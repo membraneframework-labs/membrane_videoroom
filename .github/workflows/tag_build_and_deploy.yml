@@ -42,8 +42,8 @@ jobs:
         id: docker_build_tag
         uses: docker/build-push-action@v2
         with:
-          context: webrtc/videoroom_advanced
-          file: webrtc/videoroom_advanced/Dockerfile
+          context: .
+          file: Dockerfile
           push: true
           build-args: VERSION= ${{ steps.vars.outputs.version }}
           tags: membraneframework/demo_webrtc_videoroom_advanced:${{ steps.tag.outputs.tag }}
@@ -52,8 +52,8 @@ jobs:
         id: docker_build_latest
         uses: docker/build-push-action@v2
         with:
-          context: webrtc/videoroom_advanced
-          file: webrtc/videoroom_advanced/Dockerfile
+          context: .
+          file: Dockerfile
           push: true
           build-args: VERSION= ${{ steps.vars.outputs.version }}
           tags: membraneframework/demo_webrtc_videoroom_advanced:latest
@@ -65,4 +65,4 @@ jobs:
           remote_host: ${{ secrets.DEMO_SWARM_MANAGER }}
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}
           ssh_public_key: ${{ secrets.SSH_SERVER_PUBLIC_KEY}}
-          args: stack deploy --compose-file webrtc/videoroom_advanced/docker-compose.yml videoroom_advanced
+          args: stack deploy --compose-file docker-compose.yml videoroom_advanced

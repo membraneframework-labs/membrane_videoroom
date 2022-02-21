@@ -1,10 +1,10 @@
-name: WebRTC Videoroom Advanced - Master Build
+name: Master Build
 on:
   push:
     branches: 
       - "master"
     paths:
-      - "./**"
+      - "**"
       - "!README.md"
 
   # Allows you to run this workflow manually from the Actions tab

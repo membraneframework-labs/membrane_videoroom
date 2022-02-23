@@ -16,7 +16,7 @@ export const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
 
 export const LOCAL_PEER_ID = "local-peer";
 
-const MBps = 1024 * 1024 * 8;
+const MBps = 1024 * 8;
 
 export const BANDWIDTH_LIMITS = {
   video: 10 * MBps,

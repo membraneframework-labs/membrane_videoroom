@@ -96,7 +96,7 @@ export class Room {
             attachStream(peer.id, { audioStream: stream, videoStream: stream });
           }
         },
-        onTrackAdded: (ctx) => { },
+        onTrackAdded: (ctx) => {},
         onTrackRemoved: (ctx) => {
           if (ctx.metadata.type === "screensharing") {
             detachScreensharing(ctx.peer.id);
@@ -112,7 +112,7 @@ export class Room {
           removeVideoElement(peer.id);
           this.updateParticipantsList();
         },
-        onPeerUpdated: (ctx) => { },
+        onPeerUpdated: (ctx) => {},
       },
     });
 

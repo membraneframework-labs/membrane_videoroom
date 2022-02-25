@@ -7,6 +7,8 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Message
   alias Membrane.RTC.Engine.Endpoint.WebRTC
   alias Membrane.ICE.TURNManager
+  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
+
   require Membrane.Logger
   require OpenTelemetry.Tracer, as: Tracer
 
@@ -139,7 +141,8 @@ defmodule Videoroom.Room do
       integrated_turn_domain: state.network_options[:integrated_turn_domain],
       handshake_opts: handshake_opts,
       log_metadata: [peer_id: peer.id],
-      trace_context: state.trace_ctx
+      trace_context: state.trace_ctx,
+      webrtc_extensions: [Mid, Rid, TWCC]
     }
 
     Engine.accept_peer(rtc_engine, peer.id)

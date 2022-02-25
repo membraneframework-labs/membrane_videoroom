@@ -21,8 +21,7 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:membrane_rtc_engine,
-       github: "membraneframework/membrane_rtc_engine", branch: "limit-bandwidth"},
+      {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine"},
       {:membrane_webrtc_plugin, github: "membraneframework/membrane_webrtc_plugin"},
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},

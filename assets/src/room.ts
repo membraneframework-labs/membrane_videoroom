@@ -3,6 +3,7 @@ import {
   AUDIO_MEDIA_CONSTRAINTS,
   VIDEO_MEDIA_CONSTRAINTS,
   SCREENSHARING_MEDIA_CONSTRAINTS,
+  BANDWIDTH_LIMITS,
 } from "./consts";
 import {
   addVideoElement,
@@ -58,13 +59,13 @@ export class Room {
           this.localAudioStream
             ?.getTracks()
             .forEach((track) =>
-              this.webrtc.addTrack(track, this.localAudioStream!)
+              this.webrtc.addTrack(track, this.localAudioStream!, {}, false, BANDWIDTH_LIMITS.audio)
             );
 
           this.localVideoStream
             ?.getTracks()
             .forEach((track) =>
-              this.webrtc.addTrack(track, this.localVideoStream!)
+              this.webrtc.addTrack(track, this.localVideoStream!, {}, false, BANDWIDTH_LIMITS.video)
             );
 
           this.peers = peersInRoom;

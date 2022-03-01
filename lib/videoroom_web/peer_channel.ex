@@ -45,6 +45,14 @@ defmodule VideoRoomWeb.PeerChannel do
   end
 
   @impl true
+  def handle_info(
+        {:DOWN, _ref, :process, _pid, _reason},
+        socket
+      ) do
+    {:stop, :normal, socket}
+  end
+
+  @impl true
   def handle_info({:media_event, event}, socket) do
     push(socket, "mediaEvent", %{data: event})
 

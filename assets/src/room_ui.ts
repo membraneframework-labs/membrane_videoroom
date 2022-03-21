@@ -356,7 +356,7 @@ function setupRemoteVideoFeed(
   simulcastCallbacks: SimulcastCallbacks
 ) {
   const copy = (
-    document.querySelector("#video-feed-template") as HTMLTemplateElement
+    document.querySelector("#remote-video-feed-template") as HTMLTemplateElement
   ).content.cloneNode(true) as Element;
   const feed = copy.querySelector("div[name='video-feed']") as HTMLDivElement;
   const audio = feed.querySelector("audio") as HTMLAudioElement;

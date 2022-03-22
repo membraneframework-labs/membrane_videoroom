@@ -164,7 +164,7 @@ export class Room {
 
     const mediaDevices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = mediaDevices.filter(
-      (device) => device.kind === "videoinput"
+      (device) => device.kind === "videoinput" && device.deviceId !== ""
     );
 
     for (const device of videoDevices) {

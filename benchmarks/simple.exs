@@ -53,4 +53,13 @@ defmodule SimpleScenario do
   end
 end
 
-Beamchmark.run(SimpleScenario, duration: 60, delay: 20, output_dir: "/tmp/videoroom_benchmark")
+Beamchmark.run(SimpleScenario,
+  duration: 60,
+  delay: 20,
+  output_dir: "/tmp/videoroom_benchmark/simple",
+  compare?: true,
+  formatters: [
+    {Beamchmark.Formatters.HTML,
+     [output_path: "/tmp/beamchmark.html", auto_open?: false, inline_assets?: true]}
+  ]
+)

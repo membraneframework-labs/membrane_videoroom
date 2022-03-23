@@ -25,5 +25,10 @@ end
 Beamchmark.run(MultiroomScenario,
   duration: 60,
   delay: 30,
-  output_dir: "/tmp/videoroom_benchmark/multiroom"
+  output_dir: "/tmp/videoroom_benchmark/multiroom",
+  compare?: true,
+  formatters: [
+    {Beamchmark.Formatters.HTML,
+     [output_path: "/tmp/beamchmark.html", auto_open?: false, inline_assets?: true]}
+  ]
 )

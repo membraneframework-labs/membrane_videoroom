@@ -76,5 +76,4 @@ jobs:
           stack_file_name: docker-compose.yml
           deploy_path: /home/videoroom
           copy_stack_file: true
-          docker_prune: true
           args: up -d

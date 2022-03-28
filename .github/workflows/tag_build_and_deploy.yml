@@ -57,9 +57,10 @@ jobs:
           push: true
           build-args: VERSION= ${{ steps.vars.outputs.version }}
           tags: membraneframework/demo_webrtc_videoroom_advanced:latest
-          
+
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     steps:  
       - uses: actions/checkout@v2
 
@@ -72,5 +73,7 @@ jobs:
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           deployment_mode: docker-compose
           stack_file_name: docker-compose.yml
+          deploy_path: /home/videoroom
           copy_stack_file: true
           args: up -d
+

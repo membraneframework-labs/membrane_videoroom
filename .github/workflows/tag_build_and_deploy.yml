@@ -5,7 +5,7 @@ on:
       - "*.*.*"
 
 jobs:
-  build_and_deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -57,8 +57,13 @@ jobs:
           push: true
           build-args: VERSION= ${{ steps.vars.outputs.version }}
           tags: membraneframework/demo_webrtc_videoroom_advanced:latest
-      
-      - name: Deploy to Swarm
+          
+  deploy:
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v2
+
+      - name: Deploy docker compose to a pre-configured server
         id: deploy
         uses: sagebind/docker-swarm-deploy-action@v2
         with:

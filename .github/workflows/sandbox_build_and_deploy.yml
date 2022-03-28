@@ -8,7 +8,7 @@ on:
       - "!README.md"
 
 jobs:
-  build_and_deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -58,6 +58,11 @@ jobs:
       - name: Change Docker-Compose integrated TURN IP before deployment
         id: sed_it_once_more
         run: sed -i -e "9 s/65.21.244.250/95.216.159.234/" docker-compose.yml
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v2
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy

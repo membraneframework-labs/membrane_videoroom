@@ -74,4 +74,5 @@ jobs:
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           deployment_mode: docker-compose
           stack_file_name: docker-compose.yml
+          copy_stack_file: true
           args: up -d

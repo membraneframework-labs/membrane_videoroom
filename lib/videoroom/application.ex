@@ -12,6 +12,7 @@ defmodule VideoRoom.Application do
     create_integrated_turn_cert_file()
 
     children = [
+      {TelemetryMetricsPrometheus, [metrics: metrics()]},
       VideoRoomWeb.Endpoint,
       {Phoenix.PubSub, name: VideoRoom.PubSub},
       {Registry, keys: :unique, name: Videoroom.Room.Registry}
@@ -58,4 +59,28 @@ defmodule VideoRoom.Application do
     Application.put_env(:membrane_videoroom_demo, :dtls_pkey, pkey)
     Application.put_env(:membrane_videoroom_demo, :dtls_cert, cert)
   end
+
+  defp metrics() do
+    [
+      Telemetry.Metrics.sum(
+        "video_track.keyframes",
+        event_name: [:video_track, :packet_arrival],
+        measurement: :keyframe_indicator,
+        tags: track_telemetry_tags()
+      ),
+      Telemetry.Metrics.sum(
+        "video_track.bitrate",
+        event_name: [:video_track, :packet_arrival],
+        measurement: :bitrate,
+        tags: track_telemetry_tags()
+      ),
+      Telemetry.Metrics.counter(
+        "video_track.packets",
+        event_name: [:video_track, :packet_arrival],
+        tags: track_telemetry_tags()
+      )
+    ]
+  end
+
+  defp track_telemetry_tags(), do: [:endpoint_id, :track_id, :encoding]
 end

@@ -26,4 +26,6 @@ config :logger, :console, metadata: [:room, :peer]
 
 config :ex_libnice, impl: NIF
 
+config :membrane_telemetry_metrics, emit_events: :all
+
 import_config("#{config_env()}.exs")

@@ -63,9 +63,9 @@ defmodule VideoRoom.Application do
   defp metrics() do
     [
       Telemetry.Metrics.sum(
-        "inbound-rtp.bitrate",
+        "inbound-rtp.bytes_received",
         event_name: [:packet_arrival, :rtp],
-        measurement: :bitrate,
+        measurement: :bytes,
         tags: [:ssrc]
       ),
       Telemetry.Metrics.counter(

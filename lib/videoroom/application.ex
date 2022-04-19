@@ -62,6 +62,11 @@ defmodule VideoRoom.Application do
 
   defp metrics() do
     [
+      Telemetry.Metrics.counter(
+        "inbound-rtp.keyframe_request_sent",
+        event_name: [:sending_fir, :rtcp],
+        tags: [:ssrc]
+      ),
       Telemetry.Metrics.sum(
         "inbound-rtp.bytes_received",
         event_name: [:packet_arrival, :rtp],
@@ -98,4 +103,5 @@ defmodule VideoRoom.Application do
       )
     ]
   end
+
 end

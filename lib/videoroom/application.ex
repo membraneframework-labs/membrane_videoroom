@@ -103,5 +103,4 @@ defmodule VideoRoom.Application do
       )
     ]
   end
-
 end

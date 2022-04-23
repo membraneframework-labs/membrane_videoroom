@@ -21,7 +21,7 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine"},
+      {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine", branch: "update-deps"},
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},
       {:phoenix_html, "~> 3.0"},

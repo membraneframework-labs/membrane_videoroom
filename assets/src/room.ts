@@ -72,7 +72,7 @@ export class Room {
           this.localAudioStream
             ?.getTracks()
             .forEach((track) =>
-              this.webrtc.addTrack(track, this.localAudioStream!, {}, false)
+              this.webrtc.addTrack(track, this.localAudioStream!, {})
             );
 
           this.localVideoStream?.getTracks().forEach((track) => {
@@ -80,7 +80,7 @@ export class Room {
               track,
               this.localVideoStream!,
               {},
-              true
+              {enabled: true, active_encodings: ["l", "m"]}
             );
           });
 

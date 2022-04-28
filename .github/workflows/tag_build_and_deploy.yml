@@ -74,5 +74,6 @@ jobs:
           deployment_mode: docker-compose
           stack_file_name: docker-compose.yml
           copy_stack_file: true
+          pull_images_first: true
           args: up -d
 

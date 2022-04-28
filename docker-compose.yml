@@ -2,6 +2,7 @@ version: "3"
 services:
   videoroom_advanced:
     image: membraneframework/demo_webrtc_videoroom_advanced:latest
+    pull_policy: always
     network_mode: "host"
     environment:
       VIRTUAL_HOST: "videoroom.membraneframework.org"

@@ -157,12 +157,14 @@ export class Room {
       await navigator.mediaDevices.enumerateDevices()
     ).some((device) => device.kind === "videoinput");
 
-    // Ask browser for permissions
+    // Ask user for permissions if required
     await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: hasVideoInput,
     });
 
+    // Refresh mediaDevices list after ensuring permissions are granted
+    // Before that, enumerateDevices() call would not return deviceIds
     const mediaDevices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = mediaDevices.filter(
       (device) => device.kind === "videoinput"

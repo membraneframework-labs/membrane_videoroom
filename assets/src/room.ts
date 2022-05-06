@@ -1,24 +1,9 @@
 import {
+  AUDIO_TRACK_CONSTRAINTS,
   LOCAL_PEER_ID,
-  AUDIO_MEDIA_CONSTRAINTS,
-  VIDEO_MEDIA_CONSTRAINTS,
   SCREENSHARING_MEDIA_CONSTRAINTS,
-  BANDWIDTH_LIMITS,
+  VIDEO_TRACK_CONSTRAINTS,
 } from "./consts";
-import {
-  addVideoElement,
-  getRoomId,
-  removeVideoElement,
-  setErrorMessage,
-  setParticipantsList,
-  attachStream,
-  setupControls,
-  terminateScreensharing,
-  attachScreensharing,
-  detachScreensharing,
-  toggleScreensharing,
-  updateTrackEncoding,
-} from "./room_ui";
 import {
   MembraneWebRTC,
   Peer,
@@ -27,6 +12,20 @@ import {
   TrackEncoding,
 } from "membrane_rtc_engine";
 import { Push, Socket } from "phoenix";
+import {
+  addVideoElement,
+  attachScreensharing,
+  attachStream,
+  detachScreensharing,
+  getRoomId,
+  removeVideoElement,
+  setErrorMessage,
+  setParticipantsList,
+  setupControls,
+  toggleScreensharing,
+  updateTrackEncoding,
+} from "./room_ui";
+
 import { parse } from "query-string";
 
 export class Room {
@@ -68,7 +67,7 @@ export class Room {
           this.webrtcChannel.push("mediaEvent", { data: mediaEvent });
         },
         onConnectionError: setErrorMessage,
-        onJoinSuccess: (peerId, peersInRoom) => {
+        onJoinSuccess: (_peerId, peersInRoom) => {
           this.localAudioStream
             ?.getTracks()
             .forEach((track) =>
@@ -80,7 +79,7 @@ export class Room {
               track,
               this.localVideoStream!,
               {},
-              {enabled: true, active_encodings: ["l", "m"]}
+              { enabled: true, active_encodings: ["l", "m"] }
             );
           });
 
@@ -94,7 +93,7 @@ export class Room {
           });
           this.updateParticipantsList();
         },
-        onJoinError: (metadata) => {
+        onJoinError: (_metadata) => {
           throw `Peer denied.`;
         },
         onTrackReady: (ctx) => {
@@ -112,7 +111,7 @@ export class Room {
           }
           this.tracks.get(ctx.peer.id)?.push(ctx);
         },
-        onTrackAdded: (ctx) => {},
+        onTrackAdded: (_ctx) => {},
         onTrackRemoved: (ctx) => {
           if (ctx.metadata.type === "screensharing") {
             detachScreensharing(ctx.peer.id);
@@ -137,10 +136,10 @@ export class Room {
           removeVideoElement(peer.id);
           this.updateParticipantsList();
         },
-        onPeerUpdated: (ctx) => {},
+        onPeerUpdated: (_ctx) => {},
         onTrackEncodingChanged: (
           peerId: string,
-          trackId: string,
+          _trackId: string,
           encoding: string
         ) => {
           updateTrackEncoding(peerId, encoding);
@@ -154,25 +153,27 @@ export class Room {
   }
 
   public init = async () => {
-    try {
-      this.localAudioStream = await navigator.mediaDevices.getUserMedia(
-        AUDIO_MEDIA_CONSTRAINTS
-      );
-    } catch (error) {
-      console.error("Error while getting local audio stream", error);
-    }
+    const hasVideoInput: boolean = (
+      await navigator.mediaDevices.enumerateDevices()
+    ).some((device) => device.kind === "videoinput");
 
+    // Ask user for permissions if required
+    await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: hasVideoInput,
+    });
+
+    // Refresh mediaDevices list after ensuring permissions are granted
+    // Before that, enumerateDevices() call would not return deviceIds
     const mediaDevices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = mediaDevices.filter(
       (device) => device.kind === "videoinput"
     );
 
     for (const device of videoDevices) {
-      const video = VIDEO_MEDIA_CONSTRAINTS.video as MediaTrackConstraints;
       const constraints = {
-        ...VIDEO_MEDIA_CONSTRAINTS,
         video: {
-          ...video,
+          ...VIDEO_TRACK_CONSTRAINTS,
           deviceId: { exact: device.deviceId },
         },
       };
@@ -186,6 +187,14 @@ export class Room {
       } catch (error) {
         console.error("Error while getting local video stream", error);
       }
+    }
+
+    try {
+      this.localAudioStream = await navigator.mediaDevices.getUserMedia({
+        audio: AUDIO_TRACK_CONSTRAINTS,
+      });
+    } catch (error) {
+      console.error("Error while getting local audio stream", error);
     }
 
     addVideoElement(LOCAL_PEER_ID, "Me", true, {

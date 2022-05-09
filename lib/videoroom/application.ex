@@ -12,6 +12,7 @@ defmodule VideoRoom.Application do
     create_integrated_turn_cert_file()
 
     children = [
+      {TelemetryMetricsPrometheus, [metrics: metrics()]},
       VideoRoomWeb.Endpoint,
       {Phoenix.PubSub, name: VideoRoom.PubSub},
       {Registry, keys: :unique, name: Videoroom.Room.Registry}
@@ -57,5 +58,66 @@ defmodule VideoRoom.Application do
     :ok = ExDTLS.stop(pid)
     Application.put_env(:membrane_videoroom_demo, :dtls_pkey, pkey)
     Application.put_env(:membrane_videoroom_demo, :dtls_cert, cert)
+  end
+
+  defp metrics() do
+    [
+      Telemetry.Metrics.counter(
+        "inbound-rtp.keyframe_request_sent",
+        event_name: [:sending_fir, :rtcp],
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
+        "inbound-rtp.bytes_received",
+        event_name: [:packet_arrival, :rtp],
+        measurement: :bytes,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.counter(
+        "inbound-rtp.packets",
+        event_name: [:packet_arrival, :rtp],
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
+        "inbound-rtp.keyframes",
+        event_name: [:packet_arrival, :rtp],
+        measurement: :keyframe_indicator,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
+        "inbound-rtp.frames",
+        event_name: [:packet_arrival, :rtp],
+        measurement: :frame_indicator,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.counter(
+        "inbound-rtp.VP8.packets",
+        event_name: [:packet_arrival, :rtp, :VP8],
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
+        "inbound-rtp.VP8.frames",
+        event_name: [:packet_arrival, :rtp, :VP8],
+        measurement: :frame_indicator,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
+        "inbound-rtp.VP8.keyframes",
+        event_name: [:packet_arrival, :rtp, :VP8],
+        measurement: :keyframe_indicator,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
+        "inbound-rtp.H264.keyframes",
+        event_name: [:packet_arrival, :rtp, :H264],
+        measurement: :keyframe_indicator,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.counter(
+        "inbound-rtp.OPUS.frames",
+        event_name: [:packet_arrival, :rtp, :OPUS],
+        tags: [:ssrc]
+      )
+    ]
   end
 end

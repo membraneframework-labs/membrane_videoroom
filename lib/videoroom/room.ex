@@ -6,6 +6,7 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine
   alias Membrane.RTC.Engine.Message
   alias Membrane.RTC.Engine.Endpoint.WebRTC
+  alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.ICE.TURNManager
   alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
 
@@ -36,8 +37,6 @@ defmodule Videoroom.Room do
       trace_ctx: trace_ctx
     ]
 
-    use_integrated_turn = Application.fetch_env!(:membrane_videoroom_demo, :use_integrated_turn)
-
     turn_cert_file =
       case Application.fetch_env(:membrane_videoroom_demo, :integrated_turn_cert_pkey) do
         {:ok, val} -> val
@@ -52,9 +51,6 @@ defmodule Videoroom.Room do
     ]
 
     network_options = [
-      stun_servers: Application.fetch_env!(:membrane_videoroom_demo, :stun_servers),
-      turn_servers: Application.fetch_env!(:membrane_videoroom_demo, :turn_servers),
-      use_integrated_turn: use_integrated_turn,
       integrated_turn_options: integrated_turn_options,
       integrated_turn_domain:
         Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_domain),
@@ -62,14 +58,12 @@ defmodule Videoroom.Room do
       dtls_cert: Application.get_env(:membrane_videoroom_demo, :dtls_cert)
     ]
 
-    if use_integrated_turn do
-      tcp_turn_port = Application.get_env(:membrane_videoroom_demo, :integrated_tcp_turn_port)
-      TURNManager.ensure_tcp_turn_launched(integrated_turn_options, port: tcp_turn_port)
+    tcp_turn_port = Application.get_env(:membrane_videoroom_demo, :integrated_tcp_turn_port)
+    TURNManager.ensure_tcp_turn_launched(integrated_turn_options, port: tcp_turn_port)
 
-      if turn_cert_file do
-        tls_turn_port = Application.get_env(:membrane_videoroom_demo, :integrated_tls_turn_port)
-        TURNManager.ensure_tls_turn_launched(integrated_turn_options, port: tls_turn_port)
-      end
+    if turn_cert_file do
+      tls_turn_port = Application.get_env(:membrane_videoroom_demo, :integrated_tls_turn_port)
+      TURNManager.ensure_tls_turn_launched(integrated_turn_options, port: tls_turn_port)
     end
 
     {:ok, pid} = Membrane.RTC.Engine.start(rtc_engine_options, [])
@@ -134,16 +128,14 @@ defmodule Videoroom.Room do
       rtc_engine: rtc_engine,
       ice_name: peer.id,
       owner: self(),
-      stun_servers: state.network_options[:stun_servers] || [],
-      turn_servers: state.network_options[:turn_servers] || [],
-      use_integrated_turn: state.network_options[:use_integrated_turn],
       integrated_turn_options: state.network_options[:integrated_turn_options],
       integrated_turn_domain: state.network_options[:integrated_turn_domain],
       handshake_opts: handshake_opts,
       log_metadata: [peer_id: peer.id],
       trace_context: state.trace_ctx,
       webrtc_extensions: [Mid, Rid, TWCC],
-      rtcp_fir_interval: Membrane.Time.seconds(10)
+      rtcp_fir_interval: Membrane.Time.seconds(10),
+      simulcast_config: %SimulcastConfig{enabled: true, default_encoding: fn _track -> "m" end}
     }
 
     Engine.accept_peer(rtc_engine, peer.id)

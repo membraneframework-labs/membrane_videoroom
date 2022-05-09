@@ -79,6 +79,23 @@ defmodule VideoRoom.Application do
         tags: [:ssrc]
       ),
       Telemetry.Metrics.sum(
+        "inbound-rtp.keyframes",
+        event_name: [:packet_arrival, :rtp],
+        measurement: :keyframe_indicator,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
+        "inbound-rtp.frames",
+        event_name: [:packet_arrival, :rtp],
+        measurement: :frame_indicator,
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.counter(
+        "inbound-rtp.VP8.packets",
+        event_name: [:packet_arrival, :rtp, :VP8],
+        tags: [:ssrc]
+      ),
+      Telemetry.Metrics.sum(
         "inbound-rtp.VP8.frames",
         event_name: [:packet_arrival, :rtp, :VP8],
         measurement: :frame_indicator,

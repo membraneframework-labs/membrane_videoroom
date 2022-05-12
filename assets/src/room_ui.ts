@@ -1,4 +1,4 @@
-import { TrackEncoding } from "membrane_rtc_engine";
+import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 const audioButton = document.getElementById("mic-control") as HTMLButtonElement;
 const videoButton = document.getElementById(

@@ -4,6 +4,8 @@ defmodule VideoRoom.Application do
 
   require Membrane.Logger
 
+  alias Membrane.TelemetryMetrics.Reporter
+
   @cert_file_path "priv/integrated_turn_cert.pem"
 
   @impl true
@@ -12,7 +14,10 @@ defmodule VideoRoom.Application do
     create_integrated_turn_cert_file()
 
     children = [
-      {TelemetryMetricsPrometheus, [metrics: metrics()]},
+      %{
+        id: Reporter,
+        start: {Reporter, :start_link, [[metrics: metrics()], [name: Reporter]]}
+      },
       VideoRoomWeb.Endpoint,
       {Phoenix.PubSub, name: VideoRoom.PubSub},
       {Registry, keys: :unique, name: Videoroom.Room.Registry}
@@ -78,22 +83,10 @@ defmodule VideoRoom.Application do
         event_name: [:packet_arrival, :rtp],
         tags: [:ssrc]
       ),
-      Telemetry.Metrics.sum(
-        "inbound-rtp.keyframes",
+      Telemetry.Metrics.last_value(
+        "inbound-rtp.encoding",
         event_name: [:packet_arrival, :rtp],
-        measurement: :keyframe_indicator,
-        tags: [:ssrc]
-      ),
-      Telemetry.Metrics.sum(
-        "inbound-rtp.frames",
-        event_name: [:packet_arrival, :rtp],
-        measurement: :frame_indicator,
-        tags: [:ssrc]
-      ),
-      Telemetry.Metrics.counter(
-        "inbound-rtp.VP8.packets",
-        event_name: [:packet_arrival, :rtp, :VP8],
-        tags: [:ssrc]
+        measurement: :encoding
       ),
       Telemetry.Metrics.sum(
         "inbound-rtp.VP8.frames",

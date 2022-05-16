@@ -31,10 +31,12 @@ defmodule Videoroom.Room do
     turn_ip = if @mix_env == :prod, do: {0, 0, 0, 0}, else: turn_mock_ip
 
     trace_ctx = create_context("room:#{room_id}")
+    telemetry_metadata = [room_id: room_id]
 
     rtc_engine_options = [
       id: room_id,
-      trace_ctx: trace_ctx
+      trace_ctx: trace_ctx,
+      telemetry_metadata: telemetry_metadata
     ]
 
     turn_cert_file =
@@ -75,7 +77,8 @@ defmodule Videoroom.Room do
        rtc_engine: pid,
        peer_channels: %{},
        network_options: network_options,
-       trace_ctx: trace_ctx
+       trace_ctx: trace_ctx,
+       telemetry_metadata: telemetry_metadata
      }}
   end
 
@@ -135,7 +138,8 @@ defmodule Videoroom.Room do
       trace_context: state.trace_ctx,
       webrtc_extensions: [Mid, Rid, TWCC],
       rtcp_fir_interval: Membrane.Time.seconds(10),
-      simulcast_config: %SimulcastConfig{enabled: true, default_encoding: fn _track -> "m" end}
+      simulcast_config: %SimulcastConfig{enabled: true, default_encoding: fn _track -> "m" end},
+      telemetry_metadata: [peer_id: peer.id] ++ state.telemetry_metadata
     }
 
     Engine.accept_peer(rtc_engine, peer.id)

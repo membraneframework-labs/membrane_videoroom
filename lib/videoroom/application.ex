@@ -69,47 +69,45 @@ defmodule VideoRoom.Application do
     [
       Telemetry.Metrics.counter(
         "inbound-rtp.keyframe_request_sent",
-        event_name: [:sending_fir, :rtcp],
-        tags: [:ssrc]
+        event_name: [:sending_fir, :rtcp]
       ),
       Telemetry.Metrics.sum(
         "inbound-rtp.bytes_received",
         event_name: [:packet_arrival, :rtp],
-        measurement: :bytes,
-        tags: [:ssrc]
+        measurement: :bytes
       ),
       Telemetry.Metrics.counter(
         "inbound-rtp.packets",
-        event_name: [:packet_arrival, :rtp],
-        tags: [:ssrc]
+        event_name: [:packet_arrival, :rtp]
       ),
       Telemetry.Metrics.last_value(
         "inbound-rtp.encoding",
         event_name: [:packet_arrival, :rtp],
         measurement: :encoding
       ),
+      Telemetry.Metrics.last_value(
+        "inbound-rtp.ssrc",
+        event_name: [:packet_arrival, :rtp],
+        measurement: :ssrc
+      ),
       Telemetry.Metrics.sum(
         "inbound-rtp.VP8.frames",
         event_name: [:packet_arrival, :rtp, :VP8],
-        measurement: :frame_indicator,
-        tags: [:ssrc]
+        measurement: :frame_indicator
       ),
       Telemetry.Metrics.sum(
         "inbound-rtp.VP8.keyframes",
         event_name: [:packet_arrival, :rtp, :VP8],
-        measurement: :keyframe_indicator,
-        tags: [:ssrc]
+        measurement: :keyframe_indicator
       ),
       Telemetry.Metrics.sum(
         "inbound-rtp.H264.keyframes",
         event_name: [:packet_arrival, :rtp, :H264],
-        measurement: :keyframe_indicator,
-        tags: [:ssrc]
+        measurement: :keyframe_indicator
       ),
       Telemetry.Metrics.counter(
         "inbound-rtp.OPUS.frames",
-        event_name: [:packet_arrival, :rtp, :OPUS],
-        tags: [:ssrc]
+        event_name: [:packet_arrival, :rtp, :OPUS]
       )
     ]
   end

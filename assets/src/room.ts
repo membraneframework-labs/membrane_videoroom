@@ -10,7 +10,7 @@ import {
   SerializedMediaEvent,
   TrackContext,
   TrackEncoding,
-} from "membrane-webrtc-js";
+} from "@membraneframework/membrane-webrtc-js";
 import { Push, Socket } from "phoenix";
 import {
   addVideoElement,

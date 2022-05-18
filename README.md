@@ -1,6 +1,6 @@
 # Membrane WebRTC video room advanced demo
 
-This project demonstrates an advanced example usage of Membrane SFU API defined in [membrane_sfu](https://github.com/membraneframework/membrane_sfu).
+This project demonstrates an advanced example usage of Membrane RTC Engine API defined in [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine).
 
 ## Environment variables
 Available runtime environment variables:
@@ -27,13 +27,13 @@ Demo has been tested with `node` version `v14.15.0`. You will also need some sys
 #### Mac OS X
 
 ```
-brew install srtp libnice clang-format ffmpeg opus
+brew install srtp clang-format ffmpeg
 ```
 
 #### Ubuntu
 
 ```
-sudo apt-get install libsrtp2-dev libnice-dev libavcodec-dev libavformat-dev libavutil-dev libopus-dev
+sudo apt-get install libsrtp2-dev libavcodec-dev libavformat-dev libavutil-dev
 ```
 
 ### To run

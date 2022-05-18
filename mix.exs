@@ -21,9 +21,13 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:prometheus_ex, "~> 3.0"},
-      {:telemetry_metrics_prometheus, "~> 1.1.0"},
       {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine"},
+      {
+        :membrane_telemetry_metrics,
+        branch: "basic-functionality-implementation",
+        github: "membraneframework/membrane_telemetry_metrics",
+        override: true
+      },
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},
       {:phoenix_html, "~> 3.0"},

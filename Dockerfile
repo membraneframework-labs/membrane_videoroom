@@ -11,9 +11,7 @@ RUN \
     cmake \
     openssl-dev \ 
     libsrtp-dev \
-    libnice-dev \
     ffmpeg-dev \
-    opus-dev \
     clang-dev
 
 ARG VERSION
@@ -56,9 +54,7 @@ RUN \
     openssl \
     ncurses-libs \
     libsrtp \
-    libnice \
     ffmpeg \
-    opus \
     clang \ 
     curl
 

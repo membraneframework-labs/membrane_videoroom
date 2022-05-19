@@ -17,7 +17,7 @@ defmodule VideoRoom.Application do
     children = [
       %{
         id: Reporter,
-        start: {Reporter, :start_link, [[metrics: Engine.metrics()], [name: Reporter]]}
+        start: {Reporter, :start_link, [[metrics: Engine.Metrics.metrics()], [name: Reporter]]}
       },
       VideoRoomWeb.Endpoint,
       {Phoenix.PubSub, name: VideoRoom.PubSub},

@@ -6,6 +6,7 @@ defmodule VideoRoom.Application do
 
   alias Membrane.RTC.Engine
   alias Membrane.TelemetryMetrics.Reporter
+  alias VideoRoom.Metrics
 
   @cert_file_path "priv/integrated_turn_cert.pem"
 
@@ -17,7 +18,8 @@ defmodule VideoRoom.Application do
     children = [
       %{
         id: Reporter,
-        start: {Reporter, :start_link, [[metrics: Engine.Metrics.metrics()], [name: Reporter]]}
+        start:
+          {Reporter, :start_link, [[metrics: Metrics.metrics()], [name: Metrics.reporter_name()]]}
       },
       VideoRoomWeb.Endpoint,
       {Phoenix.PubSub, name: VideoRoom.PubSub},

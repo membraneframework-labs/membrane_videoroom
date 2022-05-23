@@ -7,11 +7,14 @@ defmodule VideoRoom.Metrics do
 
   @spec scrape() :: Reporter.report()
   def scrape() do
-    Reporter.scrape(Reporter)
+    Reporter.scrape(videoroom_reporter())
   end
 
-  @spec scrape_and_cleanup() :: Reporter.report()
-  def scrape_and_cleanup() do
-    Reporter.scrape(Reporter)
-  end
+  @spec metrics() :: [Telemetry.Metrics.t()]
+  def metrics(), do: Membrane.RTC.Engine.Metrics.metrics()
+
+  @spec reporter_name() :: atom()
+  def reporter_name(), do: videoroom_reporter()
+
+  defp videoroom_reporter(), do: VideoRoom.Metrics.Reporter
 end

@@ -9,4 +9,13 @@ defmodule VideoRoomWeb.RoomController do
   def index(conn, %{"room_id" => id}) do
     redirect(conn, to: Routes.page_path(conn, :index, %{room_id: id}))
   end
+
+  def scrape(conn, %{"room_id" => id}) do
+    response =
+      VideoRoom.Metrics.scrape()
+      |> Map.get({:room_id, id})
+      |> inspect(pretty: true, limit: :infinity)
+
+    text(conn, response)
+  end
 end

@@ -14,6 +14,8 @@ defmodule VideoRoomWeb.Router do
 
     get("/room/:room_id", RoomController, :index)
 
+    get("/room/:room_id/scrape", RoomController, :scrape)
+
     get("/healthcheck", PageController, :healthcheck)
   end
 end

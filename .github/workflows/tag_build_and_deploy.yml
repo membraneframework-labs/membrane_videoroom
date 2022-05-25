@@ -8,17 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Declare variables
-        id: vars
-        shell: bash
-        run: |
-          echo "::set-output name=version::$(git describe --tags --always)"
-
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
+      - uses: actions/checkout@v3
 
       - name: Cache Docker layers
         uses: actions/cache@v2
@@ -45,8 +35,8 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          build-args: VERSION= ${{ steps.vars.outputs.version }}
-          tags: membraneframework/demo_webrtc_videoroom_advanced:${{ steps.tag.outputs.tag }}
+          build-args: VERSION= ${{ github.ref_name }}
+          tags: membraneframework/demo_webrtc_videoroom_advanced:${{ github.ref_name }}
 
       - name: Build and push latest version 
         id: docker_build_latest
@@ -55,14 +45,14 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          build-args: VERSION= ${{ steps.vars.outputs.version }}
+          build-args: VERSION= ${{ github.ref_name }}
           tags: membraneframework/demo_webrtc_videoroom_advanced:latest
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:  
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy

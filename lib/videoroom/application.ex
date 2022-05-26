@@ -4,7 +4,6 @@ defmodule VideoRoom.Application do
 
   require Membrane.Logger
 
-  alias Membrane.RTC.Engine
   alias Membrane.TelemetryMetrics.Reporter
   alias VideoRoom.Metrics
 
@@ -16,11 +15,7 @@ defmodule VideoRoom.Application do
     create_integrated_turn_cert_file()
 
     children = [
-      %{
-        id: Reporter,
-        start:
-          {Reporter, :start_link, [[metrics: Metrics.metrics()], [name: Metrics.reporter_name()]]}
-      },
+      {Reporter, [metrics: Metrics.metrics(), name: Metrics.reporter_name()]},
       VideoRoomWeb.Endpoint,
       {Phoenix.PubSub, name: VideoRoom.PubSub},
       {Registry, keys: :unique, name: Videoroom.Room.Registry}

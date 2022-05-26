@@ -12,7 +12,7 @@ defmodule VideoRoomWeb.RoomController do
 
   def scrape(conn, %{"room_id" => id}) do
     response =
-      VideoRoom.Metrics.scrape()
+      Membrane.TelemetryMetrics.Reporter.scrape(VideoRoomReporter)
       |> Map.get({:room_id, id})
       |> inspect(pretty: true, limit: :infinity)
 

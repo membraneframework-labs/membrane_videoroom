@@ -24,12 +24,8 @@ interface SetupCallbacks {
 }
 
 interface SimulcastCallbacks {
-  onSelectLocalEncoding:
-    | null
-    | ((encoding: TrackEncoding, selected: boolean) => void);
-  onSelectRemoteEncoding:
-    | null
-    | ((peerId: string, encoding: TrackEncoding) => void);
+  onSelectLocalEncoding: ((encoding: TrackEncoding, selected: boolean) => void) | null;
+  onSelectRemoteEncoding: ((peerId: string, encoding: TrackEncoding) => void) | null;
 }
 
 type MediaStreams = {
@@ -418,4 +414,5 @@ export function setErrorMessage(
     errorContainer.innerHTML = message;
     errorContainer.style.display = "flex";
   }
+  document.getElementById("videochat")?.remove();
 }

@@ -21,7 +21,7 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:membrane_rtc_engine, "~> 0.3.0"},
+      {:membrane_rtc_engine, "~> 0.3.2"},
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},
       {:phoenix_html, "~> 3.0"},

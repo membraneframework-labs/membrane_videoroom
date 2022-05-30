@@ -5,6 +5,7 @@ defmodule Videoroom.Room do
 
   alias Membrane.RTC.Engine
   alias Membrane.RTC.Engine.Message
+  alias Membrane.RTC.Engine.MediaEvent
   alias Membrane.RTC.Engine.Endpoint.WebRTC
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.ICE.TURNManager
@@ -150,6 +151,19 @@ defmodule Videoroom.Room do
     {:noreply, state}
   end
 
+  @impl true
+  def handle_info(%Message.EndpointCrashed{endpoint_id: endpoint_id}, state) do
+    Membrane.Logger.error("Endpoint #{inspect(endpoint_id)} has crashed!")
+    peer_channel = state.peer_channels[endpoint_id]
+
+    error_message = "WebRTC endpoint has crashed, please refresh the page to reconnect"
+    data = MediaEvent.create_error_event(error_message)
+    send(peer_channel, {:media_event, data})
+
+    {:noreply, state}
+  end
+
+  # media_event coming from client
   @impl true
   def handle_info({:media_event, _from, _event} = msg, state) do
     Engine.receive_media_event(state.rtc_engine, msg)

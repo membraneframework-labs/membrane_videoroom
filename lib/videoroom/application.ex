@@ -5,7 +5,6 @@ defmodule VideoRoom.Application do
   require Membrane.Logger
 
   alias Membrane.TelemetryMetrics.Reporter
-  alias VideoRoom.Metrics
 
   @cert_file_path "priv/integrated_turn_cert.pem"
 

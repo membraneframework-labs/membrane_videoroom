@@ -140,7 +140,13 @@ defmodule Videoroom.Room do
     }
 
     Engine.accept_peer(rtc_engine, peer.id)
-    :ok = Engine.add_endpoint(rtc_engine, endpoint, peer_id: peer.id, node: peer_node)
+
+    :ok =
+      Engine.add_endpoint(rtc_engine, endpoint,
+        peer_id: peer.id,
+        peer_metadata: peer.metadata,
+        node: peer_node
+      )
 
     {:noreply, state}
   end

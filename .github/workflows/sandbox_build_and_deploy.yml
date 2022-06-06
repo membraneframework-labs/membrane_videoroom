@@ -7,6 +7,11 @@ on:
       - "**"
       - "!README.md"
 
+env: 
+  VIRTUAL_HOST: sandbox-videoroom.membrane.work
+  INTEGRATED_TURN_IP: 95.216.159.234
+  TAG: sandbox
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,8 +49,8 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          build-args: VERSION= ${{ steps.vars.outputs.version }}
-          tags: membraneframework/demo_webrtc_videoroom_advanced:sandbox
+          build-args: VERSION=${{ steps.vars.outputs.version }}
+          tags: membraneframework/demo_webrtc_videoroom_advanced:${{ env.TAG }}
       
   deploy:
     runs-on: ubuntu-latest
@@ -53,17 +58,9 @@ jobs:
     steps:  
       - uses: actions/checkout@v2
 
-      - name: Change Docker-Compose tag before deployment
-        id: sed_that_compose
-        run: sed -i -e "s/latest/sandbox/g" docker-compose.yml
-      
-      - name: Change Docker-Compose domain address before deployment
-        id: sed_it_again
-        run: sed -i -e "7 s/videoroom/sandbox-videoroom/" docker-compose.yml
-
-      - name: Change Docker-Compose integrated TURN IP before deployment
-        id: sed_it_once_more
-        run: sed -i -e "9 s/65.21.244.250/95.216.159.234/" docker-compose.yml
+      - name: Prepare .env file for the deployment
+        id: variables_population
+        run: echo "VIRTUAL_HOST=$VIRTUAL_HOST \nINTEGRATED_TURN_IP=$INTEGRATED_TURN_IP \nTAG=$TAG" > .env
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy
@@ -74,6 +71,5 @@ jobs:
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           deployment_mode: docker-compose
           stack_file_name: docker-compose.yml
-          copy_stack_file: true
           pull_images_first: true
-          args: up -d
+          args: --env-file .env up -d

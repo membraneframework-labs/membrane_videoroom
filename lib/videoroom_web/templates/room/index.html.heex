@@ -25,9 +25,10 @@
                 </div>
             </template>
             <template id="remote-video-feed-template">
-                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full ratio-video">
+                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full ratio-video" style="position: relative">
                     <audio></audio>
                     <video class="w-full h-full"></video>
+                    <img class="invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">
                     <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
                 </div>
             </template>

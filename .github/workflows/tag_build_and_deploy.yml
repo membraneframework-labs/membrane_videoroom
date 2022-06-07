@@ -65,7 +65,7 @@ jobs:
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy
-        uses: wshihadeh/docker-deployment-action@v2
+        uses: Autom3/docker-deployment-action@3.0.1
         with:
           remote_docker_host: ${{ secrets.DEMO_HOST }}
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}

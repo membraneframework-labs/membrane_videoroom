@@ -12,6 +12,7 @@ import {
 } from "@membraneframework/membrane-webrtc-js";
 import { Push, Socket } from "phoenix";
 import {
+  addAudioStatusChangedCallback,
   addVideoElement,
   attachScreensharing,
   attachStream,
@@ -21,6 +22,7 @@ import {
   setErrorMessage,
   setParticipantsList,
   setupControls,
+  setVisibilityOfMuteIndicator,
   toggleScreensharing,
 } from "./room_ui";
 
@@ -34,6 +36,7 @@ export class Room {
   private wakeLock: WakeLockSentinel | null = null;
   private localVideoStream: MediaStream | null = null;
   private localVideoTrackId: string | null = null;
+  private localAudioTrackIds: string[] = [];
   private localScreensharing: MediaStream | null = null;
   private localScreensharingTrackId: string | null = null;
 
@@ -67,11 +70,15 @@ export class Room {
         },
         onConnectionError: setErrorMessage,
         onJoinSuccess: (_peerId, peersInRoom) => {
-          this.localAudioStream
-            ?.getTracks()
-            .forEach((track) =>
-              this.webrtc.addTrack(track, this.localAudioStream!, {})
-            );
+          let audio_ids = this.localAudioStream?.getTracks().map((track) =>
+            this.webrtc.addTrack(track, this.localAudioStream!, {
+              active: true,
+            })
+          );
+
+          if (audio_ids != undefined) {
+            this.localAudioTrackIds = this.localAudioTrackIds.concat(audio_ids);
+          }
 
           this.localVideoStream?.getTracks().forEach((track) => {
             this.localVideoTrackId = this.webrtc.addTrack(
@@ -124,6 +131,11 @@ export class Room {
             ?.filter((track) => track.trackId !== ctx.trackId)!;
           this.tracks.set(ctx.peer.id, newPeerTracks);
         },
+        onTrackUpdated: (ctx) => {
+          if (ctx.track?.kind == "audio") {
+            setVisibilityOfMuteIndicator(ctx.peer.id, ctx.metadata.active);
+          }
+        },
         onPeerJoined: (peer) => {
           this.peers.push(peer);
           this.tracks.set(peer.id, []);
@@ -143,6 +155,8 @@ export class Room {
     this.webrtcChannel.on("mediaEvent", (event: any) =>
       this.webrtc.receiveMediaEvent(event.data)
     );
+
+    addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
   }
 
   public init = async () => {
@@ -284,6 +298,13 @@ export class Room {
     window.history.replaceState(null, "", window.location.pathname);
 
     return displayName as string;
+  };
+
+  private onAudioStatusChange = (status: boolean) => {
+    this.localAudioTrackIds.forEach((track) =>
+      this.webrtc.updateTrackMetadata(track, { active: status })
+    );
+    setVisibilityOfMuteIndicator("local-peer", status);
   };
 
   private updateParticipantsList = (): void => {

@@ -26,6 +26,28 @@ type MediaStreams = {
   videoStream: MediaStream | null;
 };
 
+export function addAudioStatusChangedCallback(
+  callback: (status: boolean) => any
+) {
+  audioButton.addEventListener("click", () =>
+    callback(!getAudioButtonCurrentStatus())
+  );
+}
+
+export function setVisibilityOfMuteIndicator(peer_id: string, active: boolean) {
+  let image = document.querySelector(`#feed-${peer_id} img`);
+
+  if (active) {
+    image?.classList.add("invisible");
+  } else {
+    image?.classList.remove("invisible");
+  }
+}
+
+export function getAudioButtonCurrentStatus(): boolean {
+  return audioButton.dataset.enabled === "true";
+}
+
 export function setupControls(
   mediaStreams: MediaStreams,
   callbacks: SetupCallbacks
@@ -39,11 +61,11 @@ export function setupControls(
   const isVideoAvailable =
     (mediaStreams.videoStream?.getVideoTracks()?.length || 0) > 0;
 
-  audioButton.onclick = toggleAudio;
+  audioButton.addEventListener("click", toggleAudio);
   audioButton.disabled = !isAudioAvailable;
   audioButton.querySelector("img")!.src = iconFor("audio", isAudioAvailable);
 
-  videoButton.onclick = toggleVideo;
+  videoButton.addEventListener("click", toggleVideo);
   videoButton.disabled = !isVideoAvailable;
   videoButton.querySelector("img")!.src = iconFor("video", isVideoAvailable);
 

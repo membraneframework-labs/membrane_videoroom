@@ -113,6 +113,8 @@ export class Room {
               `(${ctx.peer.metadata.displayName}) Screen`,
               ctx.stream!
             );
+          } else if (ctx.track?.kind === "audio") {
+            setVisibilityOfMuteIndicator(ctx.peer.id, ctx.metadata.active)
           } else {
             attachStream(ctx.peer.id, {
               audioStream: ctx.stream,

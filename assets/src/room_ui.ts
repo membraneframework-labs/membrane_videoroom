@@ -1,5 +1,3 @@
-import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
-
 const audioButton = document.getElementById("mic-control") as HTMLButtonElement;
 const videoButton = document.getElementById(
   "camera-control"
@@ -21,11 +19,6 @@ interface SetupCallbacks {
   onLeave: () => void;
   onScreensharingStart: () => Promise<void>;
   onScreensharingEnd: () => Promise<void>;
-}
-
-interface SimulcastCallbacks {
-  onSelectLocalEncoding: ((encoding: TrackEncoding, selected: boolean) => void) | null;
-  onSelectRemoteEncoding: ((peerId: string, encoding: TrackEncoding) => void) | null;
 }
 
 type MediaStreams = {
@@ -210,8 +203,7 @@ function adjustScreensharingGridStyles() {
 export function addVideoElement(
   peerId: string,
   label: string,
-  isLocalVideo: boolean,
-  simulcastCallbacks: SimulcastCallbacks
+  isLocalVideo: boolean
 ): void {
   const videoId = elementId(peerId, "video");
   const audioId = elementId(peerId, "audio");
@@ -223,8 +215,7 @@ export function addVideoElement(
     const values = setupVideoFeed(
       peerId,
       label,
-      isLocalVideo,
-      simulcastCallbacks
+      isLocalVideo
     );
     video = values.video;
     audio = values.audio;
@@ -249,15 +240,6 @@ export function setParticipantsList(participants: Array<string>): void {
   participantsNamesEl.innerHTML =
     "<b>Participants</b>: " + participants.join(", ");
 }
-
-export function updateTrackEncoding(peerId: string, encoding: string) {
-  const feed = document.getElementById(elementId(peerId, "feed"))!;
-  const videoEncoding = feed.querySelector(
-    "div[name='video-encoding']"
-  ) as HTMLDivElement;
-  videoEncoding.innerText = "Encoding: " + encoding;
-}
-
 function resizeVideosGrid(id: string) {
   const grid = document.getElementById(id)!;
 
@@ -298,19 +280,17 @@ function setupVideoFeed(
   peerId: string,
   label: string,
   isLocalVideo: boolean,
-  simulcastCallbacks: SimulcastCallbacks
 ) {
   if (isLocalVideo) {
-    return setupLocalVideoFeed(peerId, label, simulcastCallbacks);
+    return setupLocalVideoFeed(peerId, label);
   } else {
-    return setupRemoteVideoFeed(peerId, label, simulcastCallbacks);
+    return setupRemoteVideoFeed(peerId, label);
   }
 }
 
 function setupLocalVideoFeed(
   peerId: string,
   label: string,
-  simulcastCallbacks: SimulcastCallbacks
 ) {
   const copy = (
     document.querySelector("#local-video-feed-template") as HTMLTemplateElement
@@ -330,26 +310,12 @@ function setupLocalVideoFeed(
   grid.appendChild(feed);
   resizeVideosGrid("videos-grid");
 
-  const encodingCheckboxes = feed.querySelectorAll(
-    "input[type='checkbox']"
-  ) as NodeListOf<HTMLInputElement>;
-
-  for (var i = 0, len = encodingCheckboxes.length; i < len; i++) {
-    encodingCheckboxes[i].onclick = (event: MouseEvent) => {
-      simulcastCallbacks.onSelectLocalEncoding?.(
-        (event.target! as HTMLInputElement).name as TrackEncoding,
-        (event.target! as HTMLInputElement).checked
-      );
-    };
-  }
-
   return { audio, video };
 }
 
 function setupRemoteVideoFeed(
   peerId: string,
   label: string,
-  simulcastCallbacks: SimulcastCallbacks
 ) {
   const copy = (
     document.querySelector("#remote-video-feed-template") as HTMLTemplateElement
@@ -360,24 +326,12 @@ function setupRemoteVideoFeed(
   const videoLabel = feed.querySelector(
     "div[name='video-label']"
   ) as HTMLDivElement;
-  const encodingSelect = feed.querySelector(
-    "select[name='video-encoding-select']"
-  ) as HTMLSelectElement;
-
   feed.id = elementId(peerId, "feed");
   videoLabel.innerText = label;
 
   const grid = document.querySelector("#videos-grid")!;
   grid.appendChild(feed);
   resizeVideosGrid("videos-grid");
-
-  encodingSelect.onchange = (event: Event) => {
-    simulcastCallbacks.onSelectRemoteEncoding?.(
-      peerId,
-      (event.target! as HTMLSelectElement).value as TrackEncoding
-    );
-  };
-
   return { audio, video };
 }
 

@@ -14,6 +14,7 @@ import { Push, Socket } from "phoenix";
 import {
   addAudioStatusChangedCallback,
   addVideoElement,
+  addVideoStatusChangedCallback,
   attachScreensharing,
   attachStream,
   detachScreensharing,
@@ -23,6 +24,7 @@ import {
   setParticipantsList,
   setupControls,
   setVisibilityOfMuteIndicator,
+  setVisibilityOfNoVideoMsg,
   toggleScreensharing,
 } from "./room_ui";
 
@@ -84,7 +86,7 @@ export class Room {
             this.localVideoTrackId = this.webrtc.addTrack(
               track,
               this.localVideoStream!,
-              {},
+              { active: true },
               { enabled: false }
             );
           });
@@ -113,8 +115,6 @@ export class Room {
               `(${ctx.peer.metadata.displayName}) Screen`,
               ctx.stream!
             );
-          } else if (ctx.track?.kind === "audio") {
-            setVisibilityOfMuteIndicator(ctx.peer.id, ctx.metadata.active)
           } else {
             attachStream(ctx.peer.id, {
               audioStream: ctx.stream,
@@ -122,6 +122,15 @@ export class Room {
             });
           }
           this.tracks.get(ctx.peer.id)?.push(ctx);
+
+          if (ctx.track?.kind === "audio") {
+            setVisibilityOfMuteIndicator(ctx.peer.id, ctx.metadata.active);
+          } else if (
+            ctx.track?.kind === "video" &&
+            !(ctx.metadata && ctx.metadata.type === "screensharing")
+          ) {
+            setVisibilityOfNoVideoMsg(ctx.peer.id, ctx.metadata.active);
+          }
         },
         onTrackAdded: (_ctx) => {},
         onTrackRemoved: (ctx) => {
@@ -136,6 +145,8 @@ export class Room {
         onTrackUpdated: (ctx) => {
           if (ctx.track?.kind == "audio") {
             setVisibilityOfMuteIndicator(ctx.peer.id, ctx.metadata.active);
+          } else if (ctx.track?.kind == "video") {
+            setVisibilityOfNoVideoMsg(ctx.peer.id, ctx.metadata.active);
           }
         },
         onPeerJoined: (peer) => {
@@ -159,6 +170,7 @@ export class Room {
     );
 
     addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
+    addVideoStatusChangedCallback(this.onVideoStatusChange.bind(this));
   }
 
   public init = async () => {
@@ -237,7 +249,7 @@ export class Room {
       this.localScreensharingTrackId = this.webrtc.addTrack(
         this.localScreensharing.getVideoTracks()[0],
         this.localScreensharing,
-        { type: "screensharing" }
+        { type: "screensharing", active: true }
       );
 
       // listen for screensharing stop via browser controls instead of ui buttons
@@ -307,6 +319,13 @@ export class Room {
       this.webrtc.updateTrackMetadata(track, { active: status })
     );
     setVisibilityOfMuteIndicator("local-peer", status);
+  };
+
+  private onVideoStatusChange = (status: boolean) => {
+    this.webrtc.updateTrackMetadata(this.localVideoTrackId!, {
+      active: status,
+    });
+    setVisibilityOfNoVideoMsg("local-peer", status);
   };
 
   private updateParticipantsList = (): void => {

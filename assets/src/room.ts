@@ -161,7 +161,7 @@ export class Room {
           removeVideoElement(peer.id);
           this.updateParticipantsList();
         },
-        onPeerUpdated: (_ctx) => {}
+        onPeerUpdated: (_ctx) => {},
       },
     });
 

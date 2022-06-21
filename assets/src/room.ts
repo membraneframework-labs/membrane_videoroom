@@ -31,6 +31,7 @@ export class Room {
   private tracks: Map<string, TrackContext[]> = new Map();
   private displayName: string;
   private localAudioStream: MediaStream | null = null;
+  private wakeLock: WakeLockSentinel | null = null;
   private localVideoStream: MediaStream | null = null;
   private localVideoTrackId: string | null = null;
   private localScreensharing: MediaStream | null = null;
@@ -87,6 +88,9 @@ export class Room {
             this.tracks.set(peer.id, []);
           });
           this.updateParticipantsList();
+          if ("wakeLock" in navigator) {
+            navigator.wakeLock.request('screen').then((wakeLock) => { this.wakeLock = wakeLock; });
+          }
         },
         onJoinError: (_metadata) => {
           throw `Peer denied.`;
@@ -248,6 +252,8 @@ export class Room {
   };
 
   private leave = () => {
+    this.wakeLock && this.wakeLock.release();
+    this.wakeLock = null;
     this.webrtc.leave();
     this.webrtcChannel.leave();
     this.socketOff();

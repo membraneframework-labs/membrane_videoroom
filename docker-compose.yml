@@ -1,6 +1,6 @@
 version: "3"
 services:
-  videoroom_advanced:
+  videoroom:
     image: membraneframework/demo_webrtc_videoroom_advanced:${TAG:-latest}
     network_mode: "host"
     environment:
@@ -9,4 +9,4 @@ services:
       INTEGRATED_TURN_IP: "${INTEGRATED_TURN_IP:-127.0.0.1}"
       INTEGRATED_TURN_PORT_RANGE: "50000-65355"
       INTEGRATED_TCP_TURN_PORT: "49999"
-      
+

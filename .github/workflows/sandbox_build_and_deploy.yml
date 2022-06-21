@@ -51,7 +51,7 @@ jobs:
           push: true
           build-args: VERSION=${{ steps.vars.outputs.version }}
           tags: membraneframework/demo_webrtc_videoroom_advanced:${{ env.TAG }}
-      
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -64,12 +64,10 @@ jobs:
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy
-        uses: Autom3/docker-deployment-action@3.0.1
+        uses: TapTap21/docker-remote-deployment-action@v1.1
         with:
           remote_docker_host: ${{ secrets.SANDBOX_HOST }}
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
-          deployment_mode: docker-compose
           stack_file_name: docker-compose.yml
-          pull_images_first: true
-          args: --env-file .env up -d
+          args: -p sandbox --env-file .env up -d --remove-orphans

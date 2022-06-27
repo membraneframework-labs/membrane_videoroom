@@ -9,7 +9,6 @@ import {
   Peer,
   SerializedMediaEvent,
   TrackContext,
-  TrackEncoding,
 } from "@membraneframework/membrane-webrtc-js";
 import { Push, Socket } from "phoenix";
 import {
@@ -23,7 +22,6 @@ import {
   setParticipantsList,
   setupControls,
   toggleScreensharing,
-  updateTrackEncoding,
 } from "./room_ui";
 
 import { parse } from "query-string";
@@ -33,6 +31,7 @@ export class Room {
   private tracks: Map<string, TrackContext[]> = new Map();
   private displayName: string;
   private localAudioStream: MediaStream | null = null;
+  private wakeLock: WakeLockSentinel | null = null;
   private localVideoStream: MediaStream | null = null;
   private localVideoTrackId: string | null = null;
   private localScreensharing: MediaStream | null = null;
@@ -79,19 +78,23 @@ export class Room {
               track,
               this.localVideoStream!,
               {},
-              { enabled: true, active_encodings: ["l", "m"] }
+              { enabled: false }
             );
           });
 
           this.peers = peersInRoom;
           this.peers.forEach((peer) => {
-            addVideoElement(peer.id, peer.metadata.displayName, false, {
-              onSelectLocalEncoding: null,
-              onSelectRemoteEncoding: this.onSelectRemoteEncoding,
-            });
+            addVideoElement(peer.id, peer.metadata.displayName, false);
             this.tracks.set(peer.id, []);
           });
           this.updateParticipantsList();
+          if ("wakeLock" in navigator) {
+            // Acquire wakeLock on join
+            navigator.wakeLock.request('screen').then((wakeLock) => { this.wakeLock = wakeLock; });
+
+            // Reacquire wakeLock when after the document is visible again (e.g. user went back to the tab)
+            document.addEventListener('visibilitychange', this.onVisibilityChange);
+          }
         },
         onJoinError: (_metadata) => {
           throw `Peer denied.`;
@@ -125,10 +128,7 @@ export class Room {
           this.peers.push(peer);
           this.tracks.set(peer.id, []);
           this.updateParticipantsList();
-          addVideoElement(peer.id, peer.metadata.displayName, false, {
-            onSelectLocalEncoding: null,
-            onSelectRemoteEncoding: this.onSelectRemoteEncoding,
-          });
+          addVideoElement(peer.id, peer.metadata.displayName, false);
         },
         onPeerLeft: (peer) => {
           this.peers = this.peers.filter((p) => p.id !== peer.id);
@@ -136,14 +136,7 @@ export class Room {
           removeVideoElement(peer.id);
           this.updateParticipantsList();
         },
-        onPeerUpdated: (_ctx) => {},
-        onTrackEncodingChanged: (
-          peerId: string,
-          _trackId: string,
-          encoding: string
-        ) => {
-          updateTrackEncoding(peerId, encoding);
-        },
+        onPeerUpdated: (_ctx) => {}
       },
     });
 
@@ -197,10 +190,7 @@ export class Room {
       console.error("Error while getting local audio stream", error);
     }
 
-    addVideoElement(LOCAL_PEER_ID, "Me", true, {
-      onSelectLocalEncoding: this.onSelectLocalEncoding,
-      onSelectRemoteEncoding: null,
-    });
+    addVideoElement(LOCAL_PEER_ID, "Me", true);
 
     attachStream(LOCAL_PEER_ID, {
       audioStream: this.localAudioStream,
@@ -265,7 +255,16 @@ export class Room {
     this.webrtc.join({ displayName: this.displayName });
   };
 
+  private onVisibilityChange = async () => {
+    if (this.wakeLock !== null && document.visibilityState === 'visible') {
+      this.wakeLock = await navigator.wakeLock.request('screen');
+    }
+  }
+
   private leave = () => {
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    this.wakeLock && this.wakeLock.release();
+    this.wakeLock = null;
     this.webrtc.leave();
     this.webrtcChannel.leave();
     this.socketOff();
@@ -276,30 +275,6 @@ export class Room {
     while (this.webrtcSocketRefs.length > 0) {
       this.webrtcSocketRefs.pop();
     }
-  };
-
-  private onSelectLocalEncoding = (
-    encoding: TrackEncoding,
-    selected: boolean
-  ): void => {
-    if (selected) {
-      this.webrtc.enableTrackEncoding(this.localVideoTrackId!, encoding);
-    } else {
-      this.webrtc.disableTrackEncoding(this.localVideoTrackId!, encoding);
-    }
-  };
-
-  private onSelectRemoteEncoding = (
-    peerId: string,
-    encoding: TrackEncoding
-  ): void => {
-    const trackId = this.tracks
-      .get(peerId)
-      ?.filter(
-        (track) =>
-          track.metadata.type != "screensharing" && track.track!.kind == "video"
-      )[0].trackId!;
-    this.webrtc.selectTrackEncoding(peerId, trackId, encoding);
   };
 
   private parseUrl = (): string => {

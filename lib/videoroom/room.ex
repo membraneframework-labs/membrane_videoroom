@@ -7,7 +7,6 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Message
   alias Membrane.RTC.Engine.MediaEvent
   alias Membrane.RTC.Engine.Endpoint.WebRTC
-  alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.ICE.TURNManager
   alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
 
@@ -137,9 +136,7 @@ defmodule Videoroom.Room do
       handshake_opts: handshake_opts,
       log_metadata: [peer_id: peer.id],
       trace_context: state.trace_ctx,
-      webrtc_extensions: [Mid, Rid, TWCC],
-      rtcp_fir_interval: Membrane.Time.seconds(10),
-      simulcast_config: %SimulcastConfig{enabled: true, default_encoding: fn _track -> "m" end}
+      webrtc_extensions: [Mid, TWCC]
     }
 
     Engine.accept_peer(rtc_engine, peer.id)

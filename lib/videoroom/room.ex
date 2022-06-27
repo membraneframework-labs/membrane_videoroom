@@ -30,14 +30,17 @@ defmodule Videoroom.Room do
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)
     turn_ip = if @mix_env == :prod, do: {0, 0, 0, 0}, else: turn_mock_ip
 
+    trace_ctx = Membrane.OpenTelemetry.new_ctx()
+    Membrane.OpenTelemetry.attach(trace_ctx)
+
     span_id = room_span_id(room_id)
-    trace_ctx = create_context(span_id)
-    parent_span = Membrane.OpenTelemetry.get_span(span_id)
+    room_span = Membrane.OpenTelemetry.start_span(span_id)
+    Membrane.OpenTelemetry.set_attributes(span_id, tracing_metadata())
 
     rtc_engine_options = [
       id: room_id,
       trace_ctx: trace_ctx,
-      parent_span: parent_span
+      parent_span: room_span
     ]
 
     turn_cert_file =
@@ -75,6 +78,7 @@ defmodule Videoroom.Room do
 
     {:ok,
      %{
+       room_id: room_id,
        rtc_engine: pid,
        peer_channels: %{},
        network_options: network_options,
@@ -173,6 +177,9 @@ defmodule Videoroom.Room do
   @impl true
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
     if pid == state.rtc_engine do
+      room_span_id(state.room_id)
+      |> Membrane.OpenTelemetry.end_span()
+
       {:stop, :normal, state}
     else
       {peer_id, _peer_channel_id} =
@@ -188,20 +195,12 @@ defmodule Videoroom.Room do
     end
   end
 
-  defp create_context(span_id) when is_binary(span_id) do
-    metadata = [
+  defp tracing_metadata(),
+    do: [
       {:"library.language", :erlang},
       {:"library.name", :membrane_rtc_engine},
       {:"library.version", "server:#{Application.spec(:membrane_rtc_engine, :vsn)}"}
     ]
-
-    trace_ctx = Membrane.OpenTelemetry.new_ctx()
-    Membrane.OpenTelemetry.attach(trace_ctx)
-    Membrane.OpenTelemetry.start_span(span_id)
-    Membrane.OpenTelemetry.set_attributes(span_id, metadata)
-
-    trace_ctx
-  end
 
   defp room_span_id(id), do: "room:#{id}"
 end

@@ -12,7 +12,7 @@ defmodule Videoroom.Room do
   alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
 
   require Membrane.Logger
-  require OpenTelemetry.Tracer, as: Tracer
+  require Membrane.OpenTelemetry
 
   @mix_env Mix.env()
 
@@ -31,11 +31,14 @@ defmodule Videoroom.Room do
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)
     turn_ip = if @mix_env == :prod, do: {0, 0, 0, 0}, else: turn_mock_ip
 
-    trace_ctx = create_context("room:#{room_id}")
+    span_id = room_span_id(room_id)
+    trace_ctx = create_context(span_id)
+    parent_span = Membrane.OpenTelemetry.get_span(span_id)
 
     rtc_engine_options = [
       id: room_id,
-      trace_ctx: trace_ctx
+      trace_ctx: trace_ctx,
+      parent_span: parent_span
     ]
 
     turn_cert_file =
@@ -181,24 +184,27 @@ defmodule Videoroom.Room do
 
       Engine.remove_peer(state.rtc_engine, peer_id)
       {_elem, state} = pop_in(state, [:peer_channels, peer_id])
+
+      if state.peer_channels == %{}, do: Engine.terminate(state.rtc_engine)
+
       {:noreply, state}
     end
   end
 
-  defp create_context(name) do
+  defp create_context(span_id) when is_binary(span_id) do
     metadata = [
       {:"library.language", :erlang},
       {:"library.name", :membrane_rtc_engine},
       {:"library.version", "server:#{Application.spec(:membrane_rtc_engine, :vsn)}"}
     ]
 
-    root_span = Tracer.start_span(name)
-    parent_ctx = Tracer.set_current_span(root_span)
-    otel_ctx = OpenTelemetry.Ctx.attach(parent_ctx)
-    OpenTelemetry.Span.set_attributes(root_span, metadata)
-    OpenTelemetry.Span.end_span(root_span)
-    OpenTelemetry.Ctx.attach(otel_ctx)
+    trace_ctx = Membrane.OpenTelemetry.new_ctx()
+    Membrane.OpenTelemetry.attach(trace_ctx)
+    Membrane.OpenTelemetry.start_span(span_id)
+    Membrane.OpenTelemetry.set_attributes(span_id, metadata)
 
-    otel_ctx
+    trace_ctx
   end
+
+  defp room_span_id(id), do: "room:#{id}"
 end

@@ -26,4 +26,17 @@ config :membrane_telemetry_metrics, enabled: true
 
 config :logger, :console, metadata: [:room, :peer]
 
+config :membrane_rtc_engine_timescaledb, ecto_repos: [Membrane.RTC.Engine.TimescaleDB.Repo]
+
+config :membrane_rtc_engine_timescaledb, Membrane.RTC.Engine.TimescaleDB.Repo,
+  database: "membrane",
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost",
+  port: 5432,
+  pool: Ecto.Adapters.SQL.Sandbox,
+  chunk_time_interval: "10 minutes",
+  chunk_compress_policy_interval: "10 minutes",
+  log_level: :debug
+
 import_config("#{config_env()}.exs")

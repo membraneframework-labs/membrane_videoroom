@@ -94,8 +94,7 @@ config :opentelemetry, :resource,
   service: [
     name: "membrane",
     namespace: "membrane"
-  ],
-  tracer: :otel_tracer_default
+  ]
 
 exporter =
   case otel_state do

@@ -5,6 +5,7 @@ defmodule Membrane.VideoRoom.MetricsPersistor do
 
   # 1 second
   @scrape_interval 1000
+
   # 1 hour
   @cleanup_interval 1000 * 60 * 60
 

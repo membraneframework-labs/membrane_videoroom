@@ -35,8 +35,8 @@ defmodule Membrane.VideoRoom.MetricsPersistor do
 
   @impl true
   def init(reporter) do
-    send_after_scrape()
-    send_after_cleanup()
+    Process.send_after(self(), :scrape, @scrape_interval)
+    Process.send_after(self(), :cleanup, @cleanup_interval)
 
     {:ok, %{reporter: reporter}}
   end
@@ -45,7 +45,7 @@ defmodule Membrane.VideoRoom.MetricsPersistor do
   def handle_info(:scrape, state) do
     report = Membrane.TelemetryMetrics.Reporter.scrape(VideoRoomReporter)
     Reporter.store_report(state.reporter, report)
-    send_after_scrape()
+    Process.send_after(self(), :scrape, @scrape_interval)
 
     {:noreply, state}
   end
@@ -53,15 +53,8 @@ defmodule Membrane.VideoRoom.MetricsPersistor do
   @impl true
   def handle_info(:cleanup, state) do
     Reporter.cleanup(state.reporter, 1, "day")
-    send_after_cleanup()
-    {:noreply, state}
-  end
-
-  defp send_after_scrape() do
-    Process.send_after(self(), :scrape, @scrape_interval)
-  end
-
-  defp send_after_cleanup() do
     Process.send_after(self(), :cleanup, @cleanup_interval)
+
+    {:noreply, state}
   end
 end

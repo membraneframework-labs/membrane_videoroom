@@ -22,7 +22,11 @@ config :logger,
     [module: Membrane.SRTP.Encryptor, function: "handle_event/4", level_lower_than: :error]
   ]
 
-config :membrane_telemetry_metrics, enabled: true
+telemetry_enabled = true
+
+config :membrane_telemetry_metrics, enabled: telemetry_enabled
+
+config :membrane_opentelemetry, enabled: telemetry_enabled
 
 config :logger, :console, metadata: [:room, :peer]
 

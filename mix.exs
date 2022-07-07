@@ -21,7 +21,7 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:membrane_rtc_engine, "~> 0.4.0"},
+      {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine"},
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},
       {:phoenix_html, "~> 3.0"},
@@ -34,10 +34,10 @@ defmodule VideoRoom.MixProject do
       {:cowlib, "~> 2.11.0", override: true},
 
       # Otel
-      {:opentelemetry, "~> 0.6.0", override: true},
-      {:opentelemetry_api, "~> 0.6.0", override: true},
-      {:opentelemetry_exporter, "~> 0.6.0"},
-      {:opentelemetry_zipkin, "~> 0.4.0"},
+      {:opentelemetry, "~> 1.0"},
+      {:opentelemetry_api, "~> 1.0"},
+      {:opentelemetry_exporter, "~> 1.0"},
+      {:opentelemetry_zipkin, "~> 1.0"},
 
       # Benchmarks
       {:beamchmark, "~> 0.1.0", only: :benchmark},

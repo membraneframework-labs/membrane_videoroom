@@ -23,8 +23,8 @@ import {
   setErrorMessage,
   setParticipantsList,
   setupControls,
-  setVisibilityOfMuteIndicator,
-  setVisibilityOfNoVideoMsg,
+  setMuteIndicatorVisible,
+  setNoVideoMsgVisible,
   toggleScreensharing,
 } from "./room_ui";
 
@@ -72,15 +72,16 @@ export class Room {
         },
         onConnectionError: setErrorMessage,
         onJoinSuccess: (_peerId, peersInRoom) => {
-          let audio_ids = this.localAudioStream?.getTracks().map((track) =>
-            this.webrtc.addTrack(track, this.localAudioStream!, {
-              active: true,
-            })
-          );
-
-          if (audio_ids != undefined) {
-            this.localAudioTrackIds = this.localAudioTrackIds.concat(audio_ids);
-          }
+          this.localAudioStream?.getTracks().forEach((track) => {
+            const trackId = this.webrtc.addTrack(
+              track,
+              this.localAudioStream!,
+              {
+                active: true,
+              }
+            );
+            this.localAudioTrackIds.push(trackId);
+          });
 
           this.localVideoStream?.getTracks().forEach((track) => {
             this.localVideoTrackId = this.webrtc.addTrack(
@@ -109,7 +110,7 @@ export class Room {
           throw `Peer denied.`;
         },
         onTrackReady: (ctx) => {
-          if (ctx.metadata && ctx.metadata.type === "screensharing") {
+          if (ctx.metadata?.type === "screensharing") {
             attachScreensharing(
               ctx.peer.id,
               `(${ctx.peer.metadata.displayName}) Screen`,
@@ -124,12 +125,12 @@ export class Room {
           this.tracks.get(ctx.peer.id)?.push(ctx);
 
           if (ctx.track?.kind === "audio") {
-            setVisibilityOfMuteIndicator(ctx.peer.id, ctx.metadata.active);
+            setMuteIndicatorVisible(ctx.peer.id, ctx.metadata.active);
           } else if (
             ctx.track?.kind === "video" &&
-            !(ctx.metadata && ctx.metadata.type === "screensharing")
+            ctx.metadata?.type !== "screensharing"
           ) {
-            setVisibilityOfNoVideoMsg(ctx.peer.id, ctx.metadata.active);
+            setNoVideoMsgVisible(ctx.peer.id, ctx.metadata.active);
           }
         },
         onTrackAdded: (_ctx) => {},
@@ -144,9 +145,12 @@ export class Room {
         },
         onTrackUpdated: (ctx) => {
           if (ctx.track?.kind == "audio") {
-            setVisibilityOfMuteIndicator(ctx.peer.id, ctx.metadata.active);
-          } else if (ctx.track?.kind == "video") {
-            setVisibilityOfNoVideoMsg(ctx.peer.id, ctx.metadata.active);
+            setMuteIndicatorVisible(ctx.peer.id, ctx.metadata.active);
+          } else if (
+            ctx.track?.kind == "video" &&
+            ctx.metadata.type !== "screensharing"
+          ) {
+            setNoVideoMsgVisible(ctx.peer.id, ctx.metadata.active);
           }
         },
         onPeerJoined: (peer) => {
@@ -318,14 +322,14 @@ export class Room {
     this.localAudioTrackIds.forEach((track) =>
       this.webrtc.updateTrackMetadata(track, { active: status })
     );
-    setVisibilityOfMuteIndicator("local-peer", status);
+    setMuteIndicatorVisible("local-peer", status);
   };
 
   private onVideoStatusChange = (status: boolean) => {
     this.webrtc.updateTrackMetadata(this.localVideoTrackId!, {
       active: status,
     });
-    setVisibilityOfNoVideoMsg("local-peer", status);
+    setNoVideoMsgVisible("local-peer", status);
   };
 
   private updateParticipantsList = (): void => {

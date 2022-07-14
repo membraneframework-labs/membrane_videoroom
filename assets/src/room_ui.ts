@@ -30,7 +30,7 @@ export function addAudioStatusChangedCallback(
   callback: (status: boolean) => any
 ) {
   audioButton.addEventListener("click", () =>
-    callback(!getAudioButtonCurrentStatus())
+    callback(!getAudioButtonStatus())
   );
 }
 
@@ -42,7 +42,7 @@ export function addVideoStatusChangedCallback(
   );
 }
 
-export function setVisibilityOfMuteIndicator(peer_id: string, active: boolean) {
+export function setMuteIndicatorVisible(peer_id: string, active: boolean) {
   let image = document.querySelector(`#feed-${peer_id} img`);
 
   if (active) {
@@ -52,7 +52,7 @@ export function setVisibilityOfMuteIndicator(peer_id: string, active: boolean) {
   }
 }
 
-export function setVisibilityOfNoVideoMsg(peer_id: string, active: boolean) {
+export function setNoVideoMsgVisible(peer_id: string, active: boolean) {
   let text = document.querySelector(
     `#feed-${peer_id} div[name='no-video-msg']`
   );
@@ -65,7 +65,7 @@ export function setVisibilityOfNoVideoMsg(peer_id: string, active: boolean) {
   }
 }
 
-export function getAudioButtonCurrentStatus(): boolean {
+export function getAudioButtonStatus(): boolean {
   return audioButton.dataset.enabled === "true";
 }
 

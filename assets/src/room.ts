@@ -76,9 +76,7 @@ export class Room {
             const trackId = this.webrtc.addTrack(
               track,
               this.localAudioStream!,
-              {
-                active: true,
-              }
+              { active: true }
             );
             this.localAudioTrackIds.push(trackId);
           });

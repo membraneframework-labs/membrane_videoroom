@@ -1,18 +1,18 @@
-FROM elixir:1.12.2-alpine AS build
+FROM elixir:1.13.4-alpine AS build
 
 # install build dependencies
 RUN \
-    apk add --no-cache \
-    build-base \
-    npm \
-    git \
-    python3 \
-    make \
-    cmake \
-    openssl-dev \ 
-    libsrtp-dev \
-    ffmpeg-dev \
-    clang-dev
+  apk add --no-cache \
+  build-base \
+  npm \
+  git \
+  python3 \
+  make \
+  cmake \
+  openssl-dev \ 
+  libsrtp-dev \
+  ffmpeg-dev \
+  clang-dev
 
 ARG VERSION
 ENV VERSION=${VERSION}
@@ -22,7 +22,7 @@ WORKDIR /app
 
 # install hex + rebar
 RUN mix local.hex --force && \
-    mix local.rebar --force
+  mix local.rebar --force
 
 # set build ENV
 ENV MIX_ENV=prod
@@ -46,17 +46,17 @@ RUN mix assets.deploy
 RUN mix do compile, release
 
 # prepare release image
-FROM alpine:3.13 AS app
+FROM alpine:3.16 AS app
 
 # install runtime dependencies
 RUN \
-    apk add --no-cache \
-    openssl \
-    ncurses-libs \
-    libsrtp \
-    ffmpeg \
-    clang \ 
-    curl
+  apk add --no-cache \
+  openssl \
+  ncurses-libs \
+  libsrtp \
+  ffmpeg \
+  clang \ 
+  curl
 
 WORKDIR /app
 

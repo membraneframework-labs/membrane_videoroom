@@ -193,8 +193,11 @@ export class Room {
       this.webrtc.receiveMediaEvent(event.data)
     );
     this.webrtcChannel.on("simulcastConfig", (event) => {
-      this.isSimulcastOn = event.data;
-      setIsSimulcastOn(event.data);
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const simulcastStatusParams = urlParams.get("simulcast") == "true"
+      this.isSimulcastOn = event.data && simulcastStatusParams;
+      setIsSimulcastOn(this.isSimulcastOn);
     });
 
     addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
@@ -314,6 +317,7 @@ export class Room {
   };
 
   private leave = () => {
+    window.history.replaceState(null, "", window.location.pathname);
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.wakeLock && this.wakeLock.release();
     this.wakeLock = null;
@@ -357,7 +361,7 @@ export class Room {
     const { display_name: displayName } = parse(document.location.search);
 
     // remove query params without reloading the page
-    window.history.replaceState(null, "", window.location.pathname);
+    // window.history.replaceState(null, "", window.location.pathname);
 
     return displayName as string;
   };

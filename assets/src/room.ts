@@ -90,10 +90,15 @@ export class Room {
           this.updateParticipantsList();
           if ("wakeLock" in navigator) {
             // Acquire wakeLock on join
-            navigator.wakeLock.request('screen').then((wakeLock) => { this.wakeLock = wakeLock; });
+            navigator.wakeLock.request("screen").then((wakeLock) => {
+              this.wakeLock = wakeLock;
+            });
 
             // Reacquire wakeLock when after the document is visible again (e.g. user went back to the tab)
-            document.addEventListener('visibilitychange', this.onVisibilityChange);
+            document.addEventListener(
+              "visibilitychange",
+              this.onVisibilityChange
+            );
           }
         },
         onJoinError: (_metadata) => {
@@ -136,7 +141,7 @@ export class Room {
           removeVideoElement(peer.id);
           this.updateParticipantsList();
         },
-        onPeerUpdated: (_ctx) => {}
+        onPeerUpdated: (_ctx) => {},
       },
     });
 
@@ -146,15 +151,7 @@ export class Room {
   }
 
   public init = async () => {
-    const hasVideoInput: boolean = (
-      await navigator.mediaDevices.enumerateDevices()
-    ).some((device) => device.kind === "videoinput");
-
-    // Ask user for permissions if required
-    await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: hasVideoInput,
-    });
+    await this.askForPermissions();
 
     // Refresh mediaDevices list after ensuring permissions are granted
     // Before that, enumerateDevices() call would not return deviceIds
@@ -256,13 +253,13 @@ export class Room {
   };
 
   private onVisibilityChange = async () => {
-    if (this.wakeLock !== null && document.visibilityState === 'visible') {
-      this.wakeLock = await navigator.wakeLock.request('screen');
+    if (this.wakeLock !== null && document.visibilityState === "visible") {
+      this.wakeLock = await navigator.wakeLock.request("screen");
     }
-  }
+  };
 
   private leave = () => {
-    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.wakeLock && this.wakeLock.release();
     this.wakeLock = null;
     this.webrtc.leave();
@@ -294,6 +291,22 @@ export class Room {
     }
 
     setParticipantsList(participantsNames);
+  };
+
+  private askForPermissions = async (): Promise<void> => {
+    const hasVideoInput: boolean = (
+      await navigator.mediaDevices.enumerateDevices()
+    ).some((device) => device.kind === "videoinput");
+
+    let tmpVideoStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: hasVideoInput,
+    });
+
+    // stop tracks
+    // in other case, next call to getUserMedia may fail
+    // or won't respect media constraints
+    tmpVideoStream.getTracks().forEach((track) => track.stop());
   };
 
   private phoenixChannelPushResult = async (push: Push): Promise<any> => {

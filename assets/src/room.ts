@@ -90,10 +90,15 @@ export class Room {
           this.updateParticipantsList();
           if ("wakeLock" in navigator) {
             // Acquire wakeLock on join
-            navigator.wakeLock.request('screen').then((wakeLock) => { this.wakeLock = wakeLock; });
+            navigator.wakeLock.request("screen").then((wakeLock) => {
+              this.wakeLock = wakeLock;
+            });
 
             // Reacquire wakeLock when after the document is visible again (e.g. user went back to the tab)
-            document.addEventListener('visibilitychange', this.onVisibilityChange);
+            document.addEventListener(
+              "visibilitychange",
+              this.onVisibilityChange
+            );
           }
         },
         onJoinError: (_metadata) => {
@@ -136,7 +141,7 @@ export class Room {
           removeVideoElement(peer.id);
           this.updateParticipantsList();
         },
-        onPeerUpdated: (_ctx) => {}
+        onPeerUpdated: (_ctx) => {},
       },
     });
 
@@ -248,13 +253,13 @@ export class Room {
   };
 
   private onVisibilityChange = async () => {
-    if (this.wakeLock !== null && document.visibilityState === 'visible') {
-      this.wakeLock = await navigator.wakeLock.request('screen');
+    if (this.wakeLock !== null && document.visibilityState === "visible") {
+      this.wakeLock = await navigator.wakeLock.request("screen");
     }
-  }
+  };
 
   private leave = () => {
-    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.wakeLock && this.wakeLock.release();
     this.wakeLock = null;
     this.webrtc.leave();
@@ -292,17 +297,17 @@ export class Room {
     const hasVideoInput: boolean = (
       await navigator.mediaDevices.enumerateDevices()
     ).some((device) => device.kind === "videoinput");
-    
+
     let tmpVideoStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: hasVideoInput,
     });
-    
-    // stop tracks 
-    // in other case, next call to getUserMedia may fail 
+
+    // stop tracks
+    // in other case, next call to getUserMedia may fail
     // or won't respect media constraints
-    tmpVideoStream.getVideoTracks().forEach(track => track.stop());    
-  }
+    tmpVideoStream.getVideoTracks().forEach((track) => track.stop());
+  };
 
   private phoenixChannelPushResult = async (push: Push): Promise<any> => {
     return new Promise((resolve, reject) => {

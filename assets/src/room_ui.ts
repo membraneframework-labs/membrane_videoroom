@@ -212,11 +212,7 @@ export function addVideoElement(
   let audio = document.getElementById(audioId) as HTMLAudioElement;
 
   if (!video && !audio) {
-    const values = setupVideoFeed(
-      peerId,
-      label,
-      isLocalVideo
-    );
+    const values = setupVideoFeed(peerId, label, isLocalVideo);
     video = values.video;
     audio = values.audio;
   }
@@ -276,11 +272,7 @@ function replaceGridLayoutStyles(grid: HTMLElement, videosPerRow: number) {
   grid.classList.add(`md:grid-cols-${videosPerRow}`);
 }
 
-function setupVideoFeed(
-  peerId: string,
-  label: string,
-  isLocalVideo: boolean,
-) {
+function setupVideoFeed(peerId: string, label: string, isLocalVideo: boolean) {
   if (isLocalVideo) {
     return setupLocalVideoFeed(peerId, label);
   } else {
@@ -288,10 +280,7 @@ function setupVideoFeed(
   }
 }
 
-function setupLocalVideoFeed(
-  peerId: string,
-  label: string,
-) {
+function setupLocalVideoFeed(peerId: string, label: string) {
   const copy = (
     document.querySelector("#local-video-feed-template") as HTMLTemplateElement
   ).content.cloneNode(true) as Element;
@@ -313,10 +302,7 @@ function setupLocalVideoFeed(
   return { audio, video };
 }
 
-function setupRemoteVideoFeed(
-  peerId: string,
-  label: string,
-) {
+function setupRemoteVideoFeed(peerId: string, label: string) {
   const copy = (
     document.querySelector("#remote-video-feed-template") as HTMLTemplateElement
   ).content.cloneNode(true) as Element;

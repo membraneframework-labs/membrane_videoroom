@@ -146,15 +146,7 @@ export class Room {
   }
 
   public init = async () => {
-    const hasVideoInput: boolean = (
-      await navigator.mediaDevices.enumerateDevices()
-    ).some((device) => device.kind === "videoinput");
-
-    // Ask user for permissions if required
-    await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: hasVideoInput,
-    });
+    await this.askForPermissions();
 
     // Refresh mediaDevices list after ensuring permissions are granted
     // Before that, enumerateDevices() call would not return deviceIds
@@ -295,6 +287,22 @@ export class Room {
 
     setParticipantsList(participantsNames);
   };
+
+  private askForPermissions = async (): Promise<void> => {
+    const hasVideoInput: boolean = (
+      await navigator.mediaDevices.enumerateDevices()
+    ).some((device) => device.kind === "videoinput");
+    
+    let tmpVideoStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: hasVideoInput,
+    });
+    
+    // stop tracks 
+    // in other case, next call to getUserMedia may fail 
+    // or won't respect media constraints
+    tmpVideoStream.getVideoTracks().forEach(track => track.stop());    
+  }
 
   private phoenixChannelPushResult = async (push: Push): Promise<any> => {
     return new Promise((resolve, reject) => {

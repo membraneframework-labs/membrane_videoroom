@@ -306,7 +306,7 @@ export class Room {
     // stop tracks
     // in other case, next call to getUserMedia may fail
     // or won't respect media constraints
-    tmpVideoStream.getVideoTracks().forEach((track) => track.stop());
+    tmpVideoStream.getTracks().forEach((track) => track.stop());
   };
 
   private phoenixChannelPushResult = async (push: Push): Promise<any> => {

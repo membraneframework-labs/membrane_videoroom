@@ -5,7 +5,7 @@ on:
       - "*.*.*"
 
 env: 
-  VIRTUAL_HOST: videoroom.membraneframework.org
+  VIRTUAL_HOST: videoroom.membrane.stream
   INTEGRATED_TURN_IP: 65.21.244.250
   TAG: ${{ github.ref_name }}
 

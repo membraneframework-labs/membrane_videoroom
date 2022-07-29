@@ -50,10 +50,10 @@ module.exports = {
           '"Segoe UI"',
         ],
       },
-      backgroundColor: {
+      colors: {
         membraneDark: '#001A72',
         membraneLight: '#87CCE8',
-      }
+      },
     },
   },
   variants: {

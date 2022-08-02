@@ -4,10 +4,16 @@ defmodule VideoRoomWeb.PeerChannel do
   require Logger
 
   @impl true
-  def join("room:" <> room_id, _params, socket) do
+  def join("room:" <> room_id, params, socket) do
+    IO.inspect(params, label: :join_params)
+    simulcast? = Map.get(params, "isSimulcastOn")
+
     case :global.whereis_name(room_id) do
-      :undefined -> Videoroom.Room.start(room_id, name: {:global, room_id})
-      pid -> {:ok, pid}
+      :undefined ->
+        Videoroom.Room.start(%{room_id: room_id, simulcast?: simulcast?}, name: {:global, room_id})
+
+      pid ->
+        {:ok, pid}
     end
     |> case do
       {:ok, room_pid} ->

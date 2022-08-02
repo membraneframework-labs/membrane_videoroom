@@ -14,12 +14,7 @@ const simulcastControls = document.querySelector(
   "div[name=simulcast-controls]"
 ) as HTMLElement;
 const simulcastControlsBtn = simulcastControls.querySelector("button") as HTMLButtonElement;
-simulcastControlsBtn.onclick = () => {
-  state.showSimulcast = !state.showSimulcast
-  setShowSimulcast(state.showSimulcast);
-}
-simulcastControls.hidden = true
-simulcastControlsBtn.hidden = true
+
 
 
 type State = {
@@ -102,7 +97,7 @@ export function getVideoButtonStatus(): boolean {
   return videoButton.dataset.enabled === "true";
 }
 function setShowSimulcast(value: boolean) {
-  showSimulcastControll(value && state.isSimulcastOn);
+  changeVisibilitySimulcastControls(value && state.isSimulcastOn);
   state.showSimulcast = value;
 }
 
@@ -143,6 +138,14 @@ export function setupControls(
     callbacks.onLeave();
     window.location.reload();
   };
+
+
+  simulcastControlsBtn.onclick = () => {
+    state.showSimulcast = !state.showSimulcast
+    setShowSimulcast(state.showSimulcast);
+  }
+  simulcastControls.hidden = true
+  simulcastControlsBtn.hidden = true
 }
 
 function iconFor(type: "audio" | "video", enabled: boolean): string {
@@ -422,7 +425,7 @@ function setupLocalVideoFeed(
     };
   }
 
-  hideLocalSimulcastControls(
+  changeVisibilityLocalSimulcastControls(
     feed,
     !(state.isSimulcastOn && state.showSimulcast)
   );
@@ -462,7 +465,7 @@ function setupRemoteVideoFeed(
     );
   };
 
-  hideRemoteSimulcastControls(
+  changeVisibilityRemoteSimulcastControls(
     feed,
     !(state.isSimulcastOn && state.showSimulcast)
   );
@@ -506,21 +509,20 @@ export function setErrorMessage(
   document.getElementById("videochat")?.remove();
 }
 
-function showSimulcastControll(showSimulcast: boolean) {
-  const isHidden = !showSimulcast;
+function changeVisibilitySimulcastControls(showSimulcast: boolean) {
 
   let feeds = document.querySelectorAll(
     "div[name=video-feed]"
   ) as NodeListOf<HTMLElement>;
 
   feeds.forEach((feed) => {
-    hideLocalSimulcastControls(feed, isHidden);
+    changeVisibilityLocalSimulcastControls(feed, !showSimulcast);
 
-    hideRemoteSimulcastControls(feed, isHidden);
+    changeVisibilityRemoteSimulcastControls(feed, !showSimulcast);
   });
 }
 
-function hideLocalSimulcastControls(
+function changeVisibilityLocalSimulcastControls(
   feed: HTMLElement,
   isHidden: boolean = true
 ) {
@@ -531,7 +533,7 @@ function hideLocalSimulcastControls(
   if (encodingsSelect != null) encodingsSelect.hidden = isHidden;
 }
 
-function hideRemoteSimulcastControls(
+function changeVisibilityRemoteSimulcastControls(
   feed: HTMLElement,
   isHidden: boolean = true
 ) {

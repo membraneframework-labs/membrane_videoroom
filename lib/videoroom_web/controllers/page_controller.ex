@@ -5,13 +5,18 @@ defmodule VideoRoomWeb.PageController do
     render(conn, "index.html", room_id: Map.get(params, "room_id"))
   end
 
-  def enter(conn, %{"room_name" => room_name, "display_name" => display_name}) do
+  def enter(
+        conn,
+        %{"room_name" => room_name, "display_name" => display_name} = params
+      ) do
+    simulcast? = Map.get(params, "simulcast", false) == ""
+
     path =
       Routes.room_path(
         conn,
         :index,
         room_name,
-        %{"display_name" => display_name}
+        %{"display_name" => display_name, "simulcast" => simulcast?}
       )
 
     redirect(conn, to: path)

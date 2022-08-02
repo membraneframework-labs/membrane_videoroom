@@ -25,7 +25,9 @@ defmodule Videoroom.Room do
   end
 
   @impl true
-  def init(room_id) do
+  def init(args) do
+    room_id = args.room_id
+    simulcast? = args.simulcast?
     Membrane.Logger.info("Spawning room process: #{inspect(self())}")
 
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)
@@ -49,8 +51,6 @@ defmodule Videoroom.Room do
         {:ok, val} -> val
         :error -> nil
       end
-
-    simulcast? = Application.fetch_env!(:membrane_videoroom_demo, :simulcast?)
 
     integrated_turn_options = [
       ip: turn_ip,

@@ -55,8 +55,10 @@ export class Room {
   constructor() {
     this.socket = new Socket("/socket");
     this.socket.connect();
-    this.displayName = this.parseUrl();
-    this.webrtcChannel = this.socket.channel(`room:${getRoomId()}`);
+    const urlParams = this.parseUrl();
+    this.displayName = urlParams.displayName;
+    this.isSimulcastOn = urlParams.isSimulcastOn
+    this.webrtcChannel = this.socket.channel(`room:${getRoomId()}`, { isSimulcastOn: this.isSimulcastOn });
     this.webrtcChannel.onError(() => {
       this.socketOff();
       window.location.reload();
@@ -193,11 +195,7 @@ export class Room {
       this.webrtc.receiveMediaEvent(event.data)
     );
     this.webrtcChannel.on("simulcastConfig", (event) => {
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      const simulcastStatusParams = urlParams.get("simulcast") == "true"
-      this.isSimulcastOn = event.data && simulcastStatusParams;
-      setIsSimulcastOn(this.isSimulcastOn);
+      setIsSimulcastOn(event.data);
     });
 
     addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
@@ -357,13 +355,14 @@ export class Room {
     this.webrtc.selectTrackEncoding(peerId, trackId, encoding);
   };
 
-  private parseUrl = (): string => {
-    const { display_name: displayName } = parse(document.location.search);
+  private parseUrl = (): { displayName: string, isSimulcastOn: boolean } => {
+    let { display_name: displayName, simulcast: simulcast } = parse(document.location.search);
 
     // remove query params without reloading the page
-    // window.history.replaceState(null, "", window.location.pathname);
-
-    return displayName as string;
+    window.history.replaceState(null, "", window.location.pathname);
+    displayName = displayName as string
+    const isSimulcastOn = simulcast == "true"
+    return { displayName, isSimulcastOn };
   };
 
   private onAudioStatusChange = (status: boolean) => {

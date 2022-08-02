@@ -14,7 +14,6 @@ config :esbuild,
 config :membrane_videoroom_demo, VideoRoomWeb.Endpoint, pubsub_server: VideoRoom.PubSub
 
 config :membrane_videoroom_demo, version: System.get_env("VERSION", "unknown")
-config :membrane_videoroom_demo, simulcast?: true
 
 config :logger,
   compile_time_purge_matching: [

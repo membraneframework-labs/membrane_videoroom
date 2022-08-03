@@ -38,11 +38,11 @@ export function addVideoStatusChangedCallback(
   callback: (status: boolean) => any
 ) {
   videoButton.addEventListener("click", () =>
-    callback(!getVideoButtonCurrentStatus())
+    callback(!getVideoButtonStatus())
   );
 }
 
-export function setMuteIndicatorVisible(peer_id: string, active: boolean) {
+export function setMicIndicator(peer_id: string, active: boolean) {
   let image = document.querySelector(`#feed-${peer_id} img`);
 
   if (active) {
@@ -52,11 +52,10 @@ export function setMuteIndicatorVisible(peer_id: string, active: boolean) {
   }
 }
 
-export function setNoVideoMsgVisible(peer_id: string, active: boolean) {
+export function setCameraIndicator(peer_id: string, active: boolean) {
   let text = document.querySelector(
     `#feed-${peer_id} div[name='no-video-msg']`
   );
-  console.log(text);
 
   if (active) {
     text?.classList.add("invisible");
@@ -69,7 +68,7 @@ export function getAudioButtonStatus(): boolean {
   return audioButton.dataset.enabled === "true";
 }
 
-export function getVideoButtonCurrentStatus(): boolean {
+export function getVideoButtonStatus(): boolean {
   return videoButton.dataset.enabled === "true";
 }
 

@@ -23,8 +23,8 @@ import {
   setErrorMessage,
   setParticipantsList,
   setupControls,
-  setMuteIndicatorVisible,
-  setNoVideoMsgVisible,
+  setMicIndicator,
+  setCameraIndicator,
   toggleScreensharing,
 } from "./room_ui";
 
@@ -98,10 +98,15 @@ export class Room {
           this.updateParticipantsList();
           if ("wakeLock" in navigator) {
             // Acquire wakeLock on join
-            navigator.wakeLock.request('screen').then((wakeLock) => { this.wakeLock = wakeLock; });
+            navigator.wakeLock.request("screen").then((wakeLock) => {
+              this.wakeLock = wakeLock;
+            });
 
             // Reacquire wakeLock when after the document is visible again (e.g. user went back to the tab)
-            document.addEventListener('visibilitychange', this.onVisibilityChange);
+            document.addEventListener(
+              "visibilitychange",
+              this.onVisibilityChange
+            );
           }
         },
         onJoinError: (_metadata) => {
@@ -123,12 +128,12 @@ export class Room {
           this.tracks.get(ctx.peer.id)?.push(ctx);
 
           if (ctx.track?.kind === "audio") {
-            setMuteIndicatorVisible(ctx.peer.id, ctx.metadata.active);
+            setMicIndicator(ctx.peer.id, ctx.metadata.active);
           } else if (
             ctx.track?.kind === "video" &&
             ctx.metadata?.type !== "screensharing"
           ) {
-            setNoVideoMsgVisible(ctx.peer.id, ctx.metadata.active);
+            setCameraIndicator(ctx.peer.id, ctx.metadata.active);
           }
         },
         onTrackAdded: (_ctx) => {},
@@ -143,12 +148,12 @@ export class Room {
         },
         onTrackUpdated: (ctx) => {
           if (ctx.track?.kind == "audio") {
-            setMuteIndicatorVisible(ctx.peer.id, ctx.metadata.active);
+            setMicIndicator(ctx.peer.id, ctx.metadata.active);
           } else if (
             ctx.track?.kind == "video" &&
             ctx.metadata.type !== "screensharing"
           ) {
-            setNoVideoMsgVisible(ctx.peer.id, ctx.metadata.active);
+            setCameraIndicator(ctx.peer.id, ctx.metadata.active);
           }
         },
         onPeerJoined: (peer) => {
@@ -286,13 +291,13 @@ export class Room {
   };
 
   private onVisibilityChange = async () => {
-    if (this.wakeLock !== null && document.visibilityState === 'visible') {
-      this.wakeLock = await navigator.wakeLock.request('screen');
+    if (this.wakeLock !== null && document.visibilityState === "visible") {
+      this.wakeLock = await navigator.wakeLock.request("screen");
     }
-  }
+  };
 
   private leave = () => {
-    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.wakeLock && this.wakeLock.release();
     this.wakeLock = null;
     this.webrtc.leave();
@@ -320,14 +325,14 @@ export class Room {
     this.localAudioTrackIds.forEach((track) =>
       this.webrtc.updateTrackMetadata(track, { active: status })
     );
-    setMuteIndicatorVisible("local-peer", status);
+    setMicIndicator("local-peer", status);
   };
 
   private onVideoStatusChange = (status: boolean) => {
     this.webrtc.updateTrackMetadata(this.localVideoTrackId!, {
       active: status,
     });
-    setNoVideoMsgVisible("local-peer", status);
+    setCameraIndicator("local-peer", status);
   };
 
   private updateParticipantsList = (): void => {

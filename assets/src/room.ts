@@ -57,8 +57,10 @@ export class Room {
     this.socket.connect();
     const urlParams = this.parseUrl();
     this.displayName = urlParams.displayName;
-    this.isSimulcastOn = urlParams.isSimulcastOn
-    this.webrtcChannel = this.socket.channel(`room:${getRoomId()}`, { isSimulcastOn: this.isSimulcastOn });
+    this.isSimulcastOn = urlParams.isSimulcastOn;
+    this.webrtcChannel = this.socket.channel(`room:${getRoomId()}`, {
+      isSimulcastOn: this.isSimulcastOn,
+    });
     this.webrtcChannel.onError(() => {
       this.socketOff();
       window.location.reload();
@@ -145,7 +147,7 @@ export class Room {
             setCameraIndicator(ctx.peer.id, ctx.metadata.active);
           }
         },
-        onTrackAdded: (_ctx) => { },
+        onTrackAdded: (_ctx) => {},
         onTrackRemoved: (ctx) => {
           if (ctx.metadata.type === "screensharing") {
             detachScreensharing(ctx.peer.id);
@@ -180,7 +182,7 @@ export class Room {
           removeVideoElement(peer.id);
           this.updateParticipantsList();
         },
-        onPeerUpdated: (_ctx) => { },
+        onPeerUpdated: (_ctx) => {},
         onTrackEncodingChanged: (
           peerId: string,
           _trackId: string,
@@ -355,13 +357,15 @@ export class Room {
     this.webrtc.selectTrackEncoding(peerId, trackId, encoding);
   };
 
-  private parseUrl = (): { displayName: string, isSimulcastOn: boolean } => {
-    let { display_name: displayName, simulcast: simulcast } = parse(document.location.search);
+  private parseUrl = (): { displayName: string; isSimulcastOn: boolean } => {
+    let { display_name: displayName, simulcast: simulcast } = parse(
+      document.location.search
+    );
 
     // remove query params without reloading the page
     window.history.replaceState(null, "", window.location.pathname);
-    displayName = displayName as string
-    const isSimulcastOn = simulcast == "true"
+    displayName = displayName as string;
+    const isSimulcastOn = simulcast == "true";
     return { displayName, isSimulcastOn };
   };
 

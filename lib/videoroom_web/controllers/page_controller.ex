@@ -9,7 +9,7 @@ defmodule VideoRoomWeb.PageController do
         conn,
         %{"room_name" => room_name, "display_name" => display_name} = params
       ) do
-    simulcast? = Map.get(params, "simulcast", false) == ""
+    simulcast? = Map.get(params, "simulcast") == "true"
 
     path =
       Routes.room_path(

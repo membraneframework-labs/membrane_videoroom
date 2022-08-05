@@ -5,7 +5,6 @@ defmodule VideoRoomWeb.PeerChannel do
 
   @impl true
   def join("room:" <> room_id, params, socket) do
-    IO.inspect(params, label: :join_params)
     simulcast? = Map.get(params, "isSimulcastOn")
 
     case :global.whereis_name(room_id) do

@@ -72,10 +72,8 @@
         <button id="leave-control" class="mr-2 p-3 rounded-full transition duration-300 ease-in-out border-2 border-white bg-white-0 hover:bg-white/50">
             <img class="black-to-red transform rotate-135" height="26" width="26" src={static_path(@conn, "/svg/phone-fill.svg")} />
         </button>
-    </div>
-    <div name="simulcast-controls", class="flex-none flex justify-end h-auto p-2 absolute inset-x-0 bottom-0 rounded-md ">
-        <button class="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-          Show simulcast controls
+        <button id="simulcast-control" hidden class="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+            Show simulcast controls
         </button>
     </div>
 </div>

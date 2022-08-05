@@ -10,11 +10,12 @@ const screensharingButton = document.getElementById(
 const leaveButton = document.getElementById(
   "leave-control"
 ) as HTMLButtonElement;
-const simulcastControls = document.querySelector(
-  "div[name=simulcast-controls]"
-) as HTMLElement;
-const simulcastControlsBtn = simulcastControls.querySelector("button") as HTMLButtonElement;
-
+const simulcastControlsBtn = document.getElementById(
+  "simulcast-control"
+) as HTMLButtonElement;
+// const simulcastControls = document.querySelector(
+//   "div[name=simulcast-controls]"
+// ) as HTMLElement;
 
 
 type State = {
@@ -96,14 +97,10 @@ export function getAudioButtonStatus(): boolean {
 export function getVideoButtonStatus(): boolean {
   return videoButton.dataset.enabled === "true";
 }
-function setShowSimulcast(value: boolean) {
-  changeVisibilitySimulcastControls(value && state.isSimulcastOn);
-  state.showSimulcast = value;
-}
 
 export function setIsSimulcastOn(value: boolean) {
-  simulcastControls.hidden = !value
-  simulcastControlsBtn.hidden = !value
+  // simulcastControls.hidden = !value;
+  simulcastControlsBtn.hidden = !value;
   state.isSimulcastOn = value;
 }
 
@@ -139,13 +136,12 @@ export function setupControls(
     window.location.reload();
   };
 
-
   simulcastControlsBtn.onclick = () => {
-    state.showSimulcast = !state.showSimulcast
-    setShowSimulcast(state.showSimulcast);
-  }
-  simulcastControls.hidden = true
-  simulcastControlsBtn.hidden = true
+    state.showSimulcast = !state.showSimulcast;
+    changeVisibilitySimulcastControls(state.showSimulcast);
+  };
+  // simulcastControls.hidden = true;
+  simulcastControlsBtn.hidden = true;
 }
 
 function iconFor(type: "audio" | "video", enabled: boolean): string {
@@ -427,7 +423,7 @@ function setupLocalVideoFeed(
 
   changeVisibilityLocalSimulcastControls(
     feed,
-    !(state.isSimulcastOn && state.showSimulcast)
+    state.isSimulcastOn && state.showSimulcast
   );
 
   return { audio, video };
@@ -467,7 +463,7 @@ function setupRemoteVideoFeed(
 
   changeVisibilityRemoteSimulcastControls(
     feed,
-    !(state.isSimulcastOn && state.showSimulcast)
+    state.isSimulcastOn && state.showSimulcast
   );
 
   return { audio, video };
@@ -510,41 +506,39 @@ export function setErrorMessage(
 }
 
 function changeVisibilitySimulcastControls(showSimulcast: boolean) {
-
   let feeds = document.querySelectorAll(
     "div[name=video-feed]"
   ) as NodeListOf<HTMLElement>;
 
   feeds.forEach((feed) => {
-    changeVisibilityLocalSimulcastControls(feed, !showSimulcast);
+    changeVisibilityLocalSimulcastControls(feed, showSimulcast);
 
-    changeVisibilityRemoteSimulcastControls(feed, !showSimulcast);
+    changeVisibilityRemoteSimulcastControls(feed, showSimulcast);
   });
 }
 
 function changeVisibilityLocalSimulcastControls(
   feed: HTMLElement,
-  isHidden: boolean = true
+  showControls: boolean = false
 ) {
   const encodingsSelect = feed.querySelector(
     "div[name='encodings-checkbox']"
   ) as HTMLElement;
 
-  if (encodingsSelect != null) encodingsSelect.hidden = isHidden;
+  if (encodingsSelect != null) encodingsSelect.hidden = !showControls;
 }
 
 function changeVisibilityRemoteSimulcastControls(
   feed: HTMLElement,
-  isHidden: boolean = true
+  showControls: boolean = false
 ) {
   const selectDiv = feed.querySelector(
     "div[name='encodings-select']"
   ) as HTMLSelectElement;
-  if (selectDiv != null) selectDiv.hidden = isHidden;
+  if (selectDiv != null) selectDiv.hidden = !showControls;
 
   const videoEncoding = feed.querySelector(
     "div[name='video-encoding']"
   ) as HTMLSelectElement;
-  if (videoEncoding != null) videoEncoding.hidden = isHidden;
+  if (videoEncoding != null) videoEncoding.hidden = !showControls;
 }
-

@@ -197,6 +197,7 @@ export class Room {
       this.webrtc.receiveMediaEvent(event.data)
     );
     this.webrtcChannel.on("simulcastConfig", (event) => {
+      this.isSimulcastOn = this.isSimulcastOn || event.data;
       setIsSimulcastOn(event.data);
     });
 
@@ -317,7 +318,11 @@ export class Room {
   };
 
   private leave = () => {
-    window.history.replaceState(null, "", window.location.pathname);
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?simulcast=${this.isSimulcastOn}`
+    );
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.wakeLock && this.wakeLock.release();
     this.wakeLock = null;

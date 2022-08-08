@@ -23,11 +23,11 @@
         </label>
         <input requried class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="display_name" type="text" placeholder="Display name">
       </div>
-      <div class="form-check mb-6">
+      <div hidden={!@simulcast} class="form-check mb-6">
         <label class="form-check-label" for="simulcast">
           Simulcast
         </label>
-        <input class="form-check-input" type="checkbox" value="true" id="simulcast" name="simulcast">
+        <input checked={@simulcast} class="form-check-input" type="checkbox" value="true" id="simulcast" name="simulcast">
       </div>
       <div class="flex items-center justify-between">
         <button class="w-full bg-membraneLight hover:bg-membraneLight/75 focus:ring ring-membraneDark focus:border-membraneDark text-membraneDark font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">

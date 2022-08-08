@@ -13,10 +13,9 @@ const leaveButton = document.getElementById(
 const simulcastControlsBtn = document.getElementById(
   "simulcast-control"
 ) as HTMLButtonElement;
-// const simulcastControls = document.querySelector(
-//   "div[name=simulcast-controls]"
-// ) as HTMLElement;
-
+const hiddenControlsBtn = document.getElementById(
+  "hidden-button"
+) as HTMLButtonElement;
 
 type State = {
   isLocalScreensharingOn: boolean;
@@ -99,8 +98,8 @@ export function getVideoButtonStatus(): boolean {
 }
 
 export function setIsSimulcastOn(value: boolean) {
-  // simulcastControls.hidden = !value;
   simulcastControlsBtn.hidden = !value;
+  hiddenControlsBtn.hidden = !value;
   state.isSimulcastOn = value;
 }
 
@@ -140,7 +139,6 @@ export function setupControls(
     state.showSimulcast = !state.showSimulcast;
     changeVisibilitySimulcastControls(state.showSimulcast);
   };
-  // simulcastControls.hidden = true;
   simulcastControlsBtn.hidden = true;
 }
 

@@ -2,7 +2,10 @@ defmodule VideoRoomWeb.PageController do
   use VideoRoomWeb, :controller
 
   def index(conn, params) do
-    render(conn, "index.html", room_id: Map.get(params, "room_id"))
+    render(conn, "index.html",
+      room_id: Map.get(params, "room_id"),
+      simulcast: Map.get(params, "simulcast")
+    )
   end
 
   def enter(

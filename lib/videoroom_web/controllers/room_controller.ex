@@ -1,7 +1,7 @@
 defmodule VideoRoomWeb.RoomController do
   use VideoRoomWeb, :controller
 
-  def index(conn, %{"room_id" => id, "display_name" => _name} = params) do
+  def index(conn, %{"room_id" => id, "display_name" => _name}) do
     render(conn, "index.html", room_id: id)
   end
 

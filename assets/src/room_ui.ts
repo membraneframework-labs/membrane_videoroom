@@ -39,11 +39,11 @@ interface SetupCallbacks {
 
 interface SimulcastCallbacks {
   onSelectLocalEncoding:
-  | ((encoding: TrackEncoding, selected: boolean) => void)
-  | null;
+    | ((encoding: TrackEncoding, selected: boolean) => void)
+    | null;
   onSelectRemoteEncoding:
-  | ((peerId: string, encoding: TrackEncoding) => void)
-  | null;
+    | ((peerId: string, encoding: TrackEncoding) => void)
+    | null;
 }
 
 type MediaStreams = {

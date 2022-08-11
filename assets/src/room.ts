@@ -203,7 +203,6 @@ export class Room {
 
     addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
     addVideoStatusChangedCallback(this.onVideoStatusChange.bind(this));
-
   }
 
   public init = async () => {

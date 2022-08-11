@@ -57,18 +57,38 @@ Videoroom demo provides a `Dockerfile** that you can use to run videoroom applic
 
 ### To run:
 
-Default environmental variables are available in .env file, you can adjust it to your needs.
+**IMPORTANT** If you intend to use TLS remember that setting paths in `.env` file is not enough. Those paths will be used inside docker container therefore besides setting env variables you will need to mount those paths to docker container on your own.
 
-**IMPORTANT** If you intend to use TLS remember that setting paths in .env file is not enough. Those paths will be used inside docker container therefore besides setting env variables you will need to mount those paths to docker container on your own.
-
+Default environmental variables are available in `.env` file. To run Membrane Videoroom, firstly you have to set up integrated TURNs environments there. Add these 2 lines to this file:
 ```bash
-docker run -p 4000:4000 --env-file .env membraneframework/demo_webrtc_videoroom_advanced:latest
+INTEGRATED_TURN_PORT_RANGE=50000-50050
+INTEGRATED_TURN_IP={IPv4 address of one of your network interfaces}
+```
+`INTEGRATED_TURN_PORT_RANGE` describes the range, where TURN servers will try to open ports. The bigger range is, the more users server will be able to handle. If you will use `--network=host` option when running `docker`, there is no need to set the value of this variable. Otherwise, remember to publish range of ports on `UDP` traffic. 
+`INTEGRATED_TURN_IP` is the IP address, on which TURN servers will listen. You can get it from the output of `ifconfig` command. To make the server available from your local network, you can set it to address like `192.168.*.*`.
+
+To build docker image from source, run
+```bash
+$ docker build  -t membrane_videoroom .
 ```
 
-Or build and run docker image from source:
+To start a container with this image, run 
 ```bash
-docker build  -t membrane_videoroom_advanced .
-docker run -p 4000:4000 --env-file .env membrane_videoroom_advanced 
+$ docker run --network=host --env-file .env membrane_videoroom
+```
+or
+```bash
+$ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp --env-file .env membrane_videoroom
+```
+
+***NOTE*** There might be a problem with running `--network=host` on `Mac OS`, so second command is recommended on this operating system. Remember also, to update range of published ports, if you will set `INTEGRATED_TURN_PORT_RANGE` to different value, than in this guide.
+
+Alternatively, you can also use image from Docker Hub
+```bash
+$ docker run --network=host --env-file .env membraneframework/demo_webrtc_videoroom_advanced:latest
+```
+```bash
+$ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp --env-file .env membraneframework/demo_webrtc_videoroom_advanced:latest
 ```
 
 Then go to <http://localhost:4000/>.

@@ -1,6 +1,11 @@
-# Membrane Videoroom WebRTC advanced demo
+# Membrane Videoroom
+Membrane Videoroom is Open Source project, written in Elixir, for Real-time video and audio communication. 
+Membrane Videoroom uses [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine).
+Link to [demo](https://videoroom.membrane.stream)
 
-This project demonstrates an advanced example usage of Membrane RTC Engine API defined in [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine).
+## How to use demo as a client
+To see demo of Membrane Videoroom, open this [link](https://videoroom.membrane.stream) (recommended browser is Google Chrome).
+To join a room, enter the room name and your name, then click `Join room!` button below. If the browser will ask you for a camera or microphone permission, click `Allow` (otherwise, other people will not be able to see or hear you). After entering a room, you can turn on/off your camera or microphone, or start sharing your screen, by clicking icons at the bottom of the screen. You can also leave the room by clicking the red button or just closing the card in your browser.
 
 ## Environment variables
 Available runtime environment variables:
@@ -11,10 +16,12 @@ USE_TLS={"true" or "false", if set to "true" then https will be used and certifi
 KEY_FILE_PATH={path to certificate key file, used when "USE_TLS" is set to true}
 CERT_FILE_PATH={path to certificate file, used when "USE_TLS" is set to true}
 
-STUN_SERVERS={list of stun servers separated by ",", defaults to a single server "stun1.l.google.com:19302"}
-TURN_SERVERS={list of turn servers separated by ",", defaults to ""}
-USE_INTEGRATED_TURN={"true" or "false", if set to "true", then integrated TURN servers will be used}
-INTEGRATED_TURN_IP={turn server ip}
+INTEGRATED_TURN_IP={TURN server IP address}
+INTEGRATED_TURN_PORT_RANGE={port range, where UDP TURN will try to open ports. By default set to 50000-59999}
+INTEGRATED_TCP_TURN_PORT={port number of TCP TURN}
+INTEGRATED_TLS_TURN_PORT={port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided}
+INTEGRATED_TURN_PKEY={SSL certificate for TLS TURN}
+INTEGRATED_TURN_PKEY={SSL private key for TLS TURN}
 ```
 
 ## Run manually

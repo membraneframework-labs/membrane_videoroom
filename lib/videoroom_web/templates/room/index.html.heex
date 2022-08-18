@@ -24,7 +24,7 @@
                     <img class="invisible invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">
                     <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
                     <div name="no-video-msg" class="invisible absolute text-white w-full h-full top-0 left-0" style="text-align: center">Camera turned off</div>
-                    <div name="encodings-checkbox" class="absolute text-sm md:text-base text-gray-700 bg-white bottom-0 right-0 p-2">
+                    <div name="encodings-checkbox" class="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white bottom-0 right-0 p-2">
                         <label>Encodings to send</label>
                         <ul name="video-encoding-list">
                             <li><input type="checkbox" name="h" checked> High</li>
@@ -41,8 +41,8 @@
                     <img class="invisible invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">
                     <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
                     <div name="no-video-msg" class="absolute text-white w-full h-full top-0 left-0" style="text-align: center">Camera turned off</div>
-                    <div name="video-encoding", class="absolute text-sm md:text-base text-gray-700 bg-white top-0 right-0 p-2">Encoding: m</div>
-                    <div name="encodings-select" class="absolute text-sm md:text-base text-gray-700 bg-white bottom-0 right-0 p-2">
+                    <div name="video-encoding", class="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white top-0 right-0 p-2">Encoding: m</div>
+                    <div name="encodings-select" class="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white bottom-0 right-0 p-2">
                         <label>Encoding to receive</label>
                         <select name="video-encoding-select">
                             <option value="h">High</option>

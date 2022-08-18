@@ -57,9 +57,9 @@
                 <div id="videos-grid" class="grid flex-1 grid-cols-2 grid-flow-row gap-4 justify-items-center h-full"></div>
             </div>
         </div>
-        <div class="video-divider"></div>
+        <div class="video-divider mb-16 md:mb-0 "></div>
     </section>
-        <div id="controls", class="flex-none flex justify-center absolute inset-x-0 bottom-16 md:bottom-0 p-2 rounded-md">
+        <div id="controls", class="flex-none flex justify-center absolute mb-16 md:mb-0 inset-x-0 bottom-0 p-2 rounded-md">
             <%= for {id, svg, hover} <- [{"mic-control","mic-line.svg", "Mute or unmute the microphone"}, {"camera-control", "camera-line.svg", "Turn on/off the camera"}, {"screensharing-control", "computer-line.svg", "Start or stop the screensharing"}] do %>
                 <button disabled id={id} class="group relative flex justify-center items-center z-10 mr-2 p-3 rounded-full transition duration-300 ease-in-out border-2 border-white bg-white/0 hover:bg-white/40 disabled:bg-white/50 disabled:pointer-events-none">
                     <img class="invert group-disabled:invert-80" height="26" width="26" src={static_path(@conn, "/svg/#{svg}")} />

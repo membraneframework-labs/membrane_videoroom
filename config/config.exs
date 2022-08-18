@@ -28,11 +28,9 @@ config :membrane_telemetry_metrics, enabled: telemetry_enabled
 
 config :membrane_opentelemetry, enabled: telemetry_enabled
 
-config :logger, :console, metadata: [:room, :peer]
+config :membrane_videoroom_demo, ecto_repos: [VideoRoom.Repo]
 
-config :membrane_rtc_engine_timescaledb, ecto_repos: [Membrane.RTC.Engine.TimescaleDB.Repo]
-
-config :membrane_rtc_engine_timescaledb, Membrane.RTC.Engine.TimescaleDB.Repo,
+config :membrane_videoroom_demo, VideoRoom.Repo,
   database: "membrane",
   username: "postgres",
   password: "postgres",
@@ -40,7 +38,8 @@ config :membrane_rtc_engine_timescaledb, Membrane.RTC.Engine.TimescaleDB.Repo,
   port: 5432,
   pool: Ecto.Adapters.SQL.Sandbox,
   chunk_time_interval: "10 minutes",
-  chunk_compress_policy_interval: "10 minutes",
-  log_level: :debug
+  chunk_compress_policy_interval: "10 minutes"
+
+config :logger, :console, metadata: [:room, :peer]
 
 import_config("#{config_env()}.exs")

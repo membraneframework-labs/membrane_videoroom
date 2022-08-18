@@ -5,17 +5,22 @@ defmodule VideoRoom.Application do
   require Membrane.Logger
 
   @cert_file_path "priv/integrated_turn_cert.pem"
+  @mix_env Mix.env()
 
   alias Membrane.RTC.Engine.TimescaleDB
 
   @impl true
   def start(_type, _args) do
+    # For some reason, lack of the line below leads to flaky error on starting application
+    Application.ensure_all_started(:postgrex)
+
     config_common_dtls_key_cert()
     create_integrated_turn_cert_file()
 
     children = [
-      {TimescaleDB.Reporter, [name: TimescaleDB.Reporter]},
-      {Membrane.VideoRoom.MetricsPersistor, reporter: TimescaleDB.Reporter},
+      VideoRoom.Repo,
+      {TimescaleDB.Reporter, [name: TimescaleDB.Reporter, repo: VideoRoom.Repo]},
+      {VideoRoom.MetricsPersistor, reporter: TimescaleDB.Reporter},
       {Membrane.TelemetryMetrics.Reporter,
        [metrics: Membrane.RTC.Engine.Metrics.metrics(), name: VideoRoomReporter]},
       VideoRoomWeb.Endpoint,

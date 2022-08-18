@@ -1,4 +1,4 @@
-defmodule Membrane.VideoRoom.MetricsPersistor do
+defmodule VideoRoom.MetricsPersistor do
   use GenServer
 
   alias Membrane.RTC.Engine.TimescaleDB.Reporter

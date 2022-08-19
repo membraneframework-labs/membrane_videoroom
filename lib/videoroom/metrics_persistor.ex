@@ -1,20 +1,21 @@
 defmodule VideoRoom.MetricsPersistor do
+  @moduledoc """
+  Module responsible for scraping metrics reports and persisting them in database
+  """
+
   use GenServer
 
-  alias Membrane.RTC.Engine.TimescaleDB.Reporter
+  alias Membrane.RTC.Engine.TimescaleDB
+  alias Membrane.TelemetryMetrics.Reporter
 
-  @type option() :: GenServer.option() | {:reporter, Reporter.reporter()}
+  @type option() :: GenServer.option() | {:scrape_interval, pos_integer()}
   @type options() :: [option()]
 
-  # 1 second
-  @scrape_interval 1000
-
-  # 1 hour
-  @cleanup_interval 1000 * 60 * 60
+  @second 1000
 
   @spec start(options()) :: GenServer.on_start()
   def start(options \\ []) do
-    do_start(:start, reporter, options)
+    do_start(:start, options)
   end
 
   @spec start_link(options()) :: GenServer.on_start()
@@ -23,31 +24,23 @@ defmodule VideoRoom.MetricsPersistor do
   end
 
   defp do_start(function, options) do
-    {reporter, gen_server_options} = Keyword.pop(options, :reporter)
-    apply(GenServer, function, [__MODULE__, reporter, gen_server_options])
+    {scrape_interval, options} = Keyword.pop(options, :scrape_interval, 1)
+    apply(GenServer, function, [__MODULE__, scrape_interval, options])
   end
 
   @impl true
-  def init(reporter) do
-    Process.send_after(self(), :scrape, @scrape_interval)
-    Process.send_after(self(), :cleanup, @cleanup_interval)
+  def init(scrape_interval) do
+    Process.send_after(self(), :scrape, scrape_interval * @second)
 
-    {:ok, %{reporter: reporter}}
+    {:ok, %{scrape_interval: scrape_interval}}
   end
 
   @impl true
   def handle_info(:scrape, state) do
-    report = Membrane.TelemetryMetrics.Reporter.scrape(VideoRoomReporter)
-    Reporter.store_report(state.reporter, report)
-    Process.send_after(self(), :scrape, @scrape_interval)
+    Reporter.scrape(VideoRoomReporter)
+    |> TimescaleDB.store_report()
 
-    {:noreply, state}
-  end
-
-  @impl true
-  def handle_info(:cleanup, state) do
-    Reporter.cleanup(state.reporter, 1, "day")
-    Process.send_after(self(), :cleanup, @cleanup_interval)
+    Process.send_after(self(), :scrape, state.scrape_interval * @second)
 
     {:noreply, state}
   end

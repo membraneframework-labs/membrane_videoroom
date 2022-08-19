@@ -5,7 +5,6 @@ defmodule VideoRoom.Application do
   require Membrane.Logger
 
   @cert_file_path "priv/integrated_turn_cert.pem"
-  @mix_env Mix.env()
 
   alias Membrane.RTC.Engine.TimescaleDB
 
@@ -19,7 +18,6 @@ defmodule VideoRoom.Application do
 
     children = [
       VideoRoom.Repo,
-      {TimescaleDB.Reporter, [name: TimescaleDB.Reporter, repo: VideoRoom.Repo]},
       {VideoRoom.MetricsPersistor, reporter: TimescaleDB.Reporter},
       {Membrane.TelemetryMetrics.Reporter,
        [metrics: Membrane.RTC.Engine.Metrics.metrics(), name: VideoRoomReporter]},

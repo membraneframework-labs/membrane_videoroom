@@ -12,13 +12,13 @@
         <div id="videochat-error" class="flex items-center justify-center h-full px-4 text-white font-bold text-center text-4xl" style="display: none;"> </div>
         <div id="videochat" class="px-2 md:px-20 overflow-y-auto">
             <template id="screensharing-template">
-                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full ratio-video">
+                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video">
                     <video class="w-full h-full"></video>
                     <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
                 </div>
             </template>
             <template id="local-video-feed-template">
-                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full ratio-video">
+                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video">
                     <audio></audio>
                     <video class="w-full h-full"></video>
                     <img class="invisible invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">
@@ -35,7 +35,7 @@
                 </div>
             </template>
             <template id="remote-video-feed-template">
-                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full ratio-video">
+                <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video">
                     <audio></audio>
                     <video class="w-full h-full"></video>
                     <img class="invisible invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">

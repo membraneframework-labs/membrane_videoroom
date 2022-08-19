@@ -131,3 +131,11 @@ if otel_state != :purge,
         }
       ]
     )
+
+config :membrane_videoroom_demo, VideoRoom.Repo,
+  database: System.get_env("DATABASE", "membrane"),
+  username: System.get_env("DB_USERNAME", "postgres"),
+  password: System.get_env("DB_PASSWORD", "postgres"),
+  hostname: System.get_env("DB_HOSTNAME", "localhost"),
+  port: System.get_env("DB_PORT", "5432") |> ConfigParser.parse_port_number("DB_PORT"),
+  pool: Ecto.Adapters.SQL.Sandbox

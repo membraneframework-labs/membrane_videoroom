@@ -32,16 +32,6 @@ config :membrane_rtc_engine_timescaledb, repo: VideoRoom.Repo
 
 config :membrane_videoroom_demo, ecto_repos: [VideoRoom.Repo]
 
-config :membrane_videoroom_demo, VideoRoom.Repo,
-  database: "membrane",
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  port: 5432,
-  pool: Ecto.Adapters.SQL.Sandbox,
-  chunk_time_interval: "10 minutes",
-  chunk_compress_policy_interval: "10 minutes"
-
 config :logger, :console, metadata: [:room, :peer]
 
 import_config("#{config_env()}.exs")

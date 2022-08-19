@@ -40,6 +40,17 @@ defmodule ConfigParser do
         )
     end
   end
+
+  def parse_metrics_scrape_interval(interval) do
+    with {number, _sufix} when number >= 1 <- Integer.parse(interval) do
+      number
+    else
+      _var ->
+        raise (
+          "Bad METRICS_SCRAPE_INTERVAL enviroment variable value. Expected positive integer, got: #{interval}"
+        )
+    end
+  end
 end
 
 config :membrane_videoroom_demo,
@@ -56,7 +67,10 @@ config :membrane_videoroom_demo,
     |> ConfigParser.parse_port_number("INTEGRATED_TLS_TURN_PORT"),
   integrated_turn_pkey: System.get_env("INTEGRATED_TURN_PKEY"),
   integrated_turn_cert: System.get_env("INTEGRATED_TURN_CERT"),
-  integrated_turn_domain: System.get_env("VIRTUAL_HOST")
+  integrated_turn_domain: System.get_env("VIRTUAL_HOST"),
+  metrics_scrape_interval:
+    System.get_env("METRICS_SCRAPE_INTERVAL", "1")
+    |> ConfigParser.parse_metrics_scrape_interval()
 
 protocol = if System.get_env("USE_TLS") == "true", do: :https, else: :http
 

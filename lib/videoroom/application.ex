@@ -16,9 +16,11 @@ defmodule VideoRoom.Application do
     config_common_dtls_key_cert()
     create_integrated_turn_cert_file()
 
+    metrics_scrape_interval = Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
+
     children = [
       VideoRoom.Repo,
-      {VideoRoom.MetricsPersistor, reporter: TimescaleDB.Reporter},
+      {VideoRoom.MetricsPersistor, scrape_interval: metrics_scrape_interval},
       {Membrane.TelemetryMetrics.Reporter,
        [metrics: Membrane.RTC.Engine.Metrics.metrics(), name: VideoRoomReporter]},
       VideoRoomWeb.Endpoint,

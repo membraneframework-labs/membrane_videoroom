@@ -15,6 +15,14 @@ STUN_SERVERS={list of stun servers separated by ",", defaults to a single server
 TURN_SERVERS={list of turn servers separated by ",", defaults to ""}
 USE_INTEGRATED_TURN={"true" or "false", if set to "true", then integrated TURN servers will be used}
 INTEGRATED_TURN_IP={turn server ip}
+
+METRICS_SCRAPE_INTERVAL={number of seconds between `Membrane.RTC.Engine` metrics reports scrapes}
+
+DATABASE={name of database used to store `Membrane.RTC.Engine` metrics reports}
+DB_USERNAME={name of the database user}
+DB_PASSWORD={password for the database user}
+DB_HOSTNAME={hostname of the database}
+DB_PORT={port, where database will set up its endpoint}
 ```
 
 ## Run manually

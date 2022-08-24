@@ -109,7 +109,7 @@ export function setupControls(
     callbacks.onScreensharingEnd
   );
 
-  leaveButton.addEventListener("click", () => animateClick(screensharingButton))
+  leaveButton.addEventListener("click", () => animateClick(leaveButton))
   leaveButton.onclick = () => {
     callbacks.onLeave();
     window.location.reload();

@@ -55,7 +55,7 @@
 }
 
 .animate {
-  animation: clickAnimation 0.2s ease;
+  animation: clickAnimation 0.2s ease-in-out;
 }
 
 

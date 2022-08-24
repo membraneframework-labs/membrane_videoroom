@@ -14,7 +14,7 @@
             <template id="screensharing-template">
                 <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full ratio-video">
                     <video class="w-full h-full"></video>
-                    <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
+                    <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2 z-50">Placeholder</div>
                 </div>
             </template>
             <template id="local-video-feed-template">
@@ -22,7 +22,7 @@
                     <audio></audio>
                     <video class="w-full h-full"></video>
                     <img class="invisible invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">
-                    <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
+                    <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2 z-50">Placeholder</div>
                     <div name="no-video-msg" class="invisible absolute text-white w-full h-full top-0 left-0" style="text-align: center">Camera turned off</div>
                 </div>
             </template>
@@ -31,7 +31,7 @@
                     <audio></audio>
                     <video class="w-full h-full"></video>
                     <img class="invisible invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">
-                    <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
+                    <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2 z-50">Placeholder</div>
                     <div name="no-video-msg" class="absolute text-white w-full h-full top-0 left-0" style="text-align: center">Camera turned off</div>
                 </div>
             </template>

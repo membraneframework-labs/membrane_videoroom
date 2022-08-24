@@ -47,3 +47,15 @@
   filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg)
     brightness(96%) contrast(99%);
 }
+
+
+@keyframes clickAnimation {
+  0% {background-color: #001A72}
+  100% {background-color:rgba(255, 255, 255, 0.4);}
+}
+
+.animate {
+  animation: clickAnimation 0.2s ease;
+}
+
+

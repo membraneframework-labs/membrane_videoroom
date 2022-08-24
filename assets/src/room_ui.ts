@@ -72,6 +72,13 @@ export function getVideoButtonStatus(): boolean {
   return videoButton.dataset.enabled === "true";
 }
 
+
+const animateClick = (el:HTMLButtonElement) => {
+el.classList.add("animate")
+setTimeout(() => el.classList.remove("animate"), 500)
+}
+
+
 export function setupControls(
   mediaStreams: MediaStreams,
   callbacks: SetupCallbacks
@@ -86,19 +93,23 @@ export function setupControls(
     (mediaStreams.videoStream?.getVideoTracks()?.length || 0) > 0;
 
   audioButton.addEventListener("click", toggleAudio);
+  audioButton.addEventListener("click", () => animateClick(audioButton))
   audioButton.disabled = !isAudioAvailable;
   audioButton.querySelector("img")!.src = iconFor("audio", isAudioAvailable);
 
   videoButton.addEventListener("click", toggleVideo);
+  videoButton.addEventListener("click", () => animateClick(videoButton))
   videoButton.disabled = !isVideoAvailable;
   videoButton.querySelector("img")!.src = iconFor("video", isVideoAvailable);
 
+ screensharingButton.addEventListener("click", () => animateClick(screensharingButton))
   screensharingButton.disabled = false;
   screensharingButton.onclick = toggleScreensharing(
     callbacks.onScreensharingStart,
     callbacks.onScreensharingEnd
   );
 
+  leaveButton.addEventListener("click", () => animateClick(screensharingButton))
   leaveButton.onclick = () => {
     callbacks.onLeave();
     window.location.reload();

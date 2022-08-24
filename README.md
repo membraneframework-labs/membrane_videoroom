@@ -1,11 +1,15 @@
 # Membrane Videoroom
-Membrane Videoroom is Open Source project, written in Elixir, for Real-time video and audio communication. 
-Membrane Videoroom uses [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine).
-Link to [demo](https://videoroom.membrane.stream)
+Membrane Videoroom is an open-source, basic video conferencing platform using WebRTC.
+Based on [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine), it may be a good starting point for building your own real-time communication solution using Elixir and Membrane
 
-## How to use demo as a client
-To see demo of Membrane Videoroom, open this [link](https://videoroom.membrane.stream) (recommended browser is Google Chrome).
+## Try it live!
+You can test the Videoroom at [https://videoroom.membrane.stream](https://videoroom.membrane.stream)
+
+### Using the demo 
+The recommended browser for using the demo is Google Chrome.
 To join a room, enter the room name and your name, then click `Join room!` button below. If the browser will ask you for a camera or microphone permission, click `Allow` (otherwise, other people will not be able to see or hear you). After entering a room, you can turn on/off your camera or microphone, or start sharing your screen, by clicking icons at the bottom of the screen. You can also leave the room by clicking the red button or just closing the card in your browser.
+
+![videoroom_demo](https://membrane.stream/data/membrane_tutorials/videoroom/assets/records/expected_result.webp)
 
 ## Environment variables
 Available runtime environment variables:
@@ -60,11 +64,11 @@ Then go to <http://localhost:4000/>.
 
 ## Run with docker
 
-Videoroom demo provides a `Dockerfile** that you can use to run videoroom application yourself without any additional setup and dependencies.
+Videoroom demo provides a `Dockerfile` that you can use to run videoroom application yourself without any additional setup and dependencies.
 
 ### To run:
 
-**IMPORTANT** If you intend to use TLS remember that setting paths in `.env` file is not enough. Those paths will be used inside docker container therefore besides setting env variables you will need to mount those paths to docker container on your own.
+**IMPORTANT** If you intend to use TLS remember that setting paths in `.env` file is not enough. Those paths will be used inside the docker container therefore besides setting env variables you will need to mount those paths to the docker container on your own.
 
 Default environmental variables are available in `.env` file. To run Membrane Videoroom, firstly you have to set up integrated TURNs environments there. Add these 2 lines to this file:
 ```bash
@@ -88,7 +92,8 @@ or
 $ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp --env-file .env membrane_videoroom
 ```
 
-***NOTE*** There might be a problem with running `--network=host` on `Mac OS`, so second command is recommended on this operating system. Remember also, to update range of published ports, if you will set `INTEGRATED_TURN_PORT_RANGE` to different value, than in this guide.
+***NOTE 1*** There might be a problem with running `--network=host` on `macOS`, so the latter command is recommended on that operating system.
+***NOTE 2*** Remember to update the range of published ports if setting the `INTEGRATED_TURN_PORT_RANGE` to a value different than in this guide.
 
 Alternatively, you can also use image from Docker Hub
 ```bash

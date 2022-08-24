@@ -58,4 +58,11 @@
   animation: clickAnimation 0.2s ease-in-out;
 }
 
+input,
+textarea,
+button,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
 

@@ -78,7 +78,6 @@ el.classList.add("animate")
 setTimeout(() => el.classList.remove("animate"), 500)
 }
 
-
 export function setupControls(
   mediaStreams: MediaStreams,
   callbacks: SetupCallbacks

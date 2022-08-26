@@ -13,9 +13,7 @@ const leaveButton = document.getElementById(
 const simulcastControlsBtn = document.getElementById(
   "simulcast-control"
 ) as HTMLButtonElement;
-const hiddenControlsBtn = document.getElementById(
-  "hidden-button"
-) as HTMLButtonElement;
+
 
 type State = {
   isLocalScreensharingOn: boolean;
@@ -99,7 +97,6 @@ export function getVideoButtonStatus(): boolean {
 
 export function setIsSimulcastOn(value: boolean) {
   simulcastControlsBtn.hidden = !value;
-  hiddenControlsBtn.hidden = !value;
   state.isSimulcastOn = value;
 }
 

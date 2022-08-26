@@ -68,7 +68,7 @@ Videoroom demo provides a `Dockerfile` that you can use to run videoroom applica
 
 ### To run:
 
-**IMPORTANT** If you intend to use TLS remember that setting paths in `.env` file is not enough. Those paths will be used inside the docker container therefore besides setting env variables you will need to mount those paths to the docker container on your own.
+**IMPORTANT** If you intend to use TLS remember that setting paths in the `.env` file is not enough. Those paths will be used inside the docker container therefore besides setting env variables you will need to mount those paths to the docker container on your own. You can do it by adding `-v` flag with proper paths to `docker` command.
 
 Default environmental variables are available in `.env` file. To run Membrane Videoroom, firstly you have to set up integrated TURNs environments. You can add these 2 lines to `.env` file and add `--env-file .env` flag to `docker` command or set envionment variables omitting `.env` file with `-e` flag, as in examples below
 ```bash
@@ -76,7 +76,7 @@ INTEGRATED_TURN_PORT_RANGE=50000-50050
 INTEGRATED_TURN_IP={IPv4 address of one of your network interfaces}
 ```
 `INTEGRATED_TURN_PORT_RANGE` describes the range, where TURN servers will try to open ports. The bigger the range is, the more users server will be able to handle. Useful when not using the `-network=host` option to limit the UDP ports used only to ones exposed from a Docker container.
-`INTEGRATED_TURN_IP` is the IP address, on which TURN servers will listen. You can get it from the output of `ifconfig` command. To make the server available from your local network, you can set it to address like `192.168.*.*`.
+`INTEGRATED_TURN_IP` is the IP address, on which TURN servers will listen. You can get it from the output of `ifconfig` command. To make the server available from your local network, you can set it to an address like `192.168.*.*`.
 
 To start a container with image from Docker Hub, run
 ```bash

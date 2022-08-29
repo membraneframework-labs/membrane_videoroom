@@ -9,6 +9,7 @@ import {
   Peer,
   SerializedMediaEvent,
   TrackContext,
+  TrackEncoding,
 } from "@membraneframework/membrane-webrtc-js";
 import { Push, Socket } from "phoenix";
 import {
@@ -26,6 +27,8 @@ import {
   setMicIndicator,
   setCameraIndicator,
   toggleScreensharing,
+  updateTrackEncoding,
+  setIsSimulcastOn,
 } from "./room_ui";
 
 import { parse } from "query-string";
@@ -47,12 +50,17 @@ export class Room {
   private socket;
   private webrtcSocketRefs: string[] = [];
   private webrtcChannel;
+  private isSimulcastOn: boolean = false;
 
   constructor() {
     this.socket = new Socket("/socket");
     this.socket.connect();
-    this.displayName = this.parseUrl();
-    this.webrtcChannel = this.socket.channel(`room:${getRoomId()}`);
+    const urlParams = this.parseUrl();
+    this.displayName = urlParams.displayName;
+    this.isSimulcastOn = urlParams.isSimulcastOn;
+    this.webrtcChannel = this.socket.channel(`room:${getRoomId()}`, {
+      isSimulcastOn: this.isSimulcastOn,
+    });
     this.webrtcChannel.onError(() => {
       this.socketOff();
       window.location.reload();
@@ -86,13 +94,16 @@ export class Room {
               track,
               this.localVideoStream!,
               { active: true },
-              { enabled: false }
+              { enabled: this.isSimulcastOn, active_encodings: ["l", "m", "h"] }
             );
           });
 
           this.peers = peersInRoom;
           this.peers.forEach((peer) => {
-            addVideoElement(peer.id, peer.metadata.displayName, false);
+            addVideoElement(peer.id, peer.metadata.displayName, false, {
+              onSelectLocalEncoding: null,
+              onSelectRemoteEncoding: this.onSelectRemoteEncoding,
+            });
             this.tracks.set(peer.id, []);
           });
           this.updateParticipantsList();
@@ -160,7 +171,10 @@ export class Room {
           this.peers.push(peer);
           this.tracks.set(peer.id, []);
           this.updateParticipantsList();
-          addVideoElement(peer.id, peer.metadata.displayName, false);
+          addVideoElement(peer.id, peer.metadata.displayName, false, {
+            onSelectLocalEncoding: null,
+            onSelectRemoteEncoding: this.onSelectRemoteEncoding,
+          });
         },
         onPeerLeft: (peer) => {
           this.peers = this.peers.filter((p) => p.id !== peer.id);
@@ -169,12 +183,23 @@ export class Room {
           this.updateParticipantsList();
         },
         onPeerUpdated: (_ctx) => {},
+        onTrackEncodingChanged: (
+          peerId: string,
+          _trackId: string,
+          encoding: string
+        ) => {
+          updateTrackEncoding(peerId, encoding);
+        },
       },
     });
 
     this.webrtcChannel.on("mediaEvent", (event: any) =>
       this.webrtc.receiveMediaEvent(event.data)
     );
+    this.webrtcChannel.on("simulcastConfig", (event) => {
+      this.isSimulcastOn = this.isSimulcastOn || event.data;
+      setIsSimulcastOn(event.data);
+    });
 
     addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
     addVideoStatusChangedCallback(this.onVideoStatusChange.bind(this));
@@ -217,7 +242,10 @@ export class Room {
       console.error("Error while getting local audio stream", error);
     }
 
-    addVideoElement(LOCAL_PEER_ID, "Me", true);
+    addVideoElement(LOCAL_PEER_ID, "Me", true, {
+      onSelectLocalEncoding: this.onSelectLocalEncoding,
+      onSelectRemoteEncoding: null,
+    });
 
     attachStream(LOCAL_PEER_ID, {
       audioStream: this.localAudioStream,
@@ -289,6 +317,11 @@ export class Room {
   };
 
   private leave = () => {
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?simulcast=${this.isSimulcastOn}`
+    );
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.wakeLock && this.wakeLock.release();
     this.wakeLock = null;
@@ -304,13 +337,40 @@ export class Room {
     }
   };
 
-  private parseUrl = (): string => {
-    const { display_name: displayName } = parse(document.location.search);
+  private onSelectLocalEncoding = (
+    encoding: TrackEncoding,
+    selected: boolean
+  ): void => {
+    if (selected) {
+      this.webrtc.enableTrackEncoding(this.localVideoTrackId!, encoding);
+    } else {
+      this.webrtc.disableTrackEncoding(this.localVideoTrackId!, encoding);
+    }
+  };
+
+  private onSelectRemoteEncoding = (
+    peerId: string,
+    encoding: TrackEncoding
+  ): void => {
+    const trackId = this.tracks
+      .get(peerId)
+      ?.filter(
+        (track) =>
+          track.metadata.type != "screensharing" && track.track!.kind == "video"
+      )[0].trackId!;
+    this.webrtc.selectTrackEncoding(peerId, trackId, encoding);
+  };
+
+  private parseUrl = (): { displayName: string; isSimulcastOn: boolean } => {
+    let { display_name: displayName, simulcast: simulcast } = parse(
+      document.location.search
+    );
 
     // remove query params without reloading the page
     window.history.replaceState(null, "", window.location.pathname);
-
-    return displayName as string;
+    displayName = displayName as string;
+    const isSimulcastOn = simulcast == "true";
+    return { displayName, isSimulcastOn };
   };
 
   private onAudioStatusChange = (status: boolean) => {

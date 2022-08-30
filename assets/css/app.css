@@ -75,10 +75,4 @@
   transition: 0s
 }
 
-input,
-textarea,
-button,
-select,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
+

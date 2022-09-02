@@ -1,4 +1,5 @@
 # Membrane Videoroom WebRTC advanced demo
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane_videoroom.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_videoroom)
 
 This project demonstrates an advanced example usage of Membrane RTC Engine API defined in [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine).
 

@@ -8,7 +8,8 @@ defmodule VideoRoom.MixProject do
       elixir: "~> 1.13",
       aliases: aliases(),
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      dialyzer: dialyzer()
     ]
   end
 
@@ -45,6 +46,19 @@ defmodule VideoRoom.MixProject do
       {:httpoison, "~> 1.8", only: :benchmark},
       {:poison, "~> 5.0.0", only: :benchmark}
     ]
+  end
+
+  defp dialyzer() do
+    opts = [
+      flags: [:error_handling]
+    ]
+
+    if System.get_env("CI") == "true" do
+      # Store PLTs in cacheable directory for CI
+      [plt_local_path: "priv/plts", plt_core_path: "priv/plts"] ++ opts
+    else
+      opts
+    end
   end
 
   defp aliases do

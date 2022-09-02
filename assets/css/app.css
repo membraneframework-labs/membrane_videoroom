@@ -48,6 +48,6 @@
     brightness(96%) contrast(99%);
 }
 
-.test:focus:not(:focus-visible) {
+.btn-outline:focus:not(:focus-visible) {
   outline: none;
 }

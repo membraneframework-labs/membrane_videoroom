@@ -47,3 +47,7 @@
   filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg)
     brightness(96%) contrast(99%);
 }
+
+.cam-margin {
+  left: 30px;
+}

@@ -67,23 +67,26 @@ export function addVideoStatusChangedCallback(
 
 export function setMicIndicator(peer_id: string, active: boolean) {
   let image = document.querySelector(`#feed-${peer_id} img`);
+  let imageCam = document.querySelector(`#feed-${peer_id} img[name='camera']`);
+
+
+  if (active) {
+    image?.classList.add("invisible");
+    imageCam?.classList.remove("cam-margin")
+  } else {
+    image?.classList.remove("invisible");
+    imageCam?.classList.add("cam-margin")
+
+  }
+}
+
+export function setCameraIndicator(peer_id: string, active: boolean) {
+  let image = document.querySelector(`#feed-${peer_id} img[name='camera']`);
 
   if (active) {
     image?.classList.add("invisible");
   } else {
     image?.classList.remove("invisible");
-  }
-}
-
-export function setCameraIndicator(peer_id: string, active: boolean) {
-  let text = document.querySelector(
-    `#feed-${peer_id} div[name='no-video-msg']`
-  );
-
-  if (active) {
-    text?.classList.add("invisible");
-  } else {
-    text?.classList.remove("invisible");
   }
 }
 

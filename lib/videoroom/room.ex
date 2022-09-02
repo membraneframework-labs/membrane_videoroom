@@ -3,12 +3,12 @@ defmodule Videoroom.Room do
 
   use GenServer
 
+  alias Membrane.ICE.TURNManager
   alias Membrane.RTC.Engine
   alias Membrane.RTC.Engine.Message
   alias Membrane.RTC.Engine.MediaEvent
   alias Membrane.RTC.Engine.Endpoint.WebRTC
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
-  alias Membrane.ICE.TURNManager
   alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
 
   require Membrane.Logger
@@ -16,10 +16,12 @@ defmodule Videoroom.Room do
 
   @mix_env Mix.env()
 
+  @spec start(any(), list()) :: {:ok, pid()}
   def start(init_arg, opts) do
     GenServer.start(__MODULE__, init_arg, opts)
   end
 
+  @spec start_link(any()) :: {:ok, pid()}
   def start_link(opts) do
     GenServer.start_link(__MODULE__, [], opts)
   end

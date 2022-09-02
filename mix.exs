@@ -33,6 +33,8 @@ defmodule VideoRoom.MixProject do
       {:uuid, "~> 1.1"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:cowlib, "~> 2.11.0", override: true},
+      {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
+      {:credo, ">= 0.0.0", only: :dev, runtime: false},
 
       # Otel
       {:opentelemetry, "~> 1.0"},

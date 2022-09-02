@@ -48,6 +48,9 @@
     brightness(96%) contrast(99%);
 }
 
+/**
+ * Remove focus styles for non-keyboard focus.
+ */
 .btn-outline:focus:not(:focus-visible) {
   outline: none;
 }

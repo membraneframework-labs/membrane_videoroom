@@ -93,7 +93,6 @@ export function setupControls(
   videoButton.disabled = !isVideoAvailable;
   videoButton.querySelector("img")!.src = iconFor("video", isVideoAvailable);
 
-
   screensharingButton.disabled = false;
   screensharingButton.onclick = toggleScreensharing(
     callbacks.onScreensharingStart,

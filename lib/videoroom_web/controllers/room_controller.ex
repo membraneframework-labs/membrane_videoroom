@@ -1,6 +1,7 @@
 defmodule VideoRoomWeb.RoomController do
   use VideoRoomWeb, :controller
 
+  @spec index(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
   def index(conn, %{"room_id" => id, "display_name" => _name}) do
     render(conn, "index.html", room_id: id)
   end
@@ -15,6 +16,7 @@ defmodule VideoRoomWeb.RoomController do
     redirect(conn, to: Routes.page_path(conn, :index, params))
   end
 
+  @spec scrape(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
   def scrape(conn, %{"room_id" => id}) do
     response =
       Membrane.TelemetryMetrics.Reporter.scrape(VideoRoomReporter)

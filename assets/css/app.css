@@ -74,4 +74,11 @@
   transition: 0s
 }
 
-
+/**
+Don't display screensharing control on mobile browsers
+**/
+@media (max-width: 768px) { 
+  #screensharing-control {
+    display: none;
+  }
+ }

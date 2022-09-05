@@ -8,4 +8,7 @@ workflows:
     jobs:
       - elixir/build_test
       - elixir/test
-      - elixir/lint
+      - elixir/lint:
+          docs: false
+          dialyzer: false
+

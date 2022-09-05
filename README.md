@@ -88,6 +88,7 @@ $ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_
 ```
 
 ***NOTE 1*** There might be a problem with running `--network=host` on `macOS`, so the latter command is recommended on that operating system.
+
 ***NOTE 2*** Remember to update the range of published ports if setting the `INTEGRATED_TURN_PORT_RANGE` to a value different than in this guide.
 
 Alternatively, you can build docker image from source

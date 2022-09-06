@@ -30,6 +30,7 @@ INTEGRATED_TLS_TURN_PORT={port number of TLS TURN, used when "INTEGRATED_TURN_PK
 INTEGRATED_TURN_PKEY={SSL certificate for TLS TURN}
 INTEGRATED_TURN_PKEY={SSL private key for TLS TURN}
 
+STORE_METRICS={"true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to "false"}
 METRICS_SCRAPE_INTERVAL={number of seconds between `Membrane.RTC.Engine` metrics reports scrapes}
 
 DATABASE={name of database used to store `Membrane.RTC.Engine` metrics reports}

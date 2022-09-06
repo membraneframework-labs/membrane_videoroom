@@ -1,6 +1,6 @@
 defmodule VideoRoom.MetricsPersistor do
   @moduledoc """
-  Module responsible for scraping metrics reports and persisting them in database
+  Module responsible for scraping metrics reports and persisting them in the database.
   """
 
   use GenServer
@@ -10,8 +10,6 @@ defmodule VideoRoom.MetricsPersistor do
 
   @type option() :: GenServer.option() | {:scrape_interval, pos_integer()}
   @type options() :: [option()]
-
-  @second 1000
 
   @spec start(options()) :: GenServer.on_start()
   def start(options \\ []) do
@@ -30,9 +28,13 @@ defmodule VideoRoom.MetricsPersistor do
 
   @impl true
   def init(scrape_interval) do
-    Process.send_after(self(), :scrape, scrape_interval * @second)
+    scrape_interval_ms =
+      Membrane.Time.seconds(scrape_interval)
+      |> Membrane.Time.as_milliseconds()
 
-    {:ok, %{scrape_interval: scrape_interval}}
+    Process.send_after(self(), :scrape, scrape_interval_ms)
+
+    {:ok, %{scrape_interval_ms: scrape_interval_ms}}
   end
 
   @impl true
@@ -40,7 +42,7 @@ defmodule VideoRoom.MetricsPersistor do
     Reporter.scrape(VideoRoomReporter)
     |> TimescaleDB.store_report()
 
-    Process.send_after(self(), :scrape, state.scrape_interval * @second)
+    Process.send_after(self(), :scrape, state.scrape_interval_ms)
 
     {:noreply, state}
   end

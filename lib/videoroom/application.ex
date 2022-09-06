@@ -6,8 +6,6 @@ defmodule VideoRoom.Application do
 
   @cert_file_path "priv/integrated_turn_cert.pem"
 
-  alias Membrane.RTC.Engine.TimescaleDB
-
   @impl true
   def start(_type, _args) do
     # For some reason, lack of the line below leads to flaky error on starting application
@@ -16,17 +14,24 @@ defmodule VideoRoom.Application do
     config_common_dtls_key_cert()
     create_integrated_turn_cert_file()
 
-    metrics_scrape_interval = Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
+    store_metrics = Application.fetch_env!(:membrane_videoroom_demo, :store_metrics)
 
-    children = [
-      VideoRoom.Repo,
-      {VideoRoom.MetricsPersistor, scrape_interval: metrics_scrape_interval},
-      {Membrane.TelemetryMetrics.Reporter,
-       [metrics: Membrane.RTC.Engine.Metrics.metrics(), name: VideoRoomReporter]},
-      VideoRoomWeb.Endpoint,
-      {Phoenix.PubSub, name: VideoRoom.PubSub},
-      {Registry, keys: :unique, name: Videoroom.Room.Registry}
-    ]
+    children =
+      [
+        {Membrane.TelemetryMetrics.Reporter,
+         [metrics: Membrane.RTC.Engine.Metrics.metrics(), name: VideoRoomReporter]},
+        VideoRoomWeb.Endpoint,
+        {Phoenix.PubSub, name: VideoRoom.PubSub},
+        {Registry, keys: :unique, name: Videoroom.Room.Registry}
+      ] ++
+        if store_metrics do
+          scrape_interval =
+            Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
+
+          [VideoRoom.Repo, {VideoRoom.MetricsPersistor, scrape_interval: scrape_interval}]
+        else
+          []
+        end
 
     opts = [strategy: :one_for_one, name: __MODULE__]
     Supervisor.start_link(children, opts)

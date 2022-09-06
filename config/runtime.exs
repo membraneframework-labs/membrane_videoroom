@@ -160,5 +160,4 @@ config :membrane_videoroom_demo, VideoRoom.Repo,
   username: System.get_env("DB_USERNAME"),
   password: System.get_env("DB_PASSWORD"),
   hostname: System.get_env("DB_HOSTNAME"),
-  port: System.get_env("DB_PORT", "5432") |> ConfigParser.parse_port_number("DB_PORT"),
-  pool: Ecto.Adapters.SQL.Sandbox
+  port: System.get_env("DB_PORT", "5432") |> ConfigParser.parse_port_number("DB_PORT")

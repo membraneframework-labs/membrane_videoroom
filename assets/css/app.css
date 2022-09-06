@@ -20,6 +20,12 @@
   }
 }
 
+@layer base {
+  html {
+    @apply font-aktivGrotesk;
+  }
+}
+
 .flip-horizontally {
   transform: scaleX(-1);
 }
@@ -41,3 +47,12 @@
   filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg)
     brightness(96%) contrast(99%);
 }
+
+/**
+Don't display screensharing control on mobile browsers
+**/
+@media (max-width: 768px) { 
+  #screensharing-control {
+    display: none;
+  }
+ }

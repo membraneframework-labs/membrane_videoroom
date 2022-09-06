@@ -1,4 +1,5 @@
 defmodule VideoRoomWeb do
+  # credo:disable-for-this-file
   def controller do
     quote do
       use Phoenix.Controller, namespace: VideoRoomWeb

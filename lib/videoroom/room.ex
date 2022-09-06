@@ -3,28 +3,33 @@ defmodule Videoroom.Room do
 
   use GenServer
 
-  alias Membrane.RTC.Engine
-  alias Membrane.RTC.Engine.Message
-  alias Membrane.RTC.Engine.MediaEvent
-  alias Membrane.RTC.Engine.Endpoint.WebRTC
-  alias Membrane.ICE.TURNManager
-  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
-
   require Membrane.Logger
   require Membrane.OpenTelemetry
 
+  alias Membrane.ICE.TURNManager
+  alias Membrane.RTC.Engine
+  alias Membrane.RTC.Engine.Endpoint.WebRTC
+  alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
+  alias Membrane.RTC.Engine.MediaEvent
+  alias Membrane.RTC.Engine.Message
+  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
+
   @mix_env Mix.env()
 
+  @spec start(any(), list()) :: {:ok, pid()}
   def start(init_arg, opts) do
     GenServer.start(__MODULE__, init_arg, opts)
   end
 
+  @spec start_link(any()) :: {:ok, pid()}
   def start_link(opts) do
     GenServer.start_link(__MODULE__, [], opts)
   end
 
   @impl true
-  def init(room_id) do
+  def init(args) do
+    room_id = args.room_id
+    simulcast? = args.simulcast?
     Membrane.Logger.info("Spawning room process: #{inspect(self())}")
 
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)
@@ -82,13 +87,15 @@ defmodule Videoroom.Room do
        rtc_engine: pid,
        peer_channels: %{},
        network_options: network_options,
-       trace_ctx: trace_ctx
+       trace_ctx: trace_ctx,
+       simulcast?: simulcast?
      }}
   end
 
   @impl true
   def handle_info({:add_peer_channel, peer_channel_pid, peer_id}, state) do
     state = put_in(state, [:peer_channels, peer_id], peer_channel_pid)
+    send(peer_channel_pid, {:simulcast_config, state.simulcast?})
     Process.monitor(peer_channel_pid)
     {:noreply, state}
   end
@@ -131,6 +138,13 @@ defmodule Videoroom.Room do
         ]
       end
 
+    webrtc_extensions =
+      if state.simulcast? do
+        [Mid, Rid, TWCC]
+      else
+        [TWCC]
+      end
+
     endpoint = %WebRTC{
       rtc_engine: rtc_engine,
       ice_name: peer.id,
@@ -140,7 +154,11 @@ defmodule Videoroom.Room do
       handshake_opts: handshake_opts,
       log_metadata: [peer_id: peer.id],
       trace_context: state.trace_ctx,
-      webrtc_extensions: [Mid, TWCC],
+      webrtc_extensions: webrtc_extensions,
+      simulcast_config: %SimulcastConfig{
+        enabled: state.simulcast?,
+        default_encoding: fn _track -> "m" end
+      },
       peer_metadata: peer.metadata
     }
 

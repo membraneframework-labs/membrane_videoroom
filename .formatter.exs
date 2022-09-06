@@ -1,5 +1,8 @@
-# Used by "mix format"
 [
-  inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"],
-  import_deps: [:ecto]
+  inputs: [
+    "{lib,test,config}/**/*.{ex,exs}",
+    ".formatter.exs",
+    "*.exs"
+  ],
+  import_deps: [:membrane_core, :ecto, :ecto_sql]
 ]

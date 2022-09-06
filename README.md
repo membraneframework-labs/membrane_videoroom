@@ -102,15 +102,13 @@ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_PO
 ```bash
 docker run --network=host -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhost membrane_videoroom
 ```
-> ***NOTE*** The first command, which is the one we suggest using on Mac OS, should also work completely fine on Ubuntu. At the same time, it is not necessarily true another way around, since there is a problem with running `--network=host` on `macOS`. In that case, you need to explicitly forward the desired ports range. If you have decided to use the first command, make sure that the ports you are forwarding with the `-p` option switch of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable.
+> ***NOTE*** The first command, which is the one we suggest using on Mac OS, will also work completely on Ubuntu. At the same time, it is not necessarily true another way around, since there is a problem with running `--network=host` on `macOS`. That is why you need to explicitly forward the desired ports range on macOS. If you have decided to use the first command, make sure that the ports you are forwarding with the `-p` option switch of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable.
 
 Finally, go to <http://localhost:4000/>.
 
-
-
 ## More advanced configuration
 
-## Environment variables
+### Environment variables
 Below you can find a list of runtime environment variables, used to configure the demo:
 ```
 VIRTUAL_HOST={host passed to the endpoint config, defaults to "localhost" on non-production environments (MIX_ENV != prod)}
@@ -120,7 +118,9 @@ KEY_FILE_PATH={path to certificate key file, used when "USE_TLS" is set to true}
 CERT_FILE_PATH={path to certificate file, used when "USE_TLS" is set to true}
 
 EXTERNAL_IP= {the IP address, on which TURN servers will listen}
-INTEGRATED_TURN_PORT_RANGE={port range, where UDP TURN will try to open ports. By default set to 50000-59999. The bigger the range is, the more users server will be able to handle. Useful when not using the `-network=host` option to limit the UDP ports used only to ones exposed from a Docker container.}
+INTEGRATED_TURN_PORT_RANGE={port range, where UDP TURN will try to open ports. By default set to 50000-59999. 
+    The bigger the range is, the more users server will be able to handle. Useful when not using the `-network=host` option to 
+    limit the UDP ports used only to ones exposed from a Docker container.}
 INTEGRATED_TCP_TURN_PORT={port number of TCP TURN}
 INTEGRATED_TLS_TURN_PORT={port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided}
 INTEGRATED_TURN_CERT={SSL certificate for TLS TURN}
@@ -169,7 +169,7 @@ client error exporting spans {:failed_connect,
 ```
 That might be due to the misconfiguration of the `EXTERNAL_IP` environment variable. Make sure, that the variable is set in the environment where you are running the server, as well as that it is the IPv4 address pointing to the server, visible by all the peers.
 
-### When I run the videoroom in the docker container, why cannot I access VP8 tracking?
+#### When I run the videoroom in the docker container, why cannot I access VP8 tracking?
 You need to expose docker ports used for sending and receiving media (`INTEGRATED_TURN_PORT_RANGE` environment variable) or you can use the host network if you are running on Linux.
 ### Videoroom capabilities
 #### What is the maximum number of users in a Membrane videoroom conference?

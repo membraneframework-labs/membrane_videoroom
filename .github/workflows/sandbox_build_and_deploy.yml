@@ -9,7 +9,7 @@ on:
 
 env: 
   VIRTUAL_HOST: sandbox-videoroom.membrane.work
-  INTEGRATED_TURN_IP: 95.216.159.234
+  EXTERNAL_IP: 95.216.159.234
   TAG: sandbox
 
 jobs:
@@ -60,7 +60,7 @@ jobs:
 
       - name: Prepare .env file for the deployment
         id: variables_population
-        run: echo "VIRTUAL_HOST=$VIRTUAL_HOST \nINTEGRATED_TURN_IP=$INTEGRATED_TURN_IP \nTAG=$TAG" > .env
+        run: echo "VIRTUAL_HOST=$VIRTUAL_HOST \nEXTERNAL_IP=$EXTERNAL_IP \nTAG=$TAG" > .env
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy

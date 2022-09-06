@@ -1,4 +1,7 @@
 # Membrane Videoroom
+
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane_videoroom.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_videoroom)
+
 Membrane Videoroom is an open-source, basic video conferencing platform using WebRTC.
 Based on [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine), it may be a good starting point for building your own real-time communication solution using Elixir and Membrane
 

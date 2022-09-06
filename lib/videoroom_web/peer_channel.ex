@@ -1,4 +1,8 @@
 defmodule VideoRoomWeb.PeerChannel do
+  @moduledoc """
+  The main channel used to communicate with a peer,
+  i.e. exchange media events and any additional messages
+  """
   use Phoenix.Channel
 
   require Logger

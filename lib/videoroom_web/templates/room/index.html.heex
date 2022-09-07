@@ -38,8 +38,8 @@
                 <div name="video-feed" class="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video">
                     <audio></audio>
                     <video class="w-full h-full"></video>
-                    <img class="invisible invert" src={static_path(@conn, "/svg/mic-off-fill.svg")} style="position: absolute; left: 0; top: 0; width: 10%, height: 10%">
-                    <img name="camera" class="invisible invert" src={static_path(@conn, "/svg/camera-off-line.svg")} style="position: absolute; top: 0; width: 10%, height: 10%">
+                    <img class="invisible invert absolute top-0 left-0" src={static_path(@conn, "/svg/mic-off-fill.svg")}>
+                    <img name="camera" class="invisible invert absolute top-0 left-0" src={static_path(@conn, "/svg/camera-off-line.svg")}>
                     <div name="video-label" class="absolute text-white text-shadow-lg bottom-0 left-0 p-2">Placeholder</div>
                     <div name="video-encoding", class="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white top-0 right-0 p-2 z-50">Encoding: m</div>
                     <div name="encodings-select" class="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white bottom-0 right-0 p-2 z-50">

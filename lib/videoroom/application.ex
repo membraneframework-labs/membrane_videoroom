@@ -8,9 +8,6 @@ defmodule VideoRoom.Application do
 
   @impl true
   def start(_type, _args) do
-    # For some reason, lack of the line below leads to flaky error on starting application
-    Application.ensure_all_started(:postgrex)
-
     config_common_dtls_key_cert()
     create_integrated_turn_cert_file()
 

@@ -6,9 +6,7 @@ export async function getVideoStream(): Promise<MediaStream> {
   };
 
   try {
-    return await navigator.mediaDevices.getUserMedia({
-      video: VIDEO_TRACK_CONSTRAINTS,
-    });
+    return await navigator.mediaDevices.getUserMedia(constraints);
   } catch (_exception) {
     const devices = (await navigator.mediaDevices.enumerateDevices()).filter(
       (device) => device.kind === "videoinput"

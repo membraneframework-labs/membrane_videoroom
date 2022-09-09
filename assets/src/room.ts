@@ -30,6 +30,7 @@ import {
   updateTrackEncoding,
   setIsSimulcastOn,
 } from "./room_ui";
+import { getVideoStream, getAudioStream } from "./media_utils";
 
 import { parse } from "query-string";
 
@@ -206,41 +207,8 @@ export class Room {
   }
 
   public init = async () => {
-    await this.askForPermissions();
-
-    // Refresh mediaDevices list after ensuring permissions are granted
-    // Before that, enumerateDevices() call would not return deviceIds
-    const mediaDevices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = mediaDevices.filter(
-      (device) => device.kind === "videoinput"
-    );
-
-    for (const device of videoDevices) {
-      const constraints = {
-        video: {
-          ...VIDEO_TRACK_CONSTRAINTS,
-          deviceId: { exact: device.deviceId },
-        },
-      };
-
-      try {
-        this.localVideoStream = await navigator.mediaDevices.getUserMedia(
-          constraints
-        );
-
-        break;
-      } catch (error) {
-        console.error("Error while getting local video stream", error);
-      }
-    }
-
-    try {
-      this.localAudioStream = await navigator.mediaDevices.getUserMedia({
-        audio: AUDIO_TRACK_CONSTRAINTS,
-      });
-    } catch (error) {
-      console.error("Error while getting local audio stream", error);
-    }
+    this.localVideoStream = await getVideoStream();
+    this.localAudioStream = await getAudioStream();
 
     addVideoElement(LOCAL_PEER_ID, "Me", true, {
       onSelectLocalEncoding: this.onSelectLocalEncoding,
@@ -395,22 +363,6 @@ export class Room {
     }
 
     setParticipantsList(participantsNames);
-  };
-
-  private askForPermissions = async (): Promise<void> => {
-    const hasVideoInput: boolean = (
-      await navigator.mediaDevices.enumerateDevices()
-    ).some((device) => device.kind === "videoinput");
-
-    let tmpVideoStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: hasVideoInput,
-    });
-
-    // stop tracks
-    // in other case, next call to getUserMedia may fail
-    // or won't respect media constraints
-    tmpVideoStream.getTracks().forEach((track) => track.stop());
   };
 
   private phoenixChannelPushResult = async (push: Push): Promise<any> => {

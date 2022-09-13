@@ -380,11 +380,33 @@ export class Room {
     // TODO: get a new device, disable the new one and replace the stream
   };
 
-  private onVideoStatusChange = (status: boolean) => {
-    // TODO: disable the Track or grab it and replace with new one
+  private onVideoStatusChange = async (status: boolean) => {
+    if (status) {
+      // get the video stream
+      this.localVideoStream = await getVideoStream();
+      const videoTrack = this.localVideoStream.getVideoTracks()[0];
+
+      // replace the track in WebRTC and in the FE
+      this.webrtc.replaceTrack(this.localVideoTrackId!, videoTrack);
+      attachStream(LOCAL_PEER_ID, {
+        videoStream: this.localVideoStream!,
+        audioStream: null,
+      });
+    } else {
+      // We need the timeout to avoid having a frozen image, which we get if just stop all tracks instantly
+      // TODO: we might want to just hide, or even destroy the player in that instance
+      setTimeout(
+        () =>
+          this.localVideoStream?.getTracks().forEach((track) => track.stop()),
+        100
+      );
+    }
+
+    // Send status update to other peers
     this.webrtc.updateTrackMetadata(this.localVideoTrackId!, {
       active: status,
     });
+
     setCameraIndicator("local-peer", status);
   };
 

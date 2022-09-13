@@ -40,6 +40,25 @@ defmodule ConfigParser do
         )
     end
   end
+
+  def parse_metrics_scrape_interval(nil), do: nil
+
+  def parse_metrics_scrape_interval(interval) do
+    with {number, _sufix} when number >= 1 <- Integer.parse(interval) do
+      number
+    else
+      _var ->
+        raise "Bad METRICS_SCRAPE_INTERVAL enviroment variable value. Expected positive integer, got: #{interval}"
+    end
+  end
+
+  def parse_store_metrics("true"), do: true
+
+  def parse_store_metrics("false"), do: false
+
+  def parse_store_metrics(invalid_value) do
+    raise "Bad STORE_METRICS enviroment variable value. Expected \"true\" or \"false\", got: #{invalid_value}"
+  end
 end
 
 config :membrane_videoroom_demo,
@@ -56,7 +75,11 @@ config :membrane_videoroom_demo,
     |> ConfigParser.parse_port_number("INTEGRATED_TLS_TURN_PORT"),
   integrated_turn_pkey: System.get_env("INTEGRATED_TURN_PKEY"),
   integrated_turn_cert: System.get_env("INTEGRATED_TURN_CERT"),
-  integrated_turn_domain: System.get_env("VIRTUAL_HOST")
+  integrated_turn_domain: System.get_env("VIRTUAL_HOST"),
+  store_metrics: System.get_env("STORE_METRICS", "false") |> ConfigParser.parse_store_metrics(),
+  metrics_scrape_interval:
+    System.get_env("METRICS_SCRAPE_INTERVAL", "1")
+    |> ConfigParser.parse_metrics_scrape_interval()
 
 protocol = if System.get_env("USE_TLS") == "true", do: :https, else: :http
 
@@ -131,3 +154,10 @@ if otel_state != :purge,
         }
       ]
     )
+
+config :membrane_videoroom_demo, VideoRoom.Repo,
+  database: System.get_env("DATABASE"),
+  username: System.get_env("DB_USERNAME"),
+  password: System.get_env("DB_PASSWORD"),
+  hostname: System.get_env("DB_HOSTNAME"),
+  port: System.get_env("DB_PORT", "5432") |> ConfigParser.parse_port_number("DB_PORT")

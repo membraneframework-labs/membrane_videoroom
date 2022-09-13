@@ -29,6 +29,15 @@ INTEGRATED_TCP_TURN_PORT={port number of TCP TURN}
 INTEGRATED_TLS_TURN_PORT={port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided}
 INTEGRATED_TURN_PKEY={SSL certificate for TLS TURN}
 INTEGRATED_TURN_PKEY={SSL private key for TLS TURN}
+
+STORE_METRICS={"true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to "false"}
+METRICS_SCRAPE_INTERVAL={number of seconds between `Membrane.RTC.Engine` metrics reports scrapes}
+
+DATABASE={name of database used to store `Membrane.RTC.Engine` metrics reports}
+DB_USERNAME={name of the database user}
+DB_PASSWORD={password for the database user}
+DB_HOSTNAME={hostname of the database}
+DB_PORT={port, where database will set up its endpoint}
 ```
 
 ## Run manually

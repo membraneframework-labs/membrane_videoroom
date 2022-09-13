@@ -1,4 +1,5 @@
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { listVideoDevices } from "./media_utils";
 
 const audioButton = document.getElementById("mic-control") as HTMLButtonElement;
 const videoButton = document.getElementById(
@@ -535,4 +536,46 @@ function changeVisibilityRemoteSimulcastControls(
     "div[name='video-encoding']"
   ) as HTMLSelectElement;
   if (videoEncoding != null) videoEncoding.hidden = !showControls;
+}
+
+const select = document.getElementById(
+  "video_source_select"
+)! as HTMLSelectElement;
+
+export async function populateVideoSources() {
+  let devices: MediaDeviceInfo[] = [] as MediaDeviceInfo[];
+  const currentlySelected = select.options[select.selectedIndex]?.value;
+
+  try {
+    devices = await listVideoDevices();
+  } catch (exception) {
+    console.warn("Couldn't enumerateInputDevices");
+  }
+
+  select.replaceChildren();
+  console.log(devices);
+
+  devices.forEach((device, index) => {
+    var opt = document.createElement("option");
+    opt.value = device.deviceId;
+    opt.innerHTML = device.label;
+
+    if (index === 0) opt.innerHTML += " (Default)";
+
+    select.appendChild(opt);
+  });
+
+  setVideoSourceDevice(currentlySelected);
+
+  if (devices.length > 1) select.classList.remove("hidden");
+}
+
+export function setVideoSourceDevice(deviceId: string) {
+  // fix selection id
+  select.selectedIndex = Array.prototype.findIndex.call(
+    select.options,
+    (option) => option.value === deviceId
+  );
+  // if previously selected device is no longer available, fallback to default
+  if (select.selectedIndex == -1) select.selectedIndex = 0;
 }

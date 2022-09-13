@@ -204,6 +204,33 @@ export class Room {
 
     addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
     addVideoStatusChangedCallback(this.onVideoStatusChange.bind(this));
+
+    // addVideoSourceSelectedCallback(this.onVideoSourceChange.bind(this))
+    document
+      .getElementById("video_source_select")
+      ?.addEventListener("change", async (ev) => {
+        const select = ev.target as HTMLSelectElement;
+        const deviceId = select.options[select.selectedIndex]!.value;
+        console.log("selected ", deviceId);
+
+        try {
+          const newVideoStream = await getVideoStream(deviceId);
+          this.webrtc.replaceTrack(
+            this.localVideoTrackId!,
+            newVideoStream.getVideoTracks()[0]
+          );
+          this.localVideoStream?.getTracks().forEach((track) => track.stop());
+          this.localVideoStream = newVideoStream;
+
+          // console.log(newVideoStream.getVideoTracks()[0].getSettings())
+          attachStream(LOCAL_PEER_ID, {
+            videoStream: newVideoStream,
+            audioStream: null,
+          });
+        } catch (exception) {
+          console.error(exception);
+        }
+      });
   }
 
   public init = async () => {
@@ -348,7 +375,13 @@ export class Room {
     setMicIndicator("local-peer", status);
   };
 
+  private onVideoSourceChange = (device: MediaDeviceInfo) => {
+    console.log(device);
+    // TODO: get a new device, disable the new one and replace the stream
+  };
+
   private onVideoStatusChange = (status: boolean) => {
+    // TODO: disable the Track or grab it and replace with new one
     this.webrtc.updateTrackMetadata(this.localVideoTrackId!, {
       active: status,
     });

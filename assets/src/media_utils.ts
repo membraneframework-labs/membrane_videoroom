@@ -49,6 +49,7 @@ async function listDevices(): Promise<MediaDeviceInfo[]> {
   const devices = (await navigator.mediaDevices.enumerateDevices()).filter(
     (device) => device.deviceId
   );
+
   if (devices.length == 0)
     throw "There are no input devices or permissions were not granted";
   return devices;

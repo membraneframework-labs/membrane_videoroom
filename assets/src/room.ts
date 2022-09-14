@@ -29,6 +29,7 @@ import {
   toggleScreensharing,
   updateTrackEncoding,
   setIsSimulcastOn,
+  setDefaultVideoDevice,
 } from "./room_ui";
 import { getVideoStream, getAudioStream } from "./media_utils";
 
@@ -205,7 +206,6 @@ export class Room {
     addAudioStatusChangedCallback(this.onAudioStatusChange.bind(this));
     addVideoStatusChangedCallback(this.onVideoStatusChange.bind(this));
 
-    // addVideoSourceSelectedCallback(this.onVideoSourceChange.bind(this))
     document
       .getElementById("video_source_select")
       ?.addEventListener("change", async (ev) => {
@@ -236,6 +236,10 @@ export class Room {
   public init = async () => {
     this.localVideoStream = await getVideoStream();
     this.localAudioStream = await getAudioStream();
+
+    setDefaultVideoDevice(
+      this.localVideoStream.getVideoTracks()[0].getSettings().deviceId!
+    );
 
     addVideoElement(LOCAL_PEER_ID, "Me", true, {
       onSelectLocalEncoding: this.onSelectLocalEncoding,

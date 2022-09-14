@@ -545,9 +545,12 @@ const select = document.getElementById(
 export async function populateVideoSources() {
   let devices: MediaDeviceInfo[] = [] as MediaDeviceInfo[];
   const currentlySelected = select.options[select.selectedIndex]?.value;
+  const defaultId = select.getAttribute("default_device");
 
   try {
-    devices = await listVideoDevices();
+    devices = (await listVideoDevices())
+      // Make sure that default is first on the lsit
+      .sort((a, _b) => (a.deviceId === defaultId ? -1 : 1));
   } catch (exception) {
     console.warn("Couldn't enumerateInputDevices");
   }
@@ -565,17 +568,10 @@ export async function populateVideoSources() {
     select.appendChild(opt);
   });
 
-  setVideoSourceDevice(currentlySelected);
-
   if (devices.length > 1) select.classList.remove("hidden");
 }
 
-export function setVideoSourceDevice(deviceId: string) {
-  // fix selection id
-  select.selectedIndex = Array.prototype.findIndex.call(
-    select.options,
-    (option) => option.value === deviceId
-  );
-  // if previously selected device is no longer available, fallback to default
-  if (select.selectedIndex == -1) select.selectedIndex = 0;
+export function setDefaultVideoDevice(deviceId: string) {
+  select.setAttribute("default_device", deviceId);
+  populateVideoSources();
 }

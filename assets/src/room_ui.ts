@@ -538,18 +538,26 @@ function changeVisibilityRemoteSimulcastControls(
   if (videoEncoding != null) videoEncoding.hidden = !showControls;
 }
 
-const select = document.getElementById(
+const video_select = document.getElementById(
   "video_source_select"
 )! as HTMLSelectElement;
 
-export async function populateVideoSources() {
+const audio_select = document.getElementById(
+  "audio_source_select"
+) as HTMLSelectElement;
+
+async function populateSourceSelect(
+  type: "audio" | "video",
+  select: HTMLSelectElement
+): Promise<void> {
   let devices: MediaDeviceInfo[] = [] as MediaDeviceInfo[];
   const currentlySelected = select.options[select.selectedIndex]?.value;
   const defaultId = select.getAttribute("default_device");
 
   try {
-    devices = (await listDevices("video"))
-      .sort((a, _b) => (a.deviceId === defaultId ? -1 : 1));
+    devices = (await listDevices(type)).sort((a, _b) =>
+      a.deviceId === defaultId ? -1 : 1
+    );
   } catch (exception) {
     console.error("Couldn't enumerateInputDevices due to: ", exception);
   }
@@ -569,7 +577,26 @@ export async function populateVideoSources() {
   if (devices.length > 1) select.classList.remove("hidden");
 }
 
+export function populateVideoSources(): Promise<void> {
+  return populateSourceSelect("video", video_select);
+}
+
+export function populateAudioSources(): Promise<void> {
+  return populateSourceSelect("audio", audio_select);
+}
+
+export function populateSources(): Promise<void> {
+  return Promise.all([populateAudioSources(), populateVideoSources()]).then(
+    (_result): void => {}
+  );
+}
+
 export function setDefaultVideoDevice(deviceId: string) {
-  select.setAttribute("default_device", deviceId);
+  video_select.setAttribute("default_device", deviceId);
   populateVideoSources();
+}
+
+export function setDefaultAudioDevice(deviceId: string) {
+  audio_select.setAttribute("default_device", deviceId);
+  populateAudioSources();
 }

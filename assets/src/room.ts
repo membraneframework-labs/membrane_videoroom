@@ -30,6 +30,7 @@ import {
   updateTrackEncoding,
   setIsSimulcastOn,
   setDefaultVideoDevice,
+  setDefaultAudioDevice,
 } from "./room_ui";
 import { openDefaultDevice, openDevice } from "./media_utils";
 
@@ -239,6 +240,10 @@ export class Room {
       this.localVideoStream.getVideoTracks()[0].getSettings().deviceId!
     );
 
+    setDefaultAudioDevice(
+      this.localAudioStream.getAudioTracks()[0].getSettings().deviceId!
+    );
+
     addVideoElement(LOCAL_PEER_ID, "Me", true, {
       onSelectLocalEncoding: this.onSelectLocalEncoding,
       onSelectRemoteEncoding: null,
@@ -320,8 +325,10 @@ export class Room {
       `${window.location.pathname}?simulcast=${this.isSimulcastOn}`
     );
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
-    this.wakeLock && this.wakeLock.release();
+
+    this.wakeLock?.release();
     this.wakeLock = null;
+
     this.webrtc.leave();
     this.webrtcChannel.leave();
     this.socketOff();

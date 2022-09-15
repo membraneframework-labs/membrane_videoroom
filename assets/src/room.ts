@@ -32,7 +32,11 @@ import {
   setDefaultVideoDevice,
   setDefaultAudioDevice,
 } from "./room_ui";
-import { openDefaultDevice, openDevice } from "./media_utils";
+import {
+  initializeDevices,
+  openDefaultDevice,
+  openDevice,
+} from "./media_utils";
 
 import { parse } from "query-string";
 
@@ -233,8 +237,9 @@ export class Room {
   }
 
   public init = async () => {
-    this.localVideoStream = await openDefaultDevice("video");
-    this.localAudioStream = await openDefaultDevice("audio");
+    const devices = await initializeDevices();
+    this.localAudioStream = devices.audio;
+    this.localVideoStream = devices.video;
 
     setDefaultVideoDevice(
       this.localVideoStream.getVideoTracks()[0].getSettings().deviceId!

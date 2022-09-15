@@ -65,3 +65,29 @@ export async function listDevices(
 
   return devices;
 }
+
+export async function initializeDevices(): Promise<{
+  audio: MediaStream;
+  video: MediaStream;
+}> {
+  const constraints = {
+    audio: AUDIO_TRACK_CONSTRAINTS,
+    video: VIDEO_TRACK_CONSTRAINTS,
+  };
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+    return {
+      audio: new MediaStream(stream.getAudioTracks()),
+      video: new MediaStream(stream.getVideoTracks()),
+    };
+  } catch (exception) {
+    console.error("Opening devices failed due to ", exception);
+
+    return {
+      audio: await openDefaultDevice("audio"),
+      video: await openDefaultDevice("video"),
+    };
+  }
+}

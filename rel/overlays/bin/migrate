@@ -1,3 +1,0 @@
-#!/bin/sh
-cd -P -- "$(dirname -- "$0")"
-exec ./membrane_videoroom_demo eval MembraneVideoroomDemo.Release.migrate

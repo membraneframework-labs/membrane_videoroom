@@ -10,15 +10,15 @@ services:
       INTEGRATED_TURN_PORT_RANGE: "50000-65355"
       INTEGRATED_TCP_TURN_PORT: "49999"
       STORE_METRICS: "true"
-      DATABASE: "membrane_videoroom"
-      DB_USERNAME: "videoroom"
+      DATABASE: "membrane"
+      DB_USERNAME: "membrane"
       DB_PASSWORD: "membrane"
       DB_HOSTNAME: "127.0.0.1"
   timescale:
     image: timescale/timescaledb:2.5.1-pg14
     network_mode: "host"    
     environment:
-      POSTGRES_DB: "membrane_videoroom"
-      POSTGRES_USER: "videoroom"
+      POSTGRES_DB: "membrane"
+      POSTGRES_USER: "membrane"
       POSTGRES_PASSWORD: "membrane"
 

@@ -1,60 +1,67 @@
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
 
-export async function getVideoStream(
+export async function openDevice(
+  type: "audio" | "video",
   deviceId: string | undefined = undefined
 ): Promise<MediaStream> {
-  const constraints = {
-    video: {
-      ...VIDEO_TRACK_CONSTRAINTS,
-      deviceId: deviceId ? { exact: deviceId } : undefined,
-    },
-  };
+  const deviceIdConstraint = deviceId ? { exact: deviceId } : undefined;
+  let constraints;
+
+  if (type === "video") {
+    constraints = {
+      video: {
+        ...VIDEO_TRACK_CONSTRAINTS,
+        deviceId: deviceIdConstraint,
+      },
+    };
+  } else if (type === "audio") {
+    constraints = {
+      audio: {
+        ...AUDIO_TRACK_CONSTRAINTS,
+        deviceId: deviceIdConstraint,
+      },
+    };
+  } else {
+    throw `${type} doesn't describe proper device type. Use either 'audio' or 'video'`;
+  }
+
+  return await navigator.mediaDevices.getUserMedia(constraints);
+}
+
+export async function openDefaultDevice(
+  type: "audio" | "video"
+): Promise<MediaStream> {
+  if (!["audio", "video"].includes(type))
+    throw `${type} doesn't describe proper device type. Use either 'audio' or 'video'`;
 
   try {
-    return await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (exception) {
-    console.warn(exception);
-    if (deviceId) throw exception;
-
+    return await openDevice(type);
+  } catch {
     const devices = (await navigator.mediaDevices.enumerateDevices()).filter(
-      (device) => device.kind === "videoinput"
+      (device) => device.kind === type + "input"
     );
 
     for (let device of devices) {
       try {
-        constraints.video.deviceId = { exact: device.deviceId };
-        return await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (error) {
-        console.error(
-          "Failed to acquire a stream from deviceID ",
-          device.deviceId,
-          " due to ",
-          error
-        );
-      }
+        return await openDevice(type, device.deviceId);
+      } catch {}
     }
   }
 
-  return Promise.reject(new Error("No input devices are available"));
+  return Promise.reject("No MediaDevices are available");
 }
 
-export async function getAudioStream(): Promise<MediaStream> {
-  // TODO: this should probably follow the same flow as `getVideoStream`
-  return await navigator.mediaDevices.getUserMedia({
-    audio: AUDIO_TRACK_CONSTRAINTS,
-  });
-}
+export async function listDevices(
+  type: "audio" | "video" | undefined = undefined
+): Promise<MediaDeviceInfo[]> {
+  let devices = await navigator.mediaDevices.enumerateDevices();
 
-async function listDevices(): Promise<MediaDeviceInfo[]> {
-  const devices = (await navigator.mediaDevices.enumerateDevices()).filter(
-    (device) => device.deviceId
-  );
+  if (type) {
+    devices = devices.filter((device) => device.kind === type + "input");
+  }
 
   if (devices.length == 0)
     throw "There are no input devices or permissions were not granted";
-  return devices;
-}
 
-export async function listVideoDevices(): Promise<MediaDeviceInfo[]> {
-  return (await listDevices()).filter((device) => device.kind === "videoinput");
+  return devices;
 }

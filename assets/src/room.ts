@@ -31,7 +31,7 @@ import {
   setIsSimulcastOn,
   setDefaultVideoDevice,
 } from "./room_ui";
-import { getVideoStream, getAudioStream } from "./media_utils";
+import { openDefaultDevice, openDevice } from "./media_utils";
 
 import { parse } from "query-string";
 
@@ -211,10 +211,9 @@ export class Room {
       ?.addEventListener("change", async (ev) => {
         const select = ev.target as HTMLSelectElement;
         const deviceId = select.options[select.selectedIndex]!.value;
-        console.log("selected ", deviceId);
 
         try {
-          const newVideoStream = await getVideoStream(deviceId);
+          const newVideoStream = await openDevice("video", deviceId);
           this.webrtc.replaceTrack(
             this.localVideoTrackId!,
             newVideoStream.getVideoTracks()[0]
@@ -222,7 +221,6 @@ export class Room {
           this.localVideoStream?.getTracks().forEach((track) => track.stop());
           this.localVideoStream = newVideoStream;
 
-          // console.log(newVideoStream.getVideoTracks()[0].getSettings())
           attachStream(LOCAL_PEER_ID, {
             videoStream: newVideoStream,
             audioStream: null,
@@ -234,8 +232,8 @@ export class Room {
   }
 
   public init = async () => {
-    this.localVideoStream = await getVideoStream();
-    this.localAudioStream = await getAudioStream();
+    this.localVideoStream = await openDefaultDevice("video");
+    this.localAudioStream = await openDefaultDevice("audio");
 
     setDefaultVideoDevice(
       this.localVideoStream.getVideoTracks()[0].getSettings().deviceId!
@@ -380,14 +378,16 @@ export class Room {
   };
 
   private onVideoSourceChange = (device: MediaDeviceInfo) => {
-    console.log(device);
     // TODO: get a new device, disable the new one and replace the stream
   };
 
   private onVideoStatusChange = async (status: boolean) => {
     if (status) {
       // get the video stream
-      this.localVideoStream = await getVideoStream();
+      this.localVideoStream = await openDevice(
+        "video",
+        this.localVideoStream?.getVideoTracks()[0].getSettings().deviceId!
+      );
       const videoTrack = this.localVideoStream.getVideoTracks()[0];
 
       // replace the track in WebRTC and in the FE

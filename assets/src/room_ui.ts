@@ -1,5 +1,5 @@
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
-import { listVideoDevices } from "./media_utils";
+import { listDevices } from "./media_utils";
 
 const audioButton = document.getElementById("mic-control") as HTMLButtonElement;
 const videoButton = document.getElementById(
@@ -548,15 +548,13 @@ export async function populateVideoSources() {
   const defaultId = select.getAttribute("default_device");
 
   try {
-    devices = (await listVideoDevices())
-      // Make sure that default is first on the lsit
+    devices = (await listDevices("video"))
       .sort((a, _b) => (a.deviceId === defaultId ? -1 : 1));
   } catch (exception) {
-    console.warn("Couldn't enumerateInputDevices");
+    console.error("Couldn't enumerateInputDevices due to: ", exception);
   }
 
   select.replaceChildren();
-  console.log(devices);
 
   devices.forEach((device, index) => {
     var opt = document.createElement("option");

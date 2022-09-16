@@ -62,6 +62,26 @@ jobs:
         id: variables_population
         run: echo "VIRTUAL_HOST=$VIRTUAL_HOST \nINTEGRATED_TURN_IP=$INTEGRATED_TURN_IP \nTAG=$TAG" > .env
 
+      # - name: Clone GitHub repository with Grafana dashboard
+      #   id: git_clone_membrane_rtc_engine_timescaledb
+      #   run: |
+      #     git clone https://github.com/membraneframework/membrane_rtc_engine_timescaledb.git 
+      #     git --git-dir=./membrane_rtc_engine_timescaledb/.git --work-tree=./membrane_rtc_engine_timescaledb/ checkout metrics-visualisation 
+      #     mv ./membrane_rtc_engine_timescaledb/grafana/ ./
+
+      - name: Execute SSH commmands on remote server
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ secrets.SANDBOX2_HOST }}
+          privateKey: ${{ secrets.SSH_PRIV_KEY }}
+          command: |
+            mv -f membrane_rtc_engine_timescaledb temp
+            mv -f grafana temp
+            git clone https://github.com/membraneframework/membrane_rtc_engine_timescaledb.git 
+            git --git-dir=./membrane_rtc_engine_timescaledb/.git --work-tree=./membrane_rtc_engine_timescaledb/ checkout metrics-visualisation 
+            mv ./membrane_rtc_engine_timescaledb/grafana/ ./
+
+
       - name: Deploy docker compose to a pre-configured server
         id: deploy
         uses: TapTap21/docker-remote-deployment-action@v1.1

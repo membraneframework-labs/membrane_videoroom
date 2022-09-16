@@ -24,5 +24,10 @@ services:
   grafana:
     image: grafana/grafana:9.1.5
     network_mode: host
+    volumes:
+      # - ./grafana/:/etc/grafana/
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+
+
     
 

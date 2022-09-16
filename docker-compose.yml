@@ -21,4 +21,8 @@ services:
       POSTGRES_DB: "membrane"
       POSTGRES_USER: "membrane"
       POSTGRES_PASSWORD: "membrane"
+  grafana:
+    image: grafana/grafana:9.1.5
+    network_mode: host
+    
 

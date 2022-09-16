@@ -70,20 +70,21 @@ export async function initializeDevices(): Promise<{
   audio: MediaStream;
   video: MediaStream;
 }> {
-  const constraints = {
-    audio: AUDIO_TRACK_CONSTRAINTS,
-    video: VIDEO_TRACK_CONSTRAINTS,
-  };
-
   try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    // Attempt to fetch both audio and video devices at the same time
+    // This should show a permissions prompt for both
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: AUDIO_TRACK_CONSTRAINTS,
+      video: VIDEO_TRACK_CONSTRAINTS,
+    });
 
+    // Split audio and video tracks to different media streams (just Membrane thing)
     return {
       audio: new MediaStream(stream.getAudioTracks()),
       video: new MediaStream(stream.getVideoTracks()),
     };
   } catch (exception) {
-    console.error("Opening devices failed due to ", exception);
+    // If this fails, try iterating over devices
 
     return {
       audio: await openDefaultDevice("audio"),

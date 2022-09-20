@@ -156,6 +156,36 @@ Below you can find a list of Frequently Asked Questions (FAQ).
 In case of any errors occurring during the setup, we encourage you to get familiar with that list.
 If you haven't found an answer to your question, we invite you to ask it on [the Membrane's Discord server](https://discord.com/channels/464786597288738816/1007190795167731742).
 
+### Videoroom capabilities
+#### What is the maximum number of users in a Membrane videoroom conference?
+That is limited mostly by the hardware you are using, and the usage scenario.
+Let's take under the consideration server with 64 GiB RAM, access to 10 Gbit network and 32 vCPUs.
+Below you can find a table comparing a cost of such a server from three different cloud providers.
+
+| name | RAM | CPU | Storage | Network | Cost, on-demand |
+|--------------|---------:|---------:|------------------------------:|-----------:|-----------------:|
+| Amazon EC c5ad.8xlarge | 64.0 GiB | 32 vCPUs | 1200 GB (2 * 600 GB NVMe SSD) | 10 Gbps | $1.376 hourly |
+| Microsoft Azure Standard_D32plds_v5 | 64.0 GiB | 32 vCPUs | 1200 GiB |---------| $1.552 hourly |
+| Google Cloud VM c2d-highcpu-32 | 64.0 GiB | 32 vCPUs | ---------- | 32 Gbps| $1.321 hourly |
+
+With such a hardware:
+* when it comes to hosting a conference where we have e.g. two presenters that are sending audio and video and multiple passive participants, who are only watching the stream, we can handle at least ~10 rooms, 17 participants each (2 speakers, 15 passive participants).
+* in the case of a casual room where everyone can send their media, with low-quality video, one big room for 21 participants (each of them was sending audio and video) was using about 21% of the CPU resources of the given machine.
+
+#### Does Membrane videoroom support broadcasting (only one peer streaming and many peers who are only watching)?
+Membrane videoroom demo is an application meant to mimic the behavior of a videoconferencing room (i.e. Google Meet). It has mechanisms to reduce the amount of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
+At the same time, for broadcasting multimedia to thousands of viewers, other mechanisms need to be used, and it can be achieved with the use of the Membrane Framework. We invite you to take a look at other [Membrane demos](https://github.com/membraneframework/membrane_demo), especially:
+* [WebRTC to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_to_hls)
+* [RTMP to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls)
+which are demo applications meant to broadcast the media sent by the streamer to many viewers.
+<!--> ADD INFORMATION ABOUT RTMP TO HLS TUTORIAL WHEN IT IS PUBLISHED <-->
+
+### Configuration
+#### Can you use the external TURN server instead of the integrated one?
+It's not possible at the moment. Since the SFU needs to be publicly available, we don't see a purpose of having a separate publicly available TURN server.
+The architecture proposed by us: `client --- NETWORK ---> SFU with TURN` reduces the number of 'hops' in the network by one. In contrast, the architecture with the separate TURN server would like that: `client --- NETWORK -- TURN --- NETWORK ---> SFU`.
+If you can think of a use case for a separate TURN server, feel free to start a discussion on our discord server.
+
 ### Known bugs
 #### `(Mix) Could not compile dependency :fast_tls,`
 As the error suggests, there was a problem with the `:fast_tls` dependency compilation. It's usually caused by the fact, that the compiler cannot
@@ -173,31 +203,9 @@ client error exporting spans {:failed_connect,
 That might be due to the misconfiguration of the `EXTERNAL_IP` environment variable. Make sure, that the variable is set in the environment where you are running the server, as well as that it is the IPv4 address pointing to the server, visible by all the peers.
 
 #### When I run the videoroom in the docker container, why cannot I access VP8 tracking?
-You need to expose docker ports used for sending and receiving media (`INTEGRATED_TURN_PORT_RANGE` environment variable) or you can use the host network if you are running on Linux.
-### Videoroom capabilities
-#### What is the maximum number of users in a Membrane videoroom conference?
-That is limited mostly by the hardware you are using, and the usage scenario.
-Let's take under consideration Amazon EC `c5ad.8xlarge` cluster:
+You need to publish docker ports used for sending and receiving media (`INTEGRATED_TURN_PORT_RANGE` environment variable) or you can use the host network if you are running on Linux.
 
-| name | RAM | CPU | Storage | Network | Cost, on-demand |
-|--------------|---------:|---------:|------------------------------:|-----------:|-----------------:|
-| c5ad.8xlarge | 64.0 GiB | 32 vCPUs | 1200 GB (2 * 600 GB NVMe SSD) | 10 Gigabit | $1.376000 hourly |
 
-When it comes to broadcasting/hosting a conference where we have e.g. two presenters that are sending audio and video and multiple passive participants, who are only watching the stream, we can handle at least ~10 rooms, 17 participants each (2 speakers, 15 passive participants).
-In the case of a casual room where everyone can send their media, with low-quality video, one big room for 21 participants (each of them was sending audio and video) was using about 21% of the CPU resources of the given machine.
-#### Does Membrane videoroom support broadcasting (only one peer streaming and many peers who are only watching)?
-Membrane videoroom demo is an application meant to mimic the behavior of a videoconferencing room (i.e. Google Meet). It has mechanisms to reduce the amount of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
-At the same time, for broadcasting multimedia to thousands of viewers, other mechanisms need to be used, and it can be achieved with the use of the Membrane Framework. We invite you to take a look at other [Membrane demos](https://github.com/membraneframework/membrane_demo), especially:
-* [WebRTC to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_to_hls)
-* [RTMP to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls)
-which are demo applications meant to broadcast the media sent by the streamer to many viewers.
-<!--> ADD INFORMATION ABOUT RTMP TO HLS TUTORIAL WHEN IT IS PUBLISHED <-->
-
-### Configuration
-#### Can you use the external TURN server instead of the integrated one?
-It's not possible at the moment. Since the SFU needs to be publicly available, we don't see a purpose of having a separate publicly available TURN server.
-The architecture proposed by us: `client --- NETWORK ---> SFU with TURN` reduces the number of 'hops' in the network by one. In contrast, the architecture with the separate TURN server would like that: `client --- NETWORK -- TURN --- NETWORK ---> SFU`.
-If you can think of a use case for a separate TURN server, feel free to start a discussion on our discord server.
 ## Copyright and License
 
 Copyright 2020, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane)

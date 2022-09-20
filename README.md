@@ -19,6 +19,7 @@ To join a room, enter the room name and your name, then click the `Join room!` b
 
 ## Running locally
 
+
 ### Installation of the dependencies
 To run phoenix application manually, you will need to have [`node.js`](https://nodejs.org/en/) installed. You can read about the installation [here](https://nodejs.org/en/download/).
 The demo has been tested with `node.js` version `v14.15.0`. 

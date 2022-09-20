@@ -22,7 +22,9 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine"},
+      {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine", override: true},
+      {:membrane_rtc_engine_timescaledb,
+       github: "membraneframework/membrane_rtc_engine_timescaledb"},
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},
       {:phoenix_html, "~> 3.0"},
@@ -35,6 +37,10 @@ defmodule VideoRoom.MixProject do
       {:cowlib, "~> 2.11.0", override: true},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
+
+      # Ecto
+      {:ecto_sql, "~> 3.7"},
+      {:postgrex, "~> 0.16"},
 
       # Otel
       {:opentelemetry, "~> 1.0"},
@@ -70,7 +76,9 @@ defmodule VideoRoom.MixProject do
         "cmd --cd assets npm run deploy",
         "esbuild default --minify",
         "phx.digest"
-      ]
+      ],
+      "ecto.setup": ["ecto.create", "ecto.migrate"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"]
     ]
   end
 end

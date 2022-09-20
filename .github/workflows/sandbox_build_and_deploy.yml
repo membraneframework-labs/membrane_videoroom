@@ -69,10 +69,8 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIV_KEY }}
           command: |
             rm -rf membrane_rtc_engine_timescaledb
-            rm -rf grafana 
             git clone https://github.com/membraneframework/membrane_rtc_engine_timescaledb.git 
             git --git-dir=./membrane_rtc_engine_timescaledb/.git --work-tree=./membrane_rtc_engine_timescaledb/ checkout metrics-visualisation 
-            mv ./membrane_rtc_engine_timescaledb/grafana/ ./
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy

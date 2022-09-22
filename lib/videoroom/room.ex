@@ -180,7 +180,12 @@ defmodule Videoroom.Room do
     peer_channel = state.peer_channels[endpoint_id]
 
     error_message = "WebRTC endpoint has crashed, please refresh the page to reconnect"
-    data = MediaEvent.create_error_event(error_message)
+
+    data =
+      error_message
+      |> MediaEvent.create_error_event()
+      |> MediaEvent.encode()
+
     send(peer_channel, {:media_event, data})
 
     {:noreply, state}

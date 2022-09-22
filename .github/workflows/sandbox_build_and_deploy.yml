@@ -83,6 +83,7 @@ jobs:
           command: |
             rm -rf /root/membrane_rtc_engine_timescaledb
             rm -rf /root/grafana
+            mkdir /root/grafana
             mkdir /root/grafana/provisioning
             mkdir /root/grafana/provisioning/datasources
             mkdir /root/grafana/provisioning/dashboards

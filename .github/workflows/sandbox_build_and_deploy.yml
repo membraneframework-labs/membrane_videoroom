@@ -11,8 +11,6 @@ env:
   VIRTUAL_HOST: sandbox-videoroom.membrane.work
   INTEGRATED_TURN_IP: 95.216.159.234
   TAG: sandbox
-  # DB_USERNAME: ${{ secrets.DB_USERNAME }} | sed 's/./& /g' 
-  # DB_PASSWORD: ${{ secrets.DB_PASSWORD }} | sed 's/./& /g'
 
 jobs:
   build:
@@ -65,19 +63,18 @@ jobs:
         env: 
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+          GF_SECURITY_ADMIN_USER: ${{ secrets.GF_SECURITY_ADMIN_USER  }}
+
         run: |
-          echo "VIRTUAL_HOST=$VIRTUAL_HOST \nINTEGRATED_TURN_IP=$INTEGRATED_TURN_IP \nTAG=$TAG \nDB_USERNAME=${{ secrets.DB_USERNAME }} \nDB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
-          echo a
-          cat .env
-          echo b
-          # echo ${{ secrets.DB_USERNAME }} | sed 
-          echo $DB_USERNAME
-          echo c
-          # echo ${{ secrets.DB_PASSWORD }} | sed 
-          echo $DB_PASSWORD
-          echo d
-          echo ${{ secrets.SANDBOX_HOST }} 
- 
+          echo "VIRTUAL_HOST=$VIRTUAL_HOST 
+          INTEGRATED_TURN_IP=$INTEGRATED_TURN_IP 
+          TAG=$TAG 
+          DB_USERNAME=$DB_USERNAME 
+          DB_PASSWORD=$DB_PASSWORD
+          GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
+          GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
+
       - name: Execute SSH commmands on remote server
         uses: JimCronqvist/action-ssh@master
         with:

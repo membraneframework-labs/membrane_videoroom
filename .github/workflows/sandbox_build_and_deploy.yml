@@ -74,6 +74,10 @@ jobs:
           GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
           GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
 
+      - name: Dupa xd
+        run: mix deps.get
+
+
       - name: Execute SSH commmands on remote server
         uses: JimCronqvist/action-ssh@master
         with:

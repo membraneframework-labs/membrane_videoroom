@@ -77,7 +77,7 @@ jobs:
       - name: Execute SSH commmands on remote server
         uses: JimCronqvist/action-ssh@master
         with:
-          hosts: ${{ secrets.SANDBOX_HOST }}
+          hosts: ${{ secrets.QA_HOST }}
           privateKey: ${{ secrets.SSH_PRIV_KEY }}
           command: |
             rm -rf membrane_rtc_engine_timescaledb

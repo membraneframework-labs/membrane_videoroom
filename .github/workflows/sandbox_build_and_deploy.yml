@@ -74,22 +74,38 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      - name: DUPA XD
-        run: ls 
 
-      - name: DUPA XDD
-        run: find . -name "membrane_videoroom"
+      - name: ssh v1
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ secrets.SANDBOX_HOST }}
+          privateKey: ${{ secrets.SSH_PRIV_KEY }}
+          command: |
+            rm -rf /root/membrane_rtc_engine_timescaledb
+            rm -rf /root/grafana
+            mkdir /root/grafana/provisioning
+            mkdir /root/grafana/provisioning/datasources
+            mkdir /root/grafana/provisioning/dashboards
+            # git clone https://github.com/membraneframework/membrane_rtc_engine_timescaledb.git 
+            # git --git-dir=./membrane_rtc_engine_timescaledb/.git --work-tree=./membrane_rtc_engine_timescaledb/ checkout metrics-visualisation 
 
-      # - name: copy file via ssh password
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ${{ secrets.USERNAME }}
-      #     password: ${{ secrets.PASSWORD }}
-      #     port: ${{ secrets.PORT }}
-      #     source: "tests/a.txt,tests/b.txt"
-      #     target: "test"
+      - name: copy file via ssh key datasource
+        uses: appleboy/scp-action@master
+        with:
+          host: sandbox-videoroom.membrane.work
+          username: root
+          key: ${{ secrets.SSH_PRIV_KEY }}
+          source: "deps/membrane_rtc_engine_timescaledb/grafana/provisioning/datasources/timescale_db.yml"
+          target: "/root/grafana/provisioning/datasources"
 
+      - name: copy file via ssh key dashboard
+        uses: appleboy/scp-action@master
+        with:
+          host: sandbox-videoroom.membrane.work
+          username: root
+          key: ${{ secrets.SSH_PRIV_KEY }}
+          source: "deps/membrane_rtc_engine_timescaledb/grafana/provisioning/dashboards/rtc_engine_metrics_dashboard.yml,deps/membrane_rtc_engine_timescaledb/grafana/provisioning/dashboards/rtc_engine_metrics_dashboard.json"
+          target: "/root/grafana/provisioning/dashboards"
 
       - name: Prepare .env file for the deployment
         id: variables_population

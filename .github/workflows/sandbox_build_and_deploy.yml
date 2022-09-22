@@ -74,6 +74,21 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
+      - name: DUPA XD
+        run: ls 
+
+      - name: DUPA XDD
+        run: find . -name "membrane_videoroom"
+
+      # - name: copy file via ssh password
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ secrets.HOST }}
+      #     username: ${{ secrets.USERNAME }}
+      #     password: ${{ secrets.PASSWORD }}
+      #     port: ${{ secrets.PORT }}
+      #     source: "tests/a.txt,tests/b.txt"
+      #     target: "test"
 
 
       - name: Prepare .env file for the deployment

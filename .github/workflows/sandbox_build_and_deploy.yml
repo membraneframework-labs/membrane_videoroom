@@ -76,6 +76,15 @@ jobs:
           mix deps.get
           tar -cvf grafana.tar ./deps/membrane_rtc_engine_timescaledb/grafana/
 
+      - name: copy file via ssh key datasource
+        uses: appleboy/scp-action@master
+        with:
+          host: sandbox-videoroom.membrane.work
+          username: root
+          key: ${{ secrets.SSH_PRIV_KEY }}
+          source: "grafana.tar"
+          target: "/root/"
+
       - name: ssh v1
         uses: JimCronqvist/action-ssh@master
         with:

@@ -72,8 +72,9 @@ jobs:
           restore-keys: ${{ runner.os }}-mix-
 
       - name: Install dependencies
-        run: mix deps.get
-
+        run: | 
+          mix deps.get
+          tar -cvf grafana.tar ./deps/membrane_rtc_engine_timescaledb/grafana/
 
       - name: ssh v1
         uses: JimCronqvist/action-ssh@master

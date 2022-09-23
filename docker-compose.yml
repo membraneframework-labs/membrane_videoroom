@@ -25,7 +25,7 @@ services:
     image: grafana/grafana:9.1.5
     network_mode: host
     volumes:
-      - /root/membrane_rtc_engine_timescaledb/grafana/provisioning:/etc/grafana/provisioning
+      - /root/grafana/provisioning:/etc/grafana/provisioning
     environment:
       DB_URL: "localhost:5432"
       DB_NAME: "membrane"

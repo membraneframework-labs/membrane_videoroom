@@ -71,13 +71,12 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
 
-      - name: Install dependencies
+      - name: Install dependencies and tar Grafana config files
         run: | 
-          mix deps.get
-          mv ./deps/membrane_rtc_engine_timescaledb/grafana ./
-          tar -cvf grafana.tar ./grafana/
+          mix deps.get    
+          tar -cvf grafana.tar ./deps/membrane_rtc_engine_timescaledb/grafana/
 
-      - name: copy file via ssh key datasource
+      - name: Copy file on host via scp
         uses: appleboy/scp-action@master
         with:
           host: sandbox-videoroom.membrane.work
@@ -86,32 +85,16 @@ jobs:
           source: "grafana.tar"
           target: "/root/"
 
-      - name: ssh v1
+      - name: Unpack Grafana config files
         uses: JimCronqvist/action-ssh@master
         with:
           hosts: ${{ secrets.SANDBOX_HOST }}
           privateKey: ${{ secrets.SSH_PRIV_KEY }}
           command: |
-            rm -rf /root/grafana
+            rm -rf ./deps
+            rm -rf ./grafana
             tar -xf grafana.tar
-
-      # - name: copy file via ssh key datasource
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: sandbox-videoroom.membrane.work
-      #     username: root
-      #     key: ${{ secrets.SSH_PRIV_KEY }}
-      #     source: "deps/membrane_rtc_engine_timescaledb/grafana/provisioning/datasources/timescale_db.yml"
-      #     target: "/root/grafana/provisioning/datasources"
-
-      # - name: copy file via ssh key dashboard
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: sandbox-videoroom.membrane.work
-      #     username: root
-      #     key: ${{ secrets.SSH_PRIV_KEY }}
-      #     source: "deps/membrane_rtc_engine_timescaledb/grafana/provisioning/dashboards/rtc_engine_metrics_dashboard.yml,deps/membrane_rtc_engine_timescaledb/grafana/provisioning/dashboards/rtc_engine_metrics_dashboard.json"
-      #     target: "/root/grafana/provisioning/dashboards"
+            mv ./deps/membrane_rtc_engine_timescaledb/grafana ./ 
 
       - name: Prepare .env file for the deployment
         id: variables_population
@@ -121,8 +104,6 @@ jobs:
           GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
           GF_SECURITY_ADMIN_USER: ${{ secrets.GF_SECURITY_ADMIN_USER  }}
         run: |
-          echo whoami 
-          whoami
           echo "VIRTUAL_HOST=$VIRTUAL_HOST 
           INTEGRATED_TURN_IP=$INTEGRATED_TURN_IP 
           TAG=$TAG 
@@ -130,17 +111,6 @@ jobs:
           DB_PASSWORD=$DB_PASSWORD
           GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
           GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
-
-
-      # - name: Execute SSH commmands on remote server
-      #   uses: JimCronqvist/action-ssh@master
-      #   with:
-      #     hosts: ${{ secrets.SANDBOX_HOST }}
-      #     privateKey: ${{ secrets.SSH_PRIV_KEY }}
-      #     command: |
-      #       rm -rf membrane_rtc_engine_timescaledb
-      #       git clone https://github.com/membraneframework/membrane_rtc_engine_timescaledb.git 
-      #       git --git-dir=./membrane_rtc_engine_timescaledb/.git --work-tree=./membrane_rtc_engine_timescaledb/ checkout metrics-visualisation 
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy

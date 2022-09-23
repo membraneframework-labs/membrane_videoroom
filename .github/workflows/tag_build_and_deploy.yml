@@ -59,6 +59,44 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Elixir
+        uses: erlef/setup-beam@988e02bfe678367a02564f65ca2e37726dc0268f
+        with:
+          elixir-version: '1.14.0'
+          otp-version: '25'
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+
+      - name: Install dependencies and tar Grafana config files
+        run: | 
+          mix deps.get    
+          tar -cvf grafana.tar ./deps/membrane_rtc_engine_timescaledb/grafana/
+
+      - name: Copy file on host via scp
+        uses: appleboy/scp-action@master
+        with:
+          host: $VIRTUAL_HOST
+          username: root
+          key: ${{ secrets.SSH_PRIV_KEY }}
+          source: "grafana.tar"
+          target: "/root/"
+
+      - name: Unpack Grafana config files
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ secrets.DEMO_HOST }}
+          privateKey: ${{ secrets.SSH_PRIV_KEY }}
+          command: |
+            rm -rf ./deps
+            rm -rf ./grafana
+            tar -xf grafana.tar
+            mv ./deps/membrane_rtc_engine_timescaledb/grafana ./ 
+
       - name: Prepare .env file for the deployment
         id: variables_population
         env: 
@@ -74,16 +112,6 @@ jobs:
           DB_PASSWORD=$DB_PASSWORD
           GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
           GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
-
-      - name: Execute SSH commmands on remote server
-        uses: JimCronqvist/action-ssh@master
-        with:
-          hosts: ${{ secrets.DEMO_HOST }}
-          privateKey: ${{ secrets.SSH_PRIV_KEY }}
-          command: |
-            rm -rf membrane_rtc_engine_timescaledb
-            git clone https://github.com/membraneframework/membrane_rtc_engine_timescaledb.git 
-            git --git-dir=./membrane_rtc_engine_timescaledb/.git --work-tree=./membrane_rtc_engine_timescaledb/ checkout metrics-visualisation 
   
       - name: Deploy docker compose to a pre-configured server
         id: deploy

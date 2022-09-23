@@ -79,7 +79,7 @@ jobs:
       - name: Copy file on host via scp
         uses: appleboy/scp-action@master
         with:
-          host: sandbox-videoroom.membrane.work
+          host: $VIRTUAL_HOST
           username: root
           key: ${{ secrets.SSH_PRIV_KEY }}
           source: "grafana.tar"

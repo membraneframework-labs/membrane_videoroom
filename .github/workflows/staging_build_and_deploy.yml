@@ -50,7 +50,7 @@ jobs:
           file: Dockerfile
           push: true
           build-args: VERSION=${{ steps.vars.outputs.version }}
-          tags: membraneframework/demo_webrtc_videoroom_advanced:${{ env.TAG }}
+          tags: membraneframework/membrane_videoroom:${{ env.TAG }}
 
   deploy:
     runs-on: ubuntu-latest

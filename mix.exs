@@ -9,7 +9,12 @@ defmodule VideoRoom.MixProject do
       aliases: aliases(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: dialyzer()
+      dialyzer: dialyzer(),
+      releases: [
+        membrane_videoroom_demo: [
+          steps: [:assemble, &VideoRoom.Release.move_grafana_config/1]
+        ]
+      ]
     ]
   end
 

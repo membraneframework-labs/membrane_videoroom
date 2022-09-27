@@ -74,7 +74,7 @@ jobs:
       - name: Install dependencies and tar Grafana config files
         run: | 
           mix deps.get    
-          tar -cvf grafana.tar ./deps/membrane_rtc_engine_timescaledb/grafana/
+          tar -cvf grafana.tar ./deps/membrane_rtc_engine_timescaledb/priv/grafana/
 
       - name: Copy file on host via scp
         uses: appleboy/scp-action@master
@@ -94,7 +94,7 @@ jobs:
             rm -rf ./deps
             rm -rf ./grafana
             tar -xf grafana.tar
-            mv ./deps/membrane_rtc_engine_timescaledb/grafana ./ 
+            mv ./deps/membrane_rtc_engine_timescaledb/priv/grafana ./ 
 
       - name: Prepare .env file for the deployment
         id: variables_population

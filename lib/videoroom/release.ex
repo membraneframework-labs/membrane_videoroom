@@ -3,6 +3,9 @@ defmodule VideoRoom.Release do
   Used for executing DB release tasks when run in production without Mix
   installed.
   """
+
+  alias Membrane.RTC.Engine.TimescaleDB
+
   @app :membrane_videoroom_demo
 
   @spec migrate() :: :ok
@@ -27,23 +30,25 @@ defmodule VideoRoom.Release do
     :ok
   end
 
-  @spec move_grafana_config(Mix.Release.t()) :: Mix.Release.t()
-  def move_grafana_config(release, target_path \\ "_build/prod/rel/membrane_videoroom_demo/lib/") do
-    target_path =
-      if String.ends_with?(target_path, "/"),
-        do: target_path <> "grafana",
-        else: target_path <> "/grafana"
+  @spec cp_grafana_config_to_lib() :: :ok
+  def cp_grafana_config_to_lib() do
+    do_cp_grafana_config_to_lib()
+    :ok
+  end
 
-    File.mkdir_p(target_path)
-
-    Membrane.RTC.Engine.TimescaleDB.Mixfile.project()
-    |> Keyword.fetch!(:version)
-    |> then(
-      &"./_build/prod/rel/membrane_videoroom_demo/lib/membrane_rtc_engine_timescaledb-#{&1}/priv/grafana"
-    )
-    |> File.cp_r!(target_path)
-
+  @spec cp_grafana_config_to_lib(Mix.Release.t()) :: Mix.Release.t()
+  def cp_grafana_config_to_lib(release) do
+    do_cp_grafana_config_to_lib()
     release
+  end
+
+  defp do_cp_grafana_config_to_lib() do
+    rtc_engine_timescaledb_priv =
+      "./_build/prod/rel/membrane_videoroom_demo/lib/membrane_rtc_engine_timescaledb-#{TimescaleDB.ReleaseHelper.project_version()}/priv"
+
+    target_path = "_build/prod/rel/membrane_videoroom_demo/lib/"
+
+    TimescaleDB.ReleaseHelper.cp_grafana_directory(rtc_engine_timescaledb_priv, target_path)
   end
 
   defp repos do

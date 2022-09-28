@@ -1,4 +1,5 @@
-version: "3"
+version: "3.7"
+
 services:
   videoroom:
     image: membraneframework/demo_webrtc_videoroom_advanced:${TAG:-latest}
@@ -14,6 +15,10 @@ services:
       DB_USERNAME: "${DB_USERNAME}"
       DB_PASSWORD: "${DB_PASSWORD}"
       DB_HOSTNAME: "127.0.0.1"
+    volumes:
+      - type: volume
+        source: grafana-provisioning
+        target: /app/lib/grafana/provisioning
   timescale:
     image: timescale/timescaledb:2.5.1-pg14
     network_mode: "host"    
@@ -23,9 +28,14 @@ services:
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
   grafana:
     image: grafana/grafana:9.1.5
-    network_mode: host
+    network_mode: "host"
     volumes:
-      - /root/grafana/provisioning:/etc/grafana/provisioning
+      - type: volume
+        source: grafana-provisioning
+        target: /etc/grafana/provisioning
+        read_only: true
+        volume:
+          nocopy: true
     environment:
       DB_URL: "localhost:5432"
       DB_NAME: "membrane"
@@ -33,3 +43,8 @@ services:
       DB_PASSWORD: "${DB_PASSWORD}"
       GF_SECURITY_ADMIN_PASSWORD: "${GF_SECURITY_ADMIN_PASSWORD}"
       GF_SECURITY_ADMIN_USER: "${GF_SECURITY_ADMIN_USER}"
+    depends_on:
+      - videoroom
+
+volumes:
+  grafana-provisioning:

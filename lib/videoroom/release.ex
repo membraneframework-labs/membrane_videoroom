@@ -30,15 +30,17 @@ defmodule VideoRoom.Release do
   @spec move_grafana_config(Mix.Release.t()) :: Mix.Release.t()
   def move_grafana_config(release, target_path \\ "_build/prod/rel/membrane_videoroom_demo/lib/") do
     target_path =
-      if(String.ends_with?(target_path, "/"),
-        do: target_path <> "/",
-        else: target_path) <> "grafana"
+      if String.ends_with?(target_path, "/"),
+        do: target_path <> "grafana",
+        else: target_path <> "/grafana"
 
     File.mkdir_p(target_path)
 
     Membrane.RTC.Engine.TimescaleDB.Mixfile.project()
     |> Keyword.fetch!(:version)
-    |> then(&"./_build/prod/rel/membrane_videoroom_demo/lib/membrane_rtc_engine_timescaledb-#{&1}/priv/grafana")
+    |> then(
+      &"./_build/prod/rel/membrane_videoroom_demo/lib/membrane_rtc_engine_timescaledb-#{&1}/priv/grafana"
+    )
     |> File.cp_r!(target_path)
 
     release

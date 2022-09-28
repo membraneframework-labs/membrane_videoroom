@@ -58,44 +58,6 @@ jobs:
     steps:  
       - uses: actions/checkout@v2
 
-      - name: Set up Elixir
-        uses: erlef/setup-beam@988e02bfe678367a02564f65ca2e37726dc0268f
-        with:
-          elixir-version: '1.14.0'
-          otp-version: '25'
-
-      - name: Restore dependencies cache
-        uses: actions/cache@v3
-        with:
-          path: deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-
-
-      - name: Install dependencies and tar Grafana config files
-        run: | 
-          mix deps.get    
-          tar -cvf grafana.tar ./deps/membrane_rtc_engine_timescaledb/priv/grafana/
-
-      - name: Copy file on host via scp
-        uses: appleboy/scp-action@master
-        with:
-          host: sandbox-videoroom.membrane.work
-          username: root
-          key: ${{ secrets.SSH_PRIV_KEY }}
-          source: "grafana.tar"
-          target: "/root/"
-
-      - name: Unpack Grafana config files
-        uses: JimCronqvist/action-ssh@master
-        with:
-          hosts: ${{ secrets.SANDBOX_HOST }}
-          privateKey: ${{ secrets.SSH_PRIV_KEY }}
-          command: |
-            rm -rf ./deps
-            rm -rf ./grafana
-            tar -xf grafana.tar
-            mv ./deps/membrane_rtc_engine_timescaledb/priv/grafana ./ 
-
       - name: Prepare .env file for the deployment
         id: variables_population
         env: 

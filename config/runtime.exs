@@ -155,6 +155,10 @@ if otel_state != :purge,
       ]
     )
 
+config :membrane_rtc_engine_timescaledb,
+  repo: VideoRoom.Repo,
+  do_claeanups: Application.get_env(:membrane_videoroom_demo, :store_metrics)
+
 config :membrane_videoroom_demo, VideoRoom.Repo,
   database: System.get_env("DATABASE"),
   username: System.get_env("DB_USERNAME"),

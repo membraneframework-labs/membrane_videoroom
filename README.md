@@ -206,11 +206,6 @@ However, if you have your OpenSSL installed in some custom location, you will ne
 For more instructions on how to install the `:fast_tls` dependency, please visit the [Fast TLS repository](https://github.com/processone/fast_tls).
 
 #### Why, after joining the room, I don't see a video stream from the others?
-Take a look at the console logs - most probably there are prints of the following form:
-```
-client error exporting spans {:failed_connect,
-[{:to_address, {'localhost', 4318}}, {:inet, [:inet], :econnrefused}]}
-```
 That might be due to the misconfiguration of the `EXTERNAL_IP` environment variable. Make sure, that the variable is set in the environment where you are running the server, as well as that it is the IPv4 address pointing to the server, visible by all the peers.
 
 #### When I run the videoroom in the docker container, why cannot I access VP8 tracking?

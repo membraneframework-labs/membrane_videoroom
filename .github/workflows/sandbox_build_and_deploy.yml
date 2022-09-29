@@ -11,6 +11,7 @@ env:
   VIRTUAL_HOST: sandbox-videoroom.membrane.work
   INTEGRATED_TURN_IP: 95.216.159.234
   TAG: sandbox
+  PROJECT: sandbox
 
 jobs:
   build:
@@ -74,6 +75,18 @@ jobs:
           GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
           GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
 
+      - name: Remove Grafana and Videoroom containers with volumes
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ secrets.SANDBOX_HOST }}
+          privateKey: ${{ secrets.SSH_PRIV_KEY }}
+          command: |
+            docker kill ${PROJECT}_videoroom_1
+            docker kill ${PROJECT}_grafana_1
+            docker rm ${PROJECT}_videoroom_1
+            docker rm ${PROJECT}_grafana_1
+            docker volume rm ${PROJECT}_grafana-provisioning
+
       - name: Deploy docker compose to a pre-configured server
         id: deploy
         uses: TapTap21/docker-remote-deployment-action@v1.1
@@ -82,4 +95,4 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           stack_file_name: docker-compose.yml
-          args: -p sandbox_dupa --env-file .env up -d --remove-orphans
+          args: -p $PROJECT --env-file .env up -d --remove-orphans

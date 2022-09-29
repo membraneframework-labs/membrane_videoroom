@@ -11,6 +11,7 @@ env:
   VIRTUAL_HOST: staging-videoroom.membrane.work
   INTEGRATED_TURN_IP: 135.181.41.84
   TAG: latest
+  PROJECT: staging
 
 jobs:
   build:
@@ -120,4 +121,4 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           stack_file_name: docker-compose.yml
-          args: -p staging --env-file .env up -d --remove-orphans
+          args: -p ${{ env.PROJECT }} --env-file .env up -d --remove-orphans

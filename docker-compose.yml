@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   videoroom:
-    image: membraneframework/demo_webrtc_videoroom_advanced:${TAG:-latest}
+    image: membraneframework/membrane_videoroom:${TAG:-latest}
     network_mode: "host"
     environment:
       VIRTUAL_HOST: "${VIRTUAL_HOST:-localhost}"

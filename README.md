@@ -92,11 +92,11 @@ INTEGRATED_TURN_IP={IPv4 address of one of your network interfaces}
 
 To start a container with image from Docker Hub, run
 ```bash
-$ docker run --network=host -e INTEGRATED_TURN_IP=<IPv4 address> membraneframework/demo_webrtc_videoroom_advanced:latest
+$ docker run --network=host -e INTEGRATED_TURN_IP=<IPv4 address> membraneframework/membrane_videoroom:latest
 ```
 or
 ```bash
-$ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_PORT_RANGE=50000-50050 -e INTEGRATED_TURN_IP=<IPv4 address> membraneframework/demo_webrtc_videoroom_advanced:latest
+$ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_PORT_RANGE=50000-50050 -e INTEGRATED_TURN_IP=<IPv4 address> membraneframework/membrane_videoroom:latest
 ```
 
 ***NOTE 1*** There might be a problem with running `--network=host` on `macOS`, so the latter command is recommended on that operating system.

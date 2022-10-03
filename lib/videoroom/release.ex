@@ -4,7 +4,7 @@ defmodule VideoRoom.Release do
   installed.
   """
 
-  alias Membrane.RTC.Engine.TimescaleDB
+  alias Membrane.RTC.Engine.TimescaleDB.GrafanaHelper
 
   @app :membrane_videoroom_demo
 
@@ -43,12 +43,7 @@ defmodule VideoRoom.Release do
   end
 
   defp do_cp_grafana_config_to_lib() do
-    rtc_engine_timescaledb_priv =
-      "./_build/prod/rel/membrane_videoroom_demo/lib/membrane_rtc_engine_timescaledb-#{TimescaleDB.ReleaseHelper.project_version()}/priv"
-
-    target_path = "_build/prod/rel/membrane_videoroom_demo/lib/"
-
-    TimescaleDB.ReleaseHelper.cp_grafana_directory(rtc_engine_timescaledb_priv, target_path)
+    GrafanaHelper.cp_grafana_directory("_build/prod/rel/#{@app}/lib/")
   end
 
   defp repos do

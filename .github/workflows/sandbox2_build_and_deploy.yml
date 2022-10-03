@@ -83,7 +83,7 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIV_KEY }}
           command: |
             echo "docker kill ${{ env.PROJECT }}_videoroom_1
-            X=docker kill ${{ env.PROJECT }}_grafana_1
+            docker kill ${{ env.PROJECT }}_grafana_1
             docker rm ${{ env.PROJECT }}_videoroom_1
             docker rm ${{ env.PROJECT }}_grafana_1
             docker volume rm ${{ env.PROJECT }}_grafana-provisioning

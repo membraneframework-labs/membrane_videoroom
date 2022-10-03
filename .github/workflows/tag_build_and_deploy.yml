@@ -41,7 +41,7 @@ jobs:
           file: Dockerfile
           push: true
           build-args: VERSION= ${{ github.ref_name }}
-          tags: membraneframework/demo_webrtc_videoroom_advanced:${{ github.ref_name }}
+          tags: membraneframework/membrane_videoroom:${{ github.ref_name }}
 
       - name: Build and push latest version 
         id: docker_build_latest
@@ -51,7 +51,7 @@ jobs:
           file: Dockerfile
           push: true
           build-args: VERSION= ${{ github.ref_name }}
-          tags: membraneframework/demo_webrtc_videoroom_advanced:latest
+          tags: membraneframework/membrane_videoroom:latest
 
   deploy:
     runs-on: ubuntu-latest

@@ -123,7 +123,7 @@ CERT_FILE_PATH={path to certificate file, used when "USE_TLS" is set to true}
 
 EXTERNAL_IP= {the IP address, on which TURN servers will listen}
 INTEGRATED_TURN_PORT_RANGE={port range, where UDP TURN will try to open ports. By default set to 50000-59999. 
-    The bigger the range is, the more users server will be able to handle. Useful when not using the `-network=host` option to 
+    The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
     limit the UDP ports used only to ones exposed from a Docker container.}
 INTEGRATED_TCP_TURN_PORT={port number of TCP TURN}
 INTEGRATED_TLS_TURN_PORT={port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided}

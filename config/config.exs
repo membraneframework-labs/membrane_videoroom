@@ -28,6 +28,8 @@ config :membrane_telemetry_metrics, enabled: telemetry_enabled
 
 config :membrane_opentelemetry, enabled: telemetry_enabled
 
+config :membrane_rtc_engine_timescaledb, repo: VideoRoom.Repo
+
 config :membrane_videoroom_demo, ecto_repos: [VideoRoom.Repo]
 
 config :logger, :console, metadata: [:room, :peer]

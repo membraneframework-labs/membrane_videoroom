@@ -73,7 +73,7 @@ Then go to <http://localhost:4000/>.
 ## Running with docker
 
 Videoroom demo provides a `Dockerfile` that you can use to run videoroom application yourself without any additional setup and system dependencies installation.
-All you need is to have Docker Desktop installed - here you can find the instruction for installation on [macOS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
+All you need is to have Docker Engine installed. You can get it i.e. along with Docker Desktop installation - here you can find the instructions on how to install Docker Desktop on [macOS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
 
 ### Launching the demo
 First, you need to build the image from the source:

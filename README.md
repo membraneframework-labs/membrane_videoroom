@@ -21,11 +21,11 @@ To join a room, enter the room name and your name, then click the `Join room!` b
 
 
 ### Installation of the dependencies
-To run phoenix application manually, you will need to have [`node.js`](https://nodejs.org/en/) installed. You can read about the installation [here](https://nodejs.org/en/download/).
+To run the Phoenix application manually, you will need to have [`node.js`](https://nodejs.org/en/) installed. You can read about the installation [here](https://nodejs.org/en/download/).
 The demo has been tested with `node.js` version `v14.15.0`. 
 
 Furthermore, you will need some other dependencies.
-Depending on an operation system, you might also need to set up some
+Depending on an operating system, you might also need to set up some
 environment variables. Below you can find a list of commands to
 be executed on a given OS.
 
@@ -80,7 +80,7 @@ First, you need to build the image from the source:
 ```bash
 docker build -t membrane_videoroom .
 ```
-Later, you need to obtain the `EXTERNAL_IP` address. This is the IPVv4 address at your computer is accessible in the network.
+Later, you need to obtain the `EXTERNAL_IP` address. This is the IPv4 address at which your computer is accessible in the network.
 To make the server available from your local network, you can set it to a private address, like `192.168.*.*`.
 The address can be found with the use of the `ifconfig` command:
 ```
@@ -170,7 +170,7 @@ If you haven't found an answer to your question, we invite you to ask it on [the
 ### Videoroom capabilities
 #### What is the maximum number of users in a Membrane videoroom conference?
 That is limited mostly by the hardware you are using, and the usage scenario.
-Let's take under the consideration server with 64 GiB RAM, access to 10 Gbit network and 32 vCPUs.
+Let's consider a server with 64 GiB RAM, access to a 10 Gbit network and 32 vCPUs.
 Below you can find a table comparing a cost of such a server from three different cloud providers.
 
 | name | RAM | CPU | Storage | Network | Cost, on-demand |
@@ -179,12 +179,12 @@ Below you can find a table comparing a cost of such a server from three differen
 | Microsoft Azure Standard_D32plds_v5 | 64.0 GiB | 32 vCPUs | 1200 GiB |---------| $1.552 hourly |
 | Google Cloud VM c2d-highcpu-32 | 64.0 GiB | 32 vCPUs | ---------- | 32 Gbps| $1.321 hourly |
 
-With such a hardware:
+With such hardware:
 * when it comes to hosting a conference where we have e.g. two presenters that are sending audio and video and multiple passive participants, who are only watching the stream, we can handle at least ~10 rooms, 17 participants each (2 speakers, 15 passive participants).
 * in the case of a casual room where everyone can send their media, with low-quality video, one big room for 21 participants (each of them was sending audio and video) was using about 21% of the CPU resources of the given machine.
 
 #### Does Membrane videoroom support broadcasting (only one peer streaming and many peers who are only watching)?
-Membrane videoroom demo is an application meant to mimic the behavior of a videoconferencing room (i.e. Google Meet). It has mechanisms to reduce the amount of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
+Membrane videoroom demo is an application meant to mimic the behaviour of a videoconferencing room (e.g. Google Meet or Jitsi Meet). It has mechanisms to reduce the amount of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
 At the same time, for broadcasting multimedia to thousands of viewers, other mechanisms need to be used, and it can be achieved with the use of the Membrane Framework. We invite you to take a look at other [Membrane demos](https://github.com/membraneframework/membrane_demo), especially:
 * [WebRTC to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_to_hls)
 * [RTMP to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls)

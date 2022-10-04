@@ -106,7 +106,7 @@ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_PO
 ```bash
 docker run --network=host -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhost membrane_videoroom
 ```
-> ***NOTE*** On macOS you need to explicitly forward ports since the `--network=host` option doesn't work there. Make sure that the ports you are forwarding with the option `-p` of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable. Please also keep in mind that the port range cannot be too wide as it might cause problems with the docker container starting.
+> ***NOTE*** On macOS you need to explicitly publish ports since the `--network=host` option doesn't work there. Make sure that the ports you are publishing with the option `-p` of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable. Please also keep in mind that the port range cannot be too wide as it might cause problems with the docker container starting.
 
 Finally, go to <http://localhost:4000/>.
 
@@ -123,14 +123,14 @@ Below you can find a list of runtime environment variables, used to configure th
 * `EXTERNAL_IP` - the IP address, on which TURN servers will listen
 * `INTEGRATED_TURN_PORT_RANGE` - port range, where UDP TURN will try to open ports. By default set to `50000-59999`. 
  The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
- limit the UDP ports used only to ones exposed from a Docker container.
-* `INTEGRATED_TCP_TURN_PORT `port number of TCP TURN
+ limit the UDP ports used only to ones published from a Docker container.
+* `INTEGRATED_TCP_TURN_PORT` - port number of TCP TURN
 * `INTEGRATED_TLS_TURN_PORT` - port number of TLS TURN, used when `INTEGRATED_TURN_PKEY` and `INTEGRATED_TURN_CERT` are provided
 * `INTEGRATED_TURN_CERT` - SSL certificate for TLS TURN
 * `INTEGRATED_TURN_PKEY` - SSL private key for TLS TURN
 
-* `STORE_METRICS` - "true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to `false`
-* `METRICS_SCRAPE_INTERVA`L - number of seconds between `Membrane.RTC.Engine` metrics reports scrapes
+* `STORE_METRICS` - `true` or `false`, if set to `true`, then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to `false`
+* `METRICS_SCRAPE_INTERVAL` - number of seconds between `Membrane.RTC.Engine` metrics reports scrapes
 * `DATABASE` - the name of the database used to store `Membrane.RTC.Engine` metrics reports
 * `DB_USERNAME` - the name of the database user
 * `DB_PASSWORD` - password for the database user
@@ -152,12 +152,12 @@ docker run <rest of the options...> -e INTEGRATED_TURN_CERT=/usr/local/key.cert 
 
 
 ### OpenTelemetry
-The videoroom provides observability metrics 
+The videoroom provides observability metrics.
 By default, OpenTelemetry is turned off. You can turn it on by going to `config/runtime.exs` and changing `otel_state` to one of three possible values:
 * `:local` - OpenTelemetry traces will be printed on stdout
 * `:zipkin` - OpenTelemetry traces are sent to Zipkin. You can change the url traces are sent to in `config/runtime.exs`. To set up zipkin you can run this command `docker run -d -p 9411:9411 openzipkin/zipkin`.
 * `:honeycomb` - OpenTelemetry traces are sent to Honeycomb. You have to specify "x-honeycomb-team", which is API KEY for this service.
-
+  
 
 ## FAQ
 Below you can find a list of Frequently Asked Questions (FAQ).

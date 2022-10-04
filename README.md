@@ -9,11 +9,11 @@ Based on [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc
 ## Try it live!
 You can test the Videoroom at [https://videoroom.membrane.stream](https://videoroom.membrane.stream)
 
-### Using the demo 
-The recommended browser for using the demo is Google Chrome.
+### Using of the application 
+The recommended browser for using the application is Google Chrome.
 To join a room, enter the room name and your name, then click the `Join room!` button below. If the browser will ask you for a camera or microphone permission, click `Allow` (otherwise, other people will not be able to see or hear you). After entering a room, you can turn on/off your camera or microphone, or start sharing your screen, by clicking icons at the bottom of the screen. You can also leave the room by clicking the red button or just closing the card in your browser.
 
-![videoroom_demo](https://membrane.stream/data/membrane_tutorials/videoroom/assets/records/expected_result.webp)
+![videoroom](https://membrane.stream/data/membrane_tutorials/videoroom/assets/records/expected_result.webp)
 
 
 
@@ -22,7 +22,7 @@ To join a room, enter the room name and your name, then click the `Join room!` b
 
 ### Installation of the dependencies
 To run the Phoenix application manually, you will need to have [`node.js`](https://nodejs.org/en/) installed. You can read about the installation [here](https://nodejs.org/en/download/).
-The demo has been tested with `node.js` version `v14.15.0`. 
+The application has been tested with `node.js` version `v14.15.0`. 
 
 Furthermore, you will need some other dependencies.
 Depending on an operating system, you might also need to set up some
@@ -55,7 +55,7 @@ export PKG_CONFIG_PATH=/opt/homebrew/Cellar/openssl@1.1/1.1.1l_1/lib/pkgconfig/
 sudo apt-get install libsrtp2-dev libavcodec-dev libavformat-dev libavutil-dev
 ```
 
-### Launching the demo
+### Launching of the application
 First, install all project dependencies:
 ```
 mix deps.get
@@ -72,10 +72,10 @@ Then go to <http://localhost:4000/>.
 
 ## Running with docker
 
-Videoroom demo provides a `Dockerfile` that you can use to run videoroom application yourself without any additional setup and system dependencies installation.
+Videoroom provides a `Dockerfile` that you can use to run videoroom application yourself without any additional setup and system dependencies installation.
 All you need is to have Docker Engine installed. You can get it i.e. along with Docker Desktop installation - here you can find the instructions on how to install Docker Desktop on [macOS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
 
-### Launching the demo
+### Launching of the application
 First, you need to build the image from the source:
 ```bash
 docker build -t membrane_videoroom .
@@ -113,7 +113,7 @@ Finally, go to <http://localhost:4000/>.
 ## More advanced configuration
 
 ### Environment variables
-Below you can find a list of runtime environment variables, used to configure the demo:
+Below you can find a list of runtime environment variables, used to configure the application:
 * VIRTUAL_HOST - host passed to the endpoint config, defaults to "localhost" on non-production environments (MIX_ENV != prod)
 
 * USE_TLS - "true" or "false", if set to "true" then https will be used and certificate paths will be required
@@ -122,8 +122,8 @@ Below you can find a list of runtime environment variables, used to configure th
 
 * EXTERNAL_IP - the IP address, on which TURN servers will listen
 * INTEGRATED_TURN_PORT_RANGE - port range, where UDP TURN will try to open ports. By default set to 50000-59999. 
-    The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
-    limit the UDP ports used only to ones exposed from a Docker container.
+ The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
+ limit the UDP ports used only to ones exposed from a Docker container.
 * INTEGRATED_TCP_TURN_PORT port number of TCP TURN
 * INTEGRATED_TLS_TURN_PORT - port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided
 * INTEGRATED_TURN_CER - SSL certificate for TLS TURN
@@ -131,11 +131,11 @@ Below you can find a list of runtime environment variables, used to configure th
 
 * STORE_METRICS - "true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to "false"
 * METRICS_SCRAPE_INTERVAL - number of seconds between `Membrane.RTC.Engine` metrics reports scrapes
-* DATABASE - name of database used to store `Membrane.RTC.Engine` metrics reports
-* DB_USERNAME - name of the database user
+* DATABASE - the name of the database used to store `Membrane.RTC.Engine` metrics reports
+* DB_USERNAME - the name of the database user
 * DB_PASSWORD - password for the database user
 * DB_HOSTNAME - hostname of the database
-* DB_PORT - port, where database will set up its endpoint}
+* DB_PORT - port, where the database will set up its endpoint
 
 
 #### .env file
@@ -181,7 +181,7 @@ With such hardware:
 * in the case of a casual room where everyone can send their media, with low-quality video, one big room for 21 participants (each of them was sending audio and video) was using about 21% of the CPU resources of the given machine.
 
 #### Does Membrane videoroom support broadcasting (only one peer streaming and many peers who are only watching)?
-Membrane videoroom demo is an application meant to mimic the behaviour of a videoconferencing room (e.g. Google Meet or Jitsi Meet). It has mechanisms to reduce the amount of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
+Membrane videoroom is an application meant to mimic the behaviour of a videoconferencing room (e.g. Google Meet or Jitsi Meet). It has mechanisms to reduce the amount of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
 At the same time, for broadcasting multimedia to thousands of viewers, other mechanisms need to be used, and it can be achieved with the use of the Membrane Framework. We invite you to take a look at other [Membrane demos](https://github.com/membraneframework/membrane_demo), especially:
 * [WebRTC to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_to_hls)
 * [RTMP to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls)

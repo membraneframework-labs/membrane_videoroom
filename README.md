@@ -106,7 +106,7 @@ docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_PO
 ```bash
 docker run --network=host -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhost membrane_videoroom
 ```
-> ***NOTE*** On macOS you need to explicitly forward ports since the `--network=host` option doesn't work there. Make sure that the ports you are forwarding with the option `-p` of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable. Please also keep in mind that the range cannot be too wide as it might cause problems with the docker container starting.
+> ***NOTE*** On macOS you need to explicitly forward ports since the `--network=host` option doesn't work there. Make sure that the ports you are forwarding with the option `-p` of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable. Please also keep in mind that the port range cannot be too wide as it might cause problems with the docker container starting.
 
 Finally, go to <http://localhost:4000/>.
 

@@ -114,28 +114,28 @@ Finally, go to <http://localhost:4000/>.
 
 ### Environment variables
 Below you can find a list of runtime environment variables, used to configure the application:
-* VIRTUAL_HOST - host passed to the endpoint config, defaults to "localhost" on non-production environments (MIX_ENV != prod)
+* `VIRTUAL_HOST` - host passed to the endpoint config, defaults to `localhost` on non-production environments (where `MIX_ENV` != prod)
 
-* USE_TLS - "true" or "false", if set to "true" then https will be used and certificate paths will be required
-* KEY_FILE_PATH - path to certificate key file, used when "USE_TLS" is set to true
-* CERT_FILE_PATH - path to certificate file, used when "USE_TLS" is set to true
+* `USE_TLS` - `true` or `false`, if set to `true` then https will be used and certificate paths will be required
+* `KEY_FILE_PATH` - path to certificate key file, used when `USE_TLS` is set to true
+* `CERT_FILE_PATH` - path to certificate file, used when `USE_TLS` is set to true
 
-* EXTERNAL_IP - the IP address, on which TURN servers will listen
-* INTEGRATED_TURN_PORT_RANGE - port range, where UDP TURN will try to open ports. By default set to 50000-59999. 
+* `EXTERNAL_IP` - the IP address, on which TURN servers will listen
+* `INTEGRATED_TURN_PORT_RANGE` - port range, where UDP TURN will try to open ports. By default set to `50000-59999`. 
  The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
  limit the UDP ports used only to ones exposed from a Docker container.
-* INTEGRATED_TCP_TURN_PORT port number of TCP TURN
-* INTEGRATED_TLS_TURN_PORT - port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided
-* INTEGRATED_TURN_CER - SSL certificate for TLS TURN
-* INTEGRATED_TURN_PKEY - SSL private key for TLS TURN
+* `INTEGRATED_TCP_TURN_PORT `port number of TCP TURN
+* `INTEGRATED_TLS_TURN_PORT` - port number of TLS TURN, used when `INTEGRATED_TURN_PKEY` and `INTEGRATED_TURN_CERT` are provided
+* `INTEGRATED_TURN_CERT` - SSL certificate for TLS TURN
+* `INTEGRATED_TURN_PKEY` - SSL private key for TLS TURN
 
-* STORE_METRICS - "true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to "false"
-* METRICS_SCRAPE_INTERVAL - number of seconds between `Membrane.RTC.Engine` metrics reports scrapes
-* DATABASE - the name of the database used to store `Membrane.RTC.Engine` metrics reports
-* DB_USERNAME - the name of the database user
-* DB_PASSWORD - password for the database user
-* DB_HOSTNAME - hostname of the database
-* DB_PORT - port, where the database will set up its endpoint
+* `STORE_METRICS` - "true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to `false`
+* `METRICS_SCRAPE_INTERVA`L - number of seconds between `Membrane.RTC.Engine` metrics reports scrapes
+* `DATABASE` - the name of the database used to store `Membrane.RTC.Engine` metrics reports
+* `DB_USERNAME` - the name of the database user
+* `DB_PASSWORD` - password for the database user
+* `DB_HOSTNAME` - hostname of the database
+* `DB_PORT` - port, where the database will set up its endpoint
 
 
 #### .env file

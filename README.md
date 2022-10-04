@@ -29,7 +29,7 @@ Depending on an operating system, you might also need to set up some
 environment variables. Below you can find a list of commands to
 be executed on a given OS.
 
-#### Mac OS X with Intel processor
+#### macOS with Intel processor
 
 ```
 brew install srtp clang-format ffmpeg
@@ -39,7 +39,7 @@ export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include/"
 export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
 ```
 
-#### Mac OS X with M1 processor
+#### macOS with M1 processor
 
 ```
 brew install srtp clang-format ffmpeg
@@ -73,7 +73,7 @@ Then go to <http://localhost:4000/>.
 ## Running with docker
 
 Videoroom demo provides a `Dockerfile` that you can use to run videoroom application yourself without any additional setup and system dependencies installation.
-All you need is to have Docker Desktop installed - here you can find the instruction for installation on [Mac OS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
+All you need is to have Docker Desktop installed - here you can find the instruction for installation on [macOS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
 
 ### Launching the demo
 First, you need to build the image from the source:
@@ -98,15 +98,15 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 (The address we are seeking is the address following the `inet` field - in that particular case, `192.168.1.196`)
 
 Then you can start the container:
-#### Mac OS X
+#### Explicit port exposure (macOS compatible)
 ```bash
 docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_PORT_RANGE=50000-50050 -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhost membrane_videoroom
 ```
-#### Ubuntu
+#### Using host network (Linux only)
 ```bash
 docker run --network=host -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhost membrane_videoroom
 ```
-> ***NOTE*** The first command, which is the one we suggest using on Mac OS, will also work completely on Ubuntu. At the same time, it is not necessarily true another way around, since there is a problem with running `--network=host` on `macOS`. That is why you need to explicitly forward the desired ports range on macOS. If you have decided to use the first command, make sure that the ports you are forwarding with the `-p` option switch of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable.
+> ***NOTE*** On macOS you need to explicitly forward ports since the `--network=host` option doesn't work there. Make sure that the ports you are forwarding with the option `-p` of the `docker run` command are corresponding to the ports specified within the `INTEGRATED_TURN_PORT_RANGE` variable. Please also keep in mind that the range cannot be too wide as it might cause problems with the docker container starting.
 
 Finally, go to <http://localhost:4000/>.
 
@@ -114,39 +114,36 @@ Finally, go to <http://localhost:4000/>.
 
 ### Environment variables
 Below you can find a list of runtime environment variables, used to configure the demo:
-```
-VIRTUAL_HOST={host passed to the endpoint config, defaults to "localhost" on non-production environments (MIX_ENV != prod)}
+* VIRTUAL_HOST - host passed to the endpoint config, defaults to "localhost" on non-production environments (MIX_ENV != prod)
 
-USE_TLS={"true" or "false", if set to "true" then https will be used and certificate paths will be required}
-KEY_FILE_PATH={path to certificate key file, used when "USE_TLS" is set to true}
-CERT_FILE_PATH={path to certificate file, used when "USE_TLS" is set to true}
+* USE_TLS - "true" or "false", if set to "true" then https will be used and certificate paths will be required
+* KEY_FILE_PATH - path to certificate key file, used when "USE_TLS" is set to true
+* CERT_FILE_PATH - path to certificate file, used when "USE_TLS" is set to true
 
-EXTERNAL_IP= {the IP address, on which TURN servers will listen}
-INTEGRATED_TURN_PORT_RANGE={port range, where UDP TURN will try to open ports. By default set to 50000-59999. 
+* EXTERNAL_IP - the IP address, on which TURN servers will listen
+* INTEGRATED_TURN_PORT_RANGE - port range, where UDP TURN will try to open ports. By default set to 50000-59999. 
     The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
-    limit the UDP ports used only to ones exposed from a Docker container.}
-INTEGRATED_TCP_TURN_PORT={port number of TCP TURN}
-INTEGRATED_TLS_TURN_PORT={port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided}
-INTEGRATED_TURN_CERT={SSL certificate for TLS TURN}
-INTEGRATED_TURN_PKEY={SSL private key for TLS TURN}
+    limit the UDP ports used only to ones exposed from a Docker container.
+* INTEGRATED_TCP_TURN_PORT port number of TCP TURN
+* INTEGRATED_TLS_TURN_PORT - port number of TLS TURN, used when "INTEGRATED_TURN_PKEY" and "INTEGRATED_TURN_CERT" are provided
+* INTEGRATED_TURN_CER - SSL certificate for TLS TURN
+* INTEGRATED_TURN_PKEY - SSL private key for TLS TURN
 
-STORE_METRICS={"true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to "false"}
-METRICS_SCRAPE_INTERVAL={number of seconds between `Membrane.RTC.Engine` metrics reports scrapes}
+* STORE_METRICS - "true" or "false", if set to "true", then `Membrane.RTC.Engine` metrics will be stored in the database. By default set to "false"
+* METRICS_SCRAPE_INTERVAL - number of seconds between `Membrane.RTC.Engine` metrics reports scrapes
+* DATABASE - name of database used to store `Membrane.RTC.Engine` metrics reports
+* DB_USERNAME - name of the database user
+* DB_PASSWORD - password for the database user
+* DB_HOSTNAME - hostname of the database
+* DB_PORT - port, where database will set up its endpoint}
 
-DATABASE={name of database used to store `Membrane.RTC.Engine` metrics reports}
-DB_USERNAME={name of the database user}
-DB_PASSWORD={password for the database user}
-DB_HOSTNAME={hostname of the database}
-DB_PORT={port, where database will set up its endpoint}
 
+#### .env file
+Default environment variables are available in `.env` file. If you are using the docker setup, you might want to make the container use the variables defined in `.env` - you can do it by providing the `--env-file .env` flag to `docker run` command. With the variables defined in the `.env` file, you won't need to use `-e` switch of the `docker run` command: 
+```bash
+docker run <rest of the options...> -env-file .env membrane_videoroom
 ```
-
-
->Default environment variables are available in `.env` file. If you are using the docker setup, you might want to make the container use the variables defined in `.env` - you can do it by providing the `--env-file .env` flag to `docker run` command. With the variables defined in the `.env` file, you won't need to use `-e` switch of the `docker run` command: 
->```bash
->docker run <rest of the options...> -env-file .env membrane_videoroom
->```
->You can surely add other environment variables definitions to the `.env` file
+You can surely add other environment variables definitions to the `.env` file
 
 **IMPORTANT** If you intend to use TLS with the docker setup, remember that setting paths in the `.env` file is not enough. Those paths will be used inside the docker container therefore besides setting env variables you will need to mount those paths to the docker container on your own. You can do it by adding `-v` flag with proper paths to `docker` command, which will mount the desired volumes in the container's file system:
 ```bash
@@ -197,7 +194,7 @@ It's not possible at the moment. Since the SFU needs to be publicly available, w
 The architecture proposed by us: `client --- NETWORK ---> SFU with TURN` reduces the number of 'hops' in the network by one. In contrast, the architecture with the separate TURN server would like that: `client --- NETWORK -- TURN --- NETWORK ---> SFU`.
 If you can think of a use case for a separate TURN server, feel free to start a discussion on our discord server.
 
-### Known bugs
+### Known issues
 #### `(Mix) Could not compile dependency :fast_tls,`
 As the error suggests, there was a problem with the `:fast_tls` dependency compilation. It's usually caused by the fact, that the compiler cannot
 find OpenSSL dependencies in your system.
@@ -207,9 +204,7 @@ For more instructions on how to install the `:fast_tls` dependency, please visit
 
 #### Why, after joining the room, I don't see a video stream from the others?
 That might be due to the misconfiguration of the `EXTERNAL_IP` environment variable. Make sure, that the variable is set in the environment where you are running the server, as well as that it is the IPv4 address pointing to the server, visible by all the peers.
-
-#### When I run the videoroom in the docker container, why cannot I access VP8 tracking?
-You need to publish docker ports used for sending and receiving media (`INTEGRATED_TURN_PORT_RANGE` environment variable) or you can use the host network if you are running on Linux.
+Please also keep in mind that you need to publish docker ports used for sending and receiving media (`INTEGRATED_TURN_PORT_RANGE` environment variable) or use the host network if you are running on Linux.
 
 
 ## Copyright and License

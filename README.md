@@ -186,7 +186,6 @@ At the same time, for broadcasting multimedia to thousands of viewers, other mec
 * [WebRTC to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_to_hls)
 * [RTMP to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls)
 which are demo applications meant to broadcast the media sent by the streamer to many viewers.
-<!--> ADD INFORMATION ABOUT RTMP TO HLS TUTORIAL WHEN IT IS PUBLISHED <-->
 
 ### Configuration
 #### Can you use the external TURN server instead of the integrated one?

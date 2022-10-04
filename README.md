@@ -9,7 +9,7 @@ Based on [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc
 ## Try it live!
 You can test the Videoroom at [https://videoroom.membrane.stream](https://videoroom.membrane.stream)
 
-### Using of the application 
+### Using the application 
 The recommended browser for using the application is Google Chrome.
 To join a room, enter the room name and your name, then click the `Join room!` button below. If the browser will ask you for a camera or microphone permission, click `Allow` (otherwise, other people will not be able to see or hear you). After entering a room, you can turn on/off your camera or microphone, or start sharing your screen, by clicking icons at the bottom of the screen. You can also leave the room by clicking the red button or just closing the card in your browser.
 
@@ -167,7 +167,7 @@ If you haven't found an answer to your question, we invite you to ask it on [the
 ### Videoroom capabilities
 #### What is the maximum number of users in a Membrane videoroom conference?
 That is limited mostly by the hardware you are using, and the usage scenario.
-Let's consider a server with 64 GiB RAM, access to a 10 Gbit network and 32 vCPUs.
+Let's consider a server with 64 GiB RAM, access to a 10 Gbit network, and 32 vCPUs.
 Below you can find a table comparing a cost of such a server from three different cloud providers.
 
 | name | RAM | CPU | Storage | Network | Cost, on-demand |
@@ -181,7 +181,7 @@ With such hardware:
 * in the case of a casual room where everyone can send their media, with low-quality video, one big room for 21 participants (each of them was sending audio and video) was using about 21% of the CPU resources of the given machine.
 
 #### Does Membrane videoroom support broadcasting (only one peer streaming and many peers who are only watching)?
-Membrane videoroom is an application meant to mimic the behaviour of a videoconferencing room (e.g. Google Meet or Jitsi Meet). It has mechanisms to reduce the amount of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
+Membrane videoroom is an application meant to mimic the behaviour of a videoconferencing room (e.g. Google Meet or Jitsi Meet). It has mechanisms to reduce the number of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
 At the same time, for broadcasting multimedia to thousands of viewers, other mechanisms need to be used, and it can be achieved with the use of the Membrane Framework. We invite you to take a look at other [Membrane demos](https://github.com/membraneframework/membrane_demo), especially:
 * [WebRTC to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_to_hls)
 * [RTMP to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls)
@@ -203,7 +203,7 @@ For more instructions on how to install the `:fast_tls` dependency, please visit
 
 #### Why, after joining the room, I don't see a video stream from the others?
 That might be due to the misconfiguration of the `EXTERNAL_IP` environment variable. Make sure, that the variable is set in the environment where you are running the server, as well as that it is the IPv4 address pointing to the server, visible by all the peers.
-Please also keep in mind that you need to publish docker ports used for sending and receiving media (`INTEGRATED_TURN_PORT_RANGE` environment variable) or use the host network if you are running on Linux.
+Please also keep in mind that you need to publish docker UDP ports used for sending and receiving media (the ones set with `INTEGRATED_TURN_PORT_RANGE` environment variable) and the TCP port set with `INTEGRATED_TCP_TURN_PORT` environment variable. Alternatively, you can use the host network if you are running on Linux.
 
 
 ## Copyright and License

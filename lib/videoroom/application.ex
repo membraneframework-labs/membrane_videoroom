@@ -22,6 +22,8 @@ defmodule VideoRoom.Application do
         {Registry, keys: :unique, name: Videoroom.Room.Registry}
       ] ++
         if store_metrics do
+          Application.ensure_all_started(:membrane_rtc_engine_timescaledb)
+
           scrape_interval =
             Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
 

@@ -30,9 +30,9 @@ defmodule VideoRoom.MixProject do
       {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine", override: true},
       {
         :membrane_rtc_engine_timescaledb,
-        #  path: "../membrane_rtc_engine_timescaledb"},
         github: "membraneframework/membrane_rtc_engine_timescaledb",
-        branch: "metrics-visualisation"
+        branch: "metrics-visualisation",
+        runtime: false
       },
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},

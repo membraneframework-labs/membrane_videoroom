@@ -36,14 +36,9 @@ defmodule VideoRoom.Release do
 
   @spec cp_grafana_config_release_step(Mix.Release.t()) :: Mix.Release.t()
   def cp_grafana_config_release_step(release) do
-    IO.inspect(release, label: "dupa release struct", limit: :infinity)
     GrafanaHelper.cp_grafana_directory(release.path)
     release
   end
-
-  # defp do_cp_grafana_config_to_lib() do
-  #   GrafanaHelper.cp_grafana_directory("_build/prod/rel/#{@app}/lib/")
-  # end
 
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)

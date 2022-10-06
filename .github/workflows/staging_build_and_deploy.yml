@@ -75,22 +75,15 @@ jobs:
           GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
           GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
 
-      # commands executed in action below are packed into .sh script, to avoid workflow crashes when some containers or volumes don't exist
       - name: Remove Grafana and Videoroom containers with volumes
         uses: JimCronqvist/action-ssh@master
         with:
           hosts: ${{ secrets.STAGING_HOST }}
           privateKey: ${{ secrets.SSH_PRIV_KEY }}
           command: |
-            echo "docker kill ${{ env.PROJECT }}_videoroom_1
-            docker kill ${{ env.PROJECT }}_grafana_1
-            docker rm ${{ env.PROJECT }}_videoroom_1
-            docker rm ${{ env.PROJECT }}_grafana_1
-            docker volume rm ${{ env.PROJECT }}_grafana-provisioning
-            echo ok" > docker_kill.sh
-            chmod +x docker_kill.sh
-            ./docker_kill.sh
-            rm docker_kill.sh
+            docker rm -f ${{ env.PROJECT }}_grafana_1
+            docker rm -f ${{ env.PROJECT }}_videoroom_1
+            docker volume rm -f ${{ env.PROJECT }}_grafana-provisioning
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy

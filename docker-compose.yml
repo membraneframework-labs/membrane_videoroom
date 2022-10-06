@@ -18,7 +18,7 @@ services:
     volumes:
       - type: volume
         source: grafana-provisioning
-        target: /app/lib/grafana/provisioning
+        target: /app/grafana/provisioning
   timescale:
     image: timescale/timescaledb:2.5.1-pg14
     network_mode: "host"    

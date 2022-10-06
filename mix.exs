@@ -12,7 +12,7 @@ defmodule VideoRoom.MixProject do
       dialyzer: dialyzer(),
       releases: [
         membrane_videoroom_demo: [
-          steps: [:assemble, &VideoRoom.Release.cp_grafana_config_to_lib/1]
+          steps: [:assemble, &VideoRoom.Release.cp_grafana_config_release_step/1]
         ]
       ]
     ]

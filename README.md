@@ -73,7 +73,7 @@ Then go to <http://localhost:4000/>.
 ## Running with docker
 
 Videoroom provides a `Dockerfile` that you can use to run videoroom application yourself without any additional setup and system dependencies installation.
-All you need is to have Docker Engine installed. You can get it i.e. along with Docker Desktop installation - here you can find the instructions on how to install Docker Desktop on [macOS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
+All you need is to have Docker Engine installed. You can get it, for example, along with Docker Desktop installation - here you can find the instructions on how to install Docker Desktop on [macOS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
 
 ### Launching of the application
 First, you need to build the image from the source:
@@ -114,7 +114,7 @@ Finally, go to <http://localhost:4000/>.
 
 ### Environment variables
 Below you can find a list of runtime environment variables, used to configure the application:
-* `VIRTUAL_HOST` - host passed to the endpoint config, defaults to `localhost` on non-production environments (where `MIX_ENV` != prod)
+* `VIRTUAL_HOST` - host passed to the endpoint config, defaults to `localhost` on non-production environments (where `MIX_ENV` != `prod`)
 
 * `USE_TLS` - `true` or `false`, if set to `true` then https will be used and certificate paths will be required
 * `KEY_FILE_PATH` - path to certificate key file, used when `USE_TLS` is set to true
@@ -134,12 +134,12 @@ Below you can find a list of runtime environment variables, used to configure th
 * `DATABASE` - the name of the database used to store `Membrane.RTC.Engine` metrics reports
 * `DB_USERNAME` - the name of the database user
 * `DB_PASSWORD` - password for the database user
-* `DB_HOSTNAME` - hostname of the database
-* `DB_PORT` - port, where the database will set up its endpoint
+* `DB_HOSTNAME` - hostname of the database server
+* `DB_PORT` - port of the database server
 
 
 #### .env file
-Default environment variables are available in `.env` file. If you are using the docker setup, you might want to make the container use the variables defined in `.env` - you can do it by providing the `--env-file .env` flag to `docker run` command. With the variables defined in the `.env` file, you won't need to use `-e` switch of the `docker run` command: 
+Default environment variables are available in `.env` file. If you are using the Docker setup, you might want to make the container use the variables defined in `.env` - you can do so by providing the `--env-file .env` flag to `docker run` command. With the variables defined in the `.env` file, you won't need to use `-e` switch of the `docker run` command: 
 ```bash
 docker run <rest of the options...> -env-file .env membrane_videoroom
 ```
@@ -181,7 +181,7 @@ With such hardware:
 * in the case of a casual room where everyone can send their media, with low-quality video, one big room for 21 participants (each of them was sending audio and video) was using about 21% of the CPU resources of the given machine.
 
 #### Does Membrane videoroom support broadcasting (only one peer streaming and many peers who are only watching)?
-Membrane videoroom is an application meant to mimic the behaviour of a videoconferencing room (e.g. Google Meet or Jitsi Meet). It has mechanisms to reduce the number of resources consumed when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
+Membrane videoroom is an application meant to mimic the behaviour of a videoconferencing room (e.g. Google Meet or Jitsi Meet). It has mechanisms to reduce resource consumption when only part of the video conference participants are actively participating (streaming the multimedia), and the rest are only watching the stream.
 At the same time, for broadcasting multimedia to thousands of viewers, other mechanisms need to be used, and it can be achieved with the use of the Membrane Framework. We invite you to take a look at other [Membrane demos](https://github.com/membraneframework/membrane_demo), especially:
 * [WebRTC to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_to_hls)
 * [RTMP to HLS demo](https://github.com/membraneframework/membrane_demo/tree/master/rtmp_to_hls)

@@ -1,10 +1,8 @@
 # Membrane Videoroom
-
 [![CircleCI](https://circleci.com/gh/membraneframework/membrane_videoroom.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_videoroom)
 
 Membrane Videoroom is an open-source, basic video conferencing platform using WebRTC.
 Based on [membrane_rtc_engine](https://github.com/membraneframework/membrane_rtc_engine), it may be a good starting point for building your own real-time communication solution using Elixir and Membrane.
-
 
 ## Try it live!
 You can test the Videoroom at [https://videoroom.membrane.stream](https://videoroom.membrane.stream)
@@ -15,11 +13,7 @@ To join a room, enter the room name and your name, then click the `Join room!` b
 
 ![videoroom](https://membrane.stream/data/membrane_tutorials/videoroom/assets/records/expected_result.webp)
 
-
-
 ## Running locally
-
-
 ### Installation of the dependencies
 To run the Phoenix application manually, you will need to have [`node.js`](https://nodejs.org/en/) installed. You can read about the installation [here](https://nodejs.org/en/download/).
 The application has been tested with `node.js` version `v14.15.0`. 
@@ -30,7 +24,6 @@ environment variables. Below you can find a list of commands to
 be executed on a given OS.
 
 #### macOS with Intel processor
-
 ```
 brew install srtp clang-format ffmpeg
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
@@ -40,7 +33,6 @@ export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
 ```
 
 #### macOS with M1 processor
-
 ```
 brew install srtp clang-format ffmpeg
 export C_INCLUDE_PATH=/opt/homebrew/Cellar/libnice/0.1.18/include:/opt/homebrew/Cellar/opus/1.3.1/include:/opt/homebrew/Cellar/openssl@1.1/1.1.1l_1/include
@@ -50,7 +42,6 @@ export PKG_CONFIG_PATH=/opt/homebrew/Cellar/openssl@1.1/1.1.1l_1/lib/pkgconfig/
 
 
 #### Ubuntu
-
 ```
 sudo apt-get install libsrtp2-dev libavcodec-dev libavformat-dev libavutil-dev
 ```
@@ -71,7 +62,6 @@ mix phx.server
 Then go to <http://localhost:4000/>.
 
 ## Running with docker
-
 Videoroom provides a `Dockerfile` that you can use to run videoroom application yourself without any additional setup and system dependencies installation.
 All you need is to have Docker Engine installed. You can get it, for example, along with Docker Desktop installation - here you can find the instructions on how to install Docker Desktop on [macOS](https://docs.docker.com/desktop/install/mac-install/) and [Ubuntu](https://docs.docker.com/desktop/install/ubuntu/).
 
@@ -97,11 +87,13 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 ```
 (The address we are seeking is the address following the `inet` field - in that particular case, `192.168.1.196`)
 
-Then you can start the container:
+Then you can start the container.
+
 #### Explicit port exposure (macOS compatible)
 ```bash
 docker run -p 50000-50050:50000-50050/udp -p 4000:4000/tcp -e INTEGRATED_TURN_PORT_RANGE=50000-50050 -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhost membrane_videoroom
 ```
+
 #### Using host network (Linux only)
 ```bash
 docker run --network=host -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhost membrane_videoroom
@@ -111,7 +103,6 @@ docker run --network=host -e EXTERNAL_IP=<IPv4 address> -e VIRTUAL_HOST=localhos
 Finally, go to <http://localhost:4000/>.
 
 ## More advanced configuration
-
 ### Environment variables
 Below you can find a list of runtime environment variables, used to configure the application:
 * `VIRTUAL_HOST` - host passed to the endpoint config, defaults to `localhost` on non-production environments (where `MIX_ENV` != `prod`)
@@ -120,7 +111,7 @@ Below you can find a list of runtime environment variables, used to configure th
 * `KEY_FILE_PATH` - path to certificate key file, used when `USE_TLS` is set to true
 * `CERT_FILE_PATH` - path to certificate file, used when `USE_TLS` is set to true
 
-* `EXTERNAL_IP` - the IP address, on which TURN servers will listen
+* `EXTERNAL_IP` - the IP address, on which TURN servers will listen. By default set to `127.0.0.1`, meaning, that in case you haven't set it, the videoroom won't be accessible from outside of localhost.
 * `INTEGRATED_TURN_PORT_RANGE` - port range, where UDP TURN will try to open ports. By default set to `50000-59999`. 
  The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
  limit the UDP ports used only to ones published from a Docker container.
@@ -137,7 +128,6 @@ Below you can find a list of runtime environment variables, used to configure th
 * `DB_HOSTNAME` - hostname of the database server
 * `DB_PORT` - port of the database server
 
-
 #### .env file
 Default environment variables are available in `.env` file. If you are using the Docker setup, you might want to make the container use the variables defined in `.env` - you can do so by providing the `--env-file .env` flag to `docker run` command. With the variables defined in the `.env` file, you won't need to use `-e` switch of the `docker run` command: 
 ```bash
@@ -150,14 +140,12 @@ You can surely add other environment variables definitions to the `.env` file
 docker run <rest of the options...> -e INTEGRATED_TURN_CERT=/usr/local/key.cert -e INTEGRATED_TURN_PKEY=/usr/local/key.priv -v <path to the certificate on the host filesystem>:/usr/local/key.cert -v <path to the private key on the host filesystem>:/usr/local/key.priv membrane_videoroom
 ```
 
-
 ### OpenTelemetry
 The videoroom provides observability metrics.
 By default, OpenTelemetry is turned off. You can turn it on by going to `config/runtime.exs` and changing `otel_state` to one of three possible values:
 * `:local` - OpenTelemetry traces will be printed on stdout
-* `:zipkin` - OpenTelemetry traces are sent to Zipkin. You can change the url traces are sent to in `config/runtime.exs`. To set up zipkin you can run this command `docker run -d -p 9411:9411 openzipkin/zipkin`.
+* `:zipkin` - OpenTelemetry traces are sent to Zipkin. You can change the url traces that are sent to in `config/runtime.exs`. To set up zipkin you can run this command `docker run -d -p 9411:9411 openzipkin/zipkin`.
 * `:honeycomb` - OpenTelemetry traces are sent to Honeycomb. You have to specify "x-honeycomb-team", which is API KEY for this service.
-  
 
 ## FAQ
 Below you can find a list of Frequently Asked Questions (FAQ).
@@ -189,7 +177,7 @@ which are demo applications meant to broadcast the media sent by the streamer to
 
 ### Configuration
 #### Can you use the external TURN server instead of the integrated one?
-It's not possible at the moment. Since the SFU needs to be publicly available, we don't see a purpose of having a separate publicly available TURN server.
+It's not possible at the moment. Since the SFU needs to be publicly available, we don't see a purpose in having a separate publicly available TURN server.
 The architecture proposed by us: `client --- NETWORK ---> SFU with TURN` reduces the number of 'hops' in the network by one. In contrast, the architecture with the separate TURN server would like that: `client --- NETWORK -- TURN --- NETWORK ---> SFU`.
 If you can think of a use case for a separate TURN server, feel free to start a discussion on our discord server.
 
@@ -202,12 +190,10 @@ However, if you have your OpenSSL installed in some custom location, you will ne
 For more instructions on how to install the `:fast_tls` dependency, please visit the [Fast TLS repository](https://github.com/processone/fast_tls).
 
 #### Why, after joining the room, I don't see a video stream from the others?
-That might be due to the misconfiguration of the `EXTERNAL_IP` environment variable. Make sure, that the variable is set in the environment where you are running the server, as well as that it is the IPv4 address pointing to the server, visible by all the peers.
+That might be due to the misconfiguration of the `EXTERNAL_IP` environment variable. Make sure, that the variable is set in the environment where you are running the server, as well as that it is the IPv4 address pointing to the server, visible to all the peers.
 Please also keep in mind that you need to publish docker UDP ports used for sending and receiving media (the ones set with `INTEGRATED_TURN_PORT_RANGE` environment variable) and the TCP port set with `INTEGRATED_TCP_TURN_PORT` environment variable. Alternatively, you can use the host network if you are running on Linux.
 
-
 ## Copyright and License
-
 Copyright 2020, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane)
 
 [![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=membrane-github)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane)

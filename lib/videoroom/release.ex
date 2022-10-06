@@ -38,6 +38,7 @@ defmodule VideoRoom.Release do
 
   @spec cp_grafana_config_to_lib(Mix.Release.t()) :: Mix.Release.t()
   def cp_grafana_config_to_lib(release) do
+    IO.inspect(release, label: "dupa release struct", limit: :infinity)
     do_cp_grafana_config_to_lib()
     release
   end

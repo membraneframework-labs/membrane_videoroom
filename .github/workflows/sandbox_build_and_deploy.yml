@@ -75,7 +75,6 @@ jobs:
           GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
           GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
 
-      # commands executed in action below are packed into .sh script, to avoid workflow crashes when some containers or volumes don't exist
       - name: Remove Grafana and Videoroom containers with volumes
         uses: JimCronqvist/action-ssh@master
         with:

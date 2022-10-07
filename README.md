@@ -108,8 +108,8 @@ Below you can find a list of runtime environment variables, used to configure th
 * `VIRTUAL_HOST` - host passed to the endpoint config, defaults to `localhost` on non-production environments (where `MIX_ENV` != `prod`)
 
 * `USE_TLS` - `true` or `false`, if set to `true` then https will be used and certificate paths will be required
-* `KEY_FILE_PATH` - path to certificate key file, used when `USE_TLS` is set to true
-* `CERT_FILE_PATH` - path to certificate file, used when `USE_TLS` is set to true
+* `KEY_FILE_PATH` - path to certificate key file, used when `USE_TLS` is set to `true`
+* `CERT_FILE_PATH` - path to certificate file, used when `USE_TLS` is set to `true`
 
 * `EXTERNAL_IP` - the IP address, on which TURN servers will listen. By default set to `127.0.0.1`, meaning, that in case you haven't set it, the videoroom won't be accessible from outside of localhost.
 * `INTEGRATED_TURN_PORT_RANGE` - port range, where UDP TURN will try to open ports. By default set to `50000-59999`. 

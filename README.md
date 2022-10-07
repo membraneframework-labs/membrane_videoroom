@@ -111,7 +111,7 @@ Below you can find a list of runtime environment variables, used to configure th
 * `KEY_FILE_PATH` - path to certificate key file, used when `USE_TLS` is set to `true`
 * `CERT_FILE_PATH` - path to certificate file, used when `USE_TLS` is set to `true`
 
-* `EXTERNAL_IP` - the IP address, on which TURN servers will listen. By default set to `127.0.0.1`, meaning, that in case you haven't set it, the videoroom won't be accessible from outside of localhost.
+* `EXTERNAL_IP` - the IP address, on which TURN servers will listen. By default set to `127.0.0.1`, so if you don't explicitly set it, the videoroom won't be accessible from outside of localhost.
 * `INTEGRATED_TURN_PORT_RANGE` - port range, where UDP TURN will try to open ports. By default set to `50000-59999`. 
  The bigger the range is, the more users server will be able to handle. Useful when not using the `--network=host` option to 
  limit the UDP ports used only to ones published from a Docker container.

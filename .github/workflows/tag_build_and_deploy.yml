@@ -6,7 +6,7 @@ on:
 
 env: 
   VIRTUAL_HOST: videoroom.membrane.stream
-  INTEGRATED_TURN_IP: 65.21.244.250
+  EXTERNAL_IP: 65.21.244.250
   TAG: ${{ github.ref_name }}
   PROJECT: production
 
@@ -69,7 +69,7 @@ jobs:
           GF_SECURITY_ADMIN_USER: ${{ secrets.GF_SECURITY_ADMIN_USER  }}
         run: |
           echo "VIRTUAL_HOST=$VIRTUAL_HOST 
-          INTEGRATED_TURN_IP=$INTEGRATED_TURN_IP 
+          EXTERNAL_IP=$EXTERNAL_IP 
           TAG=$TAG 
           DB_USERNAME=$DB_USERNAME 
           DB_PASSWORD=$DB_PASSWORD

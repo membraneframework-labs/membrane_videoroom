@@ -9,7 +9,7 @@ on:
 
 env: 
   VIRTUAL_HOST: sandbox3-videoroom.membrane.work
-  INTEGRATED_TURN_IP: 95.217.155.120
+  EXTERNAL_IP: 95.217.155.120
   TAG: sandbox3
   PROJECT: sandbox
 
@@ -68,7 +68,7 @@ jobs:
           GF_SECURITY_ADMIN_USER: ${{ secrets.GF_SECURITY_ADMIN_USER  }}
         run: |
           echo "VIRTUAL_HOST=$VIRTUAL_HOST 
-          INTEGRATED_TURN_IP=$INTEGRATED_TURN_IP 
+          EXTERNAL_IP=$EXTERNAL_IP 
           TAG=$TAG 
           DB_USERNAME=$DB_USERNAME 
           DB_PASSWORD=$DB_PASSWORD

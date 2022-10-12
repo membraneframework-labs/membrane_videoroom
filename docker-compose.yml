@@ -1,4 +1,5 @@
-version: "3"
+version: "3.7"
+
 services:
   videoroom:
     image: membraneframework/membrane_videoroom:${TAG:-latest}
@@ -9,4 +10,41 @@ services:
       EXTERNAL_IP: "${EXTERNAL_IP:-127.0.0.1}"
       INTEGRATED_TURN_PORT_RANGE: "50000-65355"
       INTEGRATED_TCP_TURN_PORT: "49999"
+      STORE_METRICS: "true"
+      DATABASE: "membrane"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_HOSTNAME: "127.0.0.1"
+    volumes:
+      - type: volume
+        source: grafana-provisioning
+        target: /app/grafana/provisioning
+  timescale:
+    image: timescale/timescaledb:2.5.1-pg14
+    network_mode: "host"    
+    environment:
+      POSTGRES_DB: "membrane"
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+  grafana:
+    image: grafana/grafana:9.1.5
+    network_mode: "host"
+    volumes:
+      - type: volume
+        source: grafana-provisioning
+        target: /etc/grafana/provisioning
+        read_only: true
+        volume:
+          nocopy: true
+    environment:
+      DB_URL: "localhost:5432"
+      DB_NAME: "membrane"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GF_SECURITY_ADMIN_PASSWORD}"
+      GF_SECURITY_ADMIN_USER: "${GF_SECURITY_ADMIN_USER}"
+    depends_on:
+      - videoroom
 
+volumes:
+  grafana-provisioning:

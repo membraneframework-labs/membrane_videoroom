@@ -2,8 +2,14 @@ import React, { FC } from "react";
 
 import { UseMediaResult } from "../hooks/useUserMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
+import {NavigateFunction, useNavigate} from "react-router-dom";
 
-const getControls = (userMediaAudio: UseMediaResult, userMediaVideo: UseMediaResult, displayMedia: UseMediaResult) => [
+const getControls = (
+  userMediaAudio: UseMediaResult,
+  userMediaVideo: UseMediaResult,
+  displayMedia: UseMediaResult,
+  navigate: NavigateFunction
+) => [
   userMediaAudio.stream
     ? {
         icon: "/svg/mic-line.svg",
@@ -62,6 +68,7 @@ const getControls = (userMediaAudio: UseMediaResult, userMediaVideo: UseMediaRes
     imgClasses: "black-to-red transform rotate-135",
     onClick: () => {
       console.log("Leaving...");
+      navigate("/")
     },
   },
 ];
@@ -73,7 +80,8 @@ type Props = {
 };
 
 const MediaControlButtons: FC<Props> = ({ userMediaAudio, userMediaVideo, displayMedia }: Props) => {
-  const controls: MediaControlButtonProps[] = getControls(userMediaAudio, userMediaVideo, displayMedia);
+    const navigate = useNavigate();
+    const controls: MediaControlButtonProps[] = getControls(userMediaAudio, userMediaVideo, displayMedia, navigate);
 
   return (
     <div

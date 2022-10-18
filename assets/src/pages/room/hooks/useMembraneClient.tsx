@@ -21,8 +21,8 @@ type UseSetupResult = {
 
 // todo fix now - fix types e.g. setErrorMessage
 export function useMembraneClient(
+  roomId: string | undefined,
   addPeers: (peerId: string[]) => void,
-  setErrorMessage: (value: ((prevState: string | undefined) => string | undefined) | string | undefined) => void,
   removePeer: (peerId: string) => void,
   addTrack: (
     peerId: string,
@@ -31,21 +31,27 @@ export function useMembraneClient(
     mediaStream?: MediaStream,
     metadata?: Metadata
   ) => void,
-  removeTrack: (peerId: string, trackId: string) => void
+  removeTrack: (peerId: string, trackId: string) => void,
+  setErrorMessage: (value: ((prevState: string | undefined) => string | undefined) | string | undefined) => void
 ): UseSetupResult {
   const [webRtc, setWebRtc] = useState<MembraneWebRTC | undefined>();
   const [userId, setUserId] = useState<string | undefined>();
 
   useEffect(() => {
+    console.log("Starting....");
+    if (!roomId) {
+      console.log("Room is empty. Skipping");
+      return;
+    }
     const socket = new Socket("/socket"); // phoenix socket
     socket.connect();
+    const socketOnCloseRef = socket.onClose(() => cleanUp());
+    const socketOnErrorRef = socket.onError(() => cleanUp());
 
     // TODO fix now
     const displayName = "User 1" + uuid();
     // emoji is used as an example of additional metadata
     const emoji = getRandomAnimalEmoji();
-    // TODO fix now
-    const roomId = "ID1";
 
     const webrtcChannel = socket.channel(`room:${roomId}`, {
       // TODO fix later
@@ -126,7 +132,19 @@ export function useMembraneClient(
         webrtc.join({ displayName: displayName, emoji: emoji });
       })
       .receive("error", (response: any) => {});
-  }, []);
+
+    const cleanUp = () => {
+      console.log("Cleaning up started");
+      webrtc.leave();
+      webrtcChannel.leave();
+      socket.off([socketOnCloseRef, socketOnErrorRef]);
+      console.log("Cleaning up ended");
+    };
+
+    return () => {
+      cleanUp();
+    };
+  }, [roomId]);
 
   return { userId, webrtc: webRtc };
 }

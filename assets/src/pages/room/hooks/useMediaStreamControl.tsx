@@ -10,6 +10,7 @@ export function useMediaStreamControl(
   const [videoTrackId, setVideoTrackId] = useState<string | null>(null);
 
   const addTrack = (webrtc: MembraneWebRTC, userId: string, stream: MediaStream) => {
+    console.log("Adding track")
     stream.getTracks().forEach((track, idx) => {
       const trackId = webrtc.addTrack(
         track,

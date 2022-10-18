@@ -8,16 +8,23 @@ import MediaControlButtons from "./components/MediaControlButtons";
 import { usePeersState } from "./hooks/usePeerState";
 import VideoPeerPlayers from "./components/VideoPeerPlayers";
 import ScreenSharingPlayers from "./components/ScreenSharingPlayers";
+import { useMatches, useNavigate } from "react-router-dom";
+
+const useRoomId = () => {
+  const navigation = useMatches();
+  return navigation[0].params?.roomId;
+};
 
 const RoomPage: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const roomId = useRoomId();
   // useAskForPermission()
   const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS);
   const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
 
   const { peers, addPeers, removePeer, addTrack, removeTrack } = usePeersState();
-  const { userId, webrtc } = useMembraneClient(addPeers, setErrorMessage, removePeer, addTrack, removeTrack);
+  const { userId, webrtc } = useMembraneClient(roomId, addPeers, removePeer, addTrack, removeTrack, setErrorMessage);
 
   useMediaStreamControl("camera", userId, webrtc, userMediaVideo.stream);
   useMediaStreamControl("screensharing", userId, webrtc, displayMedia.stream);

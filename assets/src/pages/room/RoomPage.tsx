@@ -2,39 +2,12 @@ import React, { FC, useState } from "react";
 
 import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
-import VideoPlayer from "./components/VideoPlayer";
 import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
-import { Peers, Track, usePeersState } from "./hooks/usePeerState";
-import VideoPlayers from "./components/VideoPlayers";
-
-export type MediaStreamWithMetadata = {
-  peerId: string;
-  videoId?: string;
-  videoStream?: MediaStream;
-  audioId?: string;
-  audioStream?: MediaStream;
-  screenSharingStream?: MediaStream;
-};
-
-const prepareScreenSharingStreams = (
-  peers: Peers,
-  localStream?: MediaStream
-): { screenSharingStreams: MediaStreamWithMetadata[]; isScreenSharingActive: boolean } => {
-  const peersScreenSharingTracks: MediaStreamWithMetadata[] = Object.values(peers)
-    .flatMap((peer) => peer.tracks.map((track) => ({ peerId: peer.id, track: track })))
-    .filter((e) => e.track?.metadata?.type === "screensharing")
-    // todo fix now - should videoId be e.track?.trackId?
-    .map((e) => ({ videoStream: e.track.mediaStream, peerId: e.peerId, videoId: e.track?.mediaStreamTrack?.id }));
-
-  const screenSharingStreams: MediaStreamWithMetadata[] = localStream
-    ? [{ videoStream: localStream, peerId: "(Me) screen", videoId: "(Me) screen" }, ...peersScreenSharingTracks]
-    : peersScreenSharingTracks;
-
-  const isScreenSharingActive: boolean = screenSharingStreams.length > 0;
-  return { screenSharingStreams, isScreenSharingActive };
-};
+import { usePeersState } from "./hooks/usePeerState";
+import VideoPeerPlayers from "./components/VideoPeerPlayers";
+import ScreenSharingPlayers from "./components/ScreenSharingPlayers";
 
 const RoomPage: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -49,18 +22,7 @@ const RoomPage: FC = () => {
   useMediaStreamControl("camera", userId, webrtc, userMediaVideo.stream);
   useMediaStreamControl("screensharing", userId, webrtc, displayMedia.stream);
 
-  const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, displayMedia.stream);
-
   console.log({ peers });
-
-  const localUserCameraStream: MediaStreamWithMetadata = {
-    peerId: "Me",
-    videoId: userMediaVideo.stream ? "Me (video)" : undefined,
-    videoStream: userMediaVideo.stream,
-    audioId: userMediaAudio.stream ? "Me (audio)" : undefined,
-    audioStream: userMediaAudio.stream,
-    screenSharingStream: displayMedia.stream,
-  };
 
   return (
     <div id="room" className="flex flex-col h-screen relative">
@@ -93,31 +55,21 @@ const RoomPage: FC = () => {
 
         <div id="videochat" className="px-2 md:px-20 overflow-y-auto">
           <div className="flex flex-col items-center md:flex-row md:items-start justify-center h-full">
-            {isScreenSharingActive && (
-              <div
-                id="screensharings-grid"
-                className="h-full mb-3 md:mr-3 md:mb-none active-screensharing-grid grid-cols-1 md:grid-cols-1"
-              >
-                {screenSharingStreams.map((e) => (
-                  <VideoPlayer
-                    key={e.peerId + ":" + e.videoId}
-                    peerId={e.peerId}
-                    videoStream={e.videoStream}
-                    metadata={{ bottomLeft: e.peerId }}
-                  />
-                ))}
-              </div>
-            )}
-            <div
-              id="videos-grid"
-              className="grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1 md:grid-cols-2"
-            >
-              <VideoPlayers peers={peers} localStreams={localUserCameraStream} />
-            </div>
+            <ScreenSharingPlayers peers={peers} videoStream={displayMedia.stream} />
+            <VideoPeerPlayers
+              peers={peers}
+              videoStream={userMediaVideo.stream}
+              audioStream={userMediaAudio.stream}
+              screenSharingStream={displayMedia.stream}
+            />
           </div>
         </div>
       </section>
-      <MediaControlButtons userMediaAudio={userMediaAudio} userMediaVideo={userMediaVideo} displayMedia={displayMedia} />
+      <MediaControlButtons
+        userMediaAudio={userMediaAudio}
+        userMediaVideo={userMediaVideo}
+        displayMedia={displayMedia}
+      />
     </div>
   );
 };

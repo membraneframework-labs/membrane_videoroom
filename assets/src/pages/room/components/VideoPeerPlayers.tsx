@@ -1,7 +1,15 @@
 import React, { FC } from "react";
 import VideoPlayer from "./VideoPlayer";
 import { LocalPeer, Peers, Track } from "../hooks/usePeerState";
-import { MediaStreamWithMetadata } from "../RoomPage";
+
+export type MediaStreamWithMetadata = {
+  peerId: string;
+  videoId?: string;
+  videoStream?: MediaStream;
+  audioId?: string;
+  audioStream?: MediaStream;
+  screenSharingStream?: MediaStream;
+};
 
 const getCameraStreams = (
   peers: Peers,
@@ -24,7 +32,9 @@ const getCameraStreams = (
 
 type Props = {
   peers: Peers;
-  localStreams: MediaStreamWithMetadata;
+  videoStream?: MediaStream;
+  audioStream?: MediaStream;
+  screenSharingStream?: MediaStream;
 };
 
 const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
@@ -36,13 +46,25 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   return "⚫️";
 };
 
-const VideoPlayers: FC<Props> = ({ peers, localStreams }: Props) => {
+const VideoPeerPlayers: FC<Props> = ({ peers, videoStream, audioStream, screenSharingStream }: Props) => {
+  const localStreams: MediaStreamWithMetadata = {
+    peerId: "Me",
+    videoId: videoStream ? "Me (video)" : undefined,
+    videoStream: videoStream,
+    audioId: audioStream ? "Me (audio)" : undefined,
+    audioStream: audioStream,
+    screenSharingStream: screenSharingStream,
+  };
+
   const allCameraStreams = [localStreams, ...getCameraStreams(peers)];
   console.log({ peers });
   console.log({ allCameraStreams });
 
   return (
-    <>
+    <div
+      id="videos-grid"
+      className="grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1 md:grid-cols-2"
+    >
       {allCameraStreams.map((e) => {
         const status = getStatus(e.videoStream, e.videoId);
         const currentlySharingScreen: string | undefined = e.screenSharingStream ? "🖥" : undefined;
@@ -56,8 +78,8 @@ const VideoPlayers: FC<Props> = ({ peers, localStreams }: Props) => {
           />
         );
       })}
-    </>
+    </div>
   );
 };
 
-export default VideoPlayers;
+export default VideoPeerPlayers;

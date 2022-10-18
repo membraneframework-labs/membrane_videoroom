@@ -3,7 +3,7 @@ import {
   LOCAL_PEER_ID,
   SCREENSHARING_MEDIA_CONSTRAINTS,
   VIDEO_TRACK_CONSTRAINTS,
-} from "./consts";
+} from "../pages/room/consts";
 import {
   MembraneWebRTC,
   Peer,
@@ -53,7 +53,8 @@ export class Room {
   private isSimulcastOn: boolean = false;
 
   constructor() {
-    this.socket = new Socket("/socket");
+    console.log("constructor");
+    this.socket = new Socket("/socket"); // phoenix socket
     this.socket.connect();
     const urlParams = this.parseUrl();
     this.displayName = urlParams.displayName;
@@ -206,6 +207,7 @@ export class Room {
   }
 
   public init = async () => {
+    console.log("init");
     await this.askForPermissions();
 
     // Refresh mediaDevices list after ensuring permissions are granted
@@ -235,9 +237,7 @@ export class Room {
     }
 
     try {
-      this.localAudioStream = await navigator.mediaDevices.getUserMedia({
-        audio: AUDIO_TRACK_CONSTRAINTS,
-      });
+      this.localAudioStream = await navigator.mediaDevices.getUserMedia();
     } catch (error) {
       console.error("Error while getting local audio stream", error);
     }

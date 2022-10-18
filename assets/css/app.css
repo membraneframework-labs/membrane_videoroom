@@ -51,8 +51,8 @@
 /**
 Don't display screensharing control on mobile browsers
 **/
-@media (max-width: 768px) { 
+@media (max-width: 768px) {
   #screensharing-control {
     display: none;
   }
- }
+}

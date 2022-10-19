@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
-import { Metadata } from "./usePeerState";
+import { Metadata, NewPeer } from "./usePeerState";
 import { getRandomAnimalEmoji } from "../utils";
 
 const parseMetadata = (context: TrackContext) => ({
@@ -10,8 +10,14 @@ const parseMetadata = (context: TrackContext) => ({
 });
 
 type UseSetupResult = {
-  userId?: string;
   webrtc?: MembraneWebRTC;
+  currentUser: CurrentUser | null;
+};
+
+type CurrentUser = {
+  id: string;
+  displayName: string;
+  emoji: string;
 };
 
 // todo fix now - fix types e.g. setErrorMessage
@@ -19,7 +25,7 @@ export function useMembraneClient(
   roomId: string,
   displayName: string,
   isSimulcastOn: boolean,
-  addPeers: (peerId: string[]) => void,
+  addPeers: (peer: NewPeer[]) => void,
   removePeer: (peerId: string) => void,
   addTrack: (
     peerId: string,
@@ -32,6 +38,7 @@ export function useMembraneClient(
   setErrorMessage: (value: ((prevState: string | undefined) => string | undefined) | string | undefined) => void
 ): UseSetupResult {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
     console.log("Starting....");
@@ -69,7 +76,14 @@ export function useMembraneClient(
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
           console.log({ name: "onJoinSuccess", peerId, peersInRoom });
-          addPeers(peersInRoom.map((peer) => peer.id));
+          setCurrentUser({ id: peerId, displayName: displayName, emoji: emoji });
+          addPeers(
+            peersInRoom.map((peer) => ({
+              id: peer.id,
+              displayName: peer.metadata.displayName,
+              emoji: peer.metadata.emoji,
+            }))
+          );
         },
         onJoinError: (metadata) => {
           console.log({ name: "onJoinError", metadata });
@@ -95,7 +109,7 @@ export function useMembraneClient(
         },
         onPeerJoined: (peer) => {
           console.log({ name: "onPeerJoined", peer });
-          addPeers([peer.id]);
+          addPeers([{ id: peer.id, displayName: peer.metadata.displayName, emoji: peer.metadata.emoji }]);
         },
         onPeerLeft: (peer) => {
           console.log({ name: "onPeerLeft", peer });
@@ -136,5 +150,5 @@ export function useMembraneClient(
     };
   }, [roomId]);
 
-  return { webrtc };
+  return { webrtc, currentUser };
 }

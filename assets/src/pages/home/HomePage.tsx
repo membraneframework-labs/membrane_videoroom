@@ -10,7 +10,7 @@ export const HomePage: FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
   const [simulcastInput, setSimulcastInput] = useState<boolean>(true);
-  const [roomIdInput, setRoomIdInput] = useState<string>("");
+  const [roomIdInput, setRoomIdInput] = useState<string>("1");
 
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
 
@@ -54,7 +54,7 @@ export const HomePage: FC = () => {
               Simulcast
             </label>
             <input
-              onClick={() => setSimulcastInput((prevState) => !prevState)}
+              onChange={() => setSimulcastInput((prevState) => !prevState)}
               className="form-check-input ml-1"
               type="checkbox"
               checked={simulcastInput}

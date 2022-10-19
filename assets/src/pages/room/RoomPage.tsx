@@ -6,7 +6,7 @@ import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { usePeersState } from "./hooks/usePeerState";
-import VideoPeerPlayers from "./components/VideoPeerPlayers";
+import VideoPeerPlayers, { MediaStreamWithMetadata } from "./components/VideoPeerPlayers";
 import ScreenSharingPlayers from "./components/ScreenSharingPlayers";
 
 type Props = {
@@ -24,7 +24,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
 
   const { peers, addPeers, removePeer, addTrack, removeTrack } = usePeersState();
-  const { webrtc } = useMembraneClient(
+  const { webrtc, currentUser } = useMembraneClient(
     roomId,
     displayName,
     isSimulcastOn,
@@ -35,10 +35,21 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
     setErrorMessage
   );
 
-  useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
-  useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
+  const userCameraStreamId = useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
+  const userScreenSharingStreamId = useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
 
   console.log({ peers });
+
+  const localStreams: MediaStreamWithMetadata = {
+    peerId: "Me",
+    displayName: "Me",
+    emoji: currentUser?.emoji,
+    videoId: userCameraStreamId || undefined,
+    videoStream: userMediaVideo.stream,
+    audioId: userMediaAudio.stream ? "Me (audio)" : undefined,
+    audioStream: userMediaAudio.stream,
+    screenSharingStream: displayMedia.stream,
+  };
 
   return (
     <section className="phx-hero">
@@ -73,12 +84,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
           <div id="videochat" className="px-2 md:px-20 overflow-y-auto">
             <div className="flex flex-col items-center md:flex-row md:items-start justify-center h-full">
               <ScreenSharingPlayers peers={peers} videoStream={displayMedia.stream} />
-              <VideoPeerPlayers
-                peers={peers}
-                videoStream={userMediaVideo.stream}
-                audioStream={userMediaAudio.stream}
-                screenSharingStream={displayMedia.stream}
-              />
+              <VideoPeerPlayers peers={peers} localUser={localStreams} />
             </div>
           </div>
         </section>

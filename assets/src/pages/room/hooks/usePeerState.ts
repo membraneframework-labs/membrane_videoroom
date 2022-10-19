@@ -9,6 +9,8 @@ export type Track = {
 
 export type LocalPeer = {
   id: string;
+  displayName?: string;
+  emoji?: string;
   tracks: Track[];
   removedTracks: string[];
 };
@@ -17,13 +19,19 @@ export type Peers = {
   [peerId: string]: LocalPeer;
 };
 
+export type NewPeer = {
+  id: string;
+  displayName?: string;
+  emoji?: string;
+};
+
 export type Metadata = {
   type?: "screensharing" | "camera";
 };
 
 type UsePeersStateResult = {
   peers: Peers;
-  addPeers: (peerId: string[]) => void;
+  addPeers: (peerId: NewPeer[]) => void;
   removePeer: (peerId: string) => void;
   addTrack: (
     peerId: string,
@@ -38,9 +46,20 @@ type UsePeersStateResult = {
 export function usePeersState(): UsePeersStateResult {
   const [peers, setPeers] = useState<Peers>({});
 
-  const addPeers = (peerIds: string[]) => {
+  const addPeers = (peerIds: NewPeer[]) => {
     setPeers((prevState: Peers) => {
-      const newPeers: Peers = Object.fromEntries(peerIds.map((id) => [id, { id: id, tracks: [], removedTracks: [] }]));
+      const newPeers: Peers = Object.fromEntries(
+        peerIds.map((peer) => [
+          peer.id,
+          {
+            id: peer.id,
+            tracks: [],
+            removedTracks: [],
+            displayName: peer.displayName,
+            emoji: peer.emoji,
+          },
+        ])
+      );
       return { ...prevState, ...newPeers };
     });
   };

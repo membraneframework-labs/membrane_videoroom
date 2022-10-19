@@ -9,10 +9,15 @@ const RoomPageWrapper: FC = () => {
   const match = useParams();
   const roomId: string | undefined = match?.roomId;
   const { username } = useContext(UserContext);
+  const { simulcast } = useContext(SimulcastContext);
 
   console.log({ roomId, username });
 
-  return username && roomId ? <RoomPage displayName={username} roomId={roomId} /> : <HomePage />;
+  return username && roomId ? (
+    <RoomPage displayName={username} roomId={roomId} isSimulcastOn={simulcast} />
+  ) : (
+    <HomePage />
+  );
 };
 
 const router = createBrowserRouter([

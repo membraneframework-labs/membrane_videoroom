@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 
-export function useMediaStreamControl(type: "screensharing" | "camera", webrtc?: MembraneWebRTC, stream?: MediaStream) {
+export function useMediaStreamControl(
+  type: "screensharing" | "camera",
+  webrtc?: MembraneWebRTC,
+  stream?: MediaStream
+): string | null {
   const [videoTrackId, setVideoTrackId] = useState<string | null>(null);
 
   const addTrack = (webrtc: MembraneWebRTC, stream: MediaStream) => {
@@ -34,4 +38,6 @@ export function useMediaStreamControl(type: "screensharing" | "camera", webrtc?:
       removeTrack(webrtc, videoTrackId);
     }
   }, [webrtc, videoTrackId, stream]);
+
+  return videoTrackId;
 }

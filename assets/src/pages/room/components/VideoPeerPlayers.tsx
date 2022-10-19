@@ -4,6 +4,8 @@ import { LocalPeer, Peers, Track } from "../hooks/usePeerState";
 
 export type MediaStreamWithMetadata = {
   peerId: string;
+  emoji?: string;
+  displayName?: string;
   videoId?: string;
   videoStream?: MediaStream;
   audioId?: string;
@@ -24,6 +26,8 @@ const getCameraStreams = (
 
     return {
       peerId: peer.id,
+      emoji: peer.emoji,
+      displayName: peer.displayName,
       videoStream: video?.mediaStream,
       videoId: video?.trackId,
       screenSharingStream: screenSharingStream,
@@ -32,9 +36,7 @@ const getCameraStreams = (
 
 type Props = {
   peers: Peers;
-  videoStream?: MediaStream;
-  audioStream?: MediaStream;
-  screenSharingStream?: MediaStream;
+  localUser: MediaStreamWithMetadata;
 };
 
 const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
@@ -46,17 +48,8 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   return "⚫️";
 };
 
-const VideoPeerPlayers: FC<Props> = ({ peers, videoStream, audioStream, screenSharingStream }: Props) => {
-  const localStreams: MediaStreamWithMetadata = {
-    peerId: "Me",
-    videoId: videoStream ? "Me (video)" : undefined,
-    videoStream: videoStream,
-    audioId: audioStream ? "Me (audio)" : undefined,
-    audioStream: audioStream,
-    screenSharingStream: screenSharingStream,
-  };
-
-  const allCameraStreams = [localStreams, ...getCameraStreams(peers)];
+const VideoPeerPlayers: FC<Props> = ({ peers, localUser }: Props) => {
+  const allCameraStreams = [localUser, ...getCameraStreams(peers)];
   console.log({ peers });
   console.log({ allCameraStreams });
 
@@ -68,13 +61,18 @@ const VideoPeerPlayers: FC<Props> = ({ peers, videoStream, audioStream, screenSh
       {allCameraStreams.map((e) => {
         const status = getStatus(e.videoStream, e.videoId);
         const currentlySharingScreen: string | undefined = e.screenSharingStream ? "🖥" : undefined;
+        const emoji = e.emoji || "";
 
         return (
           <VideoPlayer
             key={e.peerId + ":" + e.videoId}
             peerId={e.peerId}
             videoStream={e.videoStream}
-            metadata={{ topLeft: currentlySharingScreen, topRight: status, bottomLeft: e.peerId }}
+            metadata={{
+              topLeft: currentlySharingScreen,
+              topRight: emoji + " " + status,
+              bottomLeft: e.displayName,
+            }}
           />
         );
       })}

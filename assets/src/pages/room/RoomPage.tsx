@@ -5,7 +5,7 @@ import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_C
 import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
-import { usePeersState } from "./hooks/usePeerState";
+import { LocalPeer, usePeersState } from "./hooks/usePeerState";
 import VideoPeerPlayers, { MediaStreamWithMetadata } from "./components/VideoPeerPlayers";
 import ScreenSharingPlayers from "./components/ScreenSharingPlayers";
 
@@ -65,15 +65,16 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
               <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2" />
               <h2 className="text-2xl md:text-4xl text-center font-bold text-white">Membrane WebRTC video room demo</h2>
             </div>
-            <h3 className="text-2xl font-semibold text-white mb-2">{displayName}</h3>
-            <h3 className="text-2xl font-semibold text-white mb-2">
-              Peers in room:{" "}
-              {Object.values(peers)?.map((e: any) => (
-                <span key={e.id}>{e.id}</span>
+            <h3 className="text-2xl font-semibold text-white mb-2">Room {roomId}</h3>
+            <h3 className="text-xl font-medium text-white">
+              Participants
+              <span title={localStreams.videoId}> {displayName}</span>
+              {Object.values(peers)?.map((e: LocalPeer) => (
+                <span key={e.id} title={e.id}>
+                  {e.displayName}
+                </span>
               ))}
             </h3>
-            <h3 className="text-2xl font-semibold text-white mb-2">RoomPage: </h3>
-            <div id="participants-list" className="text-xl font-medium text-white"></div>
           </header>
           <div
             id="videochat-error"

@@ -1,7 +1,19 @@
-import React, { FC } from "react";
+import React, { FC, useContext, useState } from "react";
 import RoomPage from "./pages/room/RoomPage";
 import { HomePage } from "./pages/home/HomePage";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, useMatch, useParams } from "react-router-dom";
+import { UserContext } from "./contexts/userContext";
+import { SimulcastContext } from "./contexts/simulcastContext";
+
+const RoomPageWrapper: FC = () => {
+  const match = useParams();
+  const roomId: string | undefined = match?.roomId;
+  const { username } = useContext(UserContext);
+
+  console.log({ roomId, username });
+
+  return username && roomId ? <RoomPage displayName={username} roomId={roomId} /> : <HomePage />;
+};
 
 const router = createBrowserRouter([
   {
@@ -10,18 +22,24 @@ const router = createBrowserRouter([
   },
   {
     path: "/room/:roomId",
-    element: <RoomPage />,
+    element: <RoomPageWrapper />,
   },
 ]);
 
-// todo add routing and homescreen
-const App: FC = () => (
-  <React.StrictMode>
-    <section className="phx-hero">
-      <RouterProvider router={router} />
-    </section>
-  </React.StrictMode>
-);
+const App: FC = () => {
+  const [username, setUsername] = useState<string>("");
+  const [simulcast, setSimulcast] = useState<boolean>(false);
+
+  return (
+    <React.StrictMode>
+      <UserContext.Provider value={{ username, setUsername }}>
+        <SimulcastContext.Provider value={{ simulcast, setSimulcast }}>
+          <RouterProvider router={router} />
+        </SimulcastContext.Provider>
+      </UserContext.Provider>
+    </React.StrictMode>
+  );
+};
 
 // todo implement WakeLock
 

@@ -5,6 +5,7 @@ module.exports = {
     content: ["./js/**/*.js", "../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
     // todo fix later
     safelist: [
+      "bg-slate-200",
       "grid",
       "grid-cols-1",
       "md:grid-cols-1",

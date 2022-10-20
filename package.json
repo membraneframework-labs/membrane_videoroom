@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "clsx": "^1.2.1"
+    "clsx": "^1.2.1",
+    "react-audio-spectrum": "^0.1.0"
   }
 }

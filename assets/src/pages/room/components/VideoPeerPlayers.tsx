@@ -23,6 +23,7 @@ const getCameraStreams = (
     const screenSharingStream: MediaStream | undefined = peer.tracks.find(
       (track) => track?.metadata?.type === "screensharing"
     )?.mediaStream;
+    const audio: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "audio");
 
     return {
       peerId: peer.id,
@@ -30,6 +31,8 @@ const getCameraStreams = (
       displayName: peer.displayName,
       videoStream: video?.mediaStream,
       videoId: video?.trackId,
+      audioStream: audio?.mediaStream,
+      audioId: audio?.trackId,
       screenSharingStream: screenSharingStream,
     };
   });
@@ -58,20 +61,28 @@ const VideoPeerPlayers: FC<Props> = ({ peers, localUser }: Props) => {
       id="videos-grid"
       className="grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1 md:grid-cols-2"
     >
-      {allCameraStreams.map((e) => {
+      {allCameraStreams.map((e, idx) => {
         const status = getStatus(e.videoStream, e.videoId);
         const currentlySharingScreen: string | undefined = e.screenSharingStream ? "🖥" : undefined;
+        const audioPlayingIcon = e.audioStream ? "🔊" : "🔇";
         const emoji = e.emoji || "";
+
+        const index = `IDX_${idx}-`
+        console.log({ peerId: index, name: "peerId test" });
 
         return (
           <VideoPlayer
-            key={e.peerId + ":" + e.videoId}
+            // why this one works: key={e.peerId + e.videoId}
+            // and this one does not work: key={e.peerId}
+            key={index}
             peerId={e.peerId}
             videoStream={e.videoStream}
+            audioStream={e.audioStream}
             metadata={{
               topLeft: currentlySharingScreen,
               topRight: emoji + " " + status,
               bottomLeft: e.displayName,
+              bottomRight: audioPlayingIcon,
             }}
           />
         );

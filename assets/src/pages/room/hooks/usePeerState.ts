@@ -15,6 +15,8 @@ export type LocalPeer = {
   removedTracks: string[];
 };
 
+export type TrackType = "screensharing" | "camera" | "audio";
+
 export type Peers = {
   [peerId: string]: LocalPeer;
 };
@@ -26,7 +28,7 @@ export type NewPeer = {
 };
 
 export type Metadata = {
-  type?: "screensharing" | "camera";
+  type?: TrackType;
 };
 
 type UsePeersStateResult = {

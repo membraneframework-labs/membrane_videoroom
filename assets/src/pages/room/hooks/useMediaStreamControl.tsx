@@ -1,30 +1,31 @@
 import { useEffect, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
+import { TrackType } from "./usePeerState";
 
-export function useMediaStreamControl(
-  type: "screensharing" | "camera",
-  webrtc?: MembraneWebRTC,
-  stream?: MediaStream
-): string | null {
-  const [videoTrackId, setVideoTrackId] = useState<string | null>(null);
+export function useMediaStreamControl(type: TrackType, webrtc?: MembraneWebRTC, stream?: MediaStream): string | null {
+  const [trackId, setTrackId] = useState<string | null>(null);
 
   const addTrack = (webrtc: MembraneWebRTC, stream: MediaStream) => {
     console.log("Adding track");
+    // if (type === "camera") return;
     stream.getTracks().forEach((track, idx) => {
       const trackId = webrtc.addTrack(
         track,
         stream,
         { active: true, type: type },
-        { enabled: false, active_encodings: ["l", "m", "h"] }
+        type === "camera" ? { enabled: false, active_encodings: ["l", "m", "h"] } : undefined
       )!!;
-
+      // console.log({ name: "Track added", trackId });
       // todo could be many tracks
-      setVideoTrackId(trackId);
+      setTrackId(trackId);
     });
   };
 
   const removeTrack = (webrtc: MembraneWebRTC, videoTrackId: string) => {
-    setVideoTrackId(null);
+    // if (type === "camera") return;
+    console.log({ name: "Track removed", trackId });
+
+    setTrackId(null);
     webrtc.removeTrack(videoTrackId);
   };
 
@@ -32,12 +33,12 @@ export function useMediaStreamControl(
     if (!webrtc) {
       return;
     }
-    if (!videoTrackId && stream) {
+    if (!trackId && stream) {
       addTrack(webrtc, stream);
-    } else if (videoTrackId && !stream) {
-      removeTrack(webrtc, videoTrackId);
+    } else if (trackId && !stream) {
+      removeTrack(webrtc, trackId);
     }
-  }, [webrtc, videoTrackId, stream]);
+  }, [webrtc, trackId, stream]);
 
-  return videoTrackId;
+  return trackId;
 }

@@ -36,7 +36,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   );
 
   const userCameraStreamId = useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
-  const userScreenSharingStreamId = useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
+  const userAudioStreamId = useMediaStreamControl("audio", webrtc, userMediaAudio.stream);
+  // useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
 
   console.log({ peers });
 
@@ -46,8 +47,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
     emoji: currentUser?.emoji,
     videoId: userCameraStreamId || undefined,
     videoStream: userMediaVideo.stream,
-    audioId: userMediaAudio.stream ? "Me (audio)" : undefined,
-    audioStream: userMediaAudio.stream,
+    // audioId: userAudioStreamId || undefined,
+    // audioStream: userMediaAudio.stream,
     screenSharingStream: displayMedia.stream,
   };
 

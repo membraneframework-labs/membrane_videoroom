@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
-import { Metadata, NewPeer } from "./usePeerState";
+import { Metadata, NewPeer, TrackType } from "./usePeerState";
 import { getRandomAnimalEmoji } from "../utils";
 
-const parseMetadata = (context: TrackContext) => ({
-  type:
-    context.metadata.type === "camera" || context.metadata.type === "screensharing" ? context.metadata.type : undefined,
-});
+const parseMetadata = (context: TrackContext) => {
+  const type = context.metadata.type;
+  // todo refactor
+  const types: TrackType[] = ["camera", "screensharing", "audio"];
+  return {
+    type: types.includes(type) ? type : undefined,
+  };
+};
 
 type UseSetupResult = {
   webrtc?: MembraneWebRTC;

@@ -1,7 +1,7 @@
 import React, { FC, useContext, useState } from "react";
 import RoomPage from "./pages/room/RoomPage";
 import { HomePage } from "./pages/home/HomePage";
-import { createBrowserRouter, RouterProvider, useMatch, useParams } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, useParams } from "react-router-dom";
 import { UserContext } from "./contexts/userContext";
 import { SimulcastContext } from "./contexts/simulcastContext";
 

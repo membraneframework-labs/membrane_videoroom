@@ -5,9 +5,9 @@ import { TrackType } from "./usePeerState";
 export function useMediaStreamControl(type: TrackType, webrtc?: MembraneWebRTC, stream?: MediaStream): string | null {
   const [trackId, setTrackId] = useState<string | null>(null);
 
+  // todo should I change it to useCallback?
   const addTrack = (webrtc: MembraneWebRTC, stream: MediaStream) => {
     console.log("Adding track");
-    // if (type === "camera") return;
     stream.getTracks().forEach((track, idx) => {
       const trackId = webrtc.addTrack(
         track,
@@ -21,6 +21,7 @@ export function useMediaStreamControl(type: TrackType, webrtc?: MembraneWebRTC, 
     });
   };
 
+  // todo should I change it to useCallback?
   const removeTrack = (webrtc: MembraneWebRTC, videoTrackId: string) => {
     // if (type === "camera") return;
     console.log({ name: "Track removed", trackId });

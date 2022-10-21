@@ -23,6 +23,7 @@ export const useDisplayMedia = (config: DisplayMediaStreamConstraints) =>
 export function useMedia(config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult {
   const [firstMount, setFirstMount] = useState(true);
 
+  // todo should I change it to useCallback?
   const stopStream = () => {
     setState((prevState) => {
       return {
@@ -38,6 +39,7 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
     });
   };
 
+  // todo should I change it to useCallback?
   // todo fix audio track
   const startStream = (stream: MediaStream) => {
     setState((prevState) => {
@@ -59,6 +61,7 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
     });
   };
 
+  // todo should I change it to useCallback?
   const handleRevokePermission = (stream: MediaStream) => {
     stream.getTracks().forEach((track) => {
       // onended fires up when:
@@ -71,6 +74,7 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
     });
   };
 
+  // todo should I change it to useCallback?
   const getMedia = () => {
     mediaStreamSupplier()
       .then((stream: MediaStream) => {

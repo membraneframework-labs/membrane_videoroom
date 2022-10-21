@@ -48,6 +48,7 @@ type UsePeersStateResult = {
 export function usePeersState(): UsePeersStateResult {
   const [peers, setPeers] = useState<Peers>({});
 
+  // todo should I change it to useCallback?
   const addPeers = (peerIds: NewPeer[]) => {
     setPeers((prevState: Peers) => {
       const newPeers: Peers = Object.fromEntries(
@@ -66,6 +67,7 @@ export function usePeersState(): UsePeersStateResult {
     });
   };
 
+  // todo should I change it to useCallback?
   const removePeer = (peerId: string) => {
     setPeers((prev) => {
       const newState = { ...prev };
@@ -74,6 +76,7 @@ export function usePeersState(): UsePeersStateResult {
     });
   };
 
+  // todo should I change it to useCallback?
   const addTrack = (
     peerId: string,
     trackId: string,
@@ -97,6 +100,7 @@ export function usePeersState(): UsePeersStateResult {
     });
   };
 
+  // todo should I change it to useCallback?
   const removeTrack = (peerId: string, trackId: string) => {
     setPeers((prev) => {
       const newState = { ...prev };

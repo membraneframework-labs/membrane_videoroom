@@ -1,10 +1,17 @@
 import React, { FC } from "react";
-import VideoPlayer from "./VideoPlayer";
-import { Peers, Track } from "../hooks/usePeerState";
+import { Peers, Track } from "../../hooks/usePeerState";
+import VideoPlayerTile from "./VideoPlayerTile";
+import { UseSimulcastLocalEncoding } from "../../hooks/useSimulcastSend";
 
-export type MediaStreamWithMetadata = {
+export type SimulcastPlayerConfig = {
+  show: boolean;
+  localEncoding?: UseSimulcastLocalEncoding;
+};
+
+export type PlayerConfig = {
   peerId: string;
   emoji?: string;
+  flipHorizontally: boolean;
   displayName?: string;
   videoId?: string;
   videoStream?: MediaStream;
@@ -12,9 +19,10 @@ export type MediaStreamWithMetadata = {
   audioStream?: MediaStream;
   autoplayAudio: boolean;
   screenSharingStream?: MediaStream;
+  simulcast?: SimulcastPlayerConfig;
 };
 
-const getCameraStreams = (peers: Peers): MediaStreamWithMetadata[] =>
+const getCameraStreams = (peers: Peers, showSimulcast: boolean): PlayerConfig[] =>
   Object.values(peers).map((peer) => {
     const video: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "camera");
     const screenSharingStream: MediaStream | undefined = peer.tracks.find(
@@ -32,12 +40,17 @@ const getCameraStreams = (peers: Peers): MediaStreamWithMetadata[] =>
       audioId: audio?.trackId,
       screenSharingStream: screenSharingStream,
       autoplayAudio: true,
+      simulcast: {
+        show: showSimulcast,
+      },
+      flipHorizontally: false,
     };
   });
 
 type Props = {
   peers: Peers;
-  localUser: MediaStreamWithMetadata;
+  localUser: PlayerConfig;
+  showSimulcast: boolean;
 };
 
 const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
@@ -49,8 +62,8 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   return "⚫️";
 };
 
-const VideoPeerPlayers: FC<Props> = ({ peers, localUser }: Props) => {
-  const allCameraStreams = [localUser, ...getCameraStreams(peers)];
+const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast }: Props) => {
+  const allCameraStreams = [localUser, ...getCameraStreams(peers, showSimulcast)];
   console.log({ peers });
   console.log({ allCameraStreams });
 
@@ -65,20 +78,23 @@ const VideoPeerPlayers: FC<Props> = ({ peers, localUser }: Props) => {
         const audioIcon = e.audioStream ? "🔊🟢" : "🔊🔴";
         const emoji = e.emoji || "";
 
+        // TODO inline VidePeerPlayerTile
         return (
-          <VideoPlayer
+          <VideoPlayerTile
             key={e.peerId}
             videoStream={e.videoStream}
             audioStream={e.autoplayAudio ? e.audioStream : undefined}
+            topLeft={<div>{emoji}</div>}
             topRight={
-              <div>
-                <span className="mx-2">{currentlySharingScreen}</span>
-                <span className="mx-2">{videoStatus}</span>
-                <span className="mx-2">{audioIcon}</span>
+              <div className="text-right">
+                <span className="ml-2">{currentlySharingScreen}</span>
+                <span className="ml-2">{videoStatus}</span>
+                <span className="ml-2">{audioIcon}</span>
               </div>
             }
-            topLeft={<div>{emoji}</div>}
             bottomLeft={<div>{e.displayName}</div>}
+            simulcast={e.simulcast}
+            flipHorizontally={e.flipHorizontally}
           />
         );
       })}
@@ -86,4 +102,4 @@ const VideoPeerPlayers: FC<Props> = ({ peers, localUser }: Props) => {
   );
 };
 
-export default VideoPeerPlayers;
+export default VideoPeerPlayersSection;

@@ -1,4 +1,6 @@
 import React, { RefObject, useEffect, useRef } from "react";
+import { SimulcastPlayerConfig } from "./VideoPeerPlayersSection";
+import { SimulcastReceivingEncoding } from "./simulcast/SimulcastReceivingEncoding";
 
 type Metadata = {
   topLeft?: string;
@@ -10,15 +12,18 @@ type Metadata = {
 export interface Props {
   videoStream?: MediaStream;
   audioStream?: MediaStream;
+  simulcast?: SimulcastPlayerConfig;
   topLeft?: JSX.Element;
   topRight?: JSX.Element;
   bottomLeft?: JSX.Element;
   bottomRight?: JSX.Element;
 }
 
-const VideoPlayer: React.FC<Props> = ({
+// todo remove
+const VideoPlayerOld: React.FC<Props> = ({
   videoStream,
   audioStream,
+  simulcast,
   topLeft,
   topRight,
   bottomLeft,
@@ -70,11 +75,12 @@ const VideoPlayer: React.FC<Props> = ({
           {bottomLeft}
         </div>
       )}
-      {bottomRight && (
-        <div data-name="video-label" className="absolute text-white text-shadow-lg bottom-0 right-0 p-2">
-          {bottomRight}
-        </div>
-      )}
+
+      {/*{bottomRight && (*/}
+      {/*  <div data-name="video-label" className="absolute text-white text-shadow-lg bottom-0 right-0 p-2">*/}
+      {/*    {bottomRight}*/}
+      {/*  </div>*/}
+
       <div
         data-name="no-video-msg"
         className="invisible absolute text-white w-full h-full top-0 left-0"
@@ -90,4 +96,4 @@ const VideoPlayer: React.FC<Props> = ({
 // from chrome console: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
 // https://stackoverflow.com/questions/49930680/how-to-handle-uncaught-in-promise-domexception-play-failed-because-the-use
 
-export default VideoPlayer;
+export default VideoPlayerOld;

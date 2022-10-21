@@ -6,8 +6,10 @@ import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { LocalPeer, usePeersState } from "./hooks/usePeerState";
-import VideoPeerPlayers, { MediaStreamWithMetadata } from "./components/VideoPeerPlayers";
-import ScreenSharingPlayers from "./components/ScreenSharingPlayers";
+import VideoPeerPlayersSection, { PlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
+import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers";
+import { useToggle } from "./hooks/useToggle";
+import { useSimulcastSend } from "./hooks/useSimulcastSend";
 
 type Props = {
   displayName: string;
@@ -17,6 +19,8 @@ type Props = {
 
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const simulcast = useSimulcastSend();
+  const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(isSimulcastOn);
 
   // useAskForPermission()
   const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS);
@@ -41,7 +45,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   console.log({ peers });
 
-  const localStreams: MediaStreamWithMetadata = {
+  const localStreams: PlayerConfig = {
     peerId: "Me",
     displayName: "Me",
     emoji: currentUser?.emoji,
@@ -51,6 +55,11 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
     audioStream: userMediaAudio.stream,
     screenSharingStream: displayMedia.stream,
     autoplayAudio: false,
+    simulcast: {
+      show: showSimulcastMenu,
+      localEncoding: showSimulcastMenu ? simulcast : undefined,
+    },
+    flipHorizontally: true,
   };
 
   return (
@@ -87,7 +96,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
           <div id="videochat" className="px-2 md:px-20 overflow-y-auto">
             <div className="flex flex-col items-center md:flex-row md:items-start justify-center h-full">
               <ScreenSharingPlayers peers={peers} videoStream={displayMedia.stream} />
-              <VideoPeerPlayers peers={peers} localUser={localStreams} />
+              <VideoPeerPlayersSection peers={peers} localUser={localStreams} showSimulcast={showSimulcastMenu} />
             </div>
           </div>
         </section>
@@ -97,6 +106,15 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
           displayMedia={displayMedia}
         />
       </div>
+      <button
+        id="simulcast-control"
+        hidden={!isSimulcastOn}
+        onClick={toggleSimulcastMenu}
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 md:right-2 md:-translate-x-1 md:left-auto bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-max"
+        type="submit"
+      >
+        Show simulcast controls
+      </button>
     </section>
   );
 };

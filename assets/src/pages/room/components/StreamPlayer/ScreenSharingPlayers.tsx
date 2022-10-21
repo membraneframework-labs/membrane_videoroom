@@ -1,6 +1,6 @@
 import React, { FC } from "react";
-import { Peers } from "../hooks/usePeerState";
-import VideoPlayer from "./VideoPlayer";
+import { Peers } from "../../hooks/usePeerState";
+import VideoPlayerOld from "./VideoPlayerOld";
 
 export type VideoStreamWithMetadata = {
   peerId: string;
@@ -41,12 +41,12 @@ const ScreenSharingPlayers: FC<Props> = ({ peers, videoStream }: Props) => {
           id="screensharings-grid"
           className="h-full mb-3 md:mr-3 md:mb-none active-screensharing-grid grid-cols-1 md:grid-cols-1"
         >
+          {/*TODO change peerId etc. in bottomLeft, right etc.*/}
           {screenSharingStreams.map((e) => (
-            <VideoPlayer
+            <VideoPlayerOld
               key={e.peerId + ":" + e.videoId}
-              peerId={e.peerId}
               videoStream={e.videoStream}
-              metadata={{ bottomLeft: e.peerId }}
+              bottomLeft={<div>{e.peerId}</div>}
             />
           ))}
         </div>

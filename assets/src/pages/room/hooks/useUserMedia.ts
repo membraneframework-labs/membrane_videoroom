@@ -1,10 +1,10 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export type UseMediaResult = {
   isError: boolean;
   isSuccess: boolean;
-  start: () => any;
-  stop: () => any;
+  start: () => void;
+  stop: () => void;
   stream?: MediaStream;
 };
 
@@ -31,7 +31,9 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
         isSuccess: false,
         previewRef: undefined,
         stream: undefined,
-        stop: () => {},
+        stop: () => {
+          // empty
+        },
       };
     });
   };
@@ -89,7 +91,9 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
     isSuccess: true,
     start: getMedia,
     stream: undefined,
-    stop: () => {},
+    stop: () => {
+      // empty
+    },
   });
 
   // startOnMount is only used for development

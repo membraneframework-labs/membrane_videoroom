@@ -3,7 +3,8 @@
   "scripts": {
     "deploy": "NODE_ENV=production tailwindcss --postcss --minify -i css/app.css -o ../priv/static/assets/css/app.css",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "lint": "eslint . --ext .ts"
   },
   "dependencies": {
     "@membraneframework/membrane-webrtc-js": "^0.1.2",
@@ -22,7 +23,12 @@
     "@types/phoenix": "^1.5.4",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "autoprefixer": "^10.2.0",
+    "eslint": "^8.25.0",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "playwright": "1.17",
     "postcss": "^8.3.5",
     "postcss-import": "^14.0.2",

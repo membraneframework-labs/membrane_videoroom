@@ -8,13 +8,22 @@ type Metadata = {
 };
 
 export interface Props {
-  peerId: string;
   videoStream?: MediaStream;
   audioStream?: MediaStream;
-  metadata?: Metadata;
+  topLeft?: JSX.Element;
+  topRight?: JSX.Element;
+  bottomLeft?: JSX.Element;
+  bottomRight?: JSX.Element;
 }
 
-const VideoPlayer: React.FC<Props> = ({ peerId, videoStream, audioStream, metadata }: Props) => {
+const VideoPlayer: React.FC<Props> = ({
+  videoStream,
+  audioStream,
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+}: Props) => {
   const videoRef: RefObject<HTMLVideoElement> = useRef<HTMLVideoElement>(null);
   const audioRef: RefObject<HTMLAudioElement> = useRef<HTMLAudioElement>(null);
 
@@ -46,24 +55,24 @@ const VideoPlayer: React.FC<Props> = ({ peerId, videoStream, audioStream, metada
         muted // 1
         ref={videoRef}
       ></video>
-      {metadata?.topLeft && (
+      {topLeft && (
         <div data-name="video-label" className="absolute text-white text-shadow-lg top-0 left-0 p-2">
-          {metadata.topLeft}
+          {topLeft}
         </div>
       )}
-      {metadata?.topRight && (
+      {topRight && (
         <div data-name="video-label" className="absolute text-white text-shadow-lg top-0 right-0 p-2">
-          {metadata.topRight}
+          {topRight}
         </div>
       )}
-      {metadata?.bottomLeft && (
+      {bottomLeft && (
         <div data-name="video-label" className="absolute text-white text-shadow-lg bottom-0 left-0 p-2">
-          {metadata.bottomLeft}
+          {bottomLeft}
         </div>
       )}
-      {metadata?.bottomRight && (
+      {bottomRight && (
         <div data-name="video-label" className="absolute text-white text-shadow-lg bottom-0 right-0 p-2">
-          {metadata.bottomRight}
+          {bottomRight}
         </div>
       )}
       <div

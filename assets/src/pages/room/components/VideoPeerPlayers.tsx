@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import VideoPlayer from "./VideoPlayer";
-import { LocalPeer, Peers, Track } from "../hooks/usePeerState";
+import { Peers, Track } from "../hooks/usePeerState";
 
 export type MediaStreamWithMetadata = {
   peerId: string;
@@ -10,14 +10,11 @@ export type MediaStreamWithMetadata = {
   videoStream?: MediaStream;
   audioId?: string;
   audioStream?: MediaStream;
+  autoplayAudio: boolean;
   screenSharingStream?: MediaStream;
 };
 
-const getCameraStreams = (
-  peers: Peers,
-  videoStream?: MediaStream,
-  audioStream?: MediaStream
-): MediaStreamWithMetadata[] =>
+const getCameraStreams = (peers: Peers): MediaStreamWithMetadata[] =>
   Object.values(peers).map((peer) => {
     const video: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "camera");
     const screenSharingStream: MediaStream | undefined = peer.tracks.find(
@@ -34,6 +31,7 @@ const getCameraStreams = (
       audioStream: audio?.mediaStream,
       audioId: audio?.trackId,
       screenSharingStream: screenSharingStream,
+      autoplayAudio: true,
     };
   });
 
@@ -61,29 +59,26 @@ const VideoPeerPlayers: FC<Props> = ({ peers, localUser }: Props) => {
       id="videos-grid"
       className="grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1 md:grid-cols-2"
     >
-      {allCameraStreams.map((e, idx) => {
-        const status = getStatus(e.videoStream, e.videoId);
-        const currentlySharingScreen: string | undefined = e.screenSharingStream ? "🖥" : undefined;
-        const audioPlayingIcon = e.audioStream ? "🔊" : "🔇";
+      {allCameraStreams.map((e) => {
+        const videoStatus = "📹" + getStatus(e.videoStream, e.videoId);
+        const currentlySharingScreen: string = e.screenSharingStream ? "🖥🟢" : "🖥🔴";
+        const audioIcon = e.audioStream ? "🔊🟢" : "🔊🔴";
         const emoji = e.emoji || "";
-
-        const index = `IDX_${idx}-`
-        console.log({ peerId: index, name: "peerId test" });
 
         return (
           <VideoPlayer
-            // why this one works: key={e.peerId + e.videoId}
-            // and this one does not work: key={e.peerId}
-            key={index}
-            peerId={e.peerId}
+            key={e.peerId}
             videoStream={e.videoStream}
-            audioStream={e.audioStream}
-            metadata={{
-              topLeft: currentlySharingScreen,
-              topRight: emoji + " " + status,
-              bottomLeft: e.displayName,
-              bottomRight: audioPlayingIcon,
-            }}
+            audioStream={e.autoplayAudio ? e.audioStream : undefined}
+            topRight={
+              <div>
+                <span className="mx-2">{currentlySharingScreen}</span>
+                <span className="mx-2">{videoStatus}</span>
+                <span className="mx-2">{audioIcon}</span>
+              </div>
+            }
+            topLeft={<div>{emoji}</div>}
+            bottomLeft={<div>{e.displayName}</div>}
           />
         );
       })}

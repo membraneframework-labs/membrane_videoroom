@@ -3,6 +3,7 @@ import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membr
 import { Socket } from "phoenix";
 import { Metadata, NewPeer, TrackType } from "./usePeerState";
 import { getRandomAnimalEmoji } from "../utils";
+import { SimulcastQuality } from "./useSimulcastRemoteEncoding";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
@@ -39,6 +40,7 @@ export function useMembraneClient(
     metadata?: Metadata
   ) => void,
   removeTrack: (peerId: string, trackId: string) => void,
+  setTrackEncoding: (peerId: string, trackId: string, encoding: SimulcastQuality) => void,
   setErrorMessage: (value: ((prevState: string | undefined) => string | undefined) | string | undefined) => void
 ): UseSetupResult {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
@@ -94,9 +96,11 @@ export function useMembraneClient(
         },
         onTrackReady: (ctx) => {
           console.log({ name: "onTrackReady", ctx });
-          const metadata: Metadata = parseMetadata(ctx);
+          if (ctx?.peer && ctx?.track && ctx?.stream) {
+            const metadata: Metadata = parseMetadata(ctx);
+            addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
+          }
           // todo handle !!
-          addTrack(ctx.peer.id!!, ctx.trackId, ctx.track!!, ctx.stream!!, metadata);
         },
         onTrackAdded: (ctx) => {
           // todo this event is triggered multiple times even though onTrackRemoved was invoked
@@ -105,8 +109,10 @@ export function useMembraneClient(
         },
         onTrackRemoved: (ctx) => {
           console.log({ name: "onTrackRemoved", ctx });
-          // todo ctx.track.id sometimes is null
-          removeTrack(ctx.peer.id!!, ctx.trackId);
+          const peerId = ctx?.peer?.id;
+          if (peerId) {
+            removeTrack(peerId, ctx.trackId);
+          }
         },
         onTrackUpdated: (ctx) => {
           console.log({ name: "onTrackUpdated", ctx });
@@ -124,6 +130,8 @@ export function useMembraneClient(
         },
         onTrackEncodingChanged: (peerId: string, trackId: string, encoding: string) => {
           console.log({ name: "onTrackEncodingChanged", peerId, trackId, encoding });
+          // todo encoding as enum
+          setTrackEncoding(peerId, trackId, encoding as SimulcastQuality);
         },
       },
     });

@@ -9,7 +9,8 @@ import { LocalPeer, usePeersState } from "./hooks/usePeerState";
 import VideoPeerPlayersSection, { PlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
 import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers";
 import { useToggle } from "./hooks/useToggle";
-import { useSimulcastSend } from "./hooks/useSimulcastSend";
+import { UseSimulcastLocalEncoding, useSimulcastSend } from "./hooks/useSimulcastSend";
+import { SimulcastQuality } from "./hooks/useSimulcastRemoteEncoding";
 
 type Props = {
   displayName: string;
@@ -19,7 +20,6 @@ type Props = {
 
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const simulcast = useSimulcastSend();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(isSimulcastOn);
 
   // useAskForPermission()
@@ -27,7 +27,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
 
-  const { peers, addPeers, removePeer, addTrack, removeTrack } = usePeersState();
+  const { peers, addPeers, removePeer, addTrack, removeTrack, setEncoding } = usePeersState();
   const { webrtc, currentUser } = useMembraneClient(
     roomId,
     displayName,
@@ -36,6 +36,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
     removePeer,
     addTrack,
     removeTrack,
+    setEncoding,
     setErrorMessage
   );
 
@@ -44,6 +45,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
 
   console.log({ peers });
+
+  const simulcast: UseSimulcastLocalEncoding = useSimulcastSend();
 
   const localStreams: PlayerConfig = {
     peerId: "Me",
@@ -58,6 +61,17 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
     simulcast: {
       show: showSimulcastMenu,
       localEncoding: showSimulcastMenu ? simulcast : undefined,
+      // todo POC
+      enableTrackEncoding: (encoding: SimulcastQuality) => {
+        if (currentUser?.id) {
+          webrtc?.enableTrackEncoding(currentUser?.id, encoding);
+        }
+      },
+      disableTrackEncoding: (encoding: SimulcastQuality) => {
+        if (currentUser?.id) {
+          webrtc?.disableTrackEncoding(currentUser?.id, encoding);
+        }
+      },
     },
     flipHorizontally: true,
   };

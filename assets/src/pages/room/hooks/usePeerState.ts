@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { SimulcastQuality } from "./useSimulcastRemoteEncoding";
 
 export type Track = {
   trackId: string;
   mediaStreamTrack?: MediaStreamTrack;
   mediaStream?: MediaStream;
   metadata?: Metadata;
+  encoding?: SimulcastQuality;
 };
 
 export type LocalPeer = {
@@ -12,7 +14,6 @@ export type LocalPeer = {
   displayName?: string;
   emoji?: string;
   tracks: Track[];
-  removedTracks: string[];
 };
 
 export type TrackType = "screensharing" | "camera" | "audio";
@@ -43,6 +44,7 @@ type UsePeersStateResult = {
     metadata?: Metadata
   ) => void;
   removeTrack: (peerId: string, trackId: string) => void;
+  setEncoding: (peerId: string, trackId: string, encoding: SimulcastQuality) => void;
 };
 
 export function usePeersState(): UsePeersStateResult {
@@ -101,6 +103,15 @@ export function usePeersState(): UsePeersStateResult {
   };
 
   // todo should I change it to useCallback?
+  const setEncoding = (peerId: string, trackId: string, encoding: SimulcastQuality) => {
+    setPeers((prev: Peers) => {
+      const peerCopy: LocalPeer = { ...prev[peerId] };
+
+      return { ...prev, [peerId]: { ...peerCopy, encoding: encoding } };
+    });
+  };
+
+  // todo should I change it to useCallback?
   const removeTrack = (peerId: string, trackId: string) => {
     setPeers((prev) => {
       const newState = { ...prev };
@@ -108,12 +119,11 @@ export function usePeersState(): UsePeersStateResult {
       const newPeer: LocalPeer = {
         ...peerCopy,
         tracks: peerCopy.tracks.filter((e) => e.trackId !== trackId),
-        removedTracks: [...peerCopy.removedTracks, trackId],
       };
       delete newState[peerId];
       return { ...newState, [peerId]: newPeer };
     });
   };
 
-  return { peers, addPeers, removePeer, addTrack, removeTrack };
+  return { peers, addPeers, removePeer, addTrack, removeTrack, setEncoding };
 }

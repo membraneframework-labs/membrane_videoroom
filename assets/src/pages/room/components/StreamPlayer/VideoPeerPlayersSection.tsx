@@ -2,10 +2,13 @@ import React, { FC } from "react";
 import { Peers, Track } from "../../hooks/usePeerState";
 import VideoPlayerTile from "./VideoPlayerTile";
 import { UseSimulcastLocalEncoding } from "../../hooks/useSimulcastSend";
+import { SimulcastQuality } from "../../hooks/useSimulcastRemoteEncoding";
 
 export type SimulcastPlayerConfig = {
   show: boolean;
   localEncoding?: UseSimulcastLocalEncoding;
+  enableTrackEncoding?: (encoding: SimulcastQuality) => void;
+  disableTrackEncoding?: (encoding: SimulcastQuality) => void;
 };
 
 export type PlayerConfig = {
@@ -82,6 +85,7 @@ const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast }:
         return (
           <VideoPlayerTile
             key={e.peerId}
+            peerId={e.peerId}
             videoStream={e.videoStream}
             audioStream={e.autoplayAudio ? e.audioStream : undefined}
             topLeft={<div>{emoji}</div>}

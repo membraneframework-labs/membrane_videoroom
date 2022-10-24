@@ -3,6 +3,7 @@ import { Peers, Track } from "../../hooks/usePeerState";
 import VideoPlayerTile from "./VideoPlayerTile";
 import { UseSimulcastLocalEncoding } from "../../hooks/useSimulcastSend";
 import { SimulcastQuality } from "../../hooks/useSimulcastRemoteEncoding";
+import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 export type SimulcastPlayerConfig = {
   show: boolean;
@@ -23,6 +24,7 @@ export type PlayerConfig = {
   autoplayAudio: boolean;
   screenSharingStream?: MediaStream;
   simulcast?: SimulcastPlayerConfig;
+  encodingQuality?: TrackEncoding;
 };
 
 const getCameraStreams = (peers: Peers, showSimulcast: boolean): PlayerConfig[] =>
@@ -47,6 +49,7 @@ const getCameraStreams = (peers: Peers, showSimulcast: boolean): PlayerConfig[] 
         show: showSimulcast,
       },
       flipHorizontally: false,
+      encodingQuality: video?.encoding,
     };
   });
 
@@ -54,6 +57,7 @@ type Props = {
   peers: Peers;
   localUser: PlayerConfig;
   showSimulcast: boolean;
+  changeVideoEncoding: any;
 };
 
 const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
@@ -65,7 +69,7 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   return "⚫️";
 };
 
-const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast }: Props) => {
+const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast, changeVideoEncoding }: Props) => {
   const allCameraStreams = [localUser, ...getCameraStreams(peers, showSimulcast)];
   console.log({ peers });
   console.log({ allCameraStreams });
@@ -80,6 +84,7 @@ const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast }:
         const currentlySharingScreen: string = e.screenSharingStream ? "🖥🟢" : "🖥🔴";
         const audioIcon = e.audioStream ? "🔊🟢" : "🔊🔴";
         const emoji = e.emoji || "";
+        console.log({ currEncoding: e.encodingQuality });
 
         // TODO inline VidePeerPlayerTile
         return (
@@ -87,7 +92,10 @@ const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast }:
             key={e.peerId}
             peerId={e.peerId}
             videoStream={e.videoStream}
+            videoTrackId={e.videoId}
             audioStream={e.autoplayAudio ? e.audioStream : undefined}
+            changeVideoEncoding={changeVideoEncoding}
+            encodingQuality={e.encodingQuality}
             topLeft={<div>{emoji}</div>}
             topRight={
               <div className="text-right">

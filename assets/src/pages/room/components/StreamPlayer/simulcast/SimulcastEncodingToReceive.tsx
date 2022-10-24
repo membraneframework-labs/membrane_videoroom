@@ -3,9 +3,10 @@ import { SimulcastQuality } from "../../../hooks/useSimulcastRemoteEncoding";
 
 type Props = {
   selectQuality: (quality: SimulcastQuality) => void;
+  changeRemoteEncoding: any;
 };
 
-export const SimulcastEncodingToReceive: FC<Props> = ({ selectQuality }: Props) => {
+export const SimulcastEncodingToReceive: FC<Props> = ({ selectQuality, changeRemoteEncoding }: Props) => {
   return (
     <div className="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white bottom-0 right-0 p-2 z-50">
       <label>Encoding to receive</label>
@@ -17,6 +18,7 @@ export const SimulcastEncodingToReceive: FC<Props> = ({ selectQuality }: Props) 
           const value = e.target.value;
           const okValues = ["l", "m", "h"];
           if (okValues.includes(value)) {
+            changeRemoteEncoding(value)
             selectQuality(value as SimulcastQuality);
           }
         }}

@@ -11,6 +11,7 @@ import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers
 import { useToggle } from "./hooks/useToggle";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "./hooks/useSimulcastSend";
 import { SimulcastQuality } from "./hooks/useSimulcastRemoteEncoding";
+import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 type Props = {
   displayName: string;
@@ -63,18 +64,31 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
       localEncoding: showSimulcastMenu ? simulcast : undefined,
       // todo POC
       enableTrackEncoding: (encoding: SimulcastQuality) => {
-        if (currentUser?.id) {
-          webrtc?.enableTrackEncoding(currentUser?.id, encoding);
+        console.log({ name: "enableTrackEncoding", encoding });
+        if (currentUser?.id && userCameraStreamId && webrtc) {
+          console.log({ encoding });
+          webrtc.enableTrackEncoding(userCameraStreamId, encoding);
         }
       },
       disableTrackEncoding: (encoding: SimulcastQuality) => {
-        if (currentUser?.id) {
-          webrtc?.disableTrackEncoding(currentUser?.id, encoding);
+        console.log({ name: "enableTrackEncoding", encoding });
+        if (currentUser?.id && userCameraStreamId && webrtc) {
+          console.log({ encoding });
+          webrtc.disableTrackEncoding(userCameraStreamId, encoding);
         }
       },
     },
     flipHorizontally: true,
   };
+
+  const changeRemoteEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
+    console.log({ name: "changeRemoteEncoding", peerId, trackId, encoding });
+    if (webrtc) {
+      webrtc.selectTrackEncoding(peerId, trackId, encoding);
+    }
+  };
+
+  console.log({ localStreams });
 
   return (
     <section className="phx-hero">
@@ -110,7 +124,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
           <div id="videochat" className="px-2 md:px-20 overflow-y-auto">
             <div className="flex flex-col items-center md:flex-row md:items-start justify-center h-full">
               <ScreenSharingPlayers peers={peers} videoStream={displayMedia.stream} />
-              <VideoPeerPlayersSection peers={peers} localUser={localStreams} showSimulcast={showSimulcastMenu} />
+              <VideoPeerPlayersSection
+                peers={peers}
+                localUser={localStreams}
+                showSimulcast={showSimulcastMenu}
+                changeVideoEncoding={changeRemoteEncoding}
+              />
             </div>
           </div>
         </section>

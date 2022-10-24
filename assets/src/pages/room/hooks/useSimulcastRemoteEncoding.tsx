@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+// todo merge with api type
 export type SimulcastQuality = "l" | "m" | "h";
 
 export type UseSimulcastRemoteEncodingResult = {

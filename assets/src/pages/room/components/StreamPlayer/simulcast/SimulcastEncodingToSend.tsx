@@ -36,12 +36,14 @@ export const SimulcastEncodingToSend: FC<Props> = ({
   // useToggleLocalEncodingQuality("m", mediumQuality, enableTrackEncoding, disableTrackEncoding);
   // useToggleLocalEncodingQuality("l", lowQuality, enableTrackEncoding, disableTrackEncoding);
 
+  // todo block form if track is not active
   return (
     <div className="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white bottom-0 right-0 p-2 z-50">
       <label>Encodings to send</label>
       <ul>
         <li>
           <input
+            // disabled={true}
             type="checkbox"
             name="h"
             checked={highQuality}
@@ -58,10 +60,38 @@ export const SimulcastEncodingToSend: FC<Props> = ({
           High
         </li>
         <li>
-          <input type="checkbox" name="m" checked={mediumQuality} onChange={toggleMediumQuality} /> Medium
+          <input
+            type="checkbox"
+            name="m"
+            checked={mediumQuality}
+            onChange={() => {
+              // todo fix
+              toggleMediumQuality();
+              if (mediumQuality) {
+                disableTrackEncoding("m");
+              } else {
+                enableTrackEncoding("m");
+              }
+            }}
+          />{" "}
+          Medium
         </li>
         <li>
-          <input type="checkbox" name="l" checked={lowQuality} onChange={toggleLowQuality} /> Low
+          <input
+            type="checkbox"
+            name="l"
+            checked={lowQuality}
+            onChange={() => {
+              // todo fix
+              toggleLowQuality();
+              if (lowQuality) {
+                disableTrackEncoding("l");
+              } else {
+                enableTrackEncoding("l");
+              }
+            }}
+          />{" "}
+          Low
         </li>
       </ul>
     </div>

@@ -59,7 +59,7 @@ export function useMembraneClient(
 
     const webrtcChannel = socket.channel(`room:${roomId}`, {
       // TODO fix later
-      isSimulcastOn: false,
+      isSimulcastOn: true,
     });
 
     webrtcChannel.onError(() => {
@@ -138,6 +138,10 @@ export function useMembraneClient(
 
     webrtcChannel.on("mediaEvent", (event: any) => {
       webrtc.receiveMediaEvent(event.data);
+    });
+
+    webrtcChannel.on("simulcastConfig", (event) => {
+      console.log({ name: "simulcastConfig", event });
     });
 
     webrtcChannel

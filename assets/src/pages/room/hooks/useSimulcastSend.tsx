@@ -10,9 +10,9 @@ export type UseSimulcastLocalEncoding = {
 };
 
 export const useSimulcastSend = (): UseSimulcastLocalEncoding => {
-  const [highQuality, toggleHighQuality] = useToggle(true);
-  const [mediumQuality, toggleMediumQuality] = useToggle(true);
-  const [lowQuality, toggleLowQuality] = useToggle(true);
+  const [highQuality, toggleHighQuality] = useToggle(false);
+  const [mediumQuality, toggleMediumQuality] = useToggle(false);
+  const [lowQuality, toggleLowQuality] = useToggle(false);
 
   return {
     highQuality,

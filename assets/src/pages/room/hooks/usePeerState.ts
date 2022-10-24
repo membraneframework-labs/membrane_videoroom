@@ -106,8 +106,14 @@ export function usePeersState(): UsePeersStateResult {
   const setEncoding = (peerId: string, trackId: string, encoding: SimulcastQuality) => {
     setPeers((prev: Peers) => {
       const peerCopy: LocalPeer = { ...prev[peerId] };
+      const trackCopy: Track | undefined = peerCopy.tracks.filter((track) => track.trackId === trackId)[0];
+      const otherTracks = peerCopy.tracks.filter((track) => track.trackId !== trackId);
+      if (trackCopy) {
+        trackCopy.encoding = encoding;
+      }
 
-      return { ...prev, [peerId]: { ...peerCopy, encoding: encoding } };
+      console.log({ name: "setEncoding" });
+      return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });
   };
 

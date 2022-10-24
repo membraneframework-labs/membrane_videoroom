@@ -1,7 +1,8 @@
 import React, { FC } from "react";
+import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 type Props = {
-  quality: "l" | "m" | "h";
+  quality?: TrackEncoding;
 };
 
 export const SimulcastReceivingEncoding: FC<Props> = ({ quality }: Props) => (

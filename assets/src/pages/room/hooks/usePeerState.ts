@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { SimulcastQuality } from "./useSimulcastRemoteEncoding";
+import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 export type Track = {
   trackId: string;
   mediaStreamTrack?: MediaStreamTrack;
   mediaStream?: MediaStream;
   metadata?: Metadata;
-  encoding?: SimulcastQuality;
+  encoding?: TrackEncoding;
 };
 
 export type LocalPeer = {
@@ -44,7 +44,7 @@ type UsePeersStateResult = {
     metadata?: Metadata
   ) => void;
   removeTrack: (peerId: string, trackId: string) => void;
-  setEncoding: (peerId: string, trackId: string, encoding: SimulcastQuality) => void;
+  setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
 };
 
 export function usePeersState(): UsePeersStateResult {
@@ -103,7 +103,7 @@ export function usePeersState(): UsePeersStateResult {
   };
 
   // todo should I change it to useCallback?
-  const setEncoding = (peerId: string, trackId: string, encoding: SimulcastQuality) => {
+  const setEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
     setPeers((prev: Peers) => {
       const peerCopy: LocalPeer = { ...prev[peerId] };
       const trackCopy: Track | undefined = peerCopy.tracks.filter((track) => track.trackId === trackId)[0];

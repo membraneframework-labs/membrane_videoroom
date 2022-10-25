@@ -1,21 +1,28 @@
 import React, { FC } from "react";
 import { SimulcastReceivingEncoding } from "./SimulcastReceivingEncoding";
 import { SimulcastEncodingToReceive } from "./SimulcastEncodingToReceive";
-import { SimulcastQuality, UseSimulcastRemoteEncodingResult } from "../../../hooks/useSimulcastRemoteEncoding";
+import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 type Props = {
-  remoteEncoding: UseSimulcastRemoteEncodingResult;
-  changeRemoteEncoding: any;
-  quality?: SimulcastQuality;
+  setDesiredEncoding: (encoding: TrackEncoding) => void;
+  currentEncoding?: TrackEncoding;
+  desiredEncoding?: TrackEncoding;
+  disabled?: boolean;
 };
 
-export const SimulcastRemoteLayer: FC<Props> = ({ remoteEncoding, changeRemoteEncoding, quality }: Props) => {
+export const SimulcastRemoteLayer: FC<Props> = ({
+  currentEncoding,
+  desiredEncoding,
+  setDesiredEncoding,
+  disabled,
+}: Props) => {
   return (
     <>
-      <SimulcastReceivingEncoding quality={quality} />
+      <SimulcastReceivingEncoding encoding={currentEncoding} />
       <SimulcastEncodingToReceive
-        selectQuality={remoteEncoding.setQuality}
-        changeRemoteEncoding={changeRemoteEncoding}
+        desiredEncoding={desiredEncoding}
+        setDesiredEncoding={setDesiredEncoding}
+        disabled={disabled}
       />
     </>
   );

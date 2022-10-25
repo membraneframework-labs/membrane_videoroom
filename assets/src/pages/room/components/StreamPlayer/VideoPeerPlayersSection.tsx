@@ -1,18 +1,15 @@
 import React, { FC } from "react";
 import { Peers, Track } from "../../hooks/usePeerState";
 import VideoPlayerTile from "./VideoPlayerTile";
-import { UseSimulcastLocalEncoding } from "../../hooks/useSimulcastSend";
-import { SimulcastQuality } from "../../hooks/useSimulcastRemoteEncoding";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 export type SimulcastPlayerConfig = {
   show: boolean;
-  localEncoding?: UseSimulcastLocalEncoding;
-  enableTrackEncoding?: (encoding: SimulcastQuality) => void;
-  disableTrackEncoding?: (encoding: SimulcastQuality) => void;
+  enableTrackEncoding?: (encoding: TrackEncoding) => void;
+  disableTrackEncoding?: (encoding: TrackEncoding) => void;
 };
 
-export type PlayerConfig = {
+export type MediaPlayerConfig = {
   peerId: string;
   emoji?: string;
   flipHorizontally: boolean;
@@ -25,9 +22,10 @@ export type PlayerConfig = {
   screenSharingStream?: MediaStream;
   simulcast?: SimulcastPlayerConfig;
   encodingQuality?: TrackEncoding;
+  remoteSimulcast?: boolean;
 };
 
-const getCameraStreams = (peers: Peers, showSimulcast: boolean): PlayerConfig[] =>
+const getCameraStreams = (peers: Peers, showSimulcast: boolean): MediaPlayerConfig[] =>
   Object.values(peers).map((peer) => {
     const video: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "camera");
     const screenSharingStream: MediaStream | undefined = peer.tracks.find(
@@ -50,14 +48,15 @@ const getCameraStreams = (peers: Peers, showSimulcast: boolean): PlayerConfig[] 
       },
       flipHorizontally: false,
       encodingQuality: video?.encoding,
+      remoteSimulcast: true,
     };
   });
 
 type Props = {
   peers: Peers;
-  localUser: PlayerConfig;
+  localUser: MediaPlayerConfig;
   showSimulcast: boolean;
-  changeVideoEncoding: any;
+  selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
 };
 
 const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
@@ -69,7 +68,7 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   return "⚫️";
 };
 
-const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast, changeVideoEncoding }: Props) => {
+const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast, selectRemoteTrackEncoding }: Props) => {
   const allCameraStreams = [localUser, ...getCameraStreams(peers, showSimulcast)];
   console.log({ peers });
   console.log({ allCameraStreams });
@@ -94,7 +93,7 @@ const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast, c
             videoStream={e.videoStream}
             videoTrackId={e.videoId}
             audioStream={e.autoplayAudio ? e.audioStream : undefined}
-            changeVideoEncoding={changeVideoEncoding}
+            selectRemoteTrackEncoding={selectRemoteTrackEncoding}
             encodingQuality={e.encodingQuality}
             topLeft={<div>{emoji}</div>}
             topRight={
@@ -105,7 +104,12 @@ const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast, c
               </div>
             }
             bottomLeft={<div>{e.displayName}</div>}
-            simulcast={e.simulcast}
+            showSimulcast={showSimulcast}
+            localSimulcastConfig={{
+              disableTrackEncoding: e.simulcast?.disableTrackEncoding,
+              enableTrackEncoding: e.simulcast?.enableTrackEncoding,
+            }}
+            enableRemoteSimulcast={e.remoteSimulcast}
             flipHorizontally={e.flipHorizontally}
           />
         );

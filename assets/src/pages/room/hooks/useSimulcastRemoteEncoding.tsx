@@ -1,23 +1,31 @@
 import { useCallback, useState } from "react";
-
-// todo merge with api type
-export type SimulcastQuality = "l" | "m" | "h";
+import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 export type UseSimulcastRemoteEncodingResult = {
-  quality: SimulcastQuality;
-  setQuality: (quality: SimulcastQuality) => void;
+  desiredEncoding: TrackEncoding;
+  setDesiredEncoding: (quality: TrackEncoding) => void;
 };
 
-export const useSimulcastRemoteEncoding = (): UseSimulcastRemoteEncodingResult => {
-  const [state, setState] = useState<SimulcastQuality>("m");
+export const useSimulcastRemoteEncoding = (
+  defaultValue: TrackEncoding = "m",
+  callback?: (encoding: TrackEncoding) => void
+): UseSimulcastRemoteEncodingResult => {
+  const [desiredEncoding, setDesiredEncodingState] = useState<TrackEncoding>(defaultValue);
 
-  const setQuality = useCallback((quality: SimulcastQuality) => {
-    console.log({ quality });
-    setState(() => quality);
-  }, []);
+  const setDesiredEncoding = useCallback(
+    (quality: TrackEncoding) => {
+      console.log({ quality });
+      setDesiredEncodingState(() => quality);
+      console.log({ callback });
+      // im not sure for this method
+      if (callback) callback(quality);
+      // todo refactor
+    },
+    [callback]
+  );
 
   return {
-    setQuality,
-    quality: state,
+    setDesiredEncoding: setDesiredEncoding,
+    desiredEncoding: desiredEncoding,
   };
 };

@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
-import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membraneframework/membrane-webrtc-js";
+import {
+  MembraneWebRTC,
+  Peer,
+  SerializedMediaEvent,
+  TrackContext,
+  TrackEncoding
+} from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
 import { Metadata, NewPeer, TrackType } from "./usePeerState";
 import { getRandomAnimalEmoji } from "../utils";
-import { SimulcastQuality } from "./useSimulcastRemoteEncoding";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
@@ -40,7 +45,7 @@ export function useMembraneClient(
     metadata?: Metadata
   ) => void,
   removeTrack: (peerId: string, trackId: string) => void,
-  setTrackEncoding: (peerId: string, trackId: string, encoding: SimulcastQuality) => void,
+  setTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void,
   setErrorMessage: (value: ((prevState: string | undefined) => string | undefined) | string | undefined) => void
 ): UseSetupResult {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
@@ -59,7 +64,7 @@ export function useMembraneClient(
 
     const webrtcChannel = socket.channel(`room:${roomId}`, {
       // TODO fix later
-      isSimulcastOn: true,
+      isSimulcastOn: isSimulcastOn,
     });
 
     webrtcChannel.onError(() => {
@@ -96,11 +101,11 @@ export function useMembraneClient(
         },
         onTrackReady: (ctx) => {
           console.log({ name: "onTrackReady", ctx });
+          // todo convert to guard clause
           if (ctx?.peer && ctx?.track && ctx?.stream) {
             const metadata: Metadata = parseMetadata(ctx);
             addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
           }
-          // todo handle !!
         },
         onTrackAdded: (ctx) => {
           // todo this event is triggered multiple times even though onTrackRemoved was invoked
@@ -131,7 +136,7 @@ export function useMembraneClient(
         onTrackEncodingChanged: (peerId: string, trackId: string, encoding: string) => {
           console.log({ name: "onTrackEncodingChanged", peerId, trackId, encoding });
           // todo encoding as enum
-          setTrackEncoding(peerId, trackId, encoding as SimulcastQuality);
+          setTrackEncoding(peerId, trackId, encoding as TrackEncoding);
         },
       },
     });

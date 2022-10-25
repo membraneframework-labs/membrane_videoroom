@@ -6,7 +6,7 @@ export const useRemoteEncodingClient = (
   webrtc: MembraneWebRTC,
   peerId: string,
   trackId: string,
-  encoding: SimulcastQuality
+  encoding: TrackEncoding
 ) => {
   useEffect(() => {
     webrtc.selectTrackEncoding(peerId, trackId, encoding);

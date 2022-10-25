@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from "react";
+import React, { FC, useState } from "react";
 
 import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
@@ -6,11 +6,9 @@ import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { LocalPeer, usePeersState } from "./hooks/usePeerState";
-import VideoPeerPlayersSection, { PlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
+import VideoPeerPlayersSection, { MediaPlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
 import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers";
 import { useToggle } from "./hooks/useToggle";
-import { UseSimulcastLocalEncoding, useSimulcastSend } from "./hooks/useSimulcastSend";
-import { SimulcastQuality } from "./hooks/useSimulcastRemoteEncoding";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 type Props = {
@@ -47,9 +45,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   console.log({ peers });
 
-  const simulcast: UseSimulcastLocalEncoding = useSimulcastSend();
-
-  const localStreams: PlayerConfig = {
+  const localStreams: MediaPlayerConfig = {
     peerId: "Me",
     displayName: "Me",
     emoji: currentUser?.emoji,
@@ -61,31 +57,27 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
     autoplayAudio: false,
     simulcast: {
       show: showSimulcastMenu,
-      localEncoding: showSimulcastMenu ? simulcast : undefined,
       // todo POC
-      enableTrackEncoding: (encoding: SimulcastQuality) => {
+      enableTrackEncoding: (encoding: TrackEncoding) => {
         console.log({ name: "enableTrackEncoding", encoding });
-        if (currentUser?.id && userCameraStreamId && webrtc) {
-          console.log({ encoding });
-          webrtc.enableTrackEncoding(userCameraStreamId, encoding);
-        }
+        if (!userCameraStreamId || !webrtc) return;
+        console.log({ encoding });
+        webrtc.enableTrackEncoding(userCameraStreamId, encoding);
       },
-      disableTrackEncoding: (encoding: SimulcastQuality) => {
+      disableTrackEncoding: (encoding: TrackEncoding) => {
         console.log({ name: "enableTrackEncoding", encoding });
-        if (currentUser?.id && userCameraStreamId && webrtc) {
-          console.log({ encoding });
-          webrtc.disableTrackEncoding(userCameraStreamId, encoding);
-        }
+        if (!userCameraStreamId || !webrtc) return;
+        console.log({ encoding });
+        webrtc.disableTrackEncoding(userCameraStreamId, encoding);
       },
     },
     flipHorizontally: true,
   };
 
-  const changeRemoteEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
+  const selectRemoteTrackEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
     console.log({ name: "changeRemoteEncoding", peerId, trackId, encoding });
-    if (webrtc) {
-      webrtc.selectTrackEncoding(peerId, trackId, encoding);
-    }
+    if (!webrtc) return;
+    webrtc.selectTrackEncoding(peerId, trackId, encoding);
   };
 
   console.log({ localStreams });
@@ -128,7 +120,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
                 peers={peers}
                 localUser={localStreams}
                 showSimulcast={showSimulcastMenu}
-                changeVideoEncoding={changeRemoteEncoding}
+                selectRemoteTrackEncoding={selectRemoteTrackEncoding}
               />
             </div>
           </div>

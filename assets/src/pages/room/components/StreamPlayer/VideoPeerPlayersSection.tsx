@@ -2,15 +2,16 @@ import React, { FC } from "react";
 import { Peers, Track } from "../../hooks/usePeerState";
 import VideoPlayerTile from "./VideoPlayerTile";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import clsx from "clsx";
 
 export type SimulcastPlayerConfig = {
   show: boolean;
-  enableTrackEncoding?: (encoding: TrackEncoding) => void;
-  disableTrackEncoding?: (encoding: TrackEncoding) => void;
+  enableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
+  disableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
 };
 
 export type MediaPlayerConfig = {
-  peerId: string;
+  peerId?: string;
   emoji?: string;
   flipHorizontally: boolean;
   displayName?: string;
@@ -57,6 +58,7 @@ type Props = {
   localUser: MediaPlayerConfig;
   showSimulcast: boolean;
   selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
+  oneColumn?: boolean;
 };
 
 const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
@@ -68,7 +70,13 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   return "⚫️";
 };
 
-const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast, selectRemoteTrackEncoding }: Props) => {
+const VideoPeerPlayersSection: FC<Props> = ({
+  peers,
+  localUser,
+  showSimulcast,
+  selectRemoteTrackEncoding,
+  oneColumn,
+}: Props) => {
   const allCameraStreams = [localUser, ...getCameraStreams(peers, showSimulcast)];
   console.log({ peers });
   console.log({ allCameraStreams });
@@ -76,7 +84,10 @@ const VideoPeerPlayersSection: FC<Props> = ({ peers, localUser, showSimulcast, s
   return (
     <div
       id="videos-grid"
-      className="grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1 md:grid-cols-2"
+      className={clsx({
+        "grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1": true,
+        "md:grid-cols-2": !oneColumn,
+      })}
     >
       {allCameraStreams.map((e) => {
         const videoStatus = "📹" + getStatus(e.videoStream, e.videoId);

@@ -6,10 +6,9 @@ import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { LocalPeer, usePeersState } from "./hooks/usePeerState";
-import VideoPeerPlayersSection, { MediaPlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
-import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers";
+import { MediaPlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
 import { useToggle } from "./hooks/useToggle";
-import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { VideochatSection } from "./VideochatSection";
 
 type Props = {
   displayName: string;
@@ -27,60 +26,24 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
 
   const { peers, addPeers, removePeer, addTrack, removeTrack, setEncoding } = usePeersState();
-  const { webrtc, currentUser } = useMembraneClient(
-    roomId,
-    displayName,
-    isSimulcastOn,
-    addPeers,
-    removePeer,
-    addTrack,
-    removeTrack,
-    setEncoding,
-    setErrorMessage
-  );
+  const { webrtc, currentUser, selectRemoteTrackEncoding, enableTrackEncoding, disableTrackEncoding } =
+    useMembraneClient(
+      roomId,
+      displayName,
+      isSimulcastOn,
+      addPeers,
+      removePeer,
+      addTrack,
+      removeTrack,
+      setEncoding,
+      setErrorMessage
+    );
 
   const userCameraStreamId = useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
   const userAudioStreamId = useMediaStreamControl("audio", webrtc, userMediaAudio.stream);
   useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
 
   console.log({ peers });
-
-  const localStreams: MediaPlayerConfig = {
-    peerId: "Me",
-    displayName: "Me",
-    emoji: currentUser?.emoji,
-    videoId: userCameraStreamId || undefined,
-    videoStream: userMediaVideo.stream,
-    audioId: userAudioStreamId || undefined,
-    audioStream: userMediaAudio.stream,
-    screenSharingStream: displayMedia.stream,
-    autoplayAudio: false,
-    simulcast: {
-      show: showSimulcastMenu,
-      // todo POC
-      enableTrackEncoding: (encoding: TrackEncoding) => {
-        console.log({ name: "enableTrackEncoding", encoding });
-        if (!userCameraStreamId || !webrtc) return;
-        console.log({ encoding });
-        webrtc.enableTrackEncoding(userCameraStreamId, encoding);
-      },
-      disableTrackEncoding: (encoding: TrackEncoding) => {
-        console.log({ name: "enableTrackEncoding", encoding });
-        if (!userCameraStreamId || !webrtc) return;
-        console.log({ encoding });
-        webrtc.disableTrackEncoding(userCameraStreamId, encoding);
-      },
-    },
-    flipHorizontally: true,
-  };
-
-  const selectRemoteTrackEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
-    console.log({ name: "changeRemoteEncoding", peerId, trackId, encoding });
-    if (!webrtc) return;
-    webrtc.selectTrackEncoding(peerId, trackId, encoding);
-  };
-
-  console.log({ localStreams });
 
   return (
     <section className="phx-hero">
@@ -99,7 +62,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             <h3 className="text-2xl font-semibold text-white mb-2">Room {roomId}</h3>
             <h3 className="text-xl font-medium text-white">
               Participants
-              <span title={localStreams.videoId}> {displayName}</span>
+              <span> {displayName}</span>
               {Object.values(peers)?.map((e: LocalPeer) => (
                 <span key={e.id} title={e.id}>
                   {e.displayName}
@@ -107,23 +70,20 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
               ))}
             </h3>
           </header>
-          <div
-            id="videochat-error"
-            className="flex items-center justify-center h-full px-4 text-white font-bold text-center text-4xl"
-            style={{ display: "none" }}
-          ></div>
-
-          <div id="videochat" className="px-2 md:px-20 overflow-y-auto">
-            <div className="flex flex-col items-center md:flex-row md:items-start justify-center h-full">
-              <ScreenSharingPlayers peers={peers} videoStream={displayMedia.stream} />
-              <VideoPeerPlayersSection
-                peers={peers}
-                localUser={localStreams}
-                showSimulcast={showSimulcastMenu}
-                selectRemoteTrackEncoding={selectRemoteTrackEncoding}
-              />
-            </div>
-          </div>
+          <VideochatSection
+            peer={currentUser}
+            peers={peers}
+            displayMedia={displayMedia}
+            // displayStreamId={}
+            cameraMedia={userMediaVideo}
+            cameraStreamId={userCameraStreamId}
+            audioMedia={userMediaAudio}
+            audioStreamId={userAudioStreamId}
+            showSimulcast={showSimulcastMenu}
+            selectRemoteTrackEncoding={selectRemoteTrackEncoding}
+            enableTrackEncoding={enableTrackEncoding}
+            disableTrackEncoding={disableTrackEncoding}
+          />
         </section>
         <MediaControlButtons
           userMediaAudio={userMediaAudio}
@@ -131,15 +91,16 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
           displayMedia={displayMedia}
         />
       </div>
-      <button
-        id="simulcast-control"
-        hidden={!isSimulcastOn}
-        onClick={toggleSimulcastMenu}
-        className="absolute bottom-2 left-1/2 -translate-x-1/2 md:right-2 md:-translate-x-1 md:left-auto bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-max"
-        type="submit"
-      >
-        Show simulcast controls
-      </button>
+      {isSimulcastOn && (
+        <button
+          id="simulcast-control"
+          onClick={toggleSimulcastMenu}
+          className="absolute bottom-2 left-1/2 -translate-x-1/2 md:right-2 md:-translate-x-1 md:left-auto bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-max"
+          type="submit"
+        >
+          Show simulcast controls
+        </button>
+      )}
     </section>
   );
 };

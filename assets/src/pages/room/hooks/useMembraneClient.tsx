@@ -4,7 +4,7 @@ import {
   Peer,
   SerializedMediaEvent,
   TrackContext,
-  TrackEncoding
+  TrackEncoding,
 } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
 import { Metadata, NewPeer, TrackType } from "./usePeerState";
@@ -22,9 +22,12 @@ const parseMetadata = (context: TrackContext) => {
 type UseSetupResult = {
   webrtc?: MembraneWebRTC;
   currentUser: CurrentUser | null;
+  selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
+  disableTrackEncoding: (trackId: string, encoding: TrackEncoding) => void;
+  enableTrackEncoding: (trackId: string, encoding: TrackEncoding) => void;
 };
 
-type CurrentUser = {
+export type CurrentUser = {
   id: string;
   displayName: string;
   emoji: string;
@@ -54,7 +57,7 @@ export function useMembraneClient(
   useEffect(() => {
     console.log("Starting....");
 
-    const socket = new Socket("/socket"); // phoenix socket
+    const socket = new Socket("/socket");
     socket.connect();
     const socketOnCloseRef = socket.onClose(() => cleanUp());
     const socketOnErrorRef = socket.onError(() => cleanUp());
@@ -171,5 +174,31 @@ export function useMembraneClient(
     };
   }, [roomId]);
 
-  return { webrtc, currentUser };
+  const selectRemoteTrackEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
+    console.log({ name: "changeRemoteEncoding", peerId, trackId, encoding });
+    if (!webrtc) return;
+    webrtc.selectTrackEncoding(peerId, trackId, encoding);
+  };
+
+  const enableTrackEncoding = (trackId: string, encoding: TrackEncoding) => {
+    console.log({ name: "enableTrackEncoding", encoding });
+    if (!trackId || !webrtc) return;
+    console.log({ encoding });
+    webrtc.enableTrackEncoding(trackId, encoding);
+  };
+
+  const disableTrackEncoding = (trackId: string, encoding: TrackEncoding) => {
+    console.log({ name: "enableTrackEncoding", encoding });
+    if (!trackId || !webrtc) return;
+    console.log({ encoding });
+    webrtc.disableTrackEncoding(trackId, encoding);
+  };
+
+  return {
+    webrtc,
+    currentUser,
+    selectRemoteTrackEncoding,
+    enableTrackEncoding,
+    disableTrackEncoding,
+  };
 }

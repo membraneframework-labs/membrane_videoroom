@@ -1,13 +1,5 @@
 import React, { RefObject, useEffect, useRef } from "react";
 import { SimulcastPlayerConfig } from "./VideoPeerPlayersSection";
-import { SimulcastReceivingEncoding } from "./simulcast/SimulcastReceivingEncoding";
-
-type Metadata = {
-  topLeft?: string;
-  topRight?: string;
-  bottomLeft?: string;
-  bottomRight?: string;
-};
 
 export interface Props {
   videoStream?: MediaStream;

@@ -11,13 +11,16 @@ export type UseSimulcastLocalEncoding = {
 };
 
 export const useSimulcastSend = (
-  enableTrackEncoding?: (encoding: TrackEncoding) => void,
-  disableTrackEncoding?: (encoding: TrackEncoding) => void
+  trackId?: string,
+  enableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void,
+  disableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void
 ): UseSimulcastLocalEncoding => {
   const toggleRemoteEncoding = (status: boolean, encodingName: TrackEncoding) => {
+    if (!trackId) return;
+
     status
-      ? enableTrackEncoding && enableTrackEncoding(encodingName)
-      : disableTrackEncoding && disableTrackEncoding(encodingName);
+      ? enableTrackEncoding && enableTrackEncoding(trackId, encodingName)
+      : disableTrackEncoding && disableTrackEncoding(trackId, encodingName);
   };
 
   const [highQuality, toggleHighQuality] = useCallbackToggle(true, (encoding) => {

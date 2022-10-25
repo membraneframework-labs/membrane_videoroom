@@ -8,15 +8,12 @@ import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 
 type LocalSimulcastConfig = {
-  disableTrackEncoding?: (encoding: TrackEncoding) => void;
-  enableTrackEncoding?: (encoding: TrackEncoding) => void;
-};
-type RemoteSimulcastConfig = {
-  def?: string;
+  disableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
+  enableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
 };
 
 export interface Props {
-  peerId: string;
+  peerId?: string;
   videoStream?: MediaStream;
   selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   encodingQuality?: TrackEncoding;
@@ -52,7 +49,7 @@ const VideoPlayerTile: FC<Props> = ({
   const selectRemoteEncoding = useCallback(
     (quality: TrackEncoding) => {
       console.log({ name: "selectRemoteEncoding", videoTrackId });
-      if (!videoTrackId) return;
+      if (!videoTrackId || !peerId) return;
       selectRemoteTrackEncoding(peerId, videoTrackId, quality);
     },
     [videoTrackId, peerId, selectRemoteTrackEncoding]
@@ -64,6 +61,7 @@ const VideoPlayerTile: FC<Props> = ({
   );
 
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(
+    videoTrackId,
     localSimulcastConfig?.enableTrackEncoding,
     localSimulcastConfig?.disableTrackEncoding
   );

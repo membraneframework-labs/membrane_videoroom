@@ -43,8 +43,8 @@ services:
       DB_PASSWORD: "${DB_PASSWORD}"
       GF_SECURITY_ADMIN_PASSWORD: "${GF_SECURITY_ADMIN_PASSWORD}"
       GF_SECURITY_ADMIN_USER: "${GF_SECURITY_ADMIN_USER}"
+      GF_SERVER_ROOT_URL: "http${VIRTUAL_HOST:+s}://${VIRTUAL_HOST:-localhost:3000}${VIRTUAL_HOST:+/metrics}"
     depends_on:
       - videoroom
-
 volumes:
   grafana-provisioning:

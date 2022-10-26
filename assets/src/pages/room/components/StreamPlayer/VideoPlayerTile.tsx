@@ -45,10 +45,10 @@ const VideoPlayerTile: FC<Props> = ({
   bottomLeft,
   bottomRight,
 }: Props) => {
-  console.log({ videoTrackId });
+  // console.log({ videoTrackId });
   const selectRemoteEncoding = useCallback(
     (quality: TrackEncoding) => {
-      console.log({ name: "selectRemoteEncoding", videoTrackId });
+      // console.log({ name: "selectRemoteEncoding", videoTrackId });
       if (!videoTrackId || !peerId || !selectRemoteTrackEncoding) return;
       selectRemoteTrackEncoding(peerId, videoTrackId, quality);
     },

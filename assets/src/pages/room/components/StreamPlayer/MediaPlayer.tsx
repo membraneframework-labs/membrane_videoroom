@@ -12,16 +12,16 @@ const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontal
   const audioRef: RefObject<HTMLAudioElement> = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    console.log("-Video hook start");
+    // console.log("-Video hook start");
     if (!videoRef.current) return;
-    console.log("-Video hook assigment");
+    // console.log("-Video hook assigment");
     videoRef.current.srcObject = videoStream || null;
   }, [videoStream]);
 
   useEffect(() => {
-    console.log("-Audio hook start");
+    // console.log("-Audio hook start");
     if (!audioRef.current) return;
-    console.log("-Audio hook assigment");
+    // console.log("-Audio hook assigment");
     audioRef.current.srcObject = audioStream || null;
   }, [audioStream]);
 

@@ -7,7 +7,7 @@ import {
   TrackEncoding,
 } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
-import { Metadata, NewPeer, TrackType } from "./usePeerState";
+import { Metadata, PeersApi, TrackType } from "./usePeerState";
 import { getRandomAnimalEmoji } from "../utils";
 
 const parseMetadata = (context: TrackContext) => {
@@ -38,24 +38,14 @@ export function useMembraneClient(
   roomId: string,
   displayName: string,
   isSimulcastOn: boolean,
-  addPeers: (peer: NewPeer[]) => void,
-  removePeer: (peerId: string) => void,
-  addTrack: (
-    peerId: string,
-    trackId: string,
-    mediaStreamTrack?: MediaStreamTrack,
-    mediaStream?: MediaStream,
-    metadata?: Metadata
-  ) => void,
-  removeTrack: (peerId: string, trackId: string) => void,
-  setTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void,
+  api: PeersApi,
   setErrorMessage: (value: ((prevState: string | undefined) => string | undefined) | string | undefined) => void
 ): UseSetupResult {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
-    console.log("Starting....");
+    // console.log("Starting....");
 
     const socket = new Socket("/socket");
     socket.connect();
@@ -80,63 +70,64 @@ export function useMembraneClient(
     const webrtc = new MembraneWebRTC({
       callbacks: {
         onSendMediaEvent: (mediaEvent: SerializedMediaEvent) => {
-          console.log({ name: "onSendMediaEvent", mediaEvent: JSON.parse(mediaEvent) });
+          // console.log({ name: "onSendMediaEvent", mediaEvent: JSON.parse(mediaEvent) });
           webrtcChannel.push("mediaEvent", { data: mediaEvent });
         },
         onConnectionError: (message: string) => {
-          console.log({ name: "onConnectionError", message });
+          // console.log({ name: "onConnectionError", message });
           setErrorMessage("Something went wrong :(");
         },
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
-          console.log({ name: "onJoinSuccess", peerId, peersInRoom });
+          // console.log({ name: "onJoinSuccess", peerId, peersInRoom });
           setCurrentUser({ id: peerId, displayName: displayName, emoji: emoji });
-          addPeers(
+          api.addPeers(
             peersInRoom.map((peer) => ({
               id: peer.id,
               displayName: peer.metadata.displayName,
               emoji: peer.metadata.emoji,
+              source: "remote",
             }))
           );
         },
         onJoinError: (metadata) => {
-          console.log({ name: "onJoinError", metadata });
+          // console.log({ name: "onJoinError", metadata });
         },
         onTrackReady: (ctx) => {
-          console.log({ name: "onTrackReady", ctx });
+          // console.log({ name: "onTrackReady", ctx });
           if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
           const metadata: Metadata = parseMetadata(ctx);
-          addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
+          api.addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
         },
         onTrackAdded: (ctx) => {
           // todo this event is triggered multiple times even though onTrackRemoved was invoked
-          console.log({ name: "onTrackAdded", ctx });
+          // console.log({ name: "onTrackAdded", ctx });
           const metadata: Metadata = parseMetadata(ctx);
         },
         onTrackRemoved: (ctx) => {
-          console.log({ name: "onTrackRemoved", ctx });
+          // console.log({ name: "onTrackRemoved", ctx });
           const peerId = ctx?.peer?.id;
           if (!peerId) return;
-          removeTrack(peerId, ctx.trackId);
+          api.removeTrack(peerId, ctx.trackId);
         },
         onTrackUpdated: (ctx) => {
-          console.log({ name: "onTrackUpdated", ctx });
+          // console.log({ name: "onTrackUpdated", ctx });
         },
         onPeerJoined: (peer) => {
-          console.log({ name: "onPeerJoined", peer });
-          addPeers([{ id: peer.id, displayName: peer.metadata.displayName, emoji: peer.metadata.emoji }]);
+          // console.log({ name: "onPeerJoined", peer });
+          api.addPeers([{ id: peer.id, displayName: peer.metadata.displayName, emoji: peer.metadata.emoji, source: "remote"}]);
         },
         onPeerLeft: (peer) => {
-          console.log({ name: "onPeerLeft", peer });
-          removePeer(peer.id);
+          // console.log({ name: "onPeerLeft", peer });
+          api.removePeer(peer.id);
         },
         onPeerUpdated: (peer) => {
-          console.log({ name: "onPeerUpdated", peer });
+          // console.log({ name: "onPeerUpdated", peer });
         },
         onTrackEncodingChanged: (peerId: string, trackId: string, encoding: string) => {
-          console.log({ name: "onTrackEncodingChanged", peerId, trackId, encoding });
+          // console.log({ name: "onTrackEncodingChanged", peerId, trackId, encoding });
           // todo encoding as enum
-          setTrackEncoding(peerId, trackId, encoding as TrackEncoding);
+          api.setEncoding(peerId, trackId, encoding as TrackEncoding);
         },
       },
     });
@@ -146,7 +137,7 @@ export function useMembraneClient(
     });
 
     webrtcChannel.on("simulcastConfig", (event) => {
-      console.log({ name: "simulcastConfig", event });
+      // console.log({ name: "simulcastConfig", event });
     });
 
     webrtcChannel
@@ -159,11 +150,11 @@ export function useMembraneClient(
       .receive("error", (response: any) => {});
 
     const cleanUp = () => {
-      console.log("Cleaning up started");
+      // console.log("Cleaning up started");
       webrtc.leave();
       webrtcChannel.leave();
       socket.off([socketOnCloseRef, socketOnErrorRef]);
-      console.log("Cleaning up ended");
+      // console.log("Cleaning up ended");
     };
 
     return () => {
@@ -172,20 +163,20 @@ export function useMembraneClient(
   }, [roomId]);
 
   const selectRemoteTrackEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
-    console.log({ name: "changeRemoteEncoding", peerId, trackId, encoding });
+    // console.log({ name: "changeRemoteEncoding", peerId, trackId, encoding });
     if (!webrtc) return;
     webrtc.selectTrackEncoding(peerId, trackId, encoding);
   };
 
   const enableTrackEncoding = (trackId: string, encoding: TrackEncoding) => {
-    console.log({ name: "enableTrackEncoding", encoding });
+    // console.log({ name: "enableTrackEncoding", encoding });
     if (!trackId || !webrtc) return;
-    console.log({ encoding });
+    // console.log({ encoding });
     webrtc.enableTrackEncoding(trackId, encoding);
   };
 
   const disableTrackEncoding = (trackId: string, encoding: TrackEncoding) => {
-    console.log({ name: "enableTrackEncoding", encoding });
+    // console.log({ name: "enableTrackEncoding", encoding });
     if (!trackId || !webrtc) return;
     console.log({ encoding });
     webrtc.disableTrackEncoding(trackId, encoding);

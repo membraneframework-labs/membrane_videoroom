@@ -1,11 +1,11 @@
 import React, { FC } from "react";
 
-export interface Props {
+type Props = {
   topLeft?: JSX.Element;
   topRight?: JSX.Element;
   bottomLeft?: JSX.Element;
   bottomRight?: JSX.Element;
-}
+};
 
 type Corner = {
   x: "left" | "right";

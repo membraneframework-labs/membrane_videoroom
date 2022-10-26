@@ -53,7 +53,7 @@ export class Room {
   private isSimulcastOn: boolean = false;
 
   constructor() {
-    console.log("constructor");
+    // console.log("constructor");
     this.socket = new Socket("/socket"); // phoenix socket
     this.socket.connect();
     const urlParams = this.parseUrl();
@@ -207,7 +207,7 @@ export class Room {
   }
 
   public init = async () => {
-    console.log("init");
+    // console.log("init");
     await this.askForPermissions();
 
     // Refresh mediaDevices list after ensuring permissions are granted

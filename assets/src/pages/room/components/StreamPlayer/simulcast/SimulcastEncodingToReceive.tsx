@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { isTrackEncoding } from "../../../../types";
 
 type Props = {
   setDesiredEncoding: (encoding: TrackEncoding) => void;
@@ -16,10 +17,8 @@ export const SimulcastEncodingToReceive: FC<Props> = ({ desiredEncoding, setDesi
         value={desiredEncoding}
         onChange={(e) => {
           const value = e.target.value;
-          const okValues = ["l", "m", "h"];
-          if (okValues.includes(value)) {
-            setDesiredEncoding(value as TrackEncoding);
-          }
+          if (!isTrackEncoding(value)) return;
+          setDesiredEncoding(value);
         }}
       >
         <option value="h">High</option>

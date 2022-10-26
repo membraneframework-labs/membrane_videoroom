@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
@@ -24,25 +24,26 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
 
-  const { peers, addPeers, removePeer, addTrack, removeTrack, setEncoding } = usePeersState();
+  // TODO implement local peer
+  const { state, api } = usePeersState();
   const { webrtc, currentUser, selectRemoteTrackEncoding, enableTrackEncoding, disableTrackEncoding } =
-    useMembraneClient(
-      roomId,
-      displayName,
-      isSimulcastOn,
-      addPeers,
-      removePeer,
-      addTrack,
-      removeTrack,
-      setEncoding,
-      setErrorMessage
-    );
+    useMembraneClient(roomId, displayName, isSimulcastOn, api, setErrorMessage);
 
   const userCameraStreamId = useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
   const userAudioStreamId = useMediaStreamControl("audio", webrtc, userMediaAudio.stream);
-  useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
 
-  console.log({ peers });
+  useEffect(() => {
+    // console.log("Add local peer");
+    currentUser && api.addLocalPeer({ ...currentUser, source: "local" });
+  }, [currentUser]);
+
+  useEffect(() => {
+    console.log("NEW API!");
+  }, [api]);
+
+  console.log({ state });
+
+  useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
 
   return (
     <section>
@@ -55,14 +56,14 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
         <section className="flex flex-col h-screen mb-14">
           <header className="p-4">
             <div className="flex items-center">
-              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2"  alt="Mini logo"/>
+              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2" alt="Mini logo" />
               <h2 className="text-2xl md:text-4xl text-center font-bold text-white">Membrane WebRTC video room demo</h2>
             </div>
             <h3 className="text-2xl font-semibold text-white mb-2">Room {roomId}</h3>
             <h3 className="text-xl font-medium text-white">
               Participants
               <span> {displayName}</span>
-              {Object.values(peers)?.map((e: LocalPeer) => (
+              {state.remote.map((e: LocalPeer) => (
                 <span key={e.id} title={e.id}>
                   {e.displayName}
                 </span>
@@ -71,7 +72,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
           </header>
           <VideochatSection
             peer={currentUser || undefined}
-            peers={peers}
+            peers={state.remote}
             displayMedia={displayMedia}
             cameraMedia={userMediaVideo}
             cameraStreamId={userCameraStreamId || undefined}

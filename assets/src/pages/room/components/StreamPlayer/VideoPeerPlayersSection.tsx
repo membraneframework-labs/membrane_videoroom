@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Peers, Track } from "../../hooks/usePeerState";
+import { LocalPeer, Track } from "../../hooks/usePeerState";
 import VideoPlayerTile from "./VideoPlayerTile";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
@@ -26,8 +26,8 @@ export type MediaPlayerConfig = {
   remoteSimulcast?: boolean;
 };
 
-const getCameraStreams = (peers?: Peers, showSimulcast?: boolean): MediaPlayerConfig[] =>
-  Object.values(peers || {}).map((peer) => {
+const getCameraStreams = (peers: LocalPeer[], showSimulcast?: boolean): MediaPlayerConfig[] =>
+  peers.map((peer) => {
     const video: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "camera");
     const screenSharingStream: MediaStream | undefined = peer.tracks.find(
       (track) => track?.metadata?.type === "screensharing"
@@ -54,7 +54,7 @@ const getCameraStreams = (peers?: Peers, showSimulcast?: boolean): MediaPlayerCo
   });
 
 type Props = {
-  peers?: Peers;
+  peers: LocalPeer[];
   localUser: MediaPlayerConfig;
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
@@ -78,8 +78,8 @@ const VideoPeerPlayersSection: FC<Props> = ({
   oneColumn,
 }: Props) => {
   const allCameraStreams = [localUser, ...getCameraStreams(peers, showSimulcast)];
-  console.log({ peers });
-  console.log({ allCameraStreams });
+  // console.log({ peers });
+  // console.log({ allCameraStreams });
 
   return (
     <div
@@ -94,7 +94,7 @@ const VideoPeerPlayersSection: FC<Props> = ({
         const currentlySharingScreen: string = e.screenSharingStream ? "🖥🟢" : "🖥🔴";
         const audioIcon = e.audioStream ? "🔊🟢" : "🔊🔴";
         const emoji = e.emoji || "";
-        console.log({ currEncoding: e.encodingQuality });
+        // console.log({ currEncoding: e.encodingQuality });
 
         // TODO inline VidePeerPlayerTile
         return (

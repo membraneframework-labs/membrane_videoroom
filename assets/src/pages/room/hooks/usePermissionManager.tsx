@@ -3,7 +3,7 @@ export function usePermissionManager() {
   navigator.mediaDevices.enumerateDevices().then((results) => {
     const videoInput: boolean = results.some((device) => device.kind === "videoinput");
     if (videoInput === false) {
-      console.log("No video input devices");
+      // console.log("No video input devices");
     }
 
     // as for p

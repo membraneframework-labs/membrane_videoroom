@@ -25,7 +25,7 @@ export function useMediaStreamControl(type: TrackType, webrtc?: MembraneWebRTC, 
   // todo should I change it to useCallback?
   const removeTrack = (webrtc: MembraneWebRTC, videoTrackId: string) => {
     // if (type === "camera") return;
-    console.log({ name: "Track removed", trackId });
+    // console.log({ name: "Track removed", trackId });
 
     setTrackId(null);
     webrtc.removeTrack(videoTrackId);

@@ -1,29 +1,27 @@
 export const AUDIO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
-  // audio: {
-  //   advanced: [{ autoGainControl: true }, { noiseSuppression: true }, { echoCancellation: true }],
-  // },
-  // video: true,
-  audio: true,
+  audio: {
+    advanced: [{ autoGainControl: true }, { noiseSuppression: true }, { echoCancellation: true }],
+  },
+  video: true,
 };
 
 export const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
-  // video: {
-  //   width: {
-  //     max: 1280,
-  //     ideal: 1280,
-  //     min: 640,
-  //   },
-  //   height: {
-  //     max: 720,
-  //     ideal: 720,
-  //     min: 320,
-  //   },
-  //   frameRate: {
-  //     max: 30,
-  //     ideal: 24,
-  //   },
-  // },
-  video: true,
+  video: {
+    width: {
+      max: 1280,
+      ideal: 1280,
+      min: 640,
+    },
+    height: {
+      max: 720,
+      ideal: 720,
+      min: 320,
+    },
+    frameRate: {
+      max: 30,
+      ideal: 24,
+    },
+  },
 };
 
 export const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
@@ -32,8 +30,10 @@ export const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
   },
 };
 
+// todo remove
 export const LOCAL_PEER_ID = "local-peer";
 
+// todo implement
 const MBps = 1024 * 8;
 
 export const BANDWIDTH_LIMITS = {

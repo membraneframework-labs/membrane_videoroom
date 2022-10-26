@@ -10,30 +10,34 @@ export type Track = {
 };
 
 export type LocalPeer = {
-  id: string;
-  displayName?: string;
-  emoji?: string;
   tracks: Track[];
-};
+} & NewPeer;
 
 export type TrackType = "screensharing" | "camera" | "audio";
 
-export type Peers = {
+type PeersMap = {
   [peerId: string]: LocalPeer;
 };
 
+// todo move display name and emoji to metadata
 export type NewPeer = {
   id: string;
   displayName?: string;
   emoji?: string;
+  source: "local" | "remote";
 };
 
 export type Metadata = {
   type?: TrackType;
 };
 
-type UsePeersStateResult = {
-  peers: Peers;
+export type PeersState = {
+  local?: LocalPeer;
+  remote: LocalPeer[];
+};
+
+export type PeersApi = {
+  addLocalPeer: (peer: NewPeer) => void;
   addPeers: (peerId: NewPeer[]) => void;
   removePeer: (peerId: string) => void;
   addTrack: (
@@ -47,13 +51,25 @@ type UsePeersStateResult = {
   setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
 };
 
+type UsePeersStateResult = {
+  state: PeersState;
+  api: PeersApi;
+};
+
 export function usePeersState(): UsePeersStateResult {
-  const [peers, setPeers] = useState<Peers>({});
+  const [remotePeers, setRemotePeers] = useState<PeersMap>({});
+  const [localPeer, setLocalPeer] = useState<LocalPeer | undefined>();
+
+  const addLocalPeer = (peer: NewPeer) => {
+    setLocalPeer(() => {
+      return { ...peer, tracks: [] };
+    });
+  };
 
   // todo should I change it to useCallback?
   const addPeers = (peerIds: NewPeer[]) => {
-    setPeers((prevState: Peers) => {
-      const newPeers: Peers = Object.fromEntries(
+    setRemotePeers((prevState: PeersMap) => {
+      const newPeers: PeersMap = Object.fromEntries(
         peerIds.map((peer) => [
           peer.id,
           {
@@ -62,6 +78,7 @@ export function usePeersState(): UsePeersStateResult {
             removedTracks: [],
             displayName: peer.displayName,
             emoji: peer.emoji,
+            source: peer.source,
           },
         ])
       );
@@ -71,7 +88,7 @@ export function usePeersState(): UsePeersStateResult {
 
   // todo should I change it to useCallback?
   const removePeer = (peerId: string) => {
-    setPeers((prev) => {
+    setRemotePeers((prev) => {
       const newState = { ...prev };
       delete newState[peerId];
       return newState;
@@ -86,7 +103,7 @@ export function usePeersState(): UsePeersStateResult {
     mediaStream?: MediaStream,
     metadata?: Metadata
   ) => {
-    setPeers((prev: Peers) => {
+    setRemotePeers((prev: PeersMap) => {
       const peerCopy: LocalPeer = { ...prev[peerId] };
       const oldTracks: Track[] = peerCopy.tracks.filter((e) => e.trackId !== trackId);
 
@@ -104,7 +121,7 @@ export function usePeersState(): UsePeersStateResult {
 
   // todo should I change it to useCallback?
   const setEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
-    setPeers((prev: Peers) => {
+    setRemotePeers((prev: PeersMap) => {
       const peerCopy: LocalPeer = { ...prev[peerId] };
       const trackCopy: Track | undefined = peerCopy.tracks.filter((track) => track.trackId === trackId)[0];
       const otherTracks = peerCopy.tracks.filter((track) => track.trackId !== trackId);
@@ -112,15 +129,15 @@ export function usePeersState(): UsePeersStateResult {
         trackCopy.encoding = encoding;
       }
 
-      console.log({ name: "setEncoding" });
+      // console.log({ name: "setEncoding" });
       return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });
   };
 
   // todo should I change it to useCallback?
   const removeTrack = (peerId: string, trackId: string) => {
-    setPeers((prev) => {
-      const newState = { ...prev };
+    setRemotePeers((prev) => {
+      const newState: PeersMap = { ...prev };
       const peerCopy: LocalPeer = { ...prev[peerId] };
       const newPeer: LocalPeer = {
         ...peerCopy,
@@ -131,5 +148,8 @@ export function usePeersState(): UsePeersStateResult {
     });
   };
 
-  return { peers, addPeers, removePeer, addTrack, removeTrack, setEncoding };
+  return {
+    state: { local: localPeer, remote: Object.values(remotePeers) },
+    api: { addPeers, removePeer, addTrack, removeTrack, setEncoding, addLocalPeer },
+  };
 }

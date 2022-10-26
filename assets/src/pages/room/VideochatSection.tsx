@@ -1,4 +1,4 @@
-import { Peers } from "./hooks/usePeerState";
+import { LocalPeer } from "./hooks/usePeerState";
 import VideoPeerPlayersSection, { MediaPlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
@@ -8,7 +8,7 @@ import { CurrentUser } from "./hooks/useMembraneClient";
 
 type Props = {
   peer?: CurrentUser;
-  peers?: Peers;
+  peers: LocalPeer[];
   displayMedia?: UseMediaResult;
   cameraMedia?: UseMediaResult;
   cameraStreamId?: string;
@@ -21,10 +21,10 @@ type Props = {
 };
 
 const prepareScreenSharingStreams = (
-  peers?: Peers,
+  peers: LocalPeer[],
   localStream?: MediaStream
 ): { screenSharingStreams: VideoStreamWithMetadata[]; isScreenSharingActive: boolean } => {
-  const peersScreenSharingTracks: VideoStreamWithMetadata[] = Object.values(peers || {})
+  const peersScreenSharingTracks: VideoStreamWithMetadata[] = peers
     .flatMap((peer) =>
       peer.tracks.map((track) => ({
         peerId: peer.id,

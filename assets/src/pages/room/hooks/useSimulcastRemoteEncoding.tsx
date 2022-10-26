@@ -14,9 +14,9 @@ export const useSimulcastRemoteEncoding = (
 
   const setDesiredEncoding = useCallback(
     (quality: TrackEncoding) => {
-      console.log({ quality });
+      // console.log({ quality });
       setDesiredEncodingState(() => quality);
-      console.log({ callback });
+      // console.log({ callback });
       // im not sure for this method
       if (callback) callback(quality);
       // todo refactor

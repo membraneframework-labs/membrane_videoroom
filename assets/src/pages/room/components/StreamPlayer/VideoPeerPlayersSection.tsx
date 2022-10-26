@@ -5,7 +5,7 @@ import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
 
 export type SimulcastPlayerConfig = {
-  show: boolean;
+  show?: boolean;
   enableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
   disableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
 };
@@ -26,8 +26,8 @@ export type MediaPlayerConfig = {
   remoteSimulcast?: boolean;
 };
 
-const getCameraStreams = (peers: Peers, showSimulcast: boolean): MediaPlayerConfig[] =>
-  Object.values(peers).map((peer) => {
+const getCameraStreams = (peers?: Peers, showSimulcast?: boolean): MediaPlayerConfig[] =>
+  Object.values(peers || {}).map((peer) => {
     const video: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "camera");
     const screenSharingStream: MediaStream | undefined = peer.tracks.find(
       (track) => track?.metadata?.type === "screensharing"
@@ -54,10 +54,10 @@ const getCameraStreams = (peers: Peers, showSimulcast: boolean): MediaPlayerConf
   });
 
 type Props = {
-  peers: Peers;
+  peers?: Peers;
   localUser: MediaPlayerConfig;
-  showSimulcast: boolean;
-  selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
+  showSimulcast?: boolean;
+  selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn?: boolean;
 };
 

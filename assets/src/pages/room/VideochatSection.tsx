@@ -21,17 +21,31 @@ type Props = {
 };
 
 const prepareScreenSharingStreams = (
-  peers: Peers,
+  peers?: Peers,
   localStream?: MediaStream
 ): { screenSharingStreams: VideoStreamWithMetadata[]; isScreenSharingActive: boolean } => {
-  const peersScreenSharingTracks: VideoStreamWithMetadata[] = Object.values(peers)
-    .flatMap((peer) => peer.tracks.map((track) => ({ peerId: peer.id, track: track })))
+  const peersScreenSharingTracks: VideoStreamWithMetadata[] = Object.values(peers || {})
+    .flatMap((peer) =>
+      peer.tracks.map((track) => ({
+        peerId: peer.id,
+        track: track,
+        emoji: peer.emoji,
+        peerName: peer.displayName,
+      }))
+    )
     .filter((e) => e.track?.metadata?.type === "screensharing")
     // todo fix now - should videoId be e.track?.trackId?
-    .map((e) => ({ videoStream: e.track.mediaStream, peerId: e.peerId, videoId: e.track?.mediaStreamTrack?.id }));
+    .map((e) => ({
+      videoStream: e.track.mediaStream,
+      peerId: e.peerId,
+      videoId: e.track?.mediaStreamTrack?.id,
+      peerIcon: e.emoji,
+      peerName: e.peerName,
+    }));
 
   const screenSharingStreams: VideoStreamWithMetadata[] = localStream
-    ? [{ videoStream: localStream, peerId: "(Me) screen", videoId: "(Me) screen" }, ...peersScreenSharingTracks]
+    // todo fix peerIcon
+    ? [{ videoStream: localStream, peerId: "(Me) screen", videoId: "(Me) screen", peerIcon: "👤", peerName: "(Me) screen" }, ...peersScreenSharingTracks]
     : peersScreenSharingTracks;
 
   const isScreenSharingActive: boolean = screenSharingStreams.length > 0;

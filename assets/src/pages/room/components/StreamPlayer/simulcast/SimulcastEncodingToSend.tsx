@@ -10,7 +10,6 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
   const { highQuality, toggleHighQuality, mediumQuality, toggleMediumQuality, lowQuality, toggleLowQuality } =
     localEncoding;
 
-  // todo block form if track is not active
   return (
     <div className="absolute text-sm md:text-base text-gray-700 opacity-80 bg-white bottom-0 right-0 p-2 z-50">
       <label>Encodings to send</label>
@@ -21,9 +20,7 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
             type="checkbox"
             name="h"
             checked={highQuality}
-            onChange={() => {
-              toggleHighQuality();
-            }}
+            onChange={toggleHighQuality}
           />
           High
         </li>
@@ -33,9 +30,7 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
             type="checkbox"
             name="m"
             checked={mediumQuality}
-            onChange={() => {
-              toggleMediumQuality();
-            }}
+            onChange={toggleMediumQuality}
           />
           Medium
         </li>
@@ -45,9 +40,7 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
             type="checkbox"
             name="l"
             checked={lowQuality}
-            onChange={() => {
-              toggleLowQuality();
-            }}
+            onChange={toggleLowQuality}
           />
           Low
         </li>

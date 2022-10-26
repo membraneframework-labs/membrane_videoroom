@@ -15,13 +15,13 @@ export const HomePage: FC = () => {
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
 
   return (
-    <section className="phx-hero">
+    <section>
       <div className="p-8 flex flex-col items-center">
         <div className="mb-4">
-          <img src="/svg/logo.svg" className="mb-2" />
+          <img src="/svg/logo.svg" className="mb-2" alt="logo" />
           <h2 className="font-rocGrotesk font-medium text-4xl text-white mb-2 ">Videoroom</h2>
         </div>
-        <form id="form" method="post" className="bg-white shadow-md rounded max-w-md px-8 pt-6 pb-8 mb-4">
+        <div className="bg-white shadow-md rounded max-w-md px-8 pt-6 pb-8 mb-4">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="room_name">
               Room name
@@ -78,7 +78,7 @@ export const HomePage: FC = () => {
               Join room!
             </Link>
           </div>
-        </form>
+        </div>
       </div>
     </section>
   );

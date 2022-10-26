@@ -6,7 +6,6 @@ import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { LocalPeer, usePeersState } from "./hooks/usePeerState";
-import { MediaPlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
 
@@ -46,8 +45,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   console.log({ peers });
 
   return (
-    <section className="phx-hero">
-      <div id="room" className="flex flex-col h-screen relative">
+    <section>
+      <div className="flex flex-col h-screen relative">
         {errorMessage && (
           <div className="bg-red-700" style={{ height: "100px", width: "100%" }}>
             {errorMessage}
@@ -56,7 +55,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
         <section className="flex flex-col h-screen mb-14">
           <header className="p-4">
             <div className="flex items-center">
-              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2" />
+              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2"  alt="Mini logo"/>
               <h2 className="text-2xl md:text-4xl text-center font-bold text-white">Membrane WebRTC video room demo</h2>
             </div>
             <h3 className="text-2xl font-semibold text-white mb-2">Room {roomId}</h3>
@@ -71,14 +70,13 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             </h3>
           </header>
           <VideochatSection
-            peer={currentUser}
+            peer={currentUser || undefined}
             peers={peers}
             displayMedia={displayMedia}
-            // displayStreamId={}
             cameraMedia={userMediaVideo}
-            cameraStreamId={userCameraStreamId}
+            cameraStreamId={userCameraStreamId || undefined}
             audioMedia={userMediaAudio}
-            audioStreamId={userAudioStreamId}
+            audioStreamId={userAudioStreamId || undefined}
             showSimulcast={showSimulcastMenu}
             selectRemoteTrackEncoding={selectRemoteTrackEncoding}
             enableTrackEncoding={enableTrackEncoding}
@@ -93,7 +91,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
       </div>
       {isSimulcastOn && (
         <button
-          id="simulcast-control"
           onClick={toggleSimulcastMenu}
           className="absolute bottom-2 left-1/2 -translate-x-1/2 md:right-2 md:-translate-x-1 md:left-auto bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-max"
           type="submit"

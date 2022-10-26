@@ -7,29 +7,27 @@ export interface Props {
   bottomRight?: JSX.Element;
 }
 
+type Corner = {
+  x: "left" | "right";
+  y: "top" | "bottom";
+  content?: JSX.Element;
+};
+
 const PeerInfoLayer: FC<Props> = ({ topLeft, topRight, bottomLeft, bottomRight }: Props) => {
+  const corners: Corner[] = [
+    { x: "left", y: "top", content: topLeft },
+    { x: "right", y: "top", content: topRight },
+    { x: "left", y: "bottom", content: bottomLeft },
+    { x: "right", y: "bottom", content: bottomRight },
+  ];
+
   return (
     <>
-      {topLeft && (
-        <div data-name="video-label" className="absolute text-white text-shadow-lg top-0 left-0 p-2">
-          {topLeft}
+      {corners.map((corner) => (
+        <div data-name="video-label" className={`absolute text-white text-shadow-lg ${corner.x}-0 ${corner.y}-0 p-2`}>
+          {corner.content}
         </div>
-      )}
-      {topRight && (
-        <div data-name="video-label" className="absolute text-white text-shadow-lg top-0 right-0 p-2">
-          {topRight}
-        </div>
-      )}
-      {bottomLeft && (
-        <div data-name="video-label" className="absolute text-white text-shadow-lg bottom-0 left-0 p-2">
-          {bottomLeft}
-        </div>
-      )}
-      {bottomRight && (
-        <div data-name="video-label" className="absolute text-white text-shadow-lg bottom-0 right-0 p-2">
-          {bottomRight}
-        </div>
-      )}
+      ))}
     </>
   );
 };

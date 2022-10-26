@@ -7,7 +7,7 @@ export interface Props {
   audioStream?: MediaStream;
 }
 
-const VideoPlayerPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontally }: Props) => {
+const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontally }: Props) => {
   const videoRef: RefObject<HTMLVideoElement> = useRef<HTMLVideoElement>(null);
   const audioRef: RefObject<HTMLAudioElement> = useRef<HTMLAudioElement>(null);
 
@@ -44,4 +44,4 @@ const VideoPlayerPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHori
 // from chrome console: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
 // https://stackoverflow.com/questions/49930680/how-to-handle-uncaught-in-promise-domexception-play-failed-because-the-use
 
-export default VideoPlayerPlayer;
+export default MediaPlayer;

@@ -1,8 +1,10 @@
 import React, { FC } from "react";
-import VideoPlayerOld from "./VideoPlayerOld";
+import VideoPlayerTile from "./VideoPlayerTile";
 
 export type VideoStreamWithMetadata = {
   peerId: string;
+  peerIcon?: string;
+  peerName?: string;
   videoId?: string;
   videoStream?: MediaStream;
 };
@@ -13,16 +15,16 @@ type Props = {
 
 const ScreenSharingPlayers: FC<Props> = ({ streams }: Props) => {
   return (
-    <div
-      id="screensharings-grid"
-      className="h-full mb-3 md:mr-3 md:mb-none active-screensharing-grid grid-cols-1 md:grid-cols-1"
-    >
-      {/*TODO change peerId etc. in bottomLeft, right etc.*/}
+    <div className="h-full mb-3 md:mr-3 md:mb-none active-screensharing-grid grid-cols-1 md:grid-cols-1">
       {streams.map((e) => (
-        <VideoPlayerOld
+        <VideoPlayerTile
           key={e.peerId + ":" + e.videoId}
           videoStream={e.videoStream}
-          bottomLeft={<div>{e.peerId}</div>}
+          bottomLeft={
+            <div>
+              {e.peerIcon} {e.peerName}
+            </div>
+          }
         />
       ))}
     </div>

@@ -13,7 +13,6 @@ export const SimulcastEncodingToReceive: FC<Props> = ({ desiredEncoding, setDesi
       <label>Encoding to receive</label>
       <select
         disabled={disabled}
-        name="video-encoding-select"
         value={desiredEncoding}
         onChange={(e) => {
           const value = e.target.value;

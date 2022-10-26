@@ -104,11 +104,9 @@ export function useMembraneClient(
         },
         onTrackReady: (ctx) => {
           console.log({ name: "onTrackReady", ctx });
-          // todo convert to guard clause
-          if (ctx?.peer && ctx?.track && ctx?.stream) {
-            const metadata: Metadata = parseMetadata(ctx);
-            addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
-          }
+          if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
+          const metadata: Metadata = parseMetadata(ctx);
+          addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
         },
         onTrackAdded: (ctx) => {
           // todo this event is triggered multiple times even though onTrackRemoved was invoked
@@ -118,9 +116,8 @@ export function useMembraneClient(
         onTrackRemoved: (ctx) => {
           console.log({ name: "onTrackRemoved", ctx });
           const peerId = ctx?.peer?.id;
-          if (peerId) {
-            removeTrack(peerId, ctx.trackId);
-          }
+          if (!peerId) return;
+          removeTrack(peerId, ctx.trackId);
         },
         onTrackUpdated: (ctx) => {
           console.log({ name: "onTrackUpdated", ctx });

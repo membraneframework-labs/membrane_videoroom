@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from "react";
-import VideoPlayerPlayer from "./VideoPlayerPlayer";
+import MediaPlayer from "./MediaPlayer";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { useSimulcastRemoteEncoding, UseSimulcastRemoteEncodingResult } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
@@ -15,7 +15,7 @@ type LocalSimulcastConfig = {
 export interface Props {
   peerId?: string;
   videoStream?: MediaStream;
-  selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
+  selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   encodingQuality?: TrackEncoding;
   videoTrackId?: string;
   flipHorizontally?: boolean;
@@ -49,7 +49,7 @@ const VideoPlayerTile: FC<Props> = ({
   const selectRemoteEncoding = useCallback(
     (quality: TrackEncoding) => {
       console.log({ name: "selectRemoteEncoding", videoTrackId });
-      if (!videoTrackId || !peerId) return;
+      if (!videoTrackId || !peerId || !selectRemoteTrackEncoding) return;
       selectRemoteTrackEncoding(peerId, videoTrackId, quality);
     },
     [videoTrackId, peerId, selectRemoteTrackEncoding]
@@ -71,7 +71,7 @@ const VideoPlayerTile: FC<Props> = ({
       data-name="video-feed"
       className="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video"
     >
-      <VideoPlayerPlayer videoStream={videoStream} audioStream={audioStream} flipHorizontally={flipHorizontally} />
+      <MediaPlayer videoStream={videoStream} audioStream={audioStream} flipHorizontally={flipHorizontally} />
       <PeerInfoLayer topLeft={topLeft} topRight={topRight} bottomLeft={bottomLeft} bottomRight={bottomRight} />
       {showSimulcast && enableRemoteSimulcast && (
         <SimulcastRemoteLayer

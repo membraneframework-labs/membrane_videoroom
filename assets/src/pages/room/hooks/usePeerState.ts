@@ -6,7 +6,7 @@ export type Track = {
   trackId: string;
   mediaStreamTrack?: MediaStreamTrack;
   mediaStream?: MediaStream;
-  metadata?: Metadata;
+  metadata?: TrackMetadata;
   encoding?: TrackEncoding;
 };
 
@@ -26,7 +26,7 @@ export type NewPeer = {
   source: "local" | "remote";
 };
 
-export type Metadata = {
+export type TrackMetadata = {
   type?: TrackType;
 };
 
@@ -41,7 +41,7 @@ export type LocalPeer = {
   videoTrackStream?: MediaStream;
   videoTrackId?: string;
   audioTrackStream?: MediaStream;
-  audioTrackId?: string;
+  audioTrack?: string;
   screenSharingTrackStream?: MediaStream;
   screenSharingTrackId?: string;
 };
@@ -54,12 +54,12 @@ export type PeersApi = {
     trackId: string,
     mediaStreamTrack?: MediaStreamTrack,
     mediaStream?: MediaStream,
-    metadata?: Metadata
+    metadata?: TrackMetadata
   ) => void;
   removeTrack: (peerId: string, trackId: string) => void;
   setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   setLocalPeer: (id: string, metadata?: PeerMetadata) => void;
-  setLocalTrack: (type: TrackType, stream?: MediaStream, trackId?: string) => void;
+  setLocalStreams: (type: TrackType, trackId: string, stream?: MediaStream) => void;
 };
 
 type UsePeersStateResult = {
@@ -80,7 +80,7 @@ export function usePeersState(): UsePeersStateResult {
     setLocalPeerState(() => ({ id: id, metadata: metadata }));
   }, []);
 
-  const setLocalTrack = useCallback((type: TrackType, stream?: MediaStream, trackId?: string) => {
+  const setLocalStreams = useCallback((type: TrackType, trackId: string, stream?: MediaStream) => {
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       if (!prevState) return prevState;
 
@@ -91,7 +91,7 @@ export function usePeersState(): UsePeersStateResult {
           screenSharingTrackStream: stream,
           screenSharingTrackId: trackId,
         };
-      if (type == "audio") return { ...prevState, audioTrackStream: stream, audioTrackId: trackId };
+      if (type == "audio") return { ...prevState, audioTrackStream: stream, audioTrack: trackId };
     });
   }, []);
 
@@ -127,7 +127,7 @@ export function usePeersState(): UsePeersStateResult {
       trackId: string,
       mediaStreamTrack?: MediaStreamTrack,
       mediaStream?: MediaStream,
-      metadata?: Metadata
+      metadata?: TrackMetadata
     ) => {
       setRemotePeers((prev: PeersMap) => {
         const peerCopy: RemotePeer = { ...prev[peerId] };
@@ -150,13 +150,12 @@ export function usePeersState(): UsePeersStateResult {
   const setEncoding = useCallback((peerId: string, trackId: string, encoding: TrackEncoding) => {
     setRemotePeers((prev: PeersMap) => {
       const peerCopy: RemotePeer = { ...prev[peerId] };
-      const trackCopy: Track | undefined = peerCopy.tracks.filter((track) => track.trackId === trackId)[0];
-      const otherTracks = peerCopy.tracks.filter((track) => track.trackId !== trackId);
-      if (trackCopy) {
-        trackCopy.encoding = encoding;
-      }
+      const trackCopy: Track | undefined = peerCopy.tracks.find((track) => track.trackId === trackId);
+      if (!trackCopy) return prev;
 
-      // console.log({ name: "setEncoding" });
+      const otherTracks = peerCopy.tracks.filter((track) => track.trackId !== trackId);
+      trackCopy.encoding = encoding;
+
       return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });
   }, []);
@@ -174,9 +173,9 @@ export function usePeersState(): UsePeersStateResult {
     });
   }, []);
 
-  const api = useMemo(() => {
-    return { addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalTrack };
-  }, [addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalTrack]);
+  const api: PeersApi = useMemo(() => {
+    return { addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalStreams };
+  }, [addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalStreams]);
 
   const state: PeersState = useMemo(() => {
     const remoteUsersArray: RemotePeer[] = Object.values(remotePeers);

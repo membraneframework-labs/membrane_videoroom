@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 
 export type MediaControlButtonProps = {
-  onClick: () => any;
+  onClick: () => void;
   icon: string;
   hover: string;
   imgClasses?: string;

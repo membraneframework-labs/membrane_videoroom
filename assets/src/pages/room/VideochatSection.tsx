@@ -24,22 +24,27 @@ const prepareScreenSharingStreams = (
         peerName: peer.displayName,
       }))
     )
-    .filter((e) => e.track?.metadata?.type === "screensharing")
+    .filter((element) => element.track?.metadata?.type === "screensharing")
     // todo fix now - should videoId be e.track?.trackId?
-    .map((e) => ({
-      videoStream: e.track.mediaStream,
-      peerId: e.peerId,
-      videoId: e.track?.mediaStreamTrack?.id,
-      peerIcon: e.emoji,
-      peerName: e.peerName,
-    }));
+    .map(
+      (element) =>
+        ({
+          video: {
+            stream: element.track.mediaStream,
+            trackId: element.track.trackId,
+            encodingQuality: element.track.encoding,
+          },
+          peerId: element.peerId,
+          peerIcon: element.emoji,
+          peerName: element.peerName,
+        } as VideoStreamWithMetadata)
+    );
 
   const screenSharingStreams: VideoStreamWithMetadata[] = localPeer?.screenSharingTrackStream
     ? [
         {
-          videoStream: localPeer?.screenSharingTrackStream,
+          video: { stream: localPeer?.screenSharingTrackStream, trackId: localPeer?.screenSharingTrackId },
           peerId: localPeer?.id,
-          videoId: localPeer?.screenSharingTrackId,
           peerIcon: localPeer?.metadata?.emoji,
           peerName: "Me",
         },
@@ -56,12 +61,9 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     peerId: localPeer?.id,
     displayName: "Me",
     emoji: localPeer?.metadata?.emoji,
-    videoId: localPeer?.videoTrackId,
-    videoStream: localPeer?.videoTrackStream,
-    audioId: localPeer?.audioTrackId,
-    audioStream: localPeer?.audioTrackStream,
-    screenSharingStream: localPeer?.screenSharingTrackStream,
-    autoplayAudio: false,
+    video: [{ stream: localPeer?.videoTrackStream, trackId: localPeer?.videoTrackId }],
+    audio: [{ stream: localPeer?.audioTrackStream, trackId: localPeer?.audioTrack }],
+    screenSharing: [{ stream: localPeer?.screenSharingTrackStream, trackId: localPeer?.screenSharingTrackId }],
     showSimulcast: showSimulcast,
     flipHorizontally: true,
     streamSource: "local",

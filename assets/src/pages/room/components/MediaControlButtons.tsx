@@ -15,7 +15,6 @@ const getControls = (
         icon: "/svg/mic-line.svg",
         hover: "Mute or unmute the microphone",
         onClick: () => {
-          // console.log("Stopping mic...");
           userMediaAudio.stop();
         },
       }
@@ -23,7 +22,6 @@ const getControls = (
         icon: "/svg/mic-off-fill.svg",
         hover: "Mute or unmute the microphone",
         onClick: () => {
-          // console.log("Starting mic...");
           userMediaAudio.start();
         },
       },
@@ -32,16 +30,13 @@ const getControls = (
         icon: "/svg/camera-line.svg",
         hover: "Turn on/off the camera",
         onClick: () => {
-          // console.log("Stopping camera...");
           userMediaVideo.stop();
-          // todo remove stream
         },
       }
     : {
         hover: "Turn on/off the camera",
         icon: "/svg/camera-off-line.svg",
         onClick: () => {
-          // console.log("Starting camera...");
           userMediaVideo.start();
         },
       },
@@ -50,7 +45,6 @@ const getControls = (
         icon: "/svg/computer-line.svg",
         hover: "Start or stop the screensharing",
         onClick: () => {
-          // console.log("Stopping ScreenSharing...");
           displayMedia.stop();
         },
       }
@@ -58,7 +52,6 @@ const getControls = (
         icon: "/svg/computer-line.svg",
         hover: "Start or stop the screensharing",
         onClick: () => {
-          // console.log("Starting ScreenSharing...");
           displayMedia.start();
         },
       },
@@ -67,7 +60,6 @@ const getControls = (
     hover: "Leave button",
     imgClasses: "black-to-red transform rotate-135",
     onClick: () => {
-      // console.log("Leaving...");
       navigate("/")
     },
   },

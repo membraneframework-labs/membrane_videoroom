@@ -7,5 +7,6 @@ export type SimulcastContextType = {
 
 export const SimulcastContext = React.createContext<SimulcastContextType>({
   simulcast: false,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setSimulcast: () => {},
 });

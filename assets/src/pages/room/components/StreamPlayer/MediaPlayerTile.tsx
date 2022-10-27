@@ -1,22 +1,21 @@
-import React, { FC, useCallback } from "react";
+import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
 import PeerInfoLayer from "./PeerInfoLayer";
-import { useSimulcastRemoteEncoding, UseSimulcastRemoteEncodingResult } from "../../hooks/useSimulcastRemoteEncoding";
+import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
-import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource } from "../../../types";
+import { TrackXXX } from "./MediaPlayerPeersSection";
 
 export interface Props {
   peerId?: string;
-  videoStream?: MediaStream;
-  encodingQuality?: TrackEncoding;
-  videoTrackId?: string;
+  video?: TrackXXX;
   flipHorizontally?: boolean;
   audioStream?: MediaStream;
   showSimulcast?: boolean;
-  streamSource: StreamSource;
+  streamSource?: StreamSource;
   topLeft?: JSX.Element;
   topRight?: JSX.Element;
   bottomLeft?: JSX.Element;
@@ -24,11 +23,9 @@ export interface Props {
   webrtc?: MembraneWebRTC;
 }
 
-const VideoPlayerTile: FC<Props> = ({
+const MediaPlayerTile: FC<Props> = ({
   peerId,
-  videoStream,
-  encodingQuality,
-  videoTrackId,
+  video,
   flipHorizontally,
   audioStream,
   showSimulcast,
@@ -39,30 +36,30 @@ const VideoPlayerTile: FC<Props> = ({
   bottomRight,
   webrtc,
 }: Props) => {
-  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, videoTrackId, webrtc);
+  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.trackId, webrtc);
 
-  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(videoTrackId, webrtc);
+  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.trackId, webrtc);
 
   return (
     <div
       data-name="video-feed"
       className="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video"
     >
-      <MediaPlayer videoStream={videoStream} audioStream={audioStream} flipHorizontally={flipHorizontally} />
+      <MediaPlayer videoStream={video?.stream} audioStream={audioStream} flipHorizontally={flipHorizontally} />
       <PeerInfoLayer topLeft={topLeft} topRight={topRight} bottomLeft={bottomLeft} bottomRight={bottomRight} />
       {showSimulcast && streamSource === "remote" && (
         <SimulcastRemoteLayer
           desiredEncoding={desiredEncoding}
           setDesiredEncoding={setDesiredEncoding}
-          currentEncoding={encodingQuality}
-          disabled={!videoStream}
+          currentEncoding={video?.encodingQuality}
+          disabled={!video?.stream}
         />
       )}
       {showSimulcast && streamSource === "local" && (
-        <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!videoStream} />
+        <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />
       )}
     </div>
   );
 };
 
-export default VideoPlayerTile;
+export default MediaPlayerTile;

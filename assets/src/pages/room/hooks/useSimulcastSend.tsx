@@ -14,8 +14,6 @@ export const useSimulcastSend = (trackId?: string, webrtc?: MembraneWebRTC): Use
   const toggleRemoteEncoding = (status: boolean, encodingName: TrackEncoding) => {
     if (!trackId) return;
 
-    console.log({ trackId });
-
     status ? webrtc?.enableTrackEncoding(trackId, encodingName) : webrtc?.disableTrackEncoding(trackId, encodingName);
   };
 

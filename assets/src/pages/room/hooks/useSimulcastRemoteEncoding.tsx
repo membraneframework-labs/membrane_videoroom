@@ -16,7 +16,6 @@ export const useSimulcastRemoteEncoding = (
 
   const selectRemoteEncoding = useCallback(
     (quality: TrackEncoding) => {
-      // console.log({ name: "selectRemoteEncoding", videoTrackId });
       if (!videoTrackId || !peerId || !webrtc) return;
       webrtc.selectTrackEncoding(peerId, videoTrackId, quality);
     },

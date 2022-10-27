@@ -11,8 +11,6 @@ const RoomPageWrapper: FC = () => {
   const { username } = useContext(UserContext);
   const { simulcast } = useContext(SimulcastContext);
 
-  // console.log({ roomId, username });
-
   return username && roomId ? (
     <RoomPage displayName={username} roomId={roomId} isSimulcastOn={simulcast} />
   ) : (

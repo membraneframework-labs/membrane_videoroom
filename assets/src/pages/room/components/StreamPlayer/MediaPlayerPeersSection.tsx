@@ -1,51 +1,54 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { RemotePeer, Track } from "../../hooks/usePeerState";
-import VideoPlayerTile from "./VideoPlayerTile";
+import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource } from "../../../types";
+
+export type TrackXXX = {
+  stream?: MediaStream;
+  trackId?: string;
+  encodingQuality?: TrackEncoding;
+};
 
 export type MediaPlayerConfig = {
   peerId?: string;
   emoji?: string;
   flipHorizontally?: boolean;
   displayName?: string;
-  videoId?: string;
-  videoStream?: MediaStream;
-  audioId?: string;
-  audioStream?: MediaStream;
-  autoplayAudio?: boolean;
-  screenSharingStream?: MediaStream;
+  video: TrackXXX[];
+  audio: TrackXXX[];
+  screenSharing: TrackXXX[];
   showSimulcast?: boolean;
-  encodingQuality?: TrackEncoding;
   remoteSimulcast?: boolean;
   streamSource: StreamSource;
 };
 
 const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerConfig[] =>
   peers.map((peer) => {
-    const video: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "camera");
-    const screenSharingStream: MediaStream | undefined = peer.tracks.find(
-      (track) => track?.metadata?.type === "screensharing"
-    )?.mediaStream;
-    const audio: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "audio");
+    const videoTracks: Track[] = peer.tracks
+      .filter((track) => track?.metadata?.type === "camera")
+      .map((track) => ({ stream: track.mediaStream, trackId: track.trackId, encoding: track.encoding }));
+    const audioTracks: Track[] = peer.tracks
+      .filter((track) => track?.metadata?.type === "audio")
+      .map((track) => ({ stream: track.mediaStream, trackId: track.trackId, encoding: track.encoding }));
+    const screenSharingTracks: Track[] = peer.tracks
+      .filter((track) => track?.metadata?.type === "screensharing")
+      .map((track) => ({ stream: track.mediaStream, trackId: track.trackId, encoding: track.encoding }));
 
     return {
       peerId: peer.id,
       emoji: peer.emoji,
       displayName: peer.displayName,
-      videoStream: video?.mediaStream,
-      videoId: video?.trackId,
-      audioStream: audio?.mediaStream,
-      audioId: audio?.trackId,
-      screenSharingStream: screenSharingStream,
+      video: videoTracks,
+      audio: audioTracks,
+      screenSharing: screenSharingTracks,
       autoplayAudio: true,
       showSimulcast: showSimulcast,
       flipHorizontally: false,
-      encodingQuality: video?.encoding,
       remoteSimulcast: true,
       streamSource: "remote",
-    };
+    } as MediaPlayerConfig;
   });
 
 type Props = {
@@ -67,7 +70,7 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
 };
 
 const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {
-  const allCameraStreams = [localUser, ...getCameraStreams(peers, showSimulcast)];
+  const allPeersConfig = [localUser, ...getCameraStreams(peers, showSimulcast)];
 
   return (
     <div
@@ -77,22 +80,24 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {allCameraStreams.map((e, idx) => {
-        const videoStatus = "📹" + getStatus(e.videoStream, e.videoId);
-        const currentlySharingScreen: string = e.screenSharingStream ? "🖥🟢" : "🖥🔴";
-        const audioIcon = e.audioStream ? "🔊🟢" : "🔊🔴";
-        const emoji = e.emoji || "";
-        // console.log({ currEncoding: e.encodingQuality });
+      {allPeersConfig.map((config, idx) => {
+        // todo for now only first audio, video and screen sharing stream are handled
+        const video: TrackXXX | undefined = config.video[0];
+        const screenSharing: TrackXXX | undefined = config.screenSharing[0];
+        const audio: TrackXXX | undefined = config.audio[0];
+
+        const videoStatus = "📹" + getStatus(video?.stream, video?.trackId);
+        const currentlySharingScreen: string = screenSharing?.stream ? "🖥🟢" : "🖥🔴";
+        const audioIcon = audio?.stream ? "🔊🟢" : "🔊🔴";
+        const emoji = config.emoji || "";
 
         // TODO inline VidePeerPlayerTile
         return (
-          <VideoPlayerTile
+          <MediaPlayerTile
             key={idx}
-            peerId={e.peerId}
-            videoStream={e.videoStream}
-            videoTrackId={e.videoId}
-            audioStream={e.autoplayAudio ? e.audioStream : undefined}
-            encodingQuality={e.encodingQuality}
+            peerId={config.peerId}
+            video={video}
+            audioStream={audio?.stream}
             topLeft={<div>{emoji}</div>}
             topRight={
               <div className="text-right">
@@ -101,10 +106,10 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
                 <span className="ml-2">{audioIcon}</span>
               </div>
             }
-            bottomLeft={<div>{e.displayName}</div>}
+            bottomLeft={<div>{config.displayName}</div>}
             showSimulcast={showSimulcast}
-            streamSource={e.streamSource}
-            flipHorizontally={e.flipHorizontally}
+            streamSource={config.streamSource}
+            flipHorizontally={config.flipHorizontally}
             webrtc={webrtc}
           />
         );

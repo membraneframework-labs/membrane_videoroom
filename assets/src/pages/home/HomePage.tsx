@@ -1,5 +1,5 @@
 import React, { FC, useContext, useState } from "react";
-import { Link, useMatch } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
 import { SimulcastContext } from "../../contexts/simulcastContext";

@@ -43,7 +43,6 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
   // todo fix audio track
   const startStream = (stream: MediaStream) => {
     setState((prevState) => {
-      // console.log("State changing: stream: " + stream);
       return {
         ...prevState,
         isError: false,
@@ -69,7 +68,6 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
       // - user withdraws permission to camera
       track.onended = () => {
         stopStream();
-        // console.log("On ended...");
       };
     });
   };
@@ -86,7 +84,6 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
         // - user didn't grant permission to camera
         // - user clicked "Cancel" instead of "Share" on Screen Sharing menu ("Chose what to share" in Google Chrome)
         stopStream();
-        // console.log({ error });
       });
   };
 

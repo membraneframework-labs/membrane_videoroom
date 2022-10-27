@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 
 import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
-import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
+import { useMembraneMediaStreaming } from "./hooks/useMembraneMediaStreaming";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, RemotePeer, usePeersState } from "./hooks/usePeerState";
@@ -31,13 +31,17 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
-  const userCameraStreamId = useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
-  const userAudioStreamId = useMediaStreamControl("audio", webrtc, userMediaAudio.stream);
-  const screenSharingStreamId = useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
+  const userCameraTrackIds: string[] = useMembraneMediaStreaming("camera", webrtc, userMediaVideo.stream);
+  const userAudioTrackIds: string[] = useMembraneMediaStreaming("audio", webrtc, userMediaAudio.stream);
+  const screenSharingTrackId: string[] = useMembraneMediaStreaming("screensharing", webrtc, displayMedia.stream);
 
-  useLocalPeerStreamLifecycle("camera", peerApi, userMediaVideo.stream, userCameraStreamId || undefined);
-  useLocalPeerStreamLifecycle("audio", peerApi, userMediaAudio.stream, userAudioStreamId || undefined);
-  useLocalPeerStreamLifecycle("screensharing", peerApi, displayMedia.stream, screenSharingStreamId || undefined);
+  useLocalPeerStreamLifecycle("camera", userCameraTrackIds, peerApi, userMediaVideo.stream);
+  useLocalPeerStreamLifecycle("audio", userAudioTrackIds, peerApi, userMediaAudio.stream);
+  useLocalPeerStreamLifecycle("screensharing", screenSharingTrackId, peerApi, displayMedia.stream);
+
+  useEffect(() => {
+    console.log({ name: "remote peers", remote: peerState });
+  }, [peerState]);
 
   return (
     <section>

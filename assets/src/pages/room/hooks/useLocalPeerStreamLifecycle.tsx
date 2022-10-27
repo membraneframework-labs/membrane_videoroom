@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { PeersApi, TrackType } from "./usePeerState";
+import { PeersApi } from "./usePeerState";
+import { TrackType } from "../../types";
 
 export function useLocalPeerStreamLifecycle(type: TrackType, api: PeersApi, stream?: MediaStream, userCameraStreamId?: string) {
   useEffect(() => {

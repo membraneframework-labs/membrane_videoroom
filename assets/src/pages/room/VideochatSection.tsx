@@ -1,18 +1,14 @@
 import { LocalPeer, RemotePeer } from "./hooks/usePeerState";
-import VideoPeerPlayersSection, { MediaPlayerConfig } from "./components/StreamPlayer/VideoPeerPlayersSection";
-import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import MediaPlayerPeersSection, { MediaPlayerConfig } from "./components/StreamPlayer/MediaPlayerPeersSection";
+import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
 import React, { FC } from "react";
-import { UseMediaResult } from "./hooks/useUserMedia";
-import { CurrentUser } from "./hooks/useMembraneClient";
 
 type Props = {
   peers: RemotePeer[];
   localPeer?: LocalPeer;
   showSimulcast?: boolean;
-  selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  disableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
-  enableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
+  webrtc?: MembraneWebRTC;
 };
 
 const prepareScreenSharingStreams = (
@@ -55,14 +51,7 @@ const prepareScreenSharingStreams = (
   return { screenSharingStreams, isScreenSharingActive };
 };
 
-export const VideochatSection: FC<Props> = ({
-  peers,
-  localPeer,
-  showSimulcast,
-  selectRemoteTrackEncoding,
-  enableTrackEncoding,
-  disableTrackEncoding,
-}: Props) => {
+export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const localUser: MediaPlayerConfig = {
     peerId: localPeer?.id,
     displayName: "Me",
@@ -73,13 +62,9 @@ export const VideochatSection: FC<Props> = ({
     audioStream: localPeer?.audioTrackStream,
     screenSharingStream: localPeer?.screenSharingTrackStream,
     autoplayAudio: false,
-    simulcast: {
-      show: showSimulcast,
-      // todo POC
-      enableTrackEncoding: enableTrackEncoding,
-      disableTrackEncoding: disableTrackEncoding,
-    },
+    showSimulcast: showSimulcast,
     flipHorizontally: true,
+    streamSource: "local",
   };
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
@@ -89,12 +74,12 @@ export const VideochatSection: FC<Props> = ({
       <div className="flex flex-col items-center md:flex-row md:items-start justify-center h-full">
         {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
 
-        <VideoPeerPlayersSection
+        <MediaPlayerPeersSection
           peers={peers}
           localUser={localUser}
           showSimulcast={showSimulcast}
-          selectRemoteTrackEncoding={selectRemoteTrackEncoding}
           oneColumn={isScreenSharingActive}
+          webrtc={webrtc}
         />
       </div>
     </div>

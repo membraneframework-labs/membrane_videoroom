@@ -29,8 +29,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   const { state: peerState, api: peerApi } = usePeersState();
 
-  const { webrtc, selectRemoteTrackEncoding, enableTrackEncoding, disableTrackEncoding } =
-    useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
   const userCameraStreamId = useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
   const userAudioStreamId = useMediaStreamControl("audio", webrtc, userMediaAudio.stream);
@@ -69,9 +68,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             peers={peerState.remote}
             localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
-            selectRemoteTrackEncoding={selectRemoteTrackEncoding}
-            enableTrackEncoding={enableTrackEncoding}
-            disableTrackEncoding={disableTrackEncoding}
+            webrtc={webrtc}
           />
         </section>
         <MediaControlButtons

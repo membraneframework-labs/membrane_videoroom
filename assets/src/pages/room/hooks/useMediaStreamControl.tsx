@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
-import { TrackType } from "./usePeerState";
+import { TrackType } from "../../types";
 
 export function useMediaStreamControl(type: TrackType, webrtc?: MembraneWebRTC, stream?: MediaStream): string | null {
   const [trackId, setTrackId] = useState<string | null>(null);

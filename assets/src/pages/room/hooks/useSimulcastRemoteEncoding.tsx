@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 export type UseSimulcastRemoteEncodingResult = {
   desiredEncoding: TrackEncoding;
@@ -8,24 +8,29 @@ export type UseSimulcastRemoteEncodingResult = {
 
 export const useSimulcastRemoteEncoding = (
   defaultValue: TrackEncoding = "m",
-  callback?: (encoding: TrackEncoding) => void
+  peerId?: string,
+  videoTrackId?: string,
+  webrtc?: MembraneWebRTC
 ): UseSimulcastRemoteEncodingResult => {
   const [desiredEncoding, setDesiredEncodingState] = useState<TrackEncoding>(defaultValue);
 
-  const setDesiredEncoding = useCallback(
+  const selectRemoteEncoding = useCallback(
     (quality: TrackEncoding) => {
-      // console.log({ quality });
-      setDesiredEncodingState(() => quality);
-      // console.log({ callback });
-      // im not sure for this method
-      if (callback) callback(quality);
-      // todo refactor
+      // console.log({ name: "selectRemoteEncoding", videoTrackId });
+      if (!videoTrackId || !peerId || !webrtc) return;
+      webrtc.selectTrackEncoding(peerId, videoTrackId, quality);
     },
-    [callback]
+    [videoTrackId, peerId, webrtc]
   );
 
-  return {
-    setDesiredEncoding: setDesiredEncoding,
-    desiredEncoding: desiredEncoding,
-  };
+  const setDesiredEncoding = useCallback(
+    (quality: TrackEncoding) => {
+      setDesiredEncodingState(() => quality);
+      // im not sure for this method
+      selectRemoteEncoding(quality);
+    },
+    [selectRemoteEncoding]
+  );
+
+  return { setDesiredEncoding, desiredEncoding };
 };

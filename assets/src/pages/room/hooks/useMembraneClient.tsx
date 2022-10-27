@@ -7,22 +7,16 @@ import {
   TrackEncoding,
 } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
-import { Metadata, PeerMetadata, PeersApi, TrackType } from "./usePeerState";
+import { Metadata, PeerMetadata, PeersApi } from "./usePeerState";
+import { isTrackType } from "../../types";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
-  // todo refactor
-  const types: TrackType[] = ["camera", "screensharing", "audio"];
-  return {
-    type: types.includes(type) ? type : undefined,
-  };
+  return isTrackType(type) ? { type } : {};
 };
 
 type UseSetupResult = {
   webrtc?: MembraneWebRTC;
-  selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  disableTrackEncoding: (trackId: string, encoding: TrackEncoding) => void;
-  enableTrackEncoding: (trackId: string, encoding: TrackEncoding) => void;
 };
 
 export type CurrentUser = {
@@ -163,30 +157,5 @@ export function useMembraneClient(
     };
   }, [roomId]);
 
-  const selectRemoteTrackEncoding = (peerId: string, trackId: string, encoding: TrackEncoding) => {
-    // console.log({ name: "changeRemoteEncoding", peerId, trackId, encoding });
-    if (!webrtc) return;
-    webrtc.selectTrackEncoding(peerId, trackId, encoding);
-  };
-
-  const enableTrackEncoding = (trackId: string, encoding: TrackEncoding) => {
-    // console.log({ name: "enableTrackEncoding", encoding });
-    if (!trackId || !webrtc) return;
-    // console.log({ encoding });
-    webrtc.enableTrackEncoding(trackId, encoding);
-  };
-
-  const disableTrackEncoding = (trackId: string, encoding: TrackEncoding) => {
-    // console.log({ name: "enableTrackEncoding", encoding });
-    if (!trackId || !webrtc) return;
-    console.log({ encoding });
-    webrtc.disableTrackEncoding(trackId, encoding);
-  };
-
-  return {
-    webrtc,
-    selectRemoteTrackEncoding,
-    enableTrackEncoding,
-    disableTrackEncoding,
-  };
+  return { webrtc };
 }

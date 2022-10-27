@@ -6,3 +6,11 @@ type EncodingType = typeof EncodingValues[number];
 
 export const isTrackEncoding = (value: string): value is TrackEncoding =>
   EncodingValues.includes(value as TrackEncoding);
+
+const TrackTypeValues = ["screensharing", "camera", "audio"] as const;
+export type TrackType = typeof TrackTypeValues[number];
+
+export const isTrackType = (value: string): value is TrackType => TrackTypeValues.includes(value as TrackType);
+
+const StreamSourceValues = ["local", "remote"] as const;
+export type StreamSource = typeof StreamSourceValues[number];

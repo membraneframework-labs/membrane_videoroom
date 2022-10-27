@@ -4,67 +4,44 @@ import PeerInfoLayer from "./PeerInfoLayer";
 import { useSimulcastRemoteEncoding, UseSimulcastRemoteEncodingResult } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
-import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
-
-type LocalSimulcastConfig = {
-  disableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
-  enableTrackEncoding?: (trackId: string, encoding: TrackEncoding) => void;
-};
+import { StreamSource } from "../../../types";
 
 export interface Props {
   peerId?: string;
   videoStream?: MediaStream;
-  selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   encodingQuality?: TrackEncoding;
   videoTrackId?: string;
   flipHorizontally?: boolean;
   audioStream?: MediaStream;
   showSimulcast?: boolean;
-  localSimulcastConfig?: LocalSimulcastConfig;
-  enableRemoteSimulcast?: boolean;
+  streamSource: StreamSource;
   topLeft?: JSX.Element;
   topRight?: JSX.Element;
   bottomLeft?: JSX.Element;
   bottomRight?: JSX.Element;
+  webrtc?: MembraneWebRTC;
 }
 
 const VideoPlayerTile: FC<Props> = ({
   peerId,
   videoStream,
-  selectRemoteTrackEncoding,
   encodingQuality,
   videoTrackId,
   flipHorizontally,
   audioStream,
   showSimulcast,
-  localSimulcastConfig,
-  enableRemoteSimulcast,
+  streamSource,
   topLeft,
   topRight,
   bottomLeft,
   bottomRight,
+  webrtc,
 }: Props) => {
-  // console.log({ videoTrackId });
-  const selectRemoteEncoding = useCallback(
-    (quality: TrackEncoding) => {
-      // console.log({ name: "selectRemoteEncoding", videoTrackId });
-      if (!videoTrackId || !peerId || !selectRemoteTrackEncoding) return;
-      selectRemoteTrackEncoding(peerId, videoTrackId, quality);
-    },
-    [videoTrackId, peerId, selectRemoteTrackEncoding]
-  );
+  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, videoTrackId, webrtc);
 
-  const { desiredEncoding, setDesiredEncoding }: UseSimulcastRemoteEncodingResult = useSimulcastRemoteEncoding(
-    "m",
-    selectRemoteEncoding
-  );
-
-  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(
-    videoTrackId,
-    localSimulcastConfig?.enableTrackEncoding,
-    localSimulcastConfig?.disableTrackEncoding
-  );
+  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(videoTrackId, webrtc);
 
   return (
     <div
@@ -73,7 +50,7 @@ const VideoPlayerTile: FC<Props> = ({
     >
       <MediaPlayer videoStream={videoStream} audioStream={audioStream} flipHorizontally={flipHorizontally} />
       <PeerInfoLayer topLeft={topLeft} topRight={topRight} bottomLeft={bottomLeft} bottomRight={bottomRight} />
-      {showSimulcast && enableRemoteSimulcast && (
+      {showSimulcast && streamSource === "remote" && (
         <SimulcastRemoteLayer
           desiredEncoding={desiredEncoding}
           setDesiredEncoding={setDesiredEncoding}
@@ -81,7 +58,7 @@ const VideoPlayerTile: FC<Props> = ({
           disabled={!videoStream}
         />
       )}
-      {showSimulcast && localSimulcastConfig?.enableTrackEncoding && localSimulcastConfig?.disableTrackEncoding && (
+      {showSimulcast && streamSource === "local" && (
         <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!videoStream} />
       )}
     </div>

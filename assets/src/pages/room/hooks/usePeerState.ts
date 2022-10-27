@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { TrackType } from "../../types";
 
 export type Track = {
   trackId: string;
@@ -12,8 +13,6 @@ export type Track = {
 export type RemotePeer = {
   tracks: Track[];
 } & NewPeer;
-
-export type TrackType = "screensharing" | "camera" | "audio";
 
 type PeersMap = {
   [peerId: string]: RemotePeer;

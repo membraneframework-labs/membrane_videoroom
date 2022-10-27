@@ -1,40 +1,47 @@
-import React, { FC, useEffect } from "react";
-import { RemotePeer, Track } from "../../hooks/usePeerState";
+import React, { FC } from "react";
+import { NewPeer, RemotePeer, Track } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
-import { StreamSource } from "../../../types";
+import { StreamSource, TrackType } from "../../../types";
 
-export type TrackXXX = {
+export type TrackWithId = {
   stream?: MediaStream;
   trackId?: string;
   encodingQuality?: TrackEncoding;
 };
 
-export type MediaPlayerConfig = {
+export type MediaPlayerTileConfig = {
   peerId?: string;
   emoji?: string;
   flipHorizontally?: boolean;
   displayName?: string;
-  video: TrackXXX[];
-  audio: TrackXXX[];
-  screenSharing: TrackXXX[];
+  video: TrackWithId[];
+  audio: TrackWithId[];
+  screenSharing: TrackWithId[];
   showSimulcast?: boolean;
   remoteSimulcast?: boolean;
   streamSource: StreamSource;
 };
 
-const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerConfig[] =>
-  peers.map((peer) => {
-    const videoTracks: Track[] = peer.tracks
-      .filter((track) => track?.metadata?.type === "camera")
-      .map((track) => ({ stream: track.mediaStream, trackId: track.trackId, encoding: track.encoding }));
-    const audioTracks: Track[] = peer.tracks
-      .filter((track) => track?.metadata?.type === "audio")
-      .map((track) => ({ stream: track.mediaStream, trackId: track.trackId, encoding: track.encoding }));
-    const screenSharingTracks: Track[] = peer.tracks
-      .filter((track) => track?.metadata?.type === "screensharing")
-      .map((track) => ({ stream: track.mediaStream, trackId: track.trackId, encoding: track.encoding }));
+const getTracks = (tracks: Track[], type: TrackType): TrackWithId[] =>
+  tracks
+    .filter((track) => track?.metadata?.type === type)
+    .map((track) => {
+      // todo fix new variable for strict type inference
+      const result: TrackWithId = {
+        stream: track.mediaStream,
+        trackId: track.trackId,
+        encodingQuality: track.encoding,
+      };
+      return result;
+    });
+
+const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerTileConfig[] => {
+  return peers.map((peer) => {
+    const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
+    const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
+    const screenSharingTracks: TrackWithId[] = getTracks(peer.tracks, "screensharing");
 
     return {
       peerId: peer.id,
@@ -48,12 +55,13 @@ const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPl
       flipHorizontally: false,
       remoteSimulcast: true,
       streamSource: "remote",
-    } as MediaPlayerConfig;
+    } as MediaPlayerTileConfig;
   });
+};
 
 type Props = {
   peers: RemotePeer[];
-  localUser: MediaPlayerConfig;
+  localUser: MediaPlayerTileConfig;
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn?: boolean;
@@ -70,7 +78,9 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
 };
 
 const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {
-  const allPeersConfig = [localUser, ...getCameraStreams(peers, showSimulcast)];
+  const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...getCameraStreams(peers, showSimulcast)];
+
+  console.log({ name: "allPeersConfig", allPeersConfig });
 
   return (
     <div
@@ -82,9 +92,9 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
     >
       {allPeersConfig.map((config, idx) => {
         // todo for now only first audio, video and screen sharing stream are handled
-        const video: TrackXXX | undefined = config.video[0];
-        const screenSharing: TrackXXX | undefined = config.screenSharing[0];
-        const audio: TrackXXX | undefined = config.audio[0];
+        const video: TrackWithId | undefined = config.video[0];
+        const screenSharing: TrackWithId | undefined = config.screenSharing[0];
+        const audio: TrackWithId | undefined = config.audio[0];
 
         const videoStatus = "📹" + getStatus(video?.stream, video?.trackId);
         const currentlySharingScreen: string = screenSharing?.stream ? "🖥🟢" : "🖥🔴";

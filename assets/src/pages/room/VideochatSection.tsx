@@ -1,5 +1,5 @@
 import { LocalPeer, RemotePeer } from "./hooks/usePeerState";
-import MediaPlayerPeersSection, { MediaPlayerConfig } from "./components/StreamPlayer/MediaPlayerPeersSection";
+import MediaPlayerPeersSection, { MediaPlayerTileConfig } from "./components/StreamPlayer/MediaPlayerPeersSection";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
 import React, { FC } from "react";
@@ -57,7 +57,7 @@ const prepareScreenSharingStreams = (
 };
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
-  const localUser: MediaPlayerConfig = {
+  const localUser: MediaPlayerTileConfig = {
     peerId: localPeer?.id,
     displayName: "Me",
     emoji: localPeer?.metadata?.emoji,

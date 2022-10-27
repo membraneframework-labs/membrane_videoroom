@@ -7,11 +7,11 @@ import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource } from "../../../types";
-import { TrackXXX } from "./MediaPlayerPeersSection";
+import { TrackWithId } from "./MediaPlayerPeersSection";
 
 export interface Props {
   peerId?: string;
-  video?: TrackXXX;
+  video?: TrackWithId;
   flipHorizontally?: boolean;
   audioStream?: MediaStream;
   showSimulcast?: boolean;
@@ -39,6 +39,20 @@ const MediaPlayerTile: FC<Props> = ({
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.trackId, webrtc);
 
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.trackId, webrtc);
+
+  console.log({
+    peerId,
+    video,
+    flipHorizontally,
+    audioStream,
+    showSimulcast,
+    streamSource,
+    topLeft,
+    topRight,
+    bottomLeft,
+    bottomRight,
+    webrtc,
+  });
 
   return (
     <div

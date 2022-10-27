@@ -93,6 +93,7 @@ export function useMembraneClient(
           api.removePeer(peer.id);
         },
         onTrackEncodingChanged: (peerId: string, trackId: string, encoding: string) => {
+          console.log({ name: "onTrackEncodingChange", peerId, trackId, encoding });
           if (!isTrackEncoding(encoding)) return;
           api.setEncoding(peerId, trackId, encoding);
         },

@@ -1,12 +1,12 @@
 import React, { FC } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
-import { TrackXXX } from "./MediaPlayerPeersSection";
+import { TrackWithId } from "./MediaPlayerPeersSection";
 
 export type VideoStreamWithMetadata = {
   peerId: string;
   peerIcon?: string;
   peerName?: string;
-  video: TrackXXX;
+  video: TrackWithId;
 };
 
 type Props = {

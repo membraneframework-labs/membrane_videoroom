@@ -22,7 +22,7 @@ const ScreenSharingPlayers: FC<Props> = ({ streams }: Props) => {
           videoStream={e.videoStream}
           bottomLeft={
             <div>
-              {e.peerIcon} {e.peerName}
+              ({e.peerIcon} {e.peerName}) Screen
             </div>
           }
         />

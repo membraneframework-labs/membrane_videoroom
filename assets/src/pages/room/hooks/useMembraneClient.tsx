@@ -7,8 +7,7 @@ import {
   TrackEncoding,
 } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
-import { Metadata, PeersApi, TrackType } from "./usePeerState";
-import { getRandomAnimalEmoji } from "../utils";
+import { Metadata, PeerMetadata, PeersApi, TrackType } from "./usePeerState";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
@@ -21,7 +20,6 @@ const parseMetadata = (context: TrackContext) => {
 
 type UseSetupResult = {
   webrtc?: MembraneWebRTC;
-  currentUser: CurrentUser | null;
   selectRemoteTrackEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   disableTrackEncoding: (trackId: string, encoding: TrackEncoding) => void;
   enableTrackEncoding: (trackId: string, encoding: TrackEncoding) => void;
@@ -29,20 +27,18 @@ type UseSetupResult = {
 
 export type CurrentUser = {
   id: string;
-  displayName: string;
-  emoji: string;
+  metadata?: PeerMetadata;
 };
 
 // todo fix now - fix types e.g. setErrorMessage
 export function useMembraneClient(
   roomId: string,
-  displayName: string,
+  peerMetadata: PeerMetadata,
   isSimulcastOn: boolean,
   api: PeersApi,
   setErrorMessage: (value: ((prevState: string | undefined) => string | undefined) | string | undefined) => void
 ): UseSetupResult {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
     // console.log("Starting....");
@@ -53,8 +49,6 @@ export function useMembraneClient(
     const socketOnErrorRef = socket.onError(() => cleanUp());
 
     // emoji is used as an example of additional metadata
-    const emoji = getRandomAnimalEmoji();
-
     const webrtcChannel = socket.channel(`room:${roomId}`, {
       // TODO fix later
       isSimulcastOn: isSimulcastOn,
@@ -80,7 +74,7 @@ export function useMembraneClient(
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
           // console.log({ name: "onJoinSuccess", peerId, peersInRoom });
-          setCurrentUser({ id: peerId, displayName: displayName, emoji: emoji });
+          api.setLocalPeer(peerId, peerMetadata);
           api.addPeers(
             peersInRoom.map((peer) => ({
               id: peer.id,
@@ -115,7 +109,14 @@ export function useMembraneClient(
         },
         onPeerJoined: (peer) => {
           // console.log({ name: "onPeerJoined", peer });
-          api.addPeers([{ id: peer.id, displayName: peer.metadata.displayName, emoji: peer.metadata.emoji, source: "remote"}]);
+          api.addPeers([
+            {
+              id: peer.id,
+              displayName: peer.metadata.displayName,
+              emoji: peer.metadata.emoji,
+              source: "remote",
+            },
+          ]);
         },
         onPeerLeft: (peer) => {
           // console.log({ name: "onPeerLeft", peer });
@@ -145,7 +146,7 @@ export function useMembraneClient(
       .receive("ok", (response: any) => {
         setWebrtc(webrtc);
 
-        webrtc.join({ displayName: displayName, emoji: emoji });
+        webrtc.join(peerMetadata);
       })
       .receive("error", (response: any) => {});
 
@@ -184,7 +185,6 @@ export function useMembraneClient(
 
   return {
     webrtc,
-    currentUser,
     selectRemoteTrackEncoding,
     enableTrackEncoding,
     disableTrackEncoding,

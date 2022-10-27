@@ -1,13 +1,15 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 
 import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
 import { useMediaStreamControl } from "./hooks/useMediaStreamControl";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
-import { LocalPeer, usePeersState } from "./hooks/usePeerState";
+import { PeerMetadata, RemotePeer, usePeersState } from "./hooks/usePeerState";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
+import { useLocalPeerStreamLifecycle } from "./hooks/useLocalPeerStreamLifecycle";
+import { getRandomAnimalEmoji } from "./utils";
 
 type Props = {
   displayName: string;
@@ -18,32 +20,25 @@ type Props = {
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(isSimulcastOn);
+  const [peerMetadata] = useState<PeerMetadata>({emoji: getRandomAnimalEmoji(), displayName: displayName})
 
   // useAskForPermission()
   const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS);
   const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
 
-  // TODO implement local peer
-  const { state, api } = usePeersState();
-  const { webrtc, currentUser, selectRemoteTrackEncoding, enableTrackEncoding, disableTrackEncoding } =
-    useMembraneClient(roomId, displayName, isSimulcastOn, api, setErrorMessage);
+  const { state: peerState, api: peerApi } = usePeersState();
+
+  const { webrtc, selectRemoteTrackEncoding, enableTrackEncoding, disableTrackEncoding } =
+    useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
   const userCameraStreamId = useMediaStreamControl("camera", webrtc, userMediaVideo.stream);
   const userAudioStreamId = useMediaStreamControl("audio", webrtc, userMediaAudio.stream);
+  const screenSharingStreamId = useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
 
-  useEffect(() => {
-    // console.log("Add local peer");
-    currentUser && api.addLocalPeer({ ...currentUser, source: "local" });
-  }, [currentUser]);
-
-  useEffect(() => {
-    console.log("NEW API!");
-  }, [api]);
-
-  console.log({ state });
-
-  useMediaStreamControl("screensharing", webrtc, displayMedia.stream);
+  useLocalPeerStreamLifecycle("camera", peerApi, userMediaVideo.stream, userCameraStreamId || undefined);
+  useLocalPeerStreamLifecycle("audio", peerApi, userMediaAudio.stream, userAudioStreamId || undefined);
+  useLocalPeerStreamLifecycle("screensharing", peerApi, displayMedia.stream, screenSharingStreamId || undefined);
 
   return (
     <section>
@@ -63,7 +58,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             <h3 className="text-xl font-medium text-white">
               Participants
               <span> {displayName}</span>
-              {state.remote.map((e: LocalPeer) => (
+              {peerState.remote.map((e: RemotePeer) => (
                 <span key={e.id} title={e.id}>
                   {e.displayName}
                 </span>
@@ -71,13 +66,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             </h3>
           </header>
           <VideochatSection
-            peer={currentUser || undefined}
-            peers={state.remote}
-            displayMedia={displayMedia}
-            cameraMedia={userMediaVideo}
-            cameraStreamId={userCameraStreamId || undefined}
-            audioMedia={userMediaAudio}
-            audioStreamId={userAudioStreamId || undefined}
+            peers={peerState.remote}
+            localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
             selectRemoteTrackEncoding={selectRemoteTrackEncoding}
             enableTrackEncoding={enableTrackEncoding}

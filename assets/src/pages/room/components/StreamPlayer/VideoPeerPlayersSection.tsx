@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { LocalPeer, Track } from "../../hooks/usePeerState";
+import { RemotePeer, Track } from "../../hooks/usePeerState";
 import VideoPlayerTile from "./VideoPlayerTile";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
@@ -13,20 +13,20 @@ export type SimulcastPlayerConfig = {
 export type MediaPlayerConfig = {
   peerId?: string;
   emoji?: string;
-  flipHorizontally: boolean;
+  flipHorizontally?: boolean;
   displayName?: string;
   videoId?: string;
   videoStream?: MediaStream;
   audioId?: string;
   audioStream?: MediaStream;
-  autoplayAudio: boolean;
+  autoplayAudio?: boolean;
   screenSharingStream?: MediaStream;
   simulcast?: SimulcastPlayerConfig;
   encodingQuality?: TrackEncoding;
   remoteSimulcast?: boolean;
 };
 
-const getCameraStreams = (peers: LocalPeer[], showSimulcast?: boolean): MediaPlayerConfig[] =>
+const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerConfig[] =>
   peers.map((peer) => {
     const video: Track | undefined = peer.tracks.find((track) => track?.metadata?.type === "camera");
     const screenSharingStream: MediaStream | undefined = peer.tracks.find(
@@ -54,7 +54,7 @@ const getCameraStreams = (peers: LocalPeer[], showSimulcast?: boolean): MediaPla
   });
 
 type Props = {
-  peers: LocalPeer[];
+  peers: RemotePeer[];
   localUser: MediaPlayerConfig;
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
@@ -89,7 +89,7 @@ const VideoPeerPlayersSection: FC<Props> = ({
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {allCameraStreams.map((e) => {
+      {allCameraStreams.map((e, idx) => {
         const videoStatus = "📹" + getStatus(e.videoStream, e.videoId);
         const currentlySharingScreen: string = e.screenSharingStream ? "🖥🟢" : "🖥🔴";
         const audioIcon = e.audioStream ? "🔊🟢" : "🔊🔴";
@@ -99,7 +99,7 @@ const VideoPeerPlayersSection: FC<Props> = ({
         // TODO inline VidePeerPlayerTile
         return (
           <VideoPlayerTile
-            key={e.peerId}
+            key={idx}
             peerId={e.peerId}
             videoStream={e.videoStream}
             videoTrackId={e.videoId}

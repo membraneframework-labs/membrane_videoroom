@@ -103,7 +103,6 @@ export function usePeersState(): UsePeersStateResult {
           {
             id: peer.id,
             tracks: [],
-            removedTracks: [],
             displayName: peer.displayName,
             emoji: peer.emoji,
             source: peer.source,

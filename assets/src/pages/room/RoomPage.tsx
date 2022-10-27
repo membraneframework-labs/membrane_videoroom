@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
@@ -20,7 +20,7 @@ type Props = {
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(isSimulcastOn);
-  const [peerMetadata] = useState<PeerMetadata>({emoji: getRandomAnimalEmoji(), displayName: displayName})
+  const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName: displayName });
 
   // useAskForPermission()
   const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS);

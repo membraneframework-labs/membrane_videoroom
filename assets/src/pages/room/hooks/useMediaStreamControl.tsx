@@ -7,8 +7,9 @@ export function useMediaStreamControl(type: TrackType, webrtc?: MembraneWebRTC, 
 
   // todo should I change it to useCallback?
   const addTrack = (webrtc: MembraneWebRTC, stream: MediaStream) => {
-    // console.log("Adding track");
-    stream.getTracks().forEach((track, idx) => {
+    const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+
+    tracks.forEach((track, idx) => {
       const trackId: string = webrtc.addTrack(
         track,
         stream,
@@ -16,7 +17,7 @@ export function useMediaStreamControl(type: TrackType, webrtc?: MembraneWebRTC, 
         // todo handle screensharing and audio
         { enabled: true, active_encodings: ["l", "m", "h"] }
       );
-      // console.log({ name: "Track added", trackId });
+      console.log({ name: "Track added", trackId, idx });
       // todo could be many tracks
       setTrackId(trackId);
     });

@@ -82,7 +82,7 @@ export function useMembraneClient(
           // console.log({ name: "onJoinError", metadata });
         },
         onTrackReady: (ctx) => {
-          // console.log({ name: "onTrackReady", ctx });
+          console.log({ name: "onTrackReady", ctx });
           if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
           const metadata: Metadata = parseMetadata(ctx);
           api.addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
@@ -93,7 +93,7 @@ export function useMembraneClient(
           const metadata: Metadata = parseMetadata(ctx);
         },
         onTrackRemoved: (ctx) => {
-          // console.log({ name: "onTrackRemoved", ctx });
+          console.log({ name: "onTrackRemoved", ctx });
           const peerId = ctx?.peer?.id;
           if (!peerId) return;
           api.removeTrack(peerId, ctx.trackId);

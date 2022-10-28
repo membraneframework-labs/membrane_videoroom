@@ -7,7 +7,7 @@ export type UseSimulcastRemoteEncodingResult = {
 };
 
 export const useSimulcastRemoteEncoding = (
-  defaultValue: TrackEncoding = "m",
+  defaultValue: TrackEncoding,
   peerId?: string,
   videoTrackId?: string,
   webrtc?: MembraneWebRTC

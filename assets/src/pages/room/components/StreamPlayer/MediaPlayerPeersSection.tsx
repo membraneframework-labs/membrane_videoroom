@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { NewPeer, RemotePeer, Track } from "../../hooks/usePeerState";
+import { RemotePeer, Track } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
@@ -27,15 +27,13 @@ export type MediaPlayerTileConfig = {
 const getTracks = (tracks: Track[], type: TrackType): TrackWithId[] =>
   tracks
     .filter((track) => track?.metadata?.type === type)
-    .map((track) => {
-      // todo fix new variable for strict type inference
-      const result: TrackWithId = {
+    .map(
+      (track): TrackWithId => ({
         stream: track.mediaStream,
         trackId: track.trackId,
         encodingQuality: track.encoding,
-      };
-      return result;
-    });
+      })
+    );
 
 const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerTileConfig[] => {
   return peers.map((peer) => {

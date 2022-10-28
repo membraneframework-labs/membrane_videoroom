@@ -45,5 +45,6 @@ services:
       GF_SECURITY_ADMIN_USER: "${GF_SECURITY_ADMIN_USER}"
     depends_on:
       - videoroom
+
 volumes:
   grafana-provisioning:

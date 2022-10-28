@@ -105,7 +105,7 @@ export function useMembraneClient(
     });
 
     webrtcChannel.on("simulcastConfig", (event) => {
-      console.log({ name: "onSimulcastConfig", event });
+      // empty
     });
 
     webrtcChannel

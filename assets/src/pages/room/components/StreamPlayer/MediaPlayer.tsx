@@ -5,9 +5,10 @@ export interface Props {
   flipHorizontally?: boolean;
   videoStream?: MediaStream;
   audioStream?: MediaStream;
+  playAudio?: boolean;
 }
 
-const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontally }: Props) => {
+const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontally, playAudio }: Props) => {
   const videoRef: RefObject<HTMLVideoElement> = useRef<HTMLVideoElement>(null);
   const audioRef: RefObject<HTMLAudioElement> = useRef<HTMLAudioElement>(null);
 
@@ -23,7 +24,7 @@ const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontal
 
   return (
     <>
-      <audio autoPlay ref={audioRef}></audio>
+      <audio muted={!playAudio} autoPlay ref={audioRef}></audio>
       <video
         className={clsx("w-full h-full", flipHorizontally && "flip-horizontally")}
         autoPlay // 1

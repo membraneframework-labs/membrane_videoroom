@@ -9,14 +9,12 @@ export function useMembraneMediaStreaming(type: TrackType, webrtc?: MembraneWebR
     const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
     const tracksId: string[] = tracks.map((track, idx) => {
-      const trackId: string = webrtc.addTrack(
+      return webrtc.addTrack(
         track,
         stream,
         { active: true, type: type },
-        // todo handle screensharing and audio
-        { enabled: true, active_encodings: ["l", "m", "h"] }
+        type == "camera" ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
       );
-      return trackId;
     });
 
     setTracksId((prevState) => {

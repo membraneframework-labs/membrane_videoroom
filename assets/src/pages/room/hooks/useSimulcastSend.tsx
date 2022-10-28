@@ -1,4 +1,4 @@
-import { useCallbackToggle } from "./useToggle";
+import { useToggle } from "./useToggle";
 import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 
 export type UseSimulcastLocalEncoding = {
@@ -17,13 +17,13 @@ export const useSimulcastSend = (trackId?: string, webrtc?: MembraneWebRTC): Use
     status ? webrtc?.enableTrackEncoding(trackId, encodingName) : webrtc?.disableTrackEncoding(trackId, encodingName);
   };
 
-  const [highQuality, toggleHighQuality] = useCallbackToggle(true, (encoding) => {
+  const [highQuality, toggleHighQuality] = useToggle(true, (encoding) => {
     toggleRemoteEncoding(encoding, "h");
   });
-  const [mediumQuality, toggleMediumQuality] = useCallbackToggle(true, (encoding) => {
+  const [mediumQuality, toggleMediumQuality] = useToggle(true, (encoding) => {
     toggleRemoteEncoding(encoding, "m");
   });
-  const [lowQuality, toggleLowQuality] = useCallbackToggle(true, (encoding) => {
+  const [lowQuality, toggleLowQuality] = useToggle(true, (encoding) => {
     toggleRemoteEncoding(encoding, "l");
   });
 

@@ -25,7 +25,6 @@ const prepareScreenSharingStreams = (
       }))
     )
     .filter((element) => element.track?.metadata?.type === "screensharing")
-    // todo fix now - should videoId be e.track?.trackId?
     .map(
       (element) =>
         ({
@@ -67,6 +66,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     showSimulcast: showSimulcast,
     flipHorizontally: true,
     streamSource: "local",
+    playAudio: false,
   };
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);

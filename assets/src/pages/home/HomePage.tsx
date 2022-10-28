@@ -1,5 +1,5 @@
 import React, { FC, useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
 import { SimulcastContext } from "../../contexts/simulcastContext";
@@ -10,7 +10,9 @@ export const HomePage: FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
   const [simulcastInput, setSimulcastInput] = useState<boolean>(true);
-  const [roomIdInput, setRoomIdInput] = useState<string>("1");
+  const match = useParams();
+  const roomId: string = match?.roomId || ""
+  const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
 
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type UseMediaResult = {
   isError: boolean;
@@ -23,25 +23,21 @@ export const useDisplayMedia = (config: DisplayMediaStreamConstraints) =>
 export function useMedia(config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult {
   const [firstMount, setFirstMount] = useState(true);
 
-  // todo should I change it to useCallback?
-  const stopStream = () => {
-    setState((prevState) => {
-      return {
-        ...prevState,
-        isError: true,
-        isSuccess: false,
-        previewRef: undefined,
-        stream: undefined,
-        stop: () => {
-          // empty
-        },
-      };
-    });
-  };
+  const stopStream = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      isError: true,
+      isSuccess: false,
+      previewRef: undefined,
+      stream: undefined,
+      stop: () => {
+        // empty
+      },
+    }));
+  }, []);
 
-  // todo should I change it to useCallback?
   // todo fix audio track
-  const startStream = (stream: MediaStream) => {
+  const startStream = useCallback((stream: MediaStream) => {
     setState((prevState) => {
       return {
         ...prevState,
@@ -58,22 +54,23 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
         },
       };
     });
-  };
+  }, []);
 
-  // todo should I change it to useCallback?
-  const handleRevokePermission = (stream: MediaStream) => {
-    stream.getTracks().forEach((track) => {
-      // onended fires up when:
-      // - user clicks "Stop sharing" button
-      // - user withdraws permission to camera
-      track.onended = () => {
-        stopStream();
-      };
-    });
-  };
+  const handleRevokePermission = useCallback(
+    (stream: MediaStream) => {
+      stream.getTracks().forEach((track) => {
+        // onended fires up when:
+        // - user clicks "Stop sharing" button
+        // - user withdraws permission to camera
+        track.onended = () => {
+          stopStream();
+        };
+      });
+    },
+    [stopStream]
+  );
 
-  // todo should I change it to useCallback?
-  const getMedia = () => {
+  const getMedia = useCallback(() => {
     mediaStreamSupplier()
       .then((stream: MediaStream) => {
         handleRevokePermission(stream);
@@ -85,7 +82,7 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
         // - user clicked "Cancel" instead of "Share" on Screen Sharing menu ("Chose what to share" in Google Chrome)
         stopStream();
       });
-  };
+  }, [mediaStreamSupplier, handleRevokePermission, startStream, stopStream]);
 
   const [state, setState] = useState<UseMediaResult>({
     isError: false,
@@ -97,13 +94,15 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
     },
   });
 
-  // startOnMount is only used for development
+  // todo extract to separate hook
   useEffect(() => {
     if (!config.startOnMount && firstMount) {
       setFirstMount(false);
       return;
     }
     getMedia();
+    // remove this comment after extracting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return state;

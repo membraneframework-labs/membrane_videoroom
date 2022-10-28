@@ -22,7 +22,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(isSimulcastOn);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName: displayName });
 
-  // useAskForPermission()
   const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS);
   const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
@@ -38,10 +37,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   useLocalPeerStreamLifecycle("camera", userCameraTrackIds, peerApi, userMediaVideo.stream);
   useLocalPeerStreamLifecycle("audio", userAudioTrackIds, peerApi, userMediaAudio.stream);
   useLocalPeerStreamLifecycle("screensharing", screenSharingTrackId, peerApi, displayMedia.stream);
-
-  useEffect(() => {
-    console.log({ name: "remote peers", remote: peerState });
-  }, [peerState]);
 
   return (
     <section>

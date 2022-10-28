@@ -2,7 +2,6 @@ export const AUDIO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   audio: {
     advanced: [{ autoGainControl: true }, { noiseSuppression: true }, { echoCancellation: true }],
   },
-  video: true,
 };
 
 export const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
@@ -29,9 +28,6 @@ export const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
     frameRate: { ideal: 10, max: 15 },
   },
 };
-
-// todo remove
-export const LOCAL_PEER_ID = "local-peer";
 
 // todo implement
 const MBps = 1024 * 8;

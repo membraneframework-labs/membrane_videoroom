@@ -18,6 +18,7 @@ export type MediaPlayerTileConfig = {
   displayName?: string;
   video: TrackWithId[];
   audio: TrackWithId[];
+  playAudio: boolean;
   screenSharing: TrackWithId[];
   showSimulcast?: boolean;
   remoteSimulcast?: boolean;
@@ -36,7 +37,7 @@ const getTracks = (tracks: Track[], type: TrackType): TrackWithId[] =>
     );
 
 const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerTileConfig[] => {
-  return peers.map((peer) => {
+  return peers.map((peer: RemotePeer): MediaPlayerTileConfig => {
     const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
     const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
     const screenSharingTracks: TrackWithId[] = getTracks(peer.tracks, "screensharing");
@@ -48,12 +49,12 @@ const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPl
       video: videoTracks,
       audio: audioTracks,
       screenSharing: screenSharingTracks,
-      autoplayAudio: true,
       showSimulcast: showSimulcast,
       flipHorizontally: false,
       remoteSimulcast: true,
       streamSource: "remote",
-    } as MediaPlayerTileConfig;
+      playAudio: true,
+    };
   });
 };
 
@@ -98,27 +99,45 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
         const currentlySharingScreen: string = screenSharing?.stream ? "🖥🟢" : "🖥🔴";
         const audioIcon = audio?.stream ? "🔊🟢" : "🔊🔴";
         const emoji = config.emoji || "";
+        const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };
 
-        // TODO inline VidePeerPlayerTile
         return (
           <MediaPlayerTile
-            key={idx}
+            key={config.peerId}
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}
             topLeft={<div>{emoji}</div>}
             topRight={
               <div className="text-right">
-                <span className="ml-2">{currentlySharingScreen}</span>
-                <span className="ml-2">{videoStatus}</span>
-                <span className="ml-2">{audioIcon}</span>
+                <span title="Streaming" className="ml-2">
+                  Active tracks:
+                </span>
+                <span title="Screen Sharing" className="ml-2">
+                  {currentlySharingScreen}
+                </span>
+                <span title="Camera" className="ml-2">
+                  {videoStatus}
+                </span>
+                <span title="Audio" className="ml-2">
+                  {audioIcon}
+                </span>
               </div>
             }
             bottomLeft={<div>{config.displayName}</div>}
+            bottomRight={
+              <div className="text-right">
+                <span className="ml-2">Local audio:</span>
+                <span title={localAudio.title} className="ml-2">
+                  {localAudio.emoji}
+                </span>
+              </div>
+            }
             showSimulcast={showSimulcast}
             streamSource={config.streamSource}
             flipHorizontally={config.flipHorizontally}
             webrtc={webrtc}
+            playAudio={config.playAudio}
           />
         );
       })}

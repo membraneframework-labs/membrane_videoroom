@@ -15,13 +15,13 @@ type UseSetupResult = {
 };
 
 // todo extract callbacks
-export function useMembraneClient(
+export const useMembraneClient = (
   roomId: string,
   peerMetadata: PeerMetadata,
   isSimulcastOn: boolean,
   api: PeersApi,
   setErrorMessage: SetErrorMessage
-): UseSetupResult {
+): UseSetupResult => {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
 
   useEffect(() => {
@@ -123,4 +123,4 @@ export function useMembraneClient(
   }, [roomId]);
 
   return { webrtc };
-}
+};

@@ -72,15 +72,11 @@ export type PeerMetadata = {
   displayName?: string;
 };
 
-function copyTrack(peerCopy: { tracks: Track[] } & NewPeer, trackId: string) {
-  return peerCopy.tracks.find((track) => track.trackId === trackId);
-}
+const copyTrack = (peer: RemotePeer, trackId: string) => peer.tracks.find((track) => track.trackId === trackId);
 
-function copyOtherTracks(peerCopy: { tracks: Track[] } & NewPeer, trackId: string) {
-  return peerCopy.tracks.filter((track) => track.trackId !== trackId);
-}
+const copyOtherTracks = (peer: RemotePeer, trackId: string) => peer.tracks.filter((track) => track.trackId !== trackId);
 
-export function usePeersState(): UsePeersStateResult {
+export const usePeersState = (): UsePeersStateResult => {
   const [remotePeers, setRemotePeers] = useState<PeersMap>({});
   const [localPeerState, setLocalPeerState] = useState<LocalPeer | undefined>();
 
@@ -196,4 +192,4 @@ export function usePeersState(): UsePeersStateResult {
   }, [localPeerState, remotePeers]);
 
   return { state, api };
-}
+};

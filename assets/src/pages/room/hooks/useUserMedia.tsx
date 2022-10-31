@@ -12,15 +12,7 @@ type Config = {
   startOnMount: boolean;
 };
 
-const startOnMount = { startOnMount: false };
-
-export const useUserMedia = (config: MediaStreamConstraints) =>
-  useMedia(startOnMount, () => navigator.mediaDevices.getUserMedia(config));
-
-export const useDisplayMedia = (config: DisplayMediaStreamConstraints) =>
-  useMedia({ startOnMount: false }, () => navigator.mediaDevices.getDisplayMedia(config));
-
-export function useMedia(config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult {
+export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
   const [firstMount, setFirstMount] = useState(true);
 
   const stopStream = useCallback(() => {
@@ -106,4 +98,12 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
   }, []);
 
   return state;
-}
+};
+
+const useUserMediaConfig = { startOnMount: false };
+
+export const useUserMedia = (config: MediaStreamConstraints) =>
+  useMedia(useUserMediaConfig, () => navigator.mediaDevices.getUserMedia(config));
+
+export const useDisplayMedia = (config: DisplayMediaStreamConstraints) =>
+  useMedia(useUserMediaConfig, () => navigator.mediaDevices.getDisplayMedia(config));

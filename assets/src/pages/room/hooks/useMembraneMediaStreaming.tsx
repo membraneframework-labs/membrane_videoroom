@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
 
-export function useMembraneMediaStreaming(type: TrackType, webrtc?: MembraneWebRTC, stream?: MediaStream): string[] {
+export const useMembraneMediaStreaming = (type: TrackType, webrtc?: MembraneWebRTC, stream?: MediaStream): string[] => {
   const [tracksId, setTracksId] = useState<string[]>([]);
 
   const addTrack = useCallback((type: TrackType, webrtc: MembraneWebRTC, stream: MediaStream) => {
@@ -41,4 +41,4 @@ export function useMembraneMediaStreaming(type: TrackType, webrtc?: MembraneWebR
   }, [webrtc, stream, type, tracksId]);
 
   return tracksId;
-}
+};

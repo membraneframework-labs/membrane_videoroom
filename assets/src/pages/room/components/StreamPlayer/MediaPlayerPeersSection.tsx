@@ -101,7 +101,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
 
         return (
           <MediaPlayerTile
-            key={config.peerId}
+            key={idx}
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}

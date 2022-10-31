@@ -3,6 +3,7 @@ import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membr
 import { Socket } from "phoenix";
 import { TrackMetadata, PeerMetadata, PeersApi } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";
+import { SetErrorMessage } from "../RoomPage";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
@@ -19,7 +20,7 @@ export function useMembraneClient(
   peerMetadata: PeerMetadata,
   isSimulcastOn: boolean,
   api: PeersApi,
-  setErrorMessage: (value: string) => void
+  setErrorMessage: SetErrorMessage
 ): UseSetupResult {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
 
@@ -45,7 +46,7 @@ export function useMembraneClient(
         onSendMediaEvent: (mediaEvent: SerializedMediaEvent) => {
           webrtcChannel.push("mediaEvent", { data: mediaEvent });
         },
-        onConnectionError: (message: string) => {
+        onConnectionError: (message) => {
           setErrorMessage("Something went wrong :(");
         },
         // todo [Peer] -> Peer[] ???

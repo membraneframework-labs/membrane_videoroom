@@ -15,8 +15,8 @@ export const SimulcastEncodingToReceive: FC<Props> = ({ desiredEncoding, setDesi
       <select
         disabled={disabled}
         value={desiredEncoding}
-        onChange={(e) => {
-          const value = e.target.value;
+        onChange={(event) => {
+          const value = event.target.value;
           if (!isTrackEncoding(value)) return;
           setDesiredEncoding(value);
         }}

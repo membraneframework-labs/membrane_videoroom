@@ -11,7 +11,7 @@ export const HomePage: FC = () => {
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
   const [simulcastInput, setSimulcastInput] = useState<boolean>(true);
   const match = useParams();
-  const roomId: string = match?.roomId || ""
+  const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
 
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
@@ -30,7 +30,7 @@ export const HomePage: FC = () => {
             </label>
             <input
               value={roomIdInput}
-              onChange={(e) => setRoomIdInput(e.target.value)}
+              onChange={(event) => setRoomIdInput(event.target.value)}
               type="text"
               required
               name="room_name"
@@ -44,7 +44,7 @@ export const HomePage: FC = () => {
             </label>
             <input
               value={displayNameInput}
-              onChange={(e) => setDisplayNameInput(e.target.value)}
+              onChange={(event) => setDisplayNameInput(event.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               name="display_name"
               type="text"

@@ -72,6 +72,14 @@ export type PeerMetadata = {
   displayName?: string;
 };
 
+function copyTrack(peerCopy: { tracks: Track[] } & NewPeer, trackId: string) {
+  return peerCopy.tracks.find((track) => track.trackId === trackId);
+}
+
+function copyOtherTracks(peerCopy: { tracks: Track[] } & NewPeer, trackId: string) {
+  return peerCopy.tracks.filter((track) => track.trackId !== trackId);
+}
+
 export function usePeersState(): UsePeersStateResult {
   const [remotePeers, setRemotePeers] = useState<PeersMap>({});
   const [localPeerState, setLocalPeerState] = useState<LocalPeer | undefined>();
@@ -131,7 +139,7 @@ export function usePeersState(): UsePeersStateResult {
     ) => {
       setRemotePeers((prev: PeersMap) => {
         const peerCopy: RemotePeer = { ...prev[peerId] };
-        const oldTracks: Track[] = peerCopy.tracks.filter((e) => e.trackId !== trackId);
+        const oldTracks: Track[] = copyOtherTracks(peerCopy, trackId);
 
         const newTrack = {
           mediaStreamTrack: mediaStreamTrack,
@@ -150,11 +158,12 @@ export function usePeersState(): UsePeersStateResult {
   const setEncoding = useCallback((peerId: string, trackId: string, encoding: TrackEncoding) => {
     setRemotePeers((prev: PeersMap) => {
       const peerCopy: RemotePeer = { ...prev[peerId] };
-      const trackCopy: Track | undefined = peerCopy.tracks.find((track) => track.trackId === trackId);
+      const trackCopy: Track | undefined = copyTrack(peerCopy, trackId);
       if (!trackCopy) return prev;
 
-      const otherTracks = peerCopy.tracks.filter((track) => track.trackId !== trackId);
       trackCopy.encoding = encoding;
+
+      const otherTracks: Track[] = copyOtherTracks(peerCopy, trackId);
 
       return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });
@@ -166,7 +175,7 @@ export function usePeersState(): UsePeersStateResult {
       const peerCopy: RemotePeer = { ...prev[peerId] };
       const newPeer: RemotePeer = {
         ...peerCopy,
-        tracks: peerCopy.tracks.filter((e) => e.trackId !== trackId),
+        tracks: copyOtherTracks(peerCopy, trackId),
       };
       delete newState[peerId];
       return { ...newState, [peerId]: newPeer };

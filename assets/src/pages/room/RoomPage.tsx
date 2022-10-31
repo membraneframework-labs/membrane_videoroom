@@ -56,9 +56,9 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             <h3 className="text-xl font-medium text-white">
               Participants
               <span> {displayName}</span>
-              {peerState.remote.map((e: RemotePeer) => (
-                <span key={e.id} title={e.id}>
-                  {e.displayName}
+              {peerState.remote.map((peer: RemotePeer) => (
+                <span key={peer.id} title={peer.id}>
+                  {peer.displayName}
                 </span>
               ))}
             </h3>

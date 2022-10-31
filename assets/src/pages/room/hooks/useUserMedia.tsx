@@ -45,7 +45,7 @@ export function useMedia(config: Config, mediaStreamSupplier: () => Promise<Medi
         isSuccess: true,
         stream: stream,
         stop: () => {
-          stream.getTracks().forEach((e) => e.stop());
+          stream.getTracks().forEach((track) => track.stop());
           // todo refactor
           setState((prevStateInner) => ({
             ...prevStateInner,

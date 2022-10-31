@@ -26,17 +26,16 @@ const prepareScreenSharingStreams = (
     )
     .filter((element) => element.track?.metadata?.type === "screensharing")
     .map(
-      (element) =>
-        ({
-          video: {
-            stream: element.track.mediaStream,
-            trackId: element.track.trackId,
-            encodingQuality: element.track.encoding,
-          },
-          peerId: element.peerId,
-          peerIcon: element.emoji,
-          peerName: element.peerName,
-        } as VideoStreamWithMetadata)
+      (element): VideoStreamWithMetadata => ({
+        video: {
+          stream: element.track.mediaStream,
+          trackId: element.track.trackId,
+          encodingQuality: element.track.encoding,
+        },
+        peerId: element.peerId,
+        peerIcon: element.emoji,
+        peerName: element.peerName,
+      })
     );
 
   const screenSharingStreams: VideoStreamWithMetadata[] = localPeer?.screenSharingTrackStream

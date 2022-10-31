@@ -13,14 +13,14 @@ const getControls = (
   userMediaAudio.stream
     ? {
         icon: "/svg/mic-line.svg",
-        hover: "Mute or unmute the microphone",
+        hover: "Mute the microphone",
         onClick: () => {
           userMediaAudio.stop();
         },
       }
     : {
         icon: "/svg/mic-off-fill.svg",
-        hover: "Mute or unmute the microphone",
+        hover: "Unmute the microphone",
         onClick: () => {
           userMediaAudio.start();
         },
@@ -28,13 +28,13 @@ const getControls = (
   userMediaVideo.stream
     ? {
         icon: "/svg/camera-line.svg",
-        hover: "Turn on/off the camera",
+        hover: "Turn off the camera",
         onClick: () => {
           userMediaVideo.stop();
         },
       }
     : {
-        hover: "Turn on/off the camera",
+        hover: "Turn on the camera",
         icon: "/svg/camera-off-line.svg",
         onClick: () => {
           userMediaVideo.start();
@@ -43,21 +43,21 @@ const getControls = (
   displayMedia.stream
     ? {
         icon: "/svg/computer-line.svg",
-        hover: "Start or stop the screensharing",
+        hover: "Stop the screensharing",
         onClick: () => {
           displayMedia.stop();
         },
       }
     : {
         icon: "/svg/computer-line.svg",
-        hover: "Start or stop the screensharing",
+        hover: "Start the screensharing",
         onClick: () => {
           displayMedia.start();
         },
       },
   {
     icon: "/svg/phone-fill.svg",
-    hover: "Leave button",
+    hover: "Leave the room",
     imgClasses: "black-to-red transform rotate-135",
     onClick: () => {
       navigate("/")

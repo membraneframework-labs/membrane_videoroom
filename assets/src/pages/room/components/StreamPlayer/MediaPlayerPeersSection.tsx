@@ -79,8 +79,6 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
 const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...getCameraStreams(peers, showSimulcast)];
 
-  console.log({ name: "allPeersConfig", allPeersConfig });
-
   return (
     <div
       id="videos-grid"

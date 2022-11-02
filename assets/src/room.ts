@@ -358,7 +358,7 @@ export class Room {
         (track) =>
           track.metadata.type != "screensharing" && track.track!.kind == "video"
       )[0].trackId!;
-    this.webrtc.selectTrackEncoding(peerId, trackId, encoding);
+    this.webrtc.setTargetTrackEncoding(trackId, encoding);
   };
 
   private parseUrl = (): { displayName: string; isSimulcastOn: boolean } => {

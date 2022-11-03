@@ -26,8 +26,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName: displayName });
 
   const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS, true);
-  const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
-  const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
+  // const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
+  // const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
 
   const { state: peerState, api: peerApi } = usePeersState();
 
@@ -95,11 +95,11 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             webrtc={webrtc}
           />
         </section>
-        <MediaControlButtons
-          userMediaAudio={userMediaAudio}
-          userMediaVideo={userMediaVideo}
-          displayMedia={displayMedia}
-        />
+        {/*<MediaControlButtons*/}
+        {/*  userMediaAudio={userMediaAudio}*/}
+        {/*  userMediaVideo={userMediaVideo}*/}
+        {/*  displayMedia={displayMedia}*/}
+        {/*/>*/}
       </div>
       {isSimulcastOn && (
         <button

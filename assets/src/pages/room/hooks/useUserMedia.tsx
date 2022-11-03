@@ -15,7 +15,6 @@ type Config = {
 };
 
 export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
-  const [used, setUsed] = useState(false);
   const isLoadingRef = useRef(false);
 
   const stoppingRef = useRef<() => void>(() => {
@@ -124,15 +123,14 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
   // todo extract to separate hook
   useEffect(() => {
     // console.log("Register useEffect");
-    if (!config.startOnMount || used) {
+    if (!config.startOnMount) {
       return () => {
         // console.log("Different stopping");
       };
     }
-    setUsed(true);
-
+    // todo asyn
     if (!isLoadingRef.current) {
-      // console.log("--------- Starting getMedia!");
+      console.log("--------- Starting getMedia!");
       getMedia();
     }
     // console.log("Function end")

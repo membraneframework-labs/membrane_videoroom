@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
-import { LocalPeer } from "./usePeerState";
 
 export const useMembraneMediaStreaming = (
   type: TrackType,
-  localPeer?: LocalPeer,
+  isConnected?: boolean,
   webrtc?: MembraneWebRTC,
   stream?: MediaStream
 ): string[] => {
@@ -45,12 +44,12 @@ export const useMembraneMediaStreaming = (
     // return;
     // console.log({ name: "useMembraneMediaStream", localPeer });
 
-    if (stream && tracksId.length === 0 && localPeer?.id) {
+    if (stream && tracksId.length === 0 && isConnected) {
       addTrack(type, webrtc, stream);
-    } else if (!stream && tracksId.length > 0 && localPeer?.id) {
+    } else if (!stream && tracksId.length > 0 && isConnected) {
       removeTrack(webrtc, tracksId);
     }
-  }, [webrtc, stream, type, localPeer, tracksId, removeTrack, addTrack]);
+  }, [webrtc, stream, type, isConnected, tracksId, removeTrack, addTrack]);
 
   return tracksId;
 };

@@ -106,8 +106,10 @@ export const useMembraneClient = (
     webrtcChannel
       .join()
       .receive("ok", (response: any) => {
+        // setTimeout(() => {
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
+        // }, 5000);
       })
       .receive("error", (response) => {});
 

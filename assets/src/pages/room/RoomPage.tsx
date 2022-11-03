@@ -33,12 +33,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
-  // const userCameraTrackIds: string[] = useMembraneMediaStreaming(
-  //   "camera",
-  //   peerState.local,
-  //   webrtc,
-  //   userMediaVideo.stream
-  // );
+  const userCameraTrackIds: string[] = useMembraneMediaStreaming(
+    "camera",
+    !!peerState?.local?.id,
+    webrtc,
+    userMediaVideo.stream
+  );
   // const userAudioTrackIds: string[] = useMembraneMediaStreaming(
   //   "audio",
   //   peerState.local,
@@ -58,7 +58,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   useEffect(() => {
     // console.log({ name: "state", peerState });
   }, [peerState]);
-  // useSetRemoteTrackId("camera", userCameraTrackIds, peerApi)
+  useSetRemoteTrackId("camera", userCameraTrackIds, peerApi);
   // useSetLocalUserTrack("audio", userAudioTrackIds, peerApi, userMediaAudio.stream);
   // useSetLocalUserTrack("screensharing", screenSharingTrackId, peerApi, displayMedia.stream);
 

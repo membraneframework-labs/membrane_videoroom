@@ -36,7 +36,7 @@ export type PeersState = {
 };
 
 export type LocalPeer = {
-  id: string;
+  id?: string;
   metadata?: PeerMetadata;
   videoTrackStream?: MediaStream;
   videoTrackId?: string;
@@ -59,7 +59,8 @@ export type PeersApi = {
   removeTrack: (peerId: string, trackId: string) => void;
   setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   setLocalPeer: (id: string, metadata?: PeerMetadata) => void;
-  setLocalStreams: (type: TrackType, trackId: string, stream?: MediaStream) => void;
+  setLocalStream: (type: TrackType, stream?: MediaStream) => void;
+  setLocalTrackId: (type: TrackType, trackId?: string) => void;
 };
 
 type UsePeersStateResult = {
@@ -78,24 +79,32 @@ const copyOtherTracks = (peer: RemotePeer, trackId: string) => peer.tracks.filte
 
 export const usePeersState = (): UsePeersStateResult => {
   const [remotePeers, setRemotePeers] = useState<PeersMap>({});
+  // todo maybe remove '| undefined'
   const [localPeerState, setLocalPeerState] = useState<LocalPeer | undefined>();
 
   const setLocalPeer = useCallback((id: string, metadata?: PeerMetadata) => {
-    setLocalPeerState(() => ({ id: id, metadata: metadata }));
+    setLocalPeerState((prevState) => ({ ...prevState, id: id, metadata: metadata }));
   }, []);
 
-  const setLocalStreams = useCallback((type: TrackType, trackId: string, stream?: MediaStream) => {
+  const setLocalStream = useCallback((type: TrackType, stream?: MediaStream) => {
+    // console.log("1");
     setLocalPeerState((prevState: LocalPeer | undefined) => {
-      if (!prevState) return prevState;
+      const state: LocalPeer = prevState ?? {};
 
-      if (type == "camera") return { ...prevState, videoTrackStream: stream, videoTrackId: trackId };
-      if (type == "screensharing")
-        return {
-          ...prevState,
-          screenSharingTrackStream: stream,
-          screenSharingTrackId: trackId,
-        };
-      if (type == "audio") return { ...prevState, audioTrackStream: stream, audioTrack: trackId };
+      if (type == "camera") return { ...state, videoTrackStream: stream };
+      if (type == "screensharing") return { ...state, screenSharingTrackStream: stream };
+      if (type == "audio") return { ...state, audioTrackStream: stream };
+    });
+  }, []);
+
+  const setLocalTrackId = useCallback((type: TrackType, trackId?: string) => {
+    // console.log("2");
+    setLocalPeerState((prevState: LocalPeer | undefined) => {
+      const state: LocalPeer = prevState ?? {};
+
+      if (type == "camera") return { ...state, videoTrackId: trackId };
+      if (type == "screensharing") return { ...state, screenSharingTrackId: trackId };
+      if (type == "audio") return { ...state, audioTrack: trackId };
     });
   }, []);
 
@@ -179,8 +188,8 @@ export const usePeersState = (): UsePeersStateResult => {
   }, []);
 
   const api: PeersApi = useMemo(() => {
-    return { addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalStreams };
-  }, [addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalStreams]);
+    return { addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalStream, setLocalTrackId };
+  }, [addPeers, removePeer, addTrack, removeTrack, setEncoding, setLocalPeer, setLocalStream, setLocalTrackId]);
 
   const state: PeersState = useMemo(() => {
     const remoteUsersArray: RemotePeer[] = Object.values(remotePeers);

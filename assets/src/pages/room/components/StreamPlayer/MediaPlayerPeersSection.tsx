@@ -69,11 +69,14 @@ type Props = {
 
 const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   // todo for now yellow status doesn't work because onTrackAdded event is ignored
+  // state "loading", camera is on and peer is connecting
   if (videoSteam === undefined && videoTrackId !== undefined) return "🟡";
-  if (videoSteam === undefined && videoTrackId === undefined) return "🔴";
+  // state "streaming off", camera is on and connection is in progress
+  if (videoSteam === undefined && videoTrackId === undefined) return "🔴"; // camera off
+  // state: "streaming on", camera is on and streaming is working, peer is streaming
   if (videoSteam !== undefined && videoTrackId !== undefined) return "🟢";
-  // todo something went wrong
-  return "⚫️";
+  // state: "waiting room", camera on but streaming off, no one can see you, state only visible for local peer
+  return "🔵️"
 };
 
 const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {

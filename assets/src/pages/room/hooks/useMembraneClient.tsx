@@ -112,6 +112,7 @@ export const useMembraneClient = (
       .receive("error", (response) => {});
 
     const cleanUp = () => {
+      // todo add clean method to remove everything from state
       webrtc.leave();
       webrtcChannel.leave();
       socket.off([socketOnCloseRef, socketOnErrorRef]);

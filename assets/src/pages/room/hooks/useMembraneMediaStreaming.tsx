@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
+import { LocalPeer } from "./usePeerState";
 
-export const useMembraneMediaStreaming = (type: TrackType, webrtc?: MembraneWebRTC, stream?: MediaStream): string[] => {
+export const useMembraneMediaStreaming = (
+  type: TrackType,
+  localPeer?: LocalPeer,
+  webrtc?: MembraneWebRTC,
+  stream?: MediaStream
+): string[] => {
   const [tracksId, setTracksId] = useState<string[]>([]);
 
   const addTrack = useCallback((type: TrackType, webrtc: MembraneWebRTC, stream: MediaStream) => {
+    console.log("addTrack");
     const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
     const tracksId: string[] = tracks.map((track, idx) => {
@@ -23,6 +30,7 @@ export const useMembraneMediaStreaming = (type: TrackType, webrtc?: MembraneWebR
   }, []);
 
   const removeTrack = useCallback((webrtc: MembraneWebRTC, trackIds: string[]) => {
+    console.log("remove track");
     setTracksId([]);
     trackIds.forEach((trackId) => {
       webrtc.removeTrack(trackId);
@@ -33,12 +41,16 @@ export const useMembraneMediaStreaming = (type: TrackType, webrtc?: MembraneWebR
     if (!webrtc) {
       return;
     }
-    if (stream && tracksId.length === 0) {
+
+    // return;
+    // console.log({ name: "useMembraneMediaStream", localPeer });
+
+    if (stream && tracksId.length === 0 && localPeer?.id) {
       addTrack(type, webrtc, stream);
-    } else if (!stream && tracksId.length > 0) {
+    } else if (!stream && tracksId.length > 0 && localPeer?.id) {
       removeTrack(webrtc, tracksId);
     }
-  }, [webrtc, stream, type, tracksId]);
+  }, [webrtc, stream, type, localPeer, tracksId, removeTrack, addTrack]);
 
   return tracksId;
 };

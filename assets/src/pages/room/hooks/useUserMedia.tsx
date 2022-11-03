@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type UseMediaResult = {
   isError: boolean;
   isSuccess: boolean;
+  isLoading: boolean;
   start: () => void;
   stop: () => void;
   stream?: MediaStream;
+  stoppingRef: () => void;
 };
 
 type Config = {
@@ -13,35 +15,64 @@ type Config = {
 };
 
 export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
-  const [firstMount, setFirstMount] = useState(true);
+  const [used, setUsed] = useState(false);
+  const isLoadingRef = useRef(false);
+
+  const stoppingRef = useRef<() => void>(() => {
+    // console.log("Default stopping ref value");
+  });
 
   const stopStream = useCallback(() => {
-    setState((prevState) => ({
-      ...prevState,
-      isError: true,
-      isSuccess: false,
-      previewRef: undefined,
-      stream: undefined,
-      stop: () => {
-        // empty
-      },
-    }));
+    isLoadingRef.current = false;
+    setState(
+      (prevState): UseMediaResult => ({
+        ...prevState,
+        isError: true,
+        isSuccess: false,
+        stream: undefined,
+        isLoading: false,
+        stop: () => {
+          // empty
+        },
+        stoppingRef: stoppingRef.current,
+      })
+    );
   }, []);
 
   // todo fix audio track
   const startStream = useCallback((stream: MediaStream) => {
+    isLoadingRef.current = false;
+    stoppingRef.current = () => {
+      // console.log("Stopping from new stopMethod");
+      stream.getTracks().forEach((track) => {
+        // console.log({ name: "Stopping track", track });
+        track.stop();
+      });
+      setState((prevStateInner) => ({
+        ...prevStateInner,
+        stream: undefined,
+        isLoading: false,
+        stoppingRef: stoppingRef.current,
+      }));
+    };
+
     setState((prevState) => {
       return {
         ...prevState,
         isError: false,
         isSuccess: true,
         stream: stream,
+        isLoading: false,
+        stoppingRef: stoppingRef.current,
         stop: () => {
+          // console.log("Stopping from old stop method");
           stream.getTracks().forEach((track) => track.stop());
           // todo refactor
           setState((prevStateInner) => ({
             ...prevStateInner,
             stream: undefined,
+            isLoading: false,
+            stoppingRef: stoppingRef.current,
           }));
         },
       };
@@ -63,6 +94,8 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
   );
 
   const getMedia = useCallback(() => {
+    isLoadingRef.current = true;
+    setState((prevState) => ({ ...prevState, isLoading: true }));
     mediaStreamSupplier()
       .then((stream: MediaStream) => {
         handleRevokePermission(stream);
@@ -81,20 +114,37 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
     isSuccess: true,
     start: getMedia,
     stream: undefined,
+    isLoading: false,
     stop: () => {
       // empty
     },
+    stoppingRef: stoppingRef.current,
   });
 
   // todo extract to separate hook
   useEffect(() => {
-    if (!config.startOnMount && firstMount) {
-      setFirstMount(false);
-      return;
+    console.log("Register useEffect");
+    if (!config.startOnMount || used) {
+      return () => {
+        console.log("Different stopping");
+      };
     }
-    getMedia();
+    setUsed(true);
+
+    if (!isLoadingRef.current) {
+      console.log("--------- Starting getMedia!");
+      getMedia();
+    }
+    console.log("Function end")
     // remove this comment after extracting
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      console.log("Stopping");
+      stoppingRef.current();
+    };
   }, []);
 
   return state;
@@ -102,8 +152,8 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
 
 const useUserMediaConfig = { startOnMount: false };
 
-export const useUserMedia = (config: MediaStreamConstraints) =>
-  useMedia(useUserMediaConfig, () => navigator.mediaDevices.getUserMedia(config));
+export const useUserMedia = (config: MediaStreamConstraints, startOnMount = false) =>
+  useMedia({ startOnMount }, () => navigator.mediaDevices.getUserMedia(config));
 
 export const useDisplayMedia = (config: DisplayMediaStreamConstraints) =>
   useMedia(useUserMediaConfig, () => navigator.mediaDevices.getDisplayMedia(config));

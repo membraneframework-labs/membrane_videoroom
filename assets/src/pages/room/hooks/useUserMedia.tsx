@@ -123,28 +123,25 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
 
   // todo extract to separate hook
   useEffect(() => {
-    console.log("Register useEffect");
+    // console.log("Register useEffect");
     if (!config.startOnMount || used) {
       return () => {
-        console.log("Different stopping");
+        // console.log("Different stopping");
       };
     }
     setUsed(true);
 
     if (!isLoadingRef.current) {
-      console.log("--------- Starting getMedia!");
+      // console.log("--------- Starting getMedia!");
       getMedia();
     }
-    console.log("Function end")
-    // remove this comment after extracting
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
+    // console.log("Function end")
     return () => {
-      console.log("Stopping");
+      // console.log("Stopping");
       stoppingRef.current();
     };
+    // remove this comment after extracting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return state;

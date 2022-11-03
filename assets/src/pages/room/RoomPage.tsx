@@ -33,12 +33,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
-  const userCameraTrackIds: string[] = useMembraneMediaStreaming(
-    "camera",
-    !!peerState?.local?.id,
-    webrtc,
-    userMediaVideo.stream
-  );
+  // const userCameraTrackIds: string[] = useMembraneMediaStreaming(
+  //   "camera",
+  //   !!peerState?.local?.id,
+  //   webrtc,
+  //   userMediaVideo.stream
+  // );
   // const userAudioTrackIds: string[] = useMembraneMediaStreaming(
   //   "audio",
   //   peerState.local,
@@ -54,11 +54,11 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   // TODO this hook should join remoteTrackId with current user track
   //  but now it add tracks to local state only if this track is streamed
-  useSetLocalUserTrack("camera", userMediaVideo.stream, peerApi);
+  // useSetLocalUserTrack("camera", userMediaVideo.stream, peerApi);
   useEffect(() => {
     // console.log({ name: "state", peerState });
   }, [peerState]);
-  useSetRemoteTrackId("camera", userCameraTrackIds, peerApi);
+  // useSetRemoteTrackId("camera", userCameraTrackIds, peerApi);
   // useSetLocalUserTrack("audio", userAudioTrackIds, peerApi, userMediaAudio.stream);
   // useSetLocalUserTrack("screensharing", screenSharingTrackId, peerApi, displayMedia.stream);
 
@@ -70,7 +70,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             {errorMessage}
           </div>
         )}
-        <button onClick={() => userMediaVideo.stoppingRef()}>STOP</button>
+        {/*<button onClick={() => userMediaVideo.stoppingRef()}>STOP</button>*/}
         <section className="flex flex-col h-screen mb-14">
           <header className="p-4">
             <div className="flex items-center">

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffectOnMountAsync } from "./useEffectOnMountAsync";
 
 export type UseMediaResult = {
   isError: boolean;
@@ -93,19 +94,30 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
   );
 
   const getMedia = useCallback(() => {
+    const someObject: { closeFunction: undefined | (() => void) } = {
+      closeFunction: undefined,
+    };
     isLoadingRef.current = true;
     setState((prevState) => ({ ...prevState, isLoading: true }));
     mediaStreamSupplier()
       .then((stream: MediaStream) => {
+        someObject.closeFunction = () => {
+          console.log("Closing");
+          stream.getTracks().forEach((track) => track.stop());
+        };
+        console.log("1");
         handleRevokePermission(stream);
         startStream(stream);
       })
       .catch((error) => {
+        console.log("2");
         // this callback fires up when
         // - user didn't grant permission to camera
         // - user clicked "Cancel" instead of "Share" on Screen Sharing menu ("Chose what to share" in Google Chrome)
         stopStream();
       });
+
+    return someObject;
   }, [mediaStreamSupplier, handleRevokePermission, startStream, stopStream]);
 
   const [state, setState] = useState<UseMediaResult>({
@@ -119,28 +131,10 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
     },
     stoppingRef: stoppingRef.current,
   });
-
   // todo extract to separate hook
-  useEffect(() => {
-    // console.log("Register useEffect");
-    if (!config.startOnMount) {
-      return () => {
-        // console.log("Different stopping");
-      };
-    }
-    // todo asyn
-    if (!isLoadingRef.current) {
-      console.log("--------- Starting getMedia!");
-      getMedia();
-    }
-    // console.log("Function end")
-    return () => {
-      // console.log("Stopping");
-      stoppingRef.current();
-    };
-    // remove this comment after extracting
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffectOnMountAsync(true, () => {
+    return getMedia();
+  });
 
   return state;
 };

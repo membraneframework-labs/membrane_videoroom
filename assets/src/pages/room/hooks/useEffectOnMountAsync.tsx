@@ -1,14 +1,20 @@
-import { EffectCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-export const useEffectOnMountAsync = (startOnMount: boolean, callback: EffectCallback) => {
-  const isLoadingRef = useRef(false);
-
+export const useEffectOnMountAsync = (
+  startOnMount: boolean,
+  callback: () => { closeFunction: (() => void) | undefined }
+) => {
   useEffect(() => {
-    if (!startOnMount) {
-      return;
-    }
-    if (!isLoadingRef.current) {
-      return callback();
-    }
+    const mutableObject = callback();
+    return () => {
+      const abc = setInterval(() => {
+        console.log("Set interval");
+        if (mutableObject.closeFunction) {
+          mutableObject.closeFunction();
+          clearInterval(abc);
+          // remove set interval
+        }
+      }, 3000);
+    };
   }, []);
 };

@@ -14,7 +14,6 @@ const simulcastControlsBtn = document.getElementById(
   "simulcast-control"
 ) as HTMLButtonElement;
 
-
 type State = {
   isLocalScreensharingOn: boolean;
   isSimulcastOn: boolean;

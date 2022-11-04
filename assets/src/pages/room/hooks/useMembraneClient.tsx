@@ -92,6 +92,9 @@ export const useMembraneClient = (
           if (!isTrackEncoding(encoding)) return;
           api.setEncoding(peerId, trackId, encoding);
         },
+        onTrackUpdated: (ctx: TrackContext) => {
+          console.log({ name: "onTrackUpdated", ctx });
+        },
       },
     });
 

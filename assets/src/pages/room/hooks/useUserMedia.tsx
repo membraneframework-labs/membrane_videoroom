@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useEffectOnMountAsync } from "./useEffectOnMountAsync";
+import { useCallback, useEffect, useState } from "react";
 
 export type UseMediaResult = {
   isError: boolean;
@@ -8,22 +7,21 @@ export type UseMediaResult = {
   start: () => void;
   stop: () => void;
   stream?: MediaStream;
-  stoppingRef: () => void;
 };
 
 type Config = {
   startOnMount: boolean;
 };
 
-export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
-  const isLoadingRef = useRef(false);
-
-  const stoppingRef = useRef<() => void>(() => {
-    // console.log("Default stopping ref value");
+const stopTracks = (stream: MediaStream) => {
+  stream.getTracks().forEach((track) => {
+    track.stop();
   });
+};
 
-  const stopStream = useCallback(() => {
-    isLoadingRef.current = false;
+export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
+  // rename to clearState or sth
+  const setEmptyState = useCallback(() => {
     setState(
       (prevState): UseMediaResult => ({
         ...prevState,
@@ -34,28 +32,11 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
         stop: () => {
           // empty
         },
-        stoppingRef: stoppingRef.current,
       })
     );
   }, []);
 
-  // todo fix audio track
   const startStream = useCallback((stream: MediaStream) => {
-    isLoadingRef.current = false;
-    stoppingRef.current = () => {
-      // console.log("Stopping from new stopMethod");
-      stream.getTracks().forEach((track) => {
-        // console.log({ name: "Stopping track", track });
-        track.stop();
-      });
-      setState((prevStateInner) => ({
-        ...prevStateInner,
-        stream: undefined,
-        isLoading: false,
-        stoppingRef: stoppingRef.current,
-      }));
-    };
-
     setState((prevState) => {
       return {
         ...prevState,
@@ -63,16 +44,13 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
         isSuccess: true,
         stream: stream,
         isLoading: false,
-        stoppingRef: stoppingRef.current,
         stop: () => {
-          // console.log("Stopping from old stop method");
           stream.getTracks().forEach((track) => track.stop());
           // todo refactor
           setState((prevStateInner) => ({
             ...prevStateInner,
             stream: undefined,
             isLoading: false,
-            stoppingRef: stoppingRef.current,
           }));
         },
       };
@@ -86,39 +64,29 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
         // - user clicks "Stop sharing" button
         // - user withdraws permission to camera
         track.onended = () => {
-          stopStream();
+          setEmptyState();
         };
       });
     },
-    [stopStream]
+    [setEmptyState]
   );
 
-  const getMedia = useCallback(() => {
-    const someObject: { closeFunction: undefined | (() => void) } = {
-      closeFunction: undefined,
-    };
-    isLoadingRef.current = true;
-    setState((prevState) => ({ ...prevState, isLoading: true }));
-    mediaStreamSupplier()
+  const getMedia = useCallback((): Promise<MediaStream> => {
+    return mediaStreamSupplier()
       .then((stream: MediaStream) => {
-        someObject.closeFunction = () => {
-          console.log("Closing");
-          stream.getTracks().forEach((track) => track.stop());
-        };
-        console.log("1");
         handleRevokePermission(stream);
         startStream(stream);
+        return stream;
       })
       .catch((error) => {
-        console.log("2");
+        console.log("Catch in got media");
         // this callback fires up when
         // - user didn't grant permission to camera
         // - user clicked "Cancel" instead of "Share" on Screen Sharing menu ("Chose what to share" in Google Chrome)
-        stopStream();
+        setEmptyState();
+        return Promise.reject();
       });
-
-    return someObject;
-  }, [mediaStreamSupplier, handleRevokePermission, startStream, stopStream]);
+  }, [mediaStreamSupplier, handleRevokePermission, startStream, setEmptyState]);
 
   const [state, setState] = useState<UseMediaResult>({
     isError: false,
@@ -129,20 +97,38 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
     stop: () => {
       // empty
     },
-    stoppingRef: stoppingRef.current,
   });
-  // todo extract to separate hook
-  useEffectOnMountAsync(true, () => {
-    return getMedia();
-  });
+
+  const setEnable = useCallback(
+    (status: boolean) => {
+      state.stream?.getTracks().forEach((track: MediaStreamTrack) => {
+        track.enabled = status;
+      });
+    },
+    [state.stream]
+  );
+
+  useEffect(() => {
+    if (!config.startOnMount) return;
+
+    const promise = getMedia();
+    return () => {
+      promise
+        .then((stream) => {
+          console.log("Closing stream");
+          stopTracks(stream);
+        })
+        .catch(() => {
+          console.log("Catching stream");
+        });
+    };
+  }, []);
 
   return state;
 };
 
-const useUserMediaConfig = { startOnMount: false };
-
 export const useUserMedia = (config: MediaStreamConstraints, startOnMount = false) =>
   useMedia({ startOnMount }, () => navigator.mediaDevices.getUserMedia(config));
 
-export const useDisplayMedia = (config: DisplayMediaStreamConstraints) =>
-  useMedia(useUserMediaConfig, () => navigator.mediaDevices.getDisplayMedia(config));
+export const useDisplayMedia = (config: DisplayMediaStreamConstraints, startOnMount = true) =>
+  useMedia({ startOnMount }, () => navigator.mediaDevices.getDisplayMedia(config));

@@ -25,42 +25,37 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName: displayName });
 
-  const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS, true);
-  // const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS);
-  // const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS);
+  const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS, false);
+  const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS, false);
+  const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS, false);
 
   const { state: peerState, api: peerApi } = usePeersState();
 
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
-  // const userCameraTrackIds: string[] = useMembraneMediaStreaming(
-  //   "camera",
-  //   !!peerState?.local?.id,
-  //   webrtc,
-  //   userMediaVideo.stream
-  // );
-  // const userAudioTrackIds: string[] = useMembraneMediaStreaming(
-  //   "audio",
-  //   peerState.local,
-  //   webrtc,
-  //   userMediaAudio.stream
-  // );
-  // const screenSharingTrackId: string[] = useMembraneMediaStreaming(
-  //   "screensharing",
-  //   peerState.local,
-  //   webrtc,
-  //   displayMedia.stream
-  // );
+  const isConnected = !!peerState?.local?.id;
 
-  // TODO this hook should join remoteTrackId with current user track
-  //  but now it add tracks to local state only if this track is streamed
-  // useSetLocalUserTrack("camera", userMediaVideo.stream, peerApi);
+  const cameraStreaming = useMembraneMediaStreaming("manual", "camera", isConnected, webrtc, userMediaVideo.stream);
+  const audioStreaming = useMembraneMediaStreaming("automatic", "audio", isConnected, webrtc, userMediaAudio.stream);
+  const screenSharingStreaming = useMembraneMediaStreaming(
+    "automatic",
+    "screensharing",
+    isConnected,
+    webrtc,
+    displayMedia.stream
+  );
+
   useEffect(() => {
-    // console.log({ name: "state", peerState });
+    console.log({ name: "state", peerState });
   }, [peerState]);
-  // useSetRemoteTrackId("camera", userCameraTrackIds, peerApi);
-  // useSetLocalUserTrack("audio", userAudioTrackIds, peerApi, userMediaAudio.stream);
-  // useSetLocalUserTrack("screensharing", screenSharingTrackId, peerApi, displayMedia.stream);
+
+  useSetLocalUserTrack("camera", peerApi, userMediaVideo.stream);
+  useSetLocalUserTrack("audio", peerApi, userMediaAudio.stream);
+  useSetLocalUserTrack("screensharing", peerApi, displayMedia.stream);
+
+  useSetRemoteTrackId("camera", cameraStreaming.tracksId, peerApi);
+  useSetRemoteTrackId("audio", audioStreaming.tracksId, peerApi);
+  useSetRemoteTrackId("screensharing", screenSharingStreaming.tracksId, peerApi);
 
   return (
     <section>
@@ -70,7 +65,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             {errorMessage}
           </div>
         )}
-        {/*<button onClick={() => userMediaVideo.stoppingRef()}>STOP</button>*/}
+        <button onClick={() => userMediaVideo?.stream && cameraStreaming.addTracks(userMediaVideo.stream)}>
+          Add tracks
+        </button>{" "}
+        <button onClick={() => cameraStreaming.removeTracks()}>Remove tracks</button>
+        <button onClick={() => userMediaVideo?.stream && cameraStreaming.setActive(true)}>Set active</button>
+        <button onClick={() => userMediaVideo?.stream && cameraStreaming.setActive(false)}>Set inactive</button>
         <section className="flex flex-col h-screen mb-14">
           <header className="p-4">
             <div className="flex items-center">
@@ -95,11 +95,11 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             webrtc={webrtc}
           />
         </section>
-        {/*<MediaControlButtons*/}
-        {/*  userMediaAudio={userMediaAudio}*/}
-        {/*  userMediaVideo={userMediaVideo}*/}
-        {/*  displayMedia={displayMedia}*/}
-        {/*/>*/}
+        <MediaControlButtons
+          userMediaAudio={userMediaAudio}
+          userMediaVideo={userMediaVideo}
+          displayMedia={displayMedia}
+        />
       </div>
       {isSimulcastOn && (
         <button

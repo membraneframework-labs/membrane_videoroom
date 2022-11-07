@@ -8,8 +8,8 @@ on:
       - "!README.md"
 
 env: 
-  VIRTUAL_HOST: sandbox2-videoroom.membrane.work
-  INTEGRATED_TURN_IP: 95.217.153.160
+  VIRTUAL_HOST: videoroom2.membrane.ovh
+  EXTERNAL_IP: 95.217.153.160
   TAG: sandbox2
 
 jobs:

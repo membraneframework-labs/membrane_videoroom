@@ -1,16 +1,17 @@
-name: Sandbox3 Build and Deploy
+name: QA Build and Deploy
 on:
   push:
     branches: 
-      - "sandbox3"
+      - "qa"
     paths:
       - "**"
       - "!README.md"
 
 env: 
-  VIRTUAL_HOST: videoroom3.membrane.ovh
-  EXTERNAL_IP: 95.217.155.120
-  TAG: sandbox3
+  VIRTUAL_HOST: videoroom4.membrane.ovh
+  EXTERNAL_IP: 65.108.211.31
+  TAG: qa
+  PROJECT: qa
 
 jobs:
   build:
@@ -42,8 +43,8 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build and push sandbox version 
-        id: docker_build_sandbox
+      - name: Build and push qa version 
+        id: docker_build_qa
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -60,14 +61,36 @@ jobs:
 
       - name: Prepare .env file for the deployment
         id: variables_population
-        run: echo "VIRTUAL_HOST=$VIRTUAL_HOST \nINTEGRATED_TURN_IP=$INTEGRATED_TURN_IP \nTAG=$TAG" > .env
+        env: 
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+          GF_SECURITY_ADMIN_USER: ${{ secrets.GF_SECURITY_ADMIN_USER  }}
+        run: |
+          echo "VIRTUAL_HOST=$VIRTUAL_HOST 
+          EXTERNAL_IP=$EXTERNAL_IP 
+          TAG=$TAG 
+          DB_USERNAME=$DB_USERNAME 
+          DB_PASSWORD=$DB_PASSWORD
+          GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
+          GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
+
+      - name: Remove Grafana and Videoroom containers with volumes
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ secrets.QA_HOST }}
+          privateKey: ${{ secrets.SSH_PRIV_KEY }}
+          command: |
+            docker rm -f ${{ env.PROJECT }}_grafana_1
+            docker rm -f ${{ env.PROJECT }}_videoroom_1
+            docker volume rm -f ${{ env.PROJECT }}_grafana-provisioning
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy
         uses: TapTap21/docker-remote-deployment-action@v1.1
         with:
-          remote_docker_host: ${{ secrets.SANDBOX3_HOST }}
+          remote_docker_host: ${{ secrets.QA_HOST }}
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           stack_file_name: docker-compose.yml
-          args: -p sandbox --env-file .env up -d --remove-orphans
+          args: -p ${{ env.PROJECT }} --env-file .env up -d --remove-orphans

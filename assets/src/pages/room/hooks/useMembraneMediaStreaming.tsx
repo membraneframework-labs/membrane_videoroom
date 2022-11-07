@@ -106,12 +106,11 @@ export const useMembraneMediaStreaming = (
 
   const setActive = useCallback(
     (status: boolean) => {
-      // console.log({ name: `Set active ${status}`, tracksId });
-      //
-      // tracksId.forEach((trackId) => {
-      //   webrtcState?.updateTrackMetadata(trackId, { active: status, type: type });
-      // });
-      // setTracksId([]);
+      console.log({ name: `Set active ${status}`, tracksId });
+
+      tracksId.forEach((trackId) => {
+        webrtcState?.updateTrackMetadata(trackId, { active: status, type: type });
+      });
     },
     [webrtcState, tracksId, type]
   );

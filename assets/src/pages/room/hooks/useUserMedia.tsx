@@ -1,12 +1,26 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export type UseMediaResult = {
   isError: boolean;
   isSuccess: boolean;
-  isLoading: boolean;
   start: () => void;
   stop: () => void;
   stream?: MediaStream;
+  enable: () => void;
+  disable: () => void;
+};
+
+type State = {
+  isError: boolean;
+  isSuccess: boolean;
+  stream?: MediaStream;
+};
+
+export type Api = {
+  start: () => void;
+  stop: () => void;
+  enable: () => void;
+  disable: () => void;
 };
 
 type Config = {
@@ -20,62 +34,59 @@ const stopTracks = (stream: MediaStream) => {
 };
 
 export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
+  const [state, setState] = useState<State>({
+    isError: false,
+    isSuccess: true,
+    stream: undefined,
+  });
+
+  const [api, setApi] = useState<Api>({
+    start: () => {},
+    stop: () => {},
+    enable: () => {},
+    disable: () => {},
+  });
+
   // rename to clearState or sth
-  const setEmptyState = useCallback(() => {
+  const setErrorState = useCallback(() => {
     setState(
-      (prevState): UseMediaResult => ({
-        ...prevState,
+      (): State => ({
         isError: true,
         isSuccess: false,
         stream: undefined,
-        isLoading: false,
-        stop: () => {
-          // empty
-        },
       })
     );
   }, []);
 
-  const startStream = useCallback((stream: MediaStream) => {
-    setState((prevState) => {
-      return {
-        ...prevState,
+  const setSuccessfulState = useCallback((stream: MediaStream) => {
+    setState(
+      (): State => ({
         isError: false,
         isSuccess: true,
         stream: stream,
-        isLoading: false,
-        stop: () => {
-          stream.getTracks().forEach((track) => track.stop());
-          // todo refactor
-          setState((prevStateInner) => ({
-            ...prevStateInner,
-            stream: undefined,
-            isLoading: false,
-          }));
-        },
-      };
-    });
+      })
+    );
   }, []);
 
-  const handleRevokePermission = useCallback(
+  const setupTrackCallbacks = useCallback(
     (stream: MediaStream) => {
       stream.getTracks().forEach((track) => {
         // onended fires up when:
         // - user clicks "Stop sharing" button
         // - user withdraws permission to camera
         track.onended = () => {
-          setEmptyState();
+          setErrorState();
         };
       });
     },
-    [setEmptyState]
+    [setErrorState]
   );
 
-  const getMedia = useCallback((): Promise<MediaStream> => {
+  const startStream = useCallback((): Promise<MediaStream> => {
     return mediaStreamSupplier()
       .then((stream: MediaStream) => {
-        handleRevokePermission(stream);
-        startStream(stream);
+        setupTrackCallbacks(stream);
+        setSuccessfulState(stream);
         return stream;
       })
       .catch((error) => {
@@ -83,35 +94,25 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
         // this callback fires up when
         // - user didn't grant permission to camera
         // - user clicked "Cancel" instead of "Share" on Screen Sharing menu ("Chose what to share" in Google Chrome)
-        setEmptyState();
+        setErrorState();
         return Promise.reject();
       });
-  }, [mediaStreamSupplier, handleRevokePermission, startStream, setEmptyState]);
-
-  const [state, setState] = useState<UseMediaResult>({
-    isError: false,
-    isSuccess: true,
-    start: getMedia,
-    stream: undefined,
-    isLoading: false,
-    stop: () => {
-      // empty
-    },
-  });
+  }, [mediaStreamSupplier, setupTrackCallbacks, setSuccessfulState, setErrorState]); // todo add media stream supplier
 
   const setEnable = useCallback(
     (status: boolean) => {
+      console.log("Activation / deactivating");
       state.stream?.getTracks().forEach((track: MediaStreamTrack) => {
         track.enabled = status;
       });
     },
-    [state.stream]
+    [state.stream] // todo
   );
 
   useEffect(() => {
     if (!config.startOnMount) return;
 
-    const promise = getMedia();
+    const promise = startStream();
     return () => {
       promise
         .then((stream) => {
@@ -124,11 +125,56 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
     };
   }, []);
 
-  return state;
+  useEffect(() => {
+    const stream = state.stream;
+
+    if (stream) {
+      setApi({
+        stop: () => {
+          stopTracks(stream);
+          // todo refactor
+          setState((prevStateInner) => ({
+            ...prevStateInner,
+            stream: undefined,
+          }));
+        },
+        start: () => {
+          console.log("Stream already started");
+        },
+        enable: () => setEnable(true),
+        disable: () => setEnable(false),
+      });
+    } else {
+      setApi({
+        stop: () => {
+          console.log("There is no stream");
+        },
+        start: () => {
+          startStream();
+        },
+        enable: () => {
+          console.log("There is no stream");
+        },
+        disable: () => {
+          console.log("There is no stream");
+        },
+      });
+    }
+  }, [startStream, setEnable, state]);
+
+  const result: UseMediaResult = useMemo(() => ({ ...api, ...state }), [api, state]);
+
+  return result;
 };
 
-export const useUserMedia = (config: MediaStreamConstraints, startOnMount = false) =>
-  useMedia({ startOnMount }, () => navigator.mediaDevices.getUserMedia(config));
+export const useUserMedia = (config: MediaStreamConstraints, startOnMount = false) => {
+  const mediaStreamSupplier = useCallback(() => navigator.mediaDevices.getUserMedia(config), []);
 
-export const useDisplayMedia = (config: DisplayMediaStreamConstraints, startOnMount = true) =>
-  useMedia({ startOnMount }, () => navigator.mediaDevices.getDisplayMedia(config));
+  return useMedia({ startOnMount }, mediaStreamSupplier);
+};
+
+export const useDisplayMedia = (config: DisplayMediaStreamConstraints, startOnMount = true) => {
+  const mediaStreamSupplier = useCallback(() => navigator.mediaDevices.getDisplayMedia(config), [config]);
+
+  return useMedia({ startOnMount }, mediaStreamSupplier);
+};

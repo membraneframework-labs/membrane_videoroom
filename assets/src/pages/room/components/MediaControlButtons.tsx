@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import { UseMediaResult } from "../hooks/useUserMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
-import {NavigateFunction, useNavigate} from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 const getControls = (
   userMediaAudio: UseMediaResult,
@@ -60,7 +60,7 @@ const getControls = (
     hover: "Leave the room",
     imgClasses: "black-to-red transform rotate-135",
     onClick: () => {
-      navigate("/")
+      navigate("/");
     },
   },
 ];
@@ -72,8 +72,8 @@ type Props = {
 };
 
 const MediaControlButtons: FC<Props> = ({ userMediaAudio, userMediaVideo, displayMedia }: Props) => {
-    const navigate = useNavigate();
-    const controls: MediaControlButtonProps[] = getControls(userMediaAudio, userMediaVideo, displayMedia, navigate);
+  const navigate = useNavigate();
+  const controls: MediaControlButtonProps[] = getControls(userMediaAudio, userMediaVideo, displayMedia, navigate);
 
   return (
     <div

@@ -25,7 +25,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName: displayName });
 
-  const userMediaVideo: UseMediaResult = useUserMedia(VIDEO_TRACK_CONSTRAINTS, false);
+  const userMediaVideo = useUserMedia(VIDEO_TRACK_CONSTRAINTS, false);
   const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS, false);
   const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS, false);
 
@@ -35,7 +35,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   const isConnected = !!peerState?.local?.id;
 
-  const cameraStreaming = useMembraneMediaStreaming("manual", "camera", isConnected, webrtc, userMediaVideo.stream);
+  const cameraStreaming = useMembraneMediaStreaming("automatic", "camera", isConnected, webrtc, userMediaVideo.stream);
   const audioStreaming = useMembraneMediaStreaming("automatic", "audio", isConnected, webrtc, userMediaAudio.stream);
   const screenSharingStreaming = useMembraneMediaStreaming(
     "automatic",
@@ -67,10 +67,13 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
         )}
         <button onClick={() => userMediaVideo?.stream && cameraStreaming.addTracks(userMediaVideo.stream)}>
           Add tracks
-        </button>{" "}
+        </button>
         <button onClick={() => cameraStreaming.removeTracks()}>Remove tracks</button>
         <button onClick={() => userMediaVideo?.stream && cameraStreaming.setActive(true)}>Set active</button>
         <button onClick={() => userMediaVideo?.stream && cameraStreaming.setActive(false)}>Set inactive</button>
+        <button onClick={() => userMediaVideo?.stream && userMediaVideo.enable()}>Enable</button>
+        <button onClick={() => userMediaVideo?.stream && userMediaVideo.disable()}>Disable</button>
+
         <section className="flex flex-col h-screen mb-14">
           <header className="p-4">
             <div className="flex items-center">

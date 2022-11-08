@@ -43,12 +43,7 @@ const prepareScreenSharingStreams = (
   const screenSharingStreams: VideoStreamWithMetadata[] = localPeer?.tracks["screensharing"]?.stream
     ? [
         {
-          video: {
-            stream: localPeer?.tracks["screensharing"]?.stream,
-            trackId: localPeer?.tracks["screensharing"]?.trackId,
-            metadata: localPeer?.tracks["screensharing"]?.metadata,
-            enabled: localPeer?.tracks["screensharing"]?.metadata,
-          },
+          video: localPeer?.tracks["screensharing"],
           peerId: localPeer?.id,
           peerIcon: localPeer?.metadata?.emoji,
           peerName: "Me",
@@ -66,30 +61,9 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     peerId: localPeer?.id,
     displayName: "Me",
     emoji: localPeer?.metadata?.emoji,
-    video: [
-      {
-        stream: localPeer?.tracks["camera"]?.stream,
-        trackId: localPeer?.tracks["camera"]?.trackId,
-        metadata: localPeer?.tracks["camera"]?.metadata,
-        enabled: localPeer?.tracks["camera"]?.enabled,
-      },
-    ],
-    audio: [
-      {
-        stream: localPeer?.tracks["audio"]?.stream,
-        trackId: localPeer?.tracks["audio"]?.trackId,
-        metadata: localPeer?.tracks["audio"]?.metadata,
-        enabled: localPeer?.tracks["audio"]?.enabled,
-      },
-    ],
-    screenSharing: [
-      {
-        stream: localPeer?.tracks["screensharing"]?.stream,
-        trackId: localPeer?.tracks["screensharing"]?.trackId,
-        metadata: localPeer?.tracks["screensharing"]?.metadata,
-        enabled: localPeer?.tracks["screensharing"]?.enabled,
-      },
-    ],
+    video: localPeer?.tracks["camera"] ? [localPeer?.tracks["camera"]] : [],
+    audio: localPeer?.tracks["audio"] ? [localPeer?.tracks["audio"]] : [],
+    screenSharing: localPeer?.tracks["screensharing"] ? [localPeer?.tracks["screensharing"]] : [],
     showSimulcast: showSimulcast,
     flipHorizontally: true,
     streamSource: "local",
@@ -97,6 +71,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   };
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
+  console.log({ name: "screenSharingStrems", screenSharingStreams });
 
   return (
     <div id="videochat" className="px-2 md:px-20 overflow-y-auto">

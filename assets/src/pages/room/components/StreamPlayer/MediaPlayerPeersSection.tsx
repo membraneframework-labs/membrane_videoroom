@@ -9,7 +9,7 @@ export type TrackWithId = {
   stream?: MediaStream;
   trackId?: string;
   encodingQuality?: TrackEncoding;
-  metadata: any;
+  metadata?: any;
   enabled?: boolean;
 };
 
@@ -191,7 +191,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
             bottomLeft={<div>{config.displayName}</div>}
             bottomRight={
               <div className="text-right">
-                <span className="ml-2">Local audio:</span>
+                <span className="ml-2">Allow audio playing:</span>
                 <span title={localAudio.title} className="ml-2">
                   {localAudio.emoji}
                 </span>

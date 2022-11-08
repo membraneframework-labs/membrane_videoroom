@@ -2,14 +2,15 @@ import React, { FC, useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
-import { SimulcastContext } from "../../contexts/simulcastContext";
+import { DeveloperContext } from "../../contexts/developerContext";
 
 export const HomePage: FC = () => {
   const { setUsername } = useContext(UserContext);
-  const { setSimulcast } = useContext(SimulcastContext);
+  const { manualMode, simulcast } = useContext(DeveloperContext);
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
   const [simulcastInput, setSimulcastInput] = useState<boolean>(true);
+  const [manualModeInput, setManualModeInput] = useState<boolean>(true);
   const match = useParams();
   const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
@@ -64,12 +65,26 @@ export const HomePage: FC = () => {
               name="simulcast"
             />
           </div>
+          <div className="form-check mb-6">
+            <label className="form-check-label text-gray-700 text-sm font-bold" htmlFor="simulcast">
+              Manual mode
+            </label>
+            <input
+              onChange={() => setManualModeInput((prevState) => !prevState)}
+              className="form-check-input ml-1"
+              type="checkbox"
+              checked={manualModeInput}
+              id="simulcast"
+              name="simulcast"
+            />
+          </div>
           <div className="flex items-center justify-between">
             <Link
               onClick={() => {
                 localStorage.setItem("displayName", displayNameInput);
                 setUsername(displayNameInput);
-                setSimulcast(simulcastInput);
+                simulcast.setSimulcast(simulcastInput);
+                manualMode.setManualMode(manualModeInput);
               }}
               to={`/room/${roomIdInput}`}
               className={clsx(

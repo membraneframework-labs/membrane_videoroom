@@ -3,7 +3,7 @@ import MediaPlayerTile from "./MediaPlayerTile";
 import { TrackWithId } from "./MediaPlayerPeersSection";
 
 export type VideoStreamWithMetadata = {
-  peerId: string;
+  peerId?: string;
   peerIcon?: string;
   peerName?: string;
   video: TrackWithId;

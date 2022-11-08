@@ -2,15 +2,20 @@ import { useCallback, useEffect, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
 
-type MembraneStreaming = {
+export type MembraneStreaming = {
   tracksId: string[];
   removeTracks: () => void;
   addTracks: (stream: MediaStream) => void;
   setActive: (status: boolean) => void;
+  updateTrackMetadata: (metadata: any) => void;
+  // todo make track metadata generic
+  trackMetadata: any;
 };
 
+export type StreamingMode = "manual" | "automatic";
+
 export const useMembraneMediaStreaming = (
-  mode: "manual" | "automatic",
+  mode: StreamingMode,
   type: TrackType,
   isConnected: boolean,
   webrtc?: MembraneWebRTC,
@@ -18,9 +23,11 @@ export const useMembraneMediaStreaming = (
 ): MembraneStreaming => {
   const [tracksId, setTracksId] = useState<string[]>([]);
   const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | undefined>(webrtc);
-  const [typeState, setTypeState] = useState<TrackType>(type);
+  const [trackMetadata, setTrackMetadata] = useState<any>();
 
   const addTrackInner = useCallback((type: TrackType, webrtc: MembraneWebRTC, stream: MediaStream) => {
+    const defaultTrackMetadata: any = { active: true, type: type };
+
     console.log("addTrack");
     const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
@@ -28,7 +35,7 @@ export const useMembraneMediaStreaming = (
       return webrtc.addTrack(
         track,
         stream,
-        { active: true, type: type },
+        defaultTrackMetadata,
         type == "camera" ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
       );
     });
@@ -36,6 +43,7 @@ export const useMembraneMediaStreaming = (
     setTracksId((prevState) => {
       return [...prevState, ...tracksId];
     });
+    setTrackMetadata(defaultTrackMetadata);
   }, []);
 
   const removeTrackInner = useCallback((webrtc: MembraneWebRTC, trackIds: string[]) => {
@@ -56,11 +64,10 @@ export const useMembraneMediaStreaming = (
     } else if (!stream && tracksId.length > 0) {
       removeTrackInner(webrtc, tracksId);
     }
-  }, [webrtc, stream, type, isConnected, tracksId, removeTrackInner, addTrackInner]);
+  }, [webrtc, stream, type, isConnected, tracksId, removeTrackInner, addTrackInner, mode]);
 
   useEffect(() => {
     setWebrtcState(webrtc);
-    setTypeState(type);
   }, [webrtc, type]);
 
   const removeTracks = useCallback(() => {
@@ -77,43 +84,55 @@ export const useMembraneMediaStreaming = (
       // todo better validation e.g.
       //  store map of browser track id to membrane track id
       //  filter already added tracks
-      if (tracksId.length > 0) {
-        console.log("Skipped");
-        return;
-      }
+      if (!webrtcState) return;
 
-      const tracks = typeState === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
-
-      const newTrackIds: string[] | undefined = webrtcState
-        ? tracks.map((track, idx) => {
-            return webrtcState?.addTrack(
-              track,
-              stream,
-              { active: true, type: typeState },
-              typeState == "camera" ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
-            );
-          })
-        : undefined;
-
-      if (newTrackIds) {
-        setTracksId((prevState) => {
-          return [...prevState, ...newTrackIds];
-        });
-      }
+      addTrackInner(type, webrtcState, stream);
+      // if (tracksId.length > 0) {
+      //   console.log("Skipped");
+      //   return;
+      // }
+      //
+      // const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+      //
+      // const newTrackIds: string[] | undefined = webrtcState
+      //   ? tracks.map((track, idx) => {
+      //       return webrtcState?.addTrack(
+      //         track,
+      //         stream,
+      //         trackMetadata,
+      //         type == "camera" ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
+      //       );
+      //     })
+      //   : undefined;
+      //
+      // if (newTrackIds) {
+      //   setTracksId((prevState) => {
+      //     return [...prevState, ...newTrackIds];
+      //   });
+      // }
     },
-    [webrtcState, typeState, tracksId]
+    [webrtcState, addTrackInner, type]
+  );
+
+  const updateTrackMetadata = useCallback(
+    (metadata: any) => {
+      console.log({ name: `updateTrackMetadata 2`, metadata });
+
+      // const newMetadata = { ...trackMetadata, ...metadata };
+
+      tracksId.forEach((trackId) => {
+        webrtcState?.updateTrackMetadata(trackId, metadata);
+      });
+
+      setTrackMetadata(metadata);
+    },
+    [webrtcState, tracksId]
   );
 
   const setActive = useCallback(
-    (status: boolean) => {
-      console.log({ name: `Set active ${status}`, tracksId });
-
-      tracksId.forEach((trackId) => {
-        webrtcState?.updateTrackMetadata(trackId, { active: status, type: type });
-      });
-    },
-    [webrtcState, tracksId, type]
+    (status: boolean) => updateTrackMetadata({ ...trackMetadata, active: status }),
+    [trackMetadata, updateTrackMetadata]
   );
 
-  return { tracksId, removeTracks, addTracks, setActive };
+  return { tracksId, removeTracks, addTracks, setActive, updateTrackMetadata, trackMetadata };
 };

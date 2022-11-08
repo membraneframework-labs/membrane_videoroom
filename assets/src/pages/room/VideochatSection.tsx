@@ -31,6 +31,8 @@ const prepareScreenSharingStreams = (
           stream: track.mediaStream,
           trackId: track.trackId,
           encodingQuality: track.encoding,
+          metadata: undefined, // TODO fix me
+          // enabled: true, // TODO fix me
         },
         peerId: peerId,
         peerIcon: emoji,
@@ -38,10 +40,15 @@ const prepareScreenSharingStreams = (
       })
     );
 
-  const screenSharingStreams: VideoStreamWithMetadata[] = localPeer?.screenSharingTrackStream
+  const screenSharingStreams: VideoStreamWithMetadata[] = localPeer?.tracks["screensharing"]?.stream
     ? [
         {
-          video: { stream: localPeer?.screenSharingTrackStream, trackId: localPeer?.screenSharingTrackId },
+          video: {
+            stream: localPeer?.tracks["screensharing"]?.stream,
+            trackId: localPeer?.tracks["screensharing"]?.trackId,
+            metadata: localPeer?.tracks["screensharing"]?.metadata,
+            enabled: localPeer?.tracks["screensharing"]?.metadata,
+          },
           peerId: localPeer?.id,
           peerIcon: localPeer?.metadata?.emoji,
           peerName: "Me",
@@ -59,9 +66,30 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     peerId: localPeer?.id,
     displayName: "Me",
     emoji: localPeer?.metadata?.emoji,
-    video: [{ stream: localPeer?.videoTrackStream, trackId: localPeer?.videoTrackId }],
-    audio: [{ stream: localPeer?.audioTrackStream, trackId: localPeer?.audioTrack }],
-    screenSharing: [{ stream: localPeer?.screenSharingTrackStream, trackId: localPeer?.screenSharingTrackId }],
+    video: [
+      {
+        stream: localPeer?.tracks["camera"]?.stream,
+        trackId: localPeer?.tracks["camera"]?.trackId,
+        metadata: localPeer?.tracks["camera"]?.metadata,
+        enabled: localPeer?.tracks["camera"]?.enabled,
+      },
+    ],
+    audio: [
+      {
+        stream: localPeer?.tracks["audio"]?.stream,
+        trackId: localPeer?.tracks["audio"]?.trackId,
+        metadata: localPeer?.tracks["audio"]?.metadata,
+        enabled: localPeer?.tracks["audio"]?.enabled,
+      },
+    ],
+    screenSharing: [
+      {
+        stream: localPeer?.tracks["screensharing"]?.stream,
+        trackId: localPeer?.tracks["screensharing"]?.trackId,
+        metadata: localPeer?.tracks["screensharing"]?.metadata,
+        enabled: localPeer?.tracks["screensharing"]?.enabled,
+      },
+    ],
     showSimulcast: showSimulcast,
     flipHorizontally: true,
     streamSource: "local",

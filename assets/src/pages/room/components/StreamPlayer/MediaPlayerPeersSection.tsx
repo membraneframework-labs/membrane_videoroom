@@ -9,6 +9,8 @@ export type TrackWithId = {
   stream?: MediaStream;
   trackId?: string;
   encodingQuality?: TrackEncoding;
+  metadata: any;
+  enabled?: boolean;
 };
 
 export type MediaPlayerTileConfig = {
@@ -33,6 +35,8 @@ const getTracks = (tracks: Track[], type: TrackType): TrackWithId[] =>
         stream: track.mediaStream,
         trackId: track.trackId,
         encodingQuality: track.encoding,
+        metadata: track.metadata,
+        enabled: true,
       })
     );
 
@@ -76,7 +80,7 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   // state: "streaming on", camera is on and streaming is working, peer is streaming
   if (videoSteam !== undefined && videoTrackId !== undefined) return "🟢";
   // state: "waiting room", camera on but streaming off, no one can see you, state only visible for local peer
-  return "🔵️"
+  return "🔵️";
 };
 
 const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {
@@ -96,11 +100,26 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
         const screenSharing: TrackWithId | undefined = config.screenSharing[0];
         const audio: TrackWithId | undefined = config.audio[0];
 
-        const videoStatus = "📹" + getStatus(video?.stream, video?.trackId);
-        const currentlySharingScreen: string = screenSharing?.stream ? "🖥🟢" : "🖥🔴";
-        const audioIcon = audio?.stream ? "🔊🟢" : "🔊🔴";
         const emoji = config.emoji || "";
         const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };
+
+        const cameraDevice = video?.stream ? "📹🟢" : "📹🔴";
+        const screenSharingDevice = screenSharing?.stream ? "🖥🟢" : "🖥🔴";
+        const microphoneDevice = audio?.stream ? "🔊🟢" : "🔊🔴";
+
+        const cameraStreamStatus = video?.enabled ? "📹🟢" : "📹🔴";
+        const screenSharingStreamStatus = screenSharing?.enabled ? "🖥🟢" : "🖥🔴";
+        const microphoneStreamStatus = audio?.enabled ? "🔊🟢" : "🔊🔴";
+
+        const cameraTrack = video?.trackId ? "📹🟢" : "📹🔴";
+        const screenSharingTrack = screenSharing?.trackId ? "🖥🟢" : "🖥🔴";
+        const microphoneTrack = audio?.trackId ? "🔊🟢" : "🔊🔴";
+
+        const cameraMetadataStatus = video?.metadata?.active ? "📹🟢" : "📹🔴";
+        const screenSharingMetadataStatus = screenSharing?.metadata?.active ? "🖥🟢" : "🖥🔴";
+        const microphoneMetadataStatus = audio?.metadata?.active ? "🔊🟢" : "🔊🔴";
+
+        // console.log({ name: "audio", audio });
 
         return (
           <MediaPlayerTile
@@ -110,19 +129,63 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
             audioStream={audio?.stream}
             topLeft={<div>{emoji}</div>}
             topRight={
-              <div className="text-right">
-                <span title="Streaming" className="ml-2">
-                  Active tracks:
-                </span>
-                <span title="Screen Sharing" className="ml-2">
-                  {currentlySharingScreen}
-                </span>
-                <span title="Camera" className="ml-2">
-                  {videoStatus}
-                </span>
-                <span title="Audio" className="ml-2">
-                  {audioIcon}
-                </span>
+              <div>
+                <div className="text-right">
+                  <span title="Streaming" className="ml-2">
+                    Device:
+                  </span>
+                  <span title="Screen Sharing" className="ml-2">
+                    {screenSharingDevice}
+                  </span>
+                  <span title="Camera" className="ml-2">
+                    {cameraDevice}
+                  </span>
+                  <span title="Audio" className="ml-2">
+                    {microphoneDevice}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span title="Streaming" className="ml-2">
+                    Stream status:
+                  </span>
+                  <span title="Screen Sharing" className="ml-2">
+                    {screenSharingStreamStatus}
+                  </span>
+                  <span title="Camera" className="ml-2">
+                    {cameraStreamStatus}
+                  </span>
+                  <span title="Audio" className="ml-2">
+                    {microphoneStreamStatus}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span title="Streaming" className="ml-2">
+                    Active tracks:
+                  </span>
+                  <span title="Screen Sharing" className="ml-2">
+                    {screenSharingTrack}
+                  </span>
+                  <span title="Camera" className="ml-2">
+                    {cameraTrack}
+                  </span>
+                  <span title="Audio" className="ml-2">
+                    {microphoneTrack}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span title="Streaming" className="ml-2">
+                    Metadata:
+                  </span>
+                  <span title="Screen Sharing" className="ml-2">
+                    {screenSharingMetadataStatus}
+                  </span>
+                  <span title="Camera" className="ml-2">
+                    {cameraMetadataStatus}
+                  </span>
+                  <span title="Audio" className="ml-2">
+                    {microphoneMetadataStatus}
+                  </span>
+                </div>
               </div>
             }
             bottomLeft={<div>{config.displayName}</div>}

@@ -7,7 +7,8 @@ import { SetErrorMessage } from "../RoomPage";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
-  return isTrackType(type) ? { type } : {};
+  const active = context.metadata.active;
+  return isTrackType(type) ? { type, active } : { active };
 };
 
 type UseSetupResult = {
@@ -65,14 +66,17 @@ export const useMembraneClient = (
           if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
           const metadata: TrackMetadata = parseMetadata(ctx);
           api.addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
+          console.log({ name: "onTrackReady", ctx });
         },
         onTrackAdded: (ctx) => {
           // todo this event is triggered multiple times even though onTrackRemoved was invoked
           const metadata: TrackMetadata = parseMetadata(ctx);
+          console.log({ name: "onTrackAdded", ctx });
         },
         onTrackRemoved: (ctx) => {
           const peerId = ctx?.peer?.id;
           if (!peerId) return;
+          console.log({ name: "onTrackRemoved", ctx });
           api.removeTrack(peerId, ctx.trackId);
         },
         onPeerJoined: (peer) => {
@@ -94,6 +98,7 @@ export const useMembraneClient = (
         },
         onTrackUpdated: (ctx: TrackContext) => {
           console.log({ name: "onTrackUpdated", ctx });
+          api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
       },
     });

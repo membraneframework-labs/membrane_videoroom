@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { PeersApi } from "./usePeerState";
 import { TrackType } from "../../types";
 
-export const useSetLocalUserTrack = (type: TrackType, api: PeersApi, stream?: MediaStream) => {
+export const useSetLocalUserTrack = (
+  type: TrackType,
+  api: PeersApi,
+  stream: MediaStream | undefined,
+  isEnabled: boolean
+) => {
   useEffect(() => {
-    // if (!api) return;
-    // console.log({name: "useSetLocalUserTrack", stream});
-
-    api.setLocalStream(type, stream);
-  }, [type, api, stream]);
+    api.setLocalStream(type, isEnabled, stream);
+  }, [type, api, stream, isEnabled]);
 };

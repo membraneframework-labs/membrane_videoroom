@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 
 import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
-import { useMembraneMediaStreaming } from "./hooks/useMembraneMediaStreaming";
+import { MembraneStreaming, useMembraneMediaStreaming } from "./hooks/useMembraneMediaStreaming";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, RemotePeer, usePeersState } from "./hooks/usePeerState";
@@ -11,6 +11,7 @@ import { VideochatSection } from "./VideochatSection";
 import { useSetLocalUserTrack } from "./hooks/useSetLocalUserTrack";
 import { getRandomAnimalEmoji } from "./utils";
 import { useSetRemoteTrackId } from "./hooks/useSetRemoteTrackId";
+import { useAbc } from "./hooks/useAbc";
 
 type Props = {
   displayName: string;
@@ -35,10 +36,16 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
 
   const isConnected = !!peerState?.local?.id;
 
-  const cameraStreaming = useMembraneMediaStreaming("automatic", "camera", isConnected, webrtc, userMediaVideo.stream);
-  const audioStreaming = useMembraneMediaStreaming("automatic", "audio", isConnected, webrtc, userMediaAudio.stream);
+  const cameraStreaming: MembraneStreaming = useMembraneMediaStreaming(
+    "manual",
+    "camera",
+    isConnected,
+    webrtc,
+    userMediaVideo.stream
+  );
+  const audioStreaming = useMembraneMediaStreaming("manual", "audio", isConnected, webrtc, userMediaAudio.stream);
   const screenSharingStreaming = useMembraneMediaStreaming(
-    "automatic",
+    "manual",
     "screensharing",
     isConnected,
     webrtc,
@@ -49,13 +56,17 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
     console.log({ name: "state", peerState });
   }, [peerState]);
 
-  useSetLocalUserTrack("camera", peerApi, userMediaVideo.stream);
-  useSetLocalUserTrack("audio", peerApi, userMediaAudio.stream);
-  useSetLocalUserTrack("screensharing", peerApi, displayMedia.stream);
+  useSetLocalUserTrack("camera", peerApi, userMediaVideo.stream, userMediaVideo.isEnabled);
+  useSetLocalUserTrack("audio", peerApi, userMediaAudio.stream, userMediaAudio.isEnabled);
+  useSetLocalUserTrack("screensharing", peerApi, displayMedia.stream, displayMedia.isEnabled);
 
   useSetRemoteTrackId("camera", cameraStreaming.tracksId, peerApi);
   useSetRemoteTrackId("audio", audioStreaming.tracksId, peerApi);
   useSetRemoteTrackId("screensharing", screenSharingStreaming.tracksId, peerApi);
+
+  useAbc("camera", peerApi, cameraStreaming.trackMetadata);
+  useAbc("audio", peerApi, audioStreaming.trackMetadata);
+  useAbc("screensharing", peerApi, screenSharingStreaming.trackMetadata);
 
   return (
     <section>
@@ -65,14 +76,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
             {errorMessage}
           </div>
         )}
-        <button onClick={() => userMediaVideo?.stream && cameraStreaming.addTracks(userMediaVideo.stream)}>
-          Add tracks
-        </button>
-        <button onClick={() => cameraStreaming.removeTracks()}>Remove tracks</button>
-        <button onClick={() => userMediaVideo?.stream && cameraStreaming.setActive(true)}>Set active</button>
-        <button onClick={() => userMediaVideo?.stream && cameraStreaming.setActive(false)}>Set inactive</button>
-        <button onClick={() => userMediaVideo?.stream && userMediaVideo.enable()}>Enable</button>
-        <button onClick={() => userMediaVideo?.stream && userMediaVideo.disable()}>Disable</button>
 
         <section className="flex flex-col h-screen mb-14">
           <header className="p-4">
@@ -99,9 +102,13 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
           />
         </section>
         <MediaControlButtons
-          userMediaAudio={userMediaAudio}
+          mode={"manual"}
           userMediaVideo={userMediaVideo}
+          cameraStreaming={cameraStreaming}
+          userMediaAudio={userMediaAudio}
+          audioStreaming={audioStreaming}
           displayMedia={displayMedia}
+          screenSharingStreaming={screenSharingStreaming}
         />
       </div>
       {isSimulcastOn && (

@@ -1,19 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-export type UseMediaResult = {
-  isError: boolean;
-  isSuccess: boolean;
-  start: () => void;
-  stop: () => void;
-  stream?: MediaStream;
-  enable: () => void;
-  disable: () => void;
-};
+export type UseMediaResult = State & Api;
 
 type State = {
   isError: boolean;
   isSuccess: boolean;
   stream?: MediaStream;
+  isEnabled: boolean;
 };
 
 export type Api = {
@@ -38,6 +31,7 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
     isError: false,
     isSuccess: true,
     stream: undefined,
+    isEnabled: false,
   });
 
   const [api, setApi] = useState<Api>({
@@ -54,6 +48,7 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
         isError: true,
         isSuccess: false,
         stream: undefined,
+        isEnabled: false,
       })
     );
   }, []);
@@ -64,6 +59,7 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
         isError: false,
         isSuccess: true,
         stream: stream,
+        isEnabled: true,
       })
     );
   }, []);
@@ -105,8 +101,14 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
       state.stream?.getTracks().forEach((track: MediaStreamTrack) => {
         track.enabled = status;
       });
+      setState(
+        (prevState: State): State => ({
+          ...prevState,
+          isEnabled: status,
+        })
+      );
     },
-    [state.stream] // todo
+    [state.stream, setState] // todo
   );
 
   useEffect(() => {

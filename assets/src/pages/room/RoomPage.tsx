@@ -11,7 +11,7 @@ import { VideochatSection } from "./VideochatSection";
 import { useSetLocalUserTrack } from "./hooks/useSetLocalUserTrack";
 import { getRandomAnimalEmoji } from "./utils";
 import { useSetRemoteTrackId } from "./hooks/useSetRemoteTrackId";
-import { useAbc } from "./hooks/useAbc";
+import { useSetLocalTrackMetadata } from "./hooks/useSetLocalTrackMetadata";
 
 type Props = {
   displayName: string;
@@ -64,9 +64,9 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn }: Props) => {
   useSetRemoteTrackId("audio", audioStreaming.tracksId, peerApi);
   useSetRemoteTrackId("screensharing", screenSharingStreaming.tracksId, peerApi);
 
-  useAbc("camera", peerApi, cameraStreaming.trackMetadata);
-  useAbc("audio", peerApi, audioStreaming.trackMetadata);
-  useAbc("screensharing", peerApi, screenSharingStreaming.trackMetadata);
+  useSetLocalTrackMetadata("camera", peerApi, cameraStreaming.trackMetadata);
+  useSetLocalTrackMetadata("audio", peerApi, audioStreaming.trackMetadata);
+  useSetLocalTrackMetadata("screensharing", peerApi, screenSharingStreaming.trackMetadata);
 
   return (
     <section>

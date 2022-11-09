@@ -14,11 +14,12 @@ type Props = {
   roomId: string;
   isSimulcastOn: boolean;
   manualMode: boolean;
+  autostartStreaming?: boolean;
 };
 
 export type SetErrorMessage = (value: string) => void;
 
-const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }: Props) => {
+const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -31,15 +32,24 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
 
   const isConnected = !!peerState?.local?.id;
 
-  const camera = useStreamManager("camera", mode, isConnected, webrtc, VIDEO_TRACKS_CONFIG, peerApi);
-  const audio = useStreamManager("audio", mode, isConnected, webrtc, AUDIO_TRACKS_CONFIG, peerApi);
+  const camera = useStreamManager(
+    "camera",
+    mode,
+    isConnected,
+    webrtc,
+    VIDEO_TRACKS_CONFIG,
+    peerApi,
+    autostartStreaming
+  );
+  const audio = useStreamManager("audio", mode, isConnected, webrtc, AUDIO_TRACKS_CONFIG, peerApi, autostartStreaming);
   const screenSharing = useStreamManager(
     "screensharing",
     mode,
     isConnected,
     webrtc,
     SCREEN_SHARING_TRACKS_CONFIG,
-    peerApi
+    peerApi,
+    false
   );
 
   useEffect(() => {

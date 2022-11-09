@@ -19,9 +19,10 @@ export const useStreamManager = (
   isConnected: boolean,
   webrtc: MembraneWebRTC | undefined,
   config: MediaStreamConfig | DisplayMediaStreamConfig,
-  peersApi: PeersApi
+  peersApi: PeersApi,
+  autostartStreaming?: boolean
 ): Streams => {
-  const local = useMediaMedia(config, false);
+  const local = useMediaMedia(config, autostartStreaming);
   const remote = useMembraneMediaStreaming(mode, type, isConnected, webrtc, local.stream);
   useSetLocalUserTrack(type, peersApi, local.stream, local.isEnabled);
   useSetRemoteTrackId(type, remote.tracksId, peersApi);

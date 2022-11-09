@@ -1,21 +1,45 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
 import { DeveloperContext } from "../../contexts/developerContext";
+import { Checkbox, Props as CheckboxProps } from "./Checkbox";
+import { useToggle } from "../room/hooks/useToggle";
 
 export const HomePage: FC = () => {
   const { setUsername } = useContext(UserContext);
-  const { manualMode, simulcast } = useContext(DeveloperContext);
+  const { manualMode, simulcast, cameraAutostart } = useContext(DeveloperContext);
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
-  const [simulcastInput, setSimulcastInput] = useState<boolean>(true);
-  const [manualModeInput, setManualModeInput] = useState<boolean>(false);
+  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(true);
+  const [manualModeInput, toggleManualModeCheckbox] = useToggle(false);
+  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
   const match = useParams();
   const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
 
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
+
+  const checkboxes: CheckboxProps[] = [
+    {
+      text: "Autostart camera and mic",
+      id: "autostart-camera-and-mic",
+      onClick: setAutostartCameraAndMicCheckbox,
+      status: autostartCameraAndMicInput,
+    },
+    {
+      text: "Simulcast",
+      id: "simulcast",
+      onClick: toggleSimulcastCheckbox,
+      status: simulcastInput,
+    },
+    {
+      text: "Manual mode",
+      id: "manual-mode",
+      onClick: toggleManualModeCheckbox,
+      status: manualModeInput,
+    },
+  ];
 
   return (
     <section>
@@ -39,7 +63,7 @@ export const HomePage: FC = () => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="display_name">
               Display name
             </label>
@@ -52,32 +76,9 @@ export const HomePage: FC = () => {
               placeholder="Display name"
             />
           </div>
-          <div className="form-check mb-6">
-            <label className="form-check-label text-gray-700 text-sm font-bold" htmlFor="simulcast">
-              Simulcast
-            </label>
-            <input
-              onChange={() => setSimulcastInput((prevState) => !prevState)}
-              className="form-check-input ml-1"
-              type="checkbox"
-              checked={simulcastInput}
-              id="simulcast"
-              name="simulcast"
-            />
-          </div>
-          <div className="form-check mb-6">
-            <label className="form-check-label text-gray-700 text-sm font-bold" htmlFor="simulcast">
-              Manual mode
-            </label>
-            <input
-              onChange={() => setManualModeInput((prevState) => !prevState)}
-              className="form-check-input ml-1"
-              type="checkbox"
-              checked={manualModeInput}
-              id="simulcast"
-              name="simulcast"
-            />
-          </div>
+          {checkboxes.map(({ text, id, status, onClick }, index) => (
+            <Checkbox key={index} text={text} id={id} status={status} onClick={onClick} />
+          ))}
           <div className="flex items-center justify-between">
             <Link
               onClick={() => {
@@ -85,6 +86,7 @@ export const HomePage: FC = () => {
                 setUsername(displayNameInput);
                 simulcast.setSimulcast(simulcastInput);
                 manualMode.setManualMode(manualModeInput);
+                cameraAutostart.setCameraAutostart(autostartCameraAndMicInput);
               }}
               to={`/room/${roomIdInput}`}
               className={clsx(

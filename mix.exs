@@ -9,7 +9,13 @@ defmodule VideoRoom.MixProject do
       aliases: aliases(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: dialyzer()
+      dialyzer: dialyzer(),
+      releases: [
+        membrane_videoroom_demo: [
+          steps: [:assemble, &VideoRoom.Release.cp_grafana_config_release_step/1],
+          applications: [membrane_rtc_engine_timescaledb: :load]
+        ]
+      ]
     ]
   end
 
@@ -24,7 +30,7 @@ defmodule VideoRoom.MixProject do
     [
       {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine", override: true},
       {:membrane_rtc_engine_timescaledb,
-       github: "membraneframework/membrane_rtc_engine_timescaledb"},
+       github: "membraneframework/membrane_rtc_engine_timescaledb", runtime: false},
       {:plug_cowboy, "~> 2.5.2"},
       {:phoenix, "~> 1.6"},
       {:phoenix_html, "~> 3.0"},

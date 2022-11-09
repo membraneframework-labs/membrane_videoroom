@@ -72,4 +72,10 @@ EXPOSE 4000
 
 HEALTHCHECK CMD curl --fail http://localhost:4000 || exit 1  
 
+COPY --chown=nobody:nobody docker-entrypoint.sh ./docker-entrypoint.sh
+
+RUN chmod +x docker-entrypoint.sh
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
+
 CMD ["bin/membrane_videoroom_demo", "start"]

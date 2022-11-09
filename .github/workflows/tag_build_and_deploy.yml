@@ -6,8 +6,9 @@ on:
 
 env: 
   VIRTUAL_HOST: videoroom.membrane.stream
-  INTEGRATED_TURN_IP: 65.21.244.250
+  EXTERNAL_IP: 65.21.244.250
   TAG: ${{ github.ref_name }}
+  PROJECT: production
 
 jobs:
   build:
@@ -61,7 +62,29 @@ jobs:
 
       - name: Prepare .env file for the deployment
         id: variables_population
-        run: echo "VIRTUAL_HOST=$VIRTUAL_HOST \nINTEGRATED_TURN_IP=$INTEGRATED_TURN_IP \nTAG=$TAG" > .env
+        env: 
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+          GF_SECURITY_ADMIN_USER: ${{ secrets.GF_SECURITY_ADMIN_USER  }}
+        run: |
+          echo "VIRTUAL_HOST=$VIRTUAL_HOST 
+          EXTERNAL_IP=$EXTERNAL_IP 
+          TAG=$TAG 
+          DB_USERNAME=$DB_USERNAME 
+          DB_PASSWORD=$DB_PASSWORD
+          GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
+          GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER" > .env
+
+      - name: Remove Grafana and Videoroom containers with volumes
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ secrets.DEMO_HOST }}
+          privateKey: ${{ secrets.SSH_PRIV_KEY }}
+          command: |
+            docker rm -f ${{ env.PROJECT }}_grafana_1
+            docker rm -f ${{ env.PROJECT }}_videoroom_1
+            docker volume rm -f ${{ env.PROJECT }}_grafana-provisioning
 
       - name: Deploy docker compose to a pre-configured server
         id: deploy
@@ -71,5 +94,4 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           stack_file_name: docker-compose.yml
-          args: -p production --env-file .env up -d --remove-orphans
-
+          args: -p ${{ env.PROJECT }} --env-file .env up -d --remove-orphans

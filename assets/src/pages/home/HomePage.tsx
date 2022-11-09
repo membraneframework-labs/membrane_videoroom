@@ -10,7 +10,7 @@ export const HomePage: FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
   const [simulcastInput, setSimulcastInput] = useState<boolean>(true);
-  const [manualModeInput, setManualModeInput] = useState<boolean>(true);
+  const [manualModeInput, setManualModeInput] = useState<boolean>(false);
   const match = useParams();
   const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);

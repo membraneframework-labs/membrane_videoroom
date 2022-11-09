@@ -71,7 +71,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   };
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
-  console.log({ name: "screenSharingStrems", screenSharingStreams });
+  // console.log({ name: "screenSharingStrems", screenSharingStreams });
 
   return (
     <div id="videochat" className="px-2 md:px-20 overflow-y-auto">

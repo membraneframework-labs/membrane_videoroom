@@ -137,7 +137,10 @@ export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<Medi
           // todo refactor
           setState((prevStateInner) => ({
             ...prevStateInner,
+            isError: false,
+            isSuccess: true,
             stream: undefined,
+            isEnabled: false,
           }));
         },
         start: () => {

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 
-import { useDisplayMedia, UseMediaResult, useUserMedia } from "./hooks/useUserMedia";
+import { useDisplayMedia, useUserMedia } from "./hooks/useUserMedia";
 import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -9,6 +9,7 @@ import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
 import { getRandomAnimalEmoji } from "./utils";
 import { useSomeHook } from "./hooks/useSomeHook";
+import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 
 type Props = {
   displayName: string;
@@ -20,7 +21,7 @@ type Props = {
 export type SetErrorMessage = (value: string) => void;
 
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }: Props) => {
-  const mode = manualMode ? "manual" : "automatic";
+  const mode: StreamingMode = manualMode ? "manual" : "automatic";
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
@@ -30,14 +31,14 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
   const userMediaVideo = useUserMedia(VIDEO_TRACK_CONSTRAINTS, false);
-  const userMediaAudio: UseMediaResult = useUserMedia(AUDIO_TRACK_CONSTRAINTS, false);
-  const displayMedia: UseMediaResult = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS, false);
+  const userMediaAudio = useUserMedia(AUDIO_TRACK_CONSTRAINTS, false);
+  const displayMedia = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS, false);
 
   const isConnected = !!peerState?.local?.id;
 
-  const cameraStreaming = useSomeHook("camera", isConnected, webrtc, userMediaVideo, peerApi);
-  const audioStreaming = useSomeHook("audio", isConnected, webrtc, userMediaVideo, peerApi);
-  const screenSharingStreaming = useSomeHook("screensharing", isConnected, webrtc, userMediaVideo, peerApi);
+  const cameraStreaming = useSomeHook("camera", mode, isConnected, webrtc, userMediaVideo, peerApi);
+  const audioStreaming = useSomeHook("audio", mode, isConnected, webrtc, userMediaAudio, peerApi);
+  const screenSharingStreaming = useSomeHook("screensharing", mode, isConnected, webrtc, displayMedia, peerApi);
 
   useEffect(() => {
     console.log({ name: "state", peerState });

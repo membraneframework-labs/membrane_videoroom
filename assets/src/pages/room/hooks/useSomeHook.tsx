@@ -1,5 +1,5 @@
 import React from "react";
-import { MembraneStreaming, useMembraneMediaStreaming } from "./useMembraneMediaStreaming";
+import { MembraneStreaming, StreamingMode, useMembraneMediaStreaming } from "./useMembraneMediaStreaming";
 import { useSetLocalUserTrack } from "./useSetLocalUserTrack";
 import { useSetRemoteTrackId } from "./useSetRemoteTrackId";
 import { useSetLocalTrackMetadata } from "./useSetLocalTrackMetadata";
@@ -10,13 +10,14 @@ import { TrackType } from "../../types";
 
 export const useSomeHook = (
   type: TrackType,
+  mode: StreamingMode,
   isConnected: boolean,
   webrtc: MembraneWebRTC | undefined,
   userMediaVideo: UseMediaResult,
   peersApi: PeersApi
 ): MembraneStreaming => {
   const cameraStreaming: MembraneStreaming = useMembraneMediaStreaming(
-    "manual",
+    mode,
     type,
     isConnected,
     webrtc,

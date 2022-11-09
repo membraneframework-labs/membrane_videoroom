@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
-import PeerInfoLayer from "./PeerInfoLayer";
+import InfoLayer from "./PeerInfoLayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
@@ -22,6 +22,7 @@ export interface Props {
   bottomLeft?: JSX.Element;
   bottomRight?: JSX.Element;
   webrtc?: MembraneWebRTC;
+  showDeveloperInfo?: boolean;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -37,6 +38,7 @@ const MediaPlayerTile: FC<Props> = ({
   bottomLeft,
   bottomRight,
   webrtc,
+  showDeveloperInfo,
 }: Props) => {
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.trackId, webrtc);
 
@@ -53,7 +55,8 @@ const MediaPlayerTile: FC<Props> = ({
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}
       />
-      <PeerInfoLayer topLeft={topLeft} topRight={topRight} bottomLeft={bottomLeft} bottomRight={bottomRight} />
+      {showDeveloperInfo && <InfoLayer topLeft={topLeft} topRight={topRight} bottomRight={bottomRight} />}
+      <InfoLayer bottomLeft={bottomLeft} />
       {showSimulcast && streamSource === "remote" && (
         <SimulcastRemoteLayer
           desiredEncoding={desiredEncoding}

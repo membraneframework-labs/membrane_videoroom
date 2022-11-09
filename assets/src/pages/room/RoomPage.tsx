@@ -1,14 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-
-import { useDisplayMedia, useUserMedia } from "./hooks/useUserMedia";
-import { AUDIO_TRACK_CONSTRAINTS, SCREENSHARING_MEDIA_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "./consts";
+import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, RemotePeer, usePeersState } from "./hooks/usePeerState";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
 import { getRandomAnimalEmoji } from "./utils";
-import { useSomeHook } from "./hooks/useSomeHook";
+import { useStreamManager } from "./hooks/useStreamManager";
 import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 
 type Props = {
@@ -25,20 +23,24 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
+  const [showDeveloperInfo, toggleDeveloperInfo] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName: displayName });
 
   const { state: peerState, api: peerApi } = usePeersState();
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
-  const userMediaVideo = useUserMedia(VIDEO_TRACK_CONSTRAINTS, false);
-  const userMediaAudio = useUserMedia(AUDIO_TRACK_CONSTRAINTS, false);
-  const displayMedia = useDisplayMedia(SCREENSHARING_MEDIA_CONSTRAINTS, false);
-
   const isConnected = !!peerState?.local?.id;
 
-  const cameraStreaming = useSomeHook("camera", mode, isConnected, webrtc, userMediaVideo, peerApi);
-  const audioStreaming = useSomeHook("audio", mode, isConnected, webrtc, userMediaAudio, peerApi);
-  const screenSharingStreaming = useSomeHook("screensharing", mode, isConnected, webrtc, displayMedia, peerApi);
+  const camera = useStreamManager("camera", mode, isConnected, webrtc, VIDEO_TRACKS_CONFIG, peerApi);
+  const audio = useStreamManager("audio", mode, isConnected, webrtc, AUDIO_TRACKS_CONFIG, peerApi);
+  const screenSharing = useStreamManager(
+    "screensharing",
+    mode,
+    isConnected,
+    webrtc,
+    SCREEN_SHARING_TRACKS_CONFIG,
+    peerApi
+  );
 
   useEffect(() => {
     console.log({ name: "state", peerState });
@@ -76,28 +78,38 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
             peers={peerState.remote}
             localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
+            showDeveloperInfo={showDeveloperInfo}
             webrtc={webrtc}
           />
         </section>
         <MediaControlButtons
           mode={mode}
-          userMediaVideo={userMediaVideo}
-          cameraStreaming={cameraStreaming}
-          userMediaAudio={userMediaAudio}
-          audioStreaming={audioStreaming}
-          displayMedia={displayMedia}
-          screenSharingStreaming={screenSharingStreaming}
+          userMediaVideo={camera.local}
+          cameraStreaming={camera.remote}
+          userMediaAudio={audio.local}
+          audioStreaming={audio.remote}
+          displayMedia={screenSharing.local}
+          screenSharingStreaming={screenSharing.remote}
         />
       </div>
-      {isSimulcastOn && (
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 md:right-2 md:-translate-x-1 md:left-auto flex flex-col items-stretch">
+        {isSimulcastOn && (
+          <button
+            onClick={toggleSimulcastMenu}
+            className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
+            type="submit"
+          >
+            Show simulcast controls
+          </button>
+        )}
         <button
-          onClick={toggleSimulcastMenu}
-          className="absolute bottom-2 left-1/2 -translate-x-1/2 md:right-2 md:-translate-x-1 md:left-auto bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-max"
+          onClick={toggleDeveloperInfo}
+          className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
           type="submit"
         >
-          Show simulcast controls
+          Show developer info
         </button>
-      )}
+      </div>
     </section>
   );
 };

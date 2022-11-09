@@ -26,6 +26,7 @@ const stopTracks = (stream: MediaStream) => {
   });
 };
 
+// todo add start camera on mount as
 export const useMedia = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
   const [state, setState] = useState<State>({
     isError: false,
@@ -178,8 +179,39 @@ export const useUserMedia = (config: MediaStreamConstraints, startOnMount = fals
   return useMedia({ startOnMount }, mediaStreamSupplier);
 };
 
-export const useDisplayMedia = (config: DisplayMediaStreamConstraints, startOnMount = true) => {
+export const useDisplayMedia = (config: DisplayMediaStreamConstraints, startOnMount = false) => {
   const mediaStreamSupplier = useCallback(() => navigator.mediaDevices.getDisplayMedia(config), [config]);
+
+  return useMedia({ startOnMount }, mediaStreamSupplier);
+};
+
+export class MediaStreamConfig {
+  private type = "MediaStreamConfig";
+
+  constructor(public constraints: MediaStreamConstraints) {
+    this.constraints = constraints;
+  }
+}
+
+export class DisplayMediaStreamConfig {
+  private type = "DisplayMediaStreamConfig";
+
+  constructor(public constraints: DisplayMediaStreamConstraints) {
+    this.constraints = constraints;
+  }
+}
+
+export const useMediaMedia = (
+  config: MediaStreamConfig | DisplayMediaStreamConfig,
+  startOnMount = false
+): UseMediaResult => {
+  const mediaStreamSupplier = useCallback(() => {
+    if (config instanceof DisplayMediaStreamConfig) {
+      return navigator.mediaDevices.getDisplayMedia(config.constraints);
+    } else {
+      return navigator.mediaDevices.getUserMedia(config.constraints);
+    }
+  }, [config]);
 
   return useMedia({ startOnMount }, mediaStreamSupplier);
 };

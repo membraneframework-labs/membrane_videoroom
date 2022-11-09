@@ -1,10 +1,12 @@
-export const AUDIO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
+import { DisplayMediaStreamConfig, MediaStreamConfig } from "./hooks/useUserMedia";
+
+const AUDIO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   audio: {
     advanced: [{ autoGainControl: true }, { noiseSuppression: true }, { echoCancellation: true }],
   },
 };
 
-export const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
+const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   video: {
     width: {
       max: 1280,
@@ -23,11 +25,14 @@ export const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   },
 };
 
-export const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
+const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
   video: {
     frameRate: { ideal: 10, max: 15 },
   },
 };
+export const VIDEO_TRACKS_CONFIG = new MediaStreamConfig(VIDEO_TRACK_CONSTRAINTS);
+export const AUDIO_TRACKS_CONFIG = new MediaStreamConfig(AUDIO_TRACK_CONSTRAINTS);
+export const SCREEN_SHARING_TRACKS_CONFIG = new DisplayMediaStreamConfig(SCREENSHARING_MEDIA_CONSTRAINTS);
 
 // todo implement
 const MBps = 1024 * 8;

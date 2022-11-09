@@ -66,6 +66,7 @@ type Props = {
   peers: RemotePeer[];
   localUser: MediaPlayerTileConfig;
   showSimulcast?: boolean;
+  showDeveloperInfo?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn?: boolean;
   webrtc?: MembraneWebRTC;
@@ -83,7 +84,14 @@ const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
   return "🔵️";
 };
 
-const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {
+const MediaPlayerPeersSection: FC<Props> = ({
+  peers,
+  localUser,
+  showSimulcast,
+  oneColumn,
+  webrtc,
+  showDeveloperInfo,
+}: Props) => {
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...getCameraStreams(peers, showSimulcast)];
 
   return (
@@ -118,8 +126,6 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
         const cameraMetadataStatus = video?.metadata?.active ? "📹🟢" : "📹🔴";
         const screenSharingMetadataStatus = screenSharing?.metadata?.active ? "🖥🟢" : "🖥🔴";
         const microphoneMetadataStatus = audio?.metadata?.active ? "🔊🟢" : "🔊🔴";
-
-        // console.log({ name: "audio", audio });
 
         return (
           <MediaPlayerTile
@@ -198,6 +204,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
               </div>
             }
             showSimulcast={showSimulcast}
+            showDeveloperInfo={showDeveloperInfo}
             streamSource={config.streamSource}
             flipHorizontally={config.flipHorizontally}
             webrtc={webrtc}

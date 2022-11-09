@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
 
@@ -24,27 +24,29 @@ export const useMembraneMediaStreaming = (
   const [tracksId, setTracksId] = useState<string[]>([]);
   const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | undefined>(webrtc);
   const [trackMetadata, setTrackMetadata] = useState<any>();
+  const defaultTrackMetadata = useMemo(() => ({ active: true, type: type }), [type]);
 
-  const addTrackInner = useCallback((type: TrackType, webrtc: MembraneWebRTC, stream: MediaStream) => {
-    const defaultTrackMetadata: any = { active: true, type: type };
+  const addTrackInner = useCallback(
+    (type: TrackType, webrtc: MembraneWebRTC, stream: MediaStream) => {
+      console.log("addTrack");
+      const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
-    console.log("addTrack");
-    const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+      const tracksId: string[] = tracks.map((track, idx) => {
+        return webrtc.addTrack(
+          track,
+          stream,
+          defaultTrackMetadata,
+          type == "camera" ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
+        );
+      });
 
-    const tracksId: string[] = tracks.map((track, idx) => {
-      return webrtc.addTrack(
-        track,
-        stream,
-        defaultTrackMetadata,
-        type == "camera" ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
-      );
-    });
-
-    setTracksId((prevState) => {
-      return [...prevState, ...tracksId];
-    });
-    setTrackMetadata(defaultTrackMetadata);
-  }, []);
+      setTracksId((prevState) => {
+        return [...prevState, ...tracksId];
+      });
+      setTrackMetadata(defaultTrackMetadata);
+    },
+    [defaultTrackMetadata]
+  );
 
   const removeTrackInner = useCallback((webrtc: MembraneWebRTC, trackIds: string[]) => {
     console.log("remove track");
@@ -52,6 +54,7 @@ export const useMembraneMediaStreaming = (
     trackIds.forEach((trackId) => {
       webrtc.removeTrack(trackId);
     });
+    setTrackMetadata(undefined);
   }, []);
 
   useEffect(() => {
@@ -70,12 +73,14 @@ export const useMembraneMediaStreaming = (
     setWebrtcState(webrtc);
   }, [webrtc, type]);
 
+  // todo merge with inner
   const removeTracks = useCallback(() => {
     console.log("Remove tracks on click");
     tracksId.forEach((trackId) => {
       webrtcState?.removeTrack(trackId);
     });
     setTracksId([]);
+    setTrackMetadata(undefined);
   }, [webrtcState, tracksId]);
 
   const addTracks = useCallback(
@@ -123,8 +128,6 @@ export const useMembraneMediaStreaming = (
       tracksId.forEach((trackId) => {
         webrtcState?.updateTrackMetadata(trackId, metadata);
       });
-
-      setTrackMetadata(metadata);
     },
     [webrtcState, tracksId]
   );

@@ -76,6 +76,7 @@ export const useMembraneMediaStreaming = (
       tracksId.forEach((trackId) => {
         webrtcState?.updateTrackMetadata(trackId, metadata);
       });
+      setTrackMetadata(metadata);
     },
     [webrtcState, tracksId]
   );

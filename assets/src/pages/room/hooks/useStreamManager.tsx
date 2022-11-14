@@ -4,7 +4,7 @@ import { useSetLocalUserTrack } from "./useSetLocalUserTrack";
 import { useSetRemoteTrackId } from "./useSetRemoteTrackId";
 import { useSetLocalTrackMetadata } from "./useSetLocalTrackMetadata";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
-import { DisplayMediaStreamConfig, MediaStreamConfig, useMediaMedia, UseMediaResult } from "./useUserMedia";
+import { DisplayMediaStreamConfig, MediaStreamConfig, useMedia, UseMediaResult } from "./useUserMedia";
 import { PeersApi } from "./usePeerState";
 import { TrackType } from "../../types";
 
@@ -17,13 +17,14 @@ export const useStreamManager = (
   type: TrackType,
   mode: StreamingMode,
   isConnected: boolean,
+  simulcast: boolean,
   webrtc: MembraneWebRTC | undefined,
   config: MediaStreamConfig | DisplayMediaStreamConfig,
   peersApi: PeersApi,
   autostartStreaming?: boolean
 ): Streams => {
-  const local = useMediaMedia(config, autostartStreaming);
-  const remote = useMembraneMediaStreaming(mode, type, isConnected, webrtc, local.stream);
+  const local = useMedia(config, autostartStreaming);
+  const remote = useMembraneMediaStreaming(mode, type, isConnected, simulcast, webrtc, local.stream);
   useSetLocalUserTrack(type, peersApi, local.stream, local.isEnabled);
   useSetRemoteTrackId(type, remote.tracksId, peersApi);
   useSetLocalTrackMetadata(type, peersApi, remote.trackMetadata);

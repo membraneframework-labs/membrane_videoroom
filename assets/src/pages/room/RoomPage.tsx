@@ -36,16 +36,27 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     "camera",
     mode,
     isConnected,
+    isSimulcastOn,
     webrtc,
     VIDEO_TRACKS_CONFIG,
     peerApi,
     autostartStreaming
   );
-  const audio = useStreamManager("audio", mode, isConnected, webrtc, AUDIO_TRACKS_CONFIG, peerApi, autostartStreaming);
+  const audio = useStreamManager(
+    "audio",
+    mode,
+    isConnected,
+    isSimulcastOn,
+    webrtc,
+    AUDIO_TRACKS_CONFIG,
+    peerApi,
+    autostartStreaming
+  );
   const screenSharing = useStreamManager(
     "screensharing",
     mode,
     isConnected,
+    isSimulcastOn,
     webrtc,
     SCREEN_SHARING_TRACKS_CONFIG,
     peerApi,

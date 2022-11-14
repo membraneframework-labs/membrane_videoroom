@@ -18,6 +18,7 @@ export const useMembraneMediaStreaming = (
   mode: StreamingMode,
   type: TrackType,
   isConnected: boolean,
+  simulcast: boolean,
   webrtc?: MembraneWebRTC,
   stream?: MediaStream
 ): MembraneStreaming => {
@@ -36,14 +37,14 @@ export const useMembraneMediaStreaming = (
           track,
           stream,
           defaultTrackMetadata,
-          type == "camera" ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
+          type == "camera" && simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
         )
       );
 
       setTracksId((prevState) => [...prevState, ...tracksId]);
       setTrackMetadata(defaultTrackMetadata);
     },
-    [defaultTrackMetadata, type, webrtc]
+    [defaultTrackMetadata, simulcast, type, webrtc]
   );
 
   const removeTracks = useCallback(() => {

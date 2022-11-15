@@ -1,44 +1,59 @@
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 
 import { UseMediaResult } from "../hooks/useUserMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
 
-const getControls = (
+const getControlsAutomatic = (
   userMediaAudio: UseMediaResult,
+  audioStreaming: MembraneStreaming,
   userMediaVideo: UseMediaResult,
+  cameraStreaming: MembraneStreaming,
   displayMedia: UseMediaResult,
+  screenSharingStreaming: MembraneStreaming,
   navigate: NavigateFunction
 ): MediaControlButtonProps[] => [
-  userMediaAudio.stream
+  userMediaAudio.isEnabled
     ? {
         icon: "/svg/mic-line.svg",
         hover: "Mute the microphone",
         onClick: () => {
-          userMediaAudio.stop();
+          userMediaAudio.disable();
+          audioStreaming.setActive(false);
         },
       }
     : {
         icon: "/svg/mic-off-fill.svg",
         hover: "Unmute the microphone",
         onClick: () => {
-          userMediaAudio.start();
+          if (userMediaAudio.stream) {
+            userMediaAudio.enable();
+            audioStreaming.setActive(true);
+          } else {
+            userMediaAudio.start();
+          }
         },
       },
-  userMediaVideo.stream
+  userMediaVideo.isEnabled
     ? {
         icon: "/svg/camera-line.svg",
         hover: "Turn off the camera",
         onClick: () => {
-          userMediaVideo.stop();
+          userMediaVideo.disable();
+          cameraStreaming.setActive(false);
         },
       }
     : {
         hover: "Turn on the camera",
         icon: "/svg/camera-off-line.svg",
         onClick: () => {
-          userMediaVideo.start();
+          if (userMediaVideo.stream) {
+            userMediaVideo.enable();
+            cameraStreaming.setActive(true);
+          } else {
+            userMediaVideo.start();
+          }
         },
       },
   displayMedia.stream
@@ -47,6 +62,7 @@ const getControls = (
         hover: "Stop the screensharing",
         onClick: () => {
           displayMedia.stop();
+          screenSharingStreaming.setActive(false);
         },
       }
     : {
@@ -54,6 +70,7 @@ const getControls = (
         hover: "Start the screensharing",
         onClick: () => {
           displayMedia.start();
+          screenSharingStreaming.setActive(true);
         },
       },
   {
@@ -248,7 +265,15 @@ const MediaControlButtons: FC<Props> = ({
           screenSharingStreaming,
           navigate
         )
-      : getControls(userMediaAudio, userMediaVideo, displayMedia, navigate);
+      : getControlsAutomatic(
+          userMediaAudio,
+          audioStreaming,
+          userMediaVideo,
+          cameraStreaming,
+          displayMedia,
+          screenSharingStreaming,
+          navigate
+        );
 
   return (
     <div

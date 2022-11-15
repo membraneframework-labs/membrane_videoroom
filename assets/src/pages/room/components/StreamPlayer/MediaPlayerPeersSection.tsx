@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { RemotePeer, Track } from "../../hooks/usePeerState";
+import { RemotePeer, ApiTrack } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
@@ -27,7 +27,7 @@ export type MediaPlayerTileConfig = {
   streamSource: StreamSource;
 };
 
-const getTracks = (tracks: Track[], type: TrackType): TrackWithId[] =>
+const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
   tracks
     .filter((track) => track?.metadata?.type === type)
     .map(
@@ -72,18 +72,6 @@ type Props = {
   webrtc?: MembraneWebRTC;
 };
 
-const getStatus = (videoSteam?: MediaStream, videoTrackId?: string) => {
-  // todo for now yellow status doesn't work because onTrackAdded event is ignored
-  // state "loading", camera is on and peer is connecting
-  if (videoSteam === undefined && videoTrackId !== undefined) return "🟡";
-  // state "streaming off", camera is on and connection is in progress
-  if (videoSteam === undefined && videoTrackId === undefined) return "🔴"; // camera off
-  // state: "streaming on", camera is on and streaming is working, peer is streaming
-  if (videoSteam !== undefined && videoTrackId !== undefined) return "🟢";
-  // state: "waiting room", camera on but streaming off, no one can see you, state only visible for local peer
-  return "🔵️";
-};
-
 const MediaPlayerPeersSection: FC<Props> = ({
   peers,
   localUser,
@@ -111,6 +99,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
         const emoji = config.emoji || "";
         const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };
 
+        // todo refactor to separate component / layer
         const cameraDevice = video?.stream ? "📹🟢" : "📹🔴";
         const screenSharingDevice = screenSharing?.stream ? "🖥🟢" : "🖥🔴";
         const microphoneDevice = audio?.stream ? "🔊🟢" : "🔊🔴";

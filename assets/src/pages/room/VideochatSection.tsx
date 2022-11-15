@@ -32,8 +32,7 @@ const prepareScreenSharingStreams = (
           stream: track.mediaStream,
           trackId: track.trackId,
           encodingQuality: track.encoding,
-          metadata: undefined, // TODO fix me
-          // enabled: true, // TODO fix me
+          metadata: track.metadata,
         },
         peerId: peerId,
         peerIcon: emoji,

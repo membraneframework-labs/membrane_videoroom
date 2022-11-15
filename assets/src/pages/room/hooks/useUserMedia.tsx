@@ -86,7 +86,6 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
         return stream;
       })
       .catch((error) => {
-        console.log("Catch in got media");
         // this callback fires up when
         // - user didn't grant permission to camera
         // - user clicked "Cancel" instead of "Share" on Screen Sharing menu ("Chose what to share" in Google Chrome)
@@ -97,7 +96,6 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
 
   const setEnable = useCallback(
     (status: boolean) => {
-      console.log("Activation / deactivating");
       state.stream?.getTracks().forEach((track: MediaStreamTrack) => {
         track.enabled = status;
       });
@@ -118,11 +116,10 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
     return () => {
       promise
         .then((stream) => {
-          console.log("Closing stream");
           stopTracks(stream);
         })
         .catch(() => {
-          console.log("Catching stream");
+          // empty
         });
     };
   }, []);
@@ -144,7 +141,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
           }));
         },
         start: () => {
-          console.log("Stream already started");
+          // empty
         },
         enable: () => setEnable(true),
         disable: () => setEnable(false),
@@ -152,16 +149,16 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
     } else {
       setApi({
         stop: () => {
-          console.log("There is no stream");
+          // empty
         },
         start: () => {
           startStream();
         },
         enable: () => {
-          console.log("There is no stream");
+          // empty
         },
         disable: () => {
-          console.log("There is no stream");
+          // empty
         },
       });
     }

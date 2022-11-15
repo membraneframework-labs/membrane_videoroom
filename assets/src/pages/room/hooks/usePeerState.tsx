@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
 
-export type Track = {
+export type ApiTrack = {
   trackId: string;
   mediaStreamTrack?: MediaStreamTrack;
   mediaStream?: MediaStream;
@@ -11,7 +11,7 @@ export type Track = {
 };
 
 export type RemotePeer = {
-  tracks: Track[];
+  tracks: ApiTrack[];
 } & NewPeer;
 
 type PeersMap = {
@@ -35,7 +35,7 @@ export type PeersState = {
   remote: RemotePeer[];
 };
 
-export type TTrack = {
+export type Track = {
   stream?: MediaStream;
   trackId?: string;
   enabled: boolean;
@@ -43,10 +43,7 @@ export type TTrack = {
 };
 
 export type Tracks = {
-  // [Property in TrackType]: TTrack;
-  camera?: TTrack;
-  screensharing?: TTrack;
-  audio?: TTrack;
+  [Property in TrackType]?: Track;
 };
 
 export type LocalPeer = {
@@ -94,7 +91,6 @@ export const usePeersState = (): UsePeersStateResult => {
   const [localPeerState, setLocalPeerState] = useState<LocalPeer | undefined>();
 
   const setLocalPeer = useCallback((id: string, metadata?: PeerMetadata) => {
-    console.log({ name: "setLocalPeer" });
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const stateCopy = prevState ?? { tracks: {} };
       return { ...stateCopy, id: id, metadata: metadata };
@@ -102,9 +98,6 @@ export const usePeersState = (): UsePeersStateResult => {
   }, []);
 
   const setLocalStream = useCallback((type: TrackType, enabled: boolean, stream?: MediaStream) => {
-    console.log({ name: "setLocalStream" });
-
-    // console.log("1");
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const state: LocalPeer = prevState ? { ...prevState } : { tracks: {} };
       const newTrack = { ...state.tracks[type], enabled, stream };
@@ -114,9 +107,6 @@ export const usePeersState = (): UsePeersStateResult => {
   }, []);
 
   const setLocalTrackMetadata = useCallback((type: TrackType, metadata: any) => {
-    console.log({ name: "setLocalTrackMetadata" });
-
-    // console.log("1");
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const state: LocalPeer = prevState ? { ...prevState } : { tracks: {} };
       const newTrack = { ...state.tracks[type], metadata };
@@ -127,9 +117,6 @@ export const usePeersState = (): UsePeersStateResult => {
 
   // TODO
   const setLocalTrackId = useCallback((type: TrackType, trackId?: string) => {
-    console.log({ name: "setLocalTrackId" });
-
-    // console.log("2");
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const state: LocalPeer = prevState ? { ...prevState } : { tracks: {} };
       const newTrack = { ...state.tracks[type], trackId };
@@ -139,8 +126,6 @@ export const usePeersState = (): UsePeersStateResult => {
   }, []);
 
   const addPeers = useCallback((peerIds: NewPeer[]) => {
-    console.log({ name: "addPeers" });
-
     setRemotePeers((prevState: PeersMap) => {
       const newPeers: PeersMap = Object.fromEntries(
         peerIds.map((peer) => [
@@ -159,8 +144,6 @@ export const usePeersState = (): UsePeersStateResult => {
   }, []);
 
   const removePeer = useCallback((peerId: string) => {
-    console.log({ name: "removePeer" });
-
     setRemotePeers((prev) => {
       const newState = { ...prev };
       delete newState[peerId];
@@ -176,11 +159,9 @@ export const usePeersState = (): UsePeersStateResult => {
       mediaStream?: MediaStream,
       metadata?: TrackMetadata
     ) => {
-      console.log({ name: "addTrack" });
-
       setRemotePeers((prev: PeersMap) => {
         const peerCopy: RemotePeer = { ...prev[peerId] };
-        const oldTracks: Track[] = copyOtherTracks(peerCopy, trackId);
+        const oldTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
 
         const newTrack = {
           mediaStreamTrack: mediaStreamTrack,
@@ -189,7 +170,7 @@ export const usePeersState = (): UsePeersStateResult => {
           trackId: trackId,
         };
 
-        const newTracks: Track[] = [...oldTracks, newTrack];
+        const newTracks: ApiTrack[] = [...oldTracks, newTrack];
         return { ...prev, [peerId]: { ...peerCopy, tracks: newTracks } };
       });
     },
@@ -197,40 +178,34 @@ export const usePeersState = (): UsePeersStateResult => {
   );
 
   const setEncoding = useCallback((peerId: string, trackId: string, encoding: TrackEncoding) => {
-    console.log({ name: "setEncoding" });
-
     setRemotePeers((prev: PeersMap) => {
       const peerCopy: RemotePeer = { ...prev[peerId] };
-      const trackCopy: Track | undefined = copyTrack(peerCopy, trackId);
+      const trackCopy: ApiTrack | undefined = copyTrack(peerCopy, trackId);
       if (!trackCopy) return prev;
 
       trackCopy.encoding = encoding;
 
-      const otherTracks: Track[] = copyOtherTracks(peerCopy, trackId);
+      const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
 
       return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });
   }, []);
 
   const setMetadata = useCallback((peerId: string, trackId: string, metadata: any) => {
-    console.log({ name: "setMetadata" });
-
     setRemotePeers((prev: PeersMap) => {
       const peerCopy: RemotePeer = { ...prev[peerId] };
-      const trackCopy: Track | undefined = copyTrack(peerCopy, trackId);
+      const trackCopy: ApiTrack | undefined = copyTrack(peerCopy, trackId);
       if (!trackCopy) return prev;
 
       trackCopy.metadata = metadata;
 
-      const otherTracks: Track[] = copyOtherTracks(peerCopy, trackId);
+      const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
 
       return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });
   }, []);
 
   const removeTrack = useCallback((peerId: string, trackId: string) => {
-    console.log({ name: "removeTrack" });
-
     setRemotePeers((prev) => {
       const newState: PeersMap = { ...prev };
       const peerCopy: RemotePeer = { ...prev[peerId] };

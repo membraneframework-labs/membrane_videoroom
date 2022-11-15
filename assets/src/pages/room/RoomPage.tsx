@@ -25,7 +25,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
   const [showDeveloperInfo, toggleDeveloperInfo] = useToggle(false);
-  const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName: displayName });
+  const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
   const { state: peerState, api: peerApi } = usePeersState();
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
@@ -59,13 +59,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     isSimulcastOn,
     webrtc,
     SCREEN_SHARING_TRACKS_CONFIG,
-    peerApi,
-    false
+    peerApi
   );
-
-  useEffect(() => {
-    console.log({ name: "state", peerState });
-  }, [peerState]);
 
   return (
     <section>

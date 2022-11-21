@@ -52,6 +52,7 @@ export const useMembraneClient = (
         },
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
+          console.log({ name: "onJoinSuccess", peersInRoom });
           api.setLocalPeer(peerId, peerMetadata);
           api.addPeers(
             peersInRoom.map((peer) => ({

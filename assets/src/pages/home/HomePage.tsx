@@ -11,9 +11,9 @@ export const HomePage: FC = () => {
   const { manualMode, simulcast, cameraAutostart } = useContext(DeveloperContext);
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
+  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
   const [simulcastInput, toggleSimulcastCheckbox] = useToggle(true);
-  const [manualModeInput, toggleManualModeCheckbox] = useToggle(true);
-  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(false);
+  const [manualModeInput, toggleManualModeCheckbox] = useToggle(false);
   const match = useParams();
   const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);

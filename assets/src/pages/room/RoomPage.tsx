@@ -32,6 +32,10 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   const isConnected = !!peerState?.local?.id;
 
+  useEffect(() => {
+    console.log({ name: "state", peerState });
+  }, [peerState]);
+
   const camera = useStreamManager(
     "camera",
     mode,

@@ -157,7 +157,7 @@ defmodule Videoroom.Room do
       webrtc_extensions: webrtc_extensions,
       simulcast_config: %SimulcastConfig{
         enabled: state.simulcast?,
-        default_encoding: fn _track -> "m" end
+        initial_target_variant: fn _track -> :medium end
       },
       peer_metadata: peer.metadata
     }

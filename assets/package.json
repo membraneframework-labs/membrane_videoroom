@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
-    "@membraneframework/membrane-webrtc-js": "github:membraneframework/membrane-webrtc-js#bug/fix-removing-track",
+    "@membraneframework/membrane-webrtc-js": "^0.3.1",
     "@types/uuid": "^8.3.4",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",

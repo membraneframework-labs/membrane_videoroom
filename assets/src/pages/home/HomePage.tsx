@@ -1,5 +1,5 @@
 import React, { FC, useContext, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
 import { DeveloperContext } from "../../contexts/developerContext";
@@ -7,16 +7,24 @@ import { Checkbox, Props as CheckboxProps } from "./Checkbox";
 import { useToggle } from "../room/hooks/useToggle";
 
 export const HomePage: FC = () => {
-  const { setUsername } = useContext(UserContext);
-  const { manualMode, simulcast, cameraAutostart } = useContext(DeveloperContext);
-  const lastDisplayName: string | null = localStorage.getItem("displayName");
-  const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
-  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
-  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(true);
-  const [manualModeInput, toggleManualModeCheckbox] = useToggle(false);
   const match = useParams();
+  const [searchParams] = useSearchParams();
+  const { manualMode, simulcast, cameraAutostart } = useContext(DeveloperContext);
+  const { setUsername } = useContext(UserContext);
+
   const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
+
+  const lastDisplayName: string | null = localStorage.getItem("displayName");
+  const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
+
+  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
+
+  const simulcastParam: string = searchParams?.get("simulcast") || "";
+  const simulcastDefaultValue: boolean = simulcastParam === "true";
+  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
+
+  const [manualModeInput, toggleManualModeCheckbox] = useToggle(false);
 
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
 

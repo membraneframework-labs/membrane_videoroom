@@ -35,8 +35,10 @@ export const useMembraneClient = (
       isSimulcastOn: isSimulcastOn,
     });
 
-    webrtcChannel.onError(() => {
-      // TODO fix later
+    webrtcChannel.onError((reason) => {
+      console.error("WebrtcChannel error occurred");
+      console.error(reason);
+      setErrorMessage("WebrtcChannel error occurred");
     });
     webrtcChannel.onClose(() => {
       // TODO fix later
@@ -48,7 +50,9 @@ export const useMembraneClient = (
           webrtcChannel.push("mediaEvent", { data: mediaEvent });
         },
         onConnectionError: (message) => {
-          setErrorMessage("Something went wrong :(");
+          console.error("onConnectionError occurred");
+          console.error(message);
+          setErrorMessage(message);
         },
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
@@ -110,12 +114,14 @@ export const useMembraneClient = (
     webrtcChannel
       .join()
       .receive("ok", (response: any) => {
-        // setTimeout(() => {
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
-        // }, 5000);
       })
-      .receive("error", (response) => {});
+      .receive("error", (response) => {
+        setErrorMessage("Connecting error");
+        console.error("Received error status");
+        console.error(response);
+      });
 
     const cleanUp = () => {
       // todo add clean method to remove everything from state

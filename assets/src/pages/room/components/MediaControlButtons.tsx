@@ -1,6 +1,6 @@
-import React, { FC, useRef } from "react";
+import React, { FC } from "react";
 
-import { UseMediaResult } from "../hooks/useUserMedia";
+import { UseMediaResult } from "../hooks/useMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";

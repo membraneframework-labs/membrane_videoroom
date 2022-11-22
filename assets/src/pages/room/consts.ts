@@ -1,4 +1,4 @@
-import { DisplayMediaStreamConfig, MediaStreamConfig } from "./hooks/useUserMedia";
+import { DisplayMediaStreamConfig, MediaStreamConfig } from "./hooks/useMedia";
 
 const AUDIO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   audio: {

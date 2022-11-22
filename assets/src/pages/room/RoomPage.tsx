@@ -8,6 +8,7 @@ import { VideochatSection } from "./VideochatSection";
 import { getRandomAnimalEmoji } from "./utils";
 import { useStreamManager } from "./hooks/useStreamManager";
 import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
+import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 
 type Props = {
   displayName: string;
@@ -20,6 +21,8 @@ type Props = {
 export type SetErrorMessage = (value: string) => void;
 
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
+  const wakeLock = useAcquireWakeLockAutomatically();
+
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -31,10 +34,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
   const isConnected = !!peerState?.local?.id;
-
-  useEffect(() => {
-    console.log({ name: "state", peerState });
-  }, [peerState]);
 
   const camera = useStreamManager(
     "camera",
@@ -72,6 +71,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         {errorMessage && (
           <div className="bg-red-700" style={{ height: "100px", width: "100%" }}>
             {errorMessage}
+          </div>
+        )}
+
+        {showDeveloperInfo && (
+          <div className="absolute text-white text-shadow-lg right-0 top-0 p-2 flex flex-col text-right">
+            <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
           </div>
         )}
 

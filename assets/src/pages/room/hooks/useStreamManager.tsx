@@ -1,10 +1,9 @@
-import React from "react";
 import { MembraneStreaming, StreamingMode, useMembraneMediaStreaming } from "./useMembraneMediaStreaming";
 import { useSetLocalUserTrack } from "./useSetLocalUserTrack";
 import { useSetRemoteTrackId } from "./useSetRemoteTrackId";
 import { useSetLocalTrackMetadata } from "./useSetLocalTrackMetadata";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
-import { DisplayMediaStreamConfig, MediaStreamConfig, useMedia, UseMediaResult } from "./useUserMedia";
+import { DisplayMediaStreamConfig, MediaStreamConfig, useMedia, UseMediaResult } from "./useMedia";
 import { PeersApi } from "./usePeerState";
 import { TrackType } from "../../types";
 

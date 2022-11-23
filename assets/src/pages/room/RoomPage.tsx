@@ -68,11 +68,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   return (
     <section>
       <div className="flex flex-col h-screen relative">
-        {errorMessage && (
-          <div className="bg-red-700" style={{ height: "100px", width: "100%" }}>
-            {errorMessage}
-          </div>
-        )}
+        {errorMessage && <div className="bg-red-700 text-white p-1 w-full">{errorMessage}</div>}
 
         {showDeveloperInfo && (
           <div className="absolute text-white text-shadow-lg right-0 top-0 p-2 flex flex-col text-right">

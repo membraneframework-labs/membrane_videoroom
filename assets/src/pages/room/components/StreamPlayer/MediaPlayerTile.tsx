@@ -17,12 +17,8 @@ export interface Props {
   playAudio?: boolean;
   showSimulcast?: boolean;
   streamSource?: StreamSource;
-  topLeft?: JSX.Element;
-  topRight?: JSX.Element;
-  bottomLeft?: JSX.Element;
-  bottomRight?: JSX.Element;
+  layers?: JSX.Element;
   webrtc?: MembraneWebRTC;
-  showDeveloperInfo?: boolean;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -33,12 +29,8 @@ const MediaPlayerTile: FC<Props> = ({
   audioStream,
   showSimulcast,
   streamSource,
-  topLeft,
-  topRight,
-  bottomLeft,
-  bottomRight,
+  layers,
   webrtc,
-  showDeveloperInfo,
 }: Props) => {
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.trackId, webrtc);
 
@@ -55,8 +47,7 @@ const MediaPlayerTile: FC<Props> = ({
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}
       />
-      {showDeveloperInfo && <InfoLayer topLeft={topLeft} topRight={topRight} bottomRight={bottomRight} />}
-      <InfoLayer bottomLeft={bottomLeft} />
+      {layers}
       {showSimulcast && streamSource === "remote" && (
         <SimulcastRemoteLayer
           desiredEncoding={desiredEncoding}

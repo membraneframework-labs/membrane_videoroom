@@ -4,6 +4,8 @@ import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
+import InfoLayer from "./PeerInfoLayer";
+import PeerInfoLayer from "./PeerInfoLayer";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -122,78 +124,98 @@ const MediaPlayerPeersSection: FC<Props> = ({
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}
-            topLeft={<div>{emoji}</div>}
-            topRight={
-              <div>
-                <div className="text-right">
-                  <span title="Streaming" className="ml-2">
-                    Device:
-                  </span>
-                  <span title="Screen Sharing" className="ml-2">
-                    {screenSharingDevice}
-                  </span>
-                  <span title="Camera" className="ml-2">
-                    {cameraDevice}
-                  </span>
-                  <span title="Audio" className="ml-2">
-                    {microphoneDevice}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span title="Streaming" className="ml-2">
-                    Stream status:
-                  </span>
-                  <span title="Screen Sharing" className="ml-2">
-                    {screenSharingStreamStatus}
-                  </span>
-                  <span title="Camera" className="ml-2">
-                    {cameraStreamStatus}
-                  </span>
-                  <span title="Audio" className="ml-2">
-                    {microphoneStreamStatus}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span title="Streaming" className="ml-2">
-                    Active tracks:
-                  </span>
-                  <span title="Screen Sharing" className="ml-2">
-                    {screenSharingTrack}
-                  </span>
-                  <span title="Camera" className="ml-2">
-                    {cameraTrack}
-                  </span>
-                  <span title="Audio" className="ml-2">
-                    {microphoneTrack}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span title="Streaming" className="ml-2">
-                    Metadata:
-                  </span>
-                  <span title="Screen Sharing" className="ml-2">
-                    {screenSharingMetadataStatus}
-                  </span>
-                  <span title="Camera" className="ml-2">
-                    {cameraMetadataStatus}
-                  </span>
-                  <span title="Audio" className="ml-2">
-                    {microphoneMetadataStatus}
-                  </span>
-                </div>
-              </div>
-            }
-            bottomLeft={<div>{config.displayName}</div>}
-            bottomRight={
-              <div className="text-right">
-                <span className="ml-2">Allow audio playing:</span>
-                <span title={localAudio.title} className="ml-2">
-                  {localAudio.emoji}
-                </span>
-              </div>
+            layers={
+              <>
+                {showDeveloperInfo && (
+                  <PeerInfoLayer
+                    topLeft={<div>{emoji}</div>}
+                    topRight={
+                      <div>
+                        <div className="text-right">
+                          <span title="Streaming" className="ml-2">
+                            Device:
+                          </span>
+                          <span title="Screen Sharing" className="ml-2">
+                            {screenSharingDevice}
+                          </span>
+                          <span title="Camera" className="ml-2">
+                            {cameraDevice}
+                          </span>
+                          <span title="Audio" className="ml-2">
+                            {microphoneDevice}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span title="Streaming" className="ml-2">
+                            Stream status:
+                          </span>
+                          <span title="Screen Sharing" className="ml-2">
+                            {screenSharingStreamStatus}
+                          </span>
+                          <span title="Camera" className="ml-2">
+                            {cameraStreamStatus}
+                          </span>
+                          <span title="Audio" className="ml-2">
+                            {microphoneStreamStatus}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span title="Streaming" className="ml-2">
+                            Active tracks:
+                          </span>
+                          <span title="Screen Sharing" className="ml-2">
+                            {screenSharingTrack}
+                          </span>
+                          <span title="Camera" className="ml-2">
+                            {cameraTrack}
+                          </span>
+                          <span title="Audio" className="ml-2">
+                            {microphoneTrack}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span title="Streaming" className="ml-2">
+                            Metadata:
+                          </span>
+                          <span title="Screen Sharing" className="ml-2">
+                            {screenSharingMetadataStatus}
+                          </span>
+                          <span title="Camera" className="ml-2">
+                            {cameraMetadataStatus}
+                          </span>
+                          <span title="Audio" className="ml-2">
+                            {microphoneMetadataStatus}
+                          </span>
+                        </div>
+                      </div>
+                    }
+                    bottomRight={
+                      <div className="text-right">
+                        <span className="ml-2">Allow audio playing:</span>
+                        <span title={localAudio.title} className="ml-2">
+                          {localAudio.emoji}
+                        </span>
+                      </div>
+                    }
+                  />
+                )}
+                <InfoLayer
+                  bottomLeft={<div>{config.displayName}</div>}
+                  topLeft={
+                    audio?.metadata?.active ? undefined : (
+                      <img
+                        className={`invert group-disabled:invert-80`}
+                        height="26"
+                        width="26"
+                        src="/svg/mic-off-fill.svg"
+                        alt="Microphone muted icon"
+                      />
+                    )
+                  }
+                />
+              </>
             }
             showSimulcast={showSimulcast}
-            showDeveloperInfo={showDeveloperInfo}
             streamSource={config.streamSource}
             flipHorizontally={config.flipHorizontally}
             webrtc={webrtc}

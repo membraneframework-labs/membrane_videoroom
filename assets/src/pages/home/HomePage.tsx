@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
@@ -54,6 +54,9 @@ export const HomePage: FC = () => {
 
   return (
     <section>
+      {deviceManager.errorMessage && (
+        <div className="bg-red-700 text-white p-1 w-full">{deviceManager.errorMessage}</div>
+      )}
       <div className="p-8 flex flex-col items-center">
         <div className="mb-4">
           <img src="/svg/logo.svg" className="mb-2" alt="logo" />

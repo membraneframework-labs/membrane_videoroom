@@ -10,8 +10,8 @@ export const useAcquireWakeLockAutomatically = () => {
     if (!isSupported) return;
 
     if (isVisible) {
-      console.log("Requesting WakeLock");
       const request = navigator.wakeLock.request("screen");
+
       return () => {
         request.then((wakeLockSentinel) => wakeLockSentinel.release());
       };

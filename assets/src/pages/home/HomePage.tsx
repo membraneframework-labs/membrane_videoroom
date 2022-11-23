@@ -1,12 +1,15 @@
-import React, { FC, useContext, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
 import { DeveloperContext } from "../../contexts/developerContext";
 import { Checkbox, Props as CheckboxProps } from "./Checkbox";
 import { useToggle } from "../room/hooks/useToggle";
+import { useMediaDeviceManager } from "../room/hooks/useMediaDeviceManager";
 
 export const HomePage: FC = () => {
+  const deviceManager = useMediaDeviceManager({ askOnMount: true });
+
   const match = useParams();
   const [searchParams] = useSearchParams();
   const { manualMode, simulcast, cameraAutostart } = useContext(DeveloperContext);

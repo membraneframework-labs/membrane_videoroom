@@ -29,7 +29,6 @@ defmodule VideoRoom.MixProject do
   defp deps do
     [
       {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine", override: true},
-      {:membrane_rtp_plugin, github: "membraneframework/membrane_rtp_plugin", branch: "feature/outbound-retransmissions", override: true},
       {:membrane_rtc_engine_timescaledb,
        github: "membraneframework/membrane_rtc_engine_timescaledb", runtime: false},
       {:plug_cowboy, "~> 2.5.2"},

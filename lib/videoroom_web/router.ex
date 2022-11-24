@@ -9,12 +9,8 @@ defmodule VideoRoomWeb.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
-
-    post("/", PageController, :enter)
-
-    get("/room/:room_id", RoomController, :index)
-
-    get("/room/:room_id/stats", RoomController, :scrape)
+    get("/room", PageController, :index)
+    get("/room/:room_id", PageController, :index)
 
     get("/healthcheck", PageController, :healthcheck)
   end

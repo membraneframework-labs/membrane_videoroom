@@ -28,7 +28,7 @@ defmodule VideoRoomWeb.PeerChannel do
       {:error, reason} ->
         Logger.error("""
         Failed to start room.
-        RoomPage: #{inspect(room_id)}
+        Room: #{inspect(room_id)}
         Reason: #{inspect(reason)}
         """)
 

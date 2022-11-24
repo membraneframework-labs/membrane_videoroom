@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
-import InfoLayer from "./PeerInfoLayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";

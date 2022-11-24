@@ -35,19 +35,19 @@ export const HomePage: FC = () => {
     {
       text: "Autostart camera and mic",
       id: "autostart-camera-and-mic",
-      onClick: setAutostartCameraAndMicCheckbox,
+      onChange: setAutostartCameraAndMicCheckbox,
       status: autostartCameraAndMicInput,
     },
     {
       text: "Simulcast",
       id: "simulcast",
-      onClick: toggleSimulcastCheckbox,
+      onChange: toggleSimulcastCheckbox,
       status: simulcastInput,
     },
     {
       text: "Manual mode",
       id: "manual-mode",
-      onClick: toggleManualModeCheckbox,
+      onChange: toggleManualModeCheckbox,
       status: manualModeInput,
     },
   ];
@@ -90,8 +90,8 @@ export const HomePage: FC = () => {
               placeholder="Display name"
             />
           </div>
-          {checkboxes.map(({ text, id, status, onClick }, index) => (
-            <Checkbox key={index} text={text} id={id} status={status} onClick={onClick} />
+          {checkboxes.map(({ text, id, status, onChange }, index) => (
+            <Checkbox key={index} text={text} id={id} status={status} onChange={onChange} />
           ))}
           <div className="flex items-center justify-between">
             <Link

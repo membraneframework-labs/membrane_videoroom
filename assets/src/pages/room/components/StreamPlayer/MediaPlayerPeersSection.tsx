@@ -11,7 +11,7 @@ export type TrackWithId = {
   stream?: MediaStream;
   trackId?: string;
   encodingQuality?: TrackEncoding;
-  metadata?: any;
+  metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   enabled?: boolean;
 };
 
@@ -42,7 +42,7 @@ const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
       })
     );
 
-const getCameraStreams = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerTileConfig[] => {
+const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerTileConfig[] => {
   return peers.map((peer: RemotePeer): MediaPlayerTileConfig => {
     const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
     const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
@@ -82,7 +82,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
   webrtc,
   showDeveloperInfo,
 }: Props) => {
-  const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...getCameraStreams(peers, showSimulcast)];
+  const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast)];
 
   return (
     <div

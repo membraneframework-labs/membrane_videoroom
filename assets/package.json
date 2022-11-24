@@ -4,12 +4,10 @@
     "deploy": "NODE_ENV=production tailwindcss --postcss --minify -i css/app.css -o ../priv/static/assets/css/app.css",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
     "@membraneframework/membrane-webrtc-js": "^0.3.1",
-    "@types/react-page-visibility": "^6.4.1",
-    "@types/uuid": "^8.3.4",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
@@ -28,6 +26,8 @@
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
+    "@types/react-page-visibility": "^6.4.1",
+    "@types/uuid": "^8.3.4",
     "autoprefixer": "^10.2.0",
     "eslint": "^8.25.0",
     "eslint-plugin-react": "^7.31.10",

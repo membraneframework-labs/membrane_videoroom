@@ -41,7 +41,7 @@ export const useMembraneClient = (
       setErrorMessage("WebrtcChannel error occurred");
     });
     webrtcChannel.onClose(() => {
-      // TODO fix later
+      return;
     });
 
     const webrtc = new MembraneWebRTC({
@@ -70,10 +70,6 @@ export const useMembraneClient = (
           if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
           const metadata: TrackMetadata = parseMetadata(ctx);
           api.addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
-        },
-        onTrackAdded: (ctx) => {
-          // todo this event is triggered multiple times even though onTrackRemoved was invoked
-          const metadata: TrackMetadata = parseMetadata(ctx);
         },
         onTrackRemoved: (ctx) => {
           const peerId = ctx?.peer?.id;
@@ -107,13 +103,13 @@ export const useMembraneClient = (
       webrtc.receiveMediaEvent(event.data);
     });
 
-    webrtcChannel.on("simulcastConfig", (event) => {
-      // empty
+    webrtcChannel.on("simulcastConfig", () => {
+      return;
     });
 
     webrtcChannel
       .join()
-      .receive("ok", (response: any) => {
+      .receive("ok", () => {
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
       })
@@ -133,7 +129,7 @@ export const useMembraneClient = (
     return () => {
       cleanUp();
     };
-  }, [roomId]);
+  }, [api, isSimulcastOn, peerMetadata, roomId, setErrorMessage]);
 
   return { webrtc };
 };

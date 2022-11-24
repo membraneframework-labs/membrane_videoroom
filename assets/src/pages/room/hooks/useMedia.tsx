@@ -27,6 +27,8 @@ const stopTracks = (stream: MediaStream) => {
 };
 
 export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
+  const [isFirstStart, setIsFirstStart] = useState<boolean>(config.startOnMount)
+
   const [state, setState] = useState<State>({
     isError: false,
     isSuccess: true,
@@ -35,10 +37,18 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
   });
 
   const [api, setApi] = useState<Api>({
-    start: () => {},
-    stop: () => {},
-    enable: () => {},
-    disable: () => {},
+    start: () => {
+      return;
+    },
+    stop: () => {
+      return;
+    },
+    enable: () => {
+      return;
+    },
+    disable: () => {
+      return;
+    },
   });
 
   // rename to clearState or sth
@@ -85,7 +95,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
         setSuccessfulState(stream);
         return stream;
       })
-      .catch((error) => {
+      .catch(() => {
         // this callback fires up when
         // - user didn't grant permission to camera
         // - user clicked "Cancel" instead of "Share" on Screen Sharing menu ("Chose what to share" in Google Chrome)
@@ -110,7 +120,8 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
   );
 
   useEffect(() => {
-    if (!config.startOnMount) return;
+    if (!isFirstStart) return;
+    setIsFirstStart(false);
 
     const promise = startStream();
     return () => {
@@ -119,10 +130,11 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
           stopTracks(stream);
         })
         .catch(() => {
-          // empty
+          return;
         });
     };
-  }, []);
+  }, [startStream, isFirstStart]);
+
 
   useEffect(() => {
     const stream = state.stream;
@@ -141,7 +153,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
           }));
         },
         start: () => {
-          // empty
+          return;
         },
         enable: () => setEnable(true),
         disable: () => setEnable(false),
@@ -149,16 +161,16 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
     } else {
       setApi({
         stop: () => {
-          // empty
+          return;
         },
         start: () => {
           startStream();
         },
         enable: () => {
-          // empty
+          return;
         },
         disable: () => {
-          // empty
+          return;
         },
       });
     }

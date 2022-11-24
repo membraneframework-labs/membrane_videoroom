@@ -1,9 +1,7 @@
 module.exports = {
   mode: "jit",
   purge: {
-    // todo fix later
     content: ["./js/**/*.js", "../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
-    // todo fix later
     safelist: [
       "bg-slate-200",
       "grid",

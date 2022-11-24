@@ -7,6 +7,7 @@ export type UserContextType = {
 
 export const UserContext = React.createContext<UserContextType>({
   username: null,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setUsername: () => {},
+  setUsername: () => {
+    return;
+  },
 });

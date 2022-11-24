@@ -9,17 +9,20 @@ export type SimulcastContextType = {
 export const DeveloperContext = React.createContext<SimulcastContextType>({
   simulcast: {
     status: false,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    setSimulcast: () => {},
+    setSimulcast: () => {
+      return;
+    },
   },
   manualMode: {
     status: false,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    setManualMode: () => {},
+    setManualMode: () => {
+      return;
+    },
   },
   cameraAutostart: {
     status: false,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    setCameraAutostart: () => {},
+    setCameraAutostart: () => {
+      return;
+    },
   },
 });

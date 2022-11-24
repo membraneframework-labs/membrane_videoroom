@@ -39,7 +39,7 @@ export type Track = {
   stream?: MediaStream;
   trackId?: string;
   enabled: boolean;
-  metadata?: any;
+  metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 export type Tracks = {
@@ -63,12 +63,12 @@ export type PeersApi = {
     metadata?: TrackMetadata
   ) => void;
   removeTrack: (peerId: string, trackId: string) => void;
-  setMetadata: (peerId: string, trackId: string, metadata: any) => void;
+  setMetadata: (peerId: string, trackId: string, metadata: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   setLocalPeer: (id: string, metadata?: PeerMetadata) => void;
   setLocalStream: (type: TrackType, enabled: boolean, stream: MediaStream | undefined) => void;
   setLocalTrackId: (type: TrackType, trackId?: string) => void;
-  setLocalTrackMetadata: (type: TrackType, metadata?: any) => void;
+  setLocalTrackMetadata: (type: TrackType, metadata?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 type UsePeersStateResult = {
@@ -106,6 +106,7 @@ export const usePeersState = (): UsePeersStateResult => {
     });
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setLocalTrackMetadata = useCallback((type: TrackType, metadata: any) => {
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const state: LocalPeer = prevState ? { ...prevState } : { tracks: {} };
@@ -191,15 +192,16 @@ export const usePeersState = (): UsePeersStateResult => {
     });
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setMetadata = useCallback((peerId: string, trackId: string, metadata: any) => {
     setRemotePeers((prev: PeersMap) => {
       const peerCopy: RemotePeer = { ...prev[peerId] };
       const trackCopy: ApiTrack | undefined = copyTrack(peerCopy, trackId);
       if (!trackCopy) return prev;
 
-      trackCopy.metadata = metadata;
+        trackCopy.metadata = metadata;
 
-      const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
+        const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
 
       return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });

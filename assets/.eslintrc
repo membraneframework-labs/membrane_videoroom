@@ -1,9 +1,6 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "ignorePatterns": [
-    "src/old/*.ts"
-  ],
   "plugins": [
     "@typescript-eslint",
     "react-hooks"

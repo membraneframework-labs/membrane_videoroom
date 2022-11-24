@@ -27,6 +27,4 @@ const App: FC = () => {
   );
 };
 
-// todo implement WakeLock
-
 export default App;

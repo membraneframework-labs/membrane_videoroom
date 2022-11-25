@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-export type UseMediaResult = State & Api;
+export type UseMediaResult = MediaState & MediaApi;
 
-type State = {
+type MediaState = {
   isError: boolean;
   isSuccess: boolean;
   stream?: MediaStream;
   isEnabled: boolean;
 };
 
-export type Api = {
+export type MediaApi = {
   start: () => void;
   stop: () => void;
   enable: () => void;
@@ -27,16 +27,14 @@ const stopTracks = (stream: MediaStream) => {
 };
 
 export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
-  const [isFirstStart, setIsFirstStart] = useState<boolean>(config.startOnMount)
-
-  const [state, setState] = useState<State>({
+  const [state, setState] = useState<MediaState>({
     isError: false,
     isSuccess: true,
     stream: undefined,
     isEnabled: false,
   });
 
-  const [api, setApi] = useState<Api>({
+  const [api, setApi] = useState<MediaApi>({
     start: () => {
       return;
     },
@@ -54,7 +52,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
   // rename to clearState or sth
   const setErrorState = useCallback(() => {
     setState(
-      (): State => ({
+      (): MediaState => ({
         isError: true,
         isSuccess: false,
         stream: undefined,
@@ -65,7 +63,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
 
   const setSuccessfulState = useCallback((stream: MediaStream) => {
     setState(
-      (): State => ({
+      (): MediaState => ({
         isError: false,
         isSuccess: true,
         stream: stream,
@@ -110,7 +108,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
         track.enabled = status;
       });
       setState(
-        (prevState: State): State => ({
+        (prevState: MediaState): MediaState => ({
           ...prevState,
           isEnabled: status,
         })
@@ -120,8 +118,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
   );
 
   useEffect(() => {
-    if (!isFirstStart) return;
-    setIsFirstStart(false);
+    if (!config.startOnMount) return;
 
     const promise = startStream();
     return () => {
@@ -133,8 +130,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
           return;
         });
     };
-  }, [startStream, isFirstStart]);
-
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const stream = state.stream;

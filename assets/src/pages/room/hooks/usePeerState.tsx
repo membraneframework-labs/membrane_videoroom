@@ -116,7 +116,6 @@ export const usePeersState = (): UsePeersStateResult => {
     });
   }, []);
 
-  // TODO
   const setLocalTrackId = useCallback((type: TrackType, trackId?: string) => {
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const state: LocalPeer = prevState ? { ...prevState } : { tracks: {} };

@@ -1,8 +1,9 @@
 module.exports = {
   mode: "jit",
   purge: {
-    content: ["./js/**/*.js", "../lib/*_web/**/*.*ex"],
+    content: ["./js/**/*.js", "../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
     safelist: [
+      "bg-slate-200",
       "grid",
       "grid-cols-1",
       "md:grid-cols-1",

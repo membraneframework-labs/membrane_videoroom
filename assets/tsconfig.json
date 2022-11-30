@@ -9,8 +9,9 @@
     "moduleResolution": "node",
     "outDir": "../priv/static",
     "strict": true,
-    "target": "es2018"
+    "target": "es2016",
+    "jsx": "react-jsx"
   },
-  "include": ["src/index.ts"],
+  "include": ["src"],
   "exclude": ["/node_modules/**/*"]
 }

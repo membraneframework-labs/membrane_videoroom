@@ -8,7 +8,7 @@ on:
       - "!README.md"
 
 env: 
-  VIRTUAL_HOST: sandbox3-videoroom.membrane.work
+  VIRTUAL_HOST: videoroom3.membrane.ovh
   EXTERNAL_IP: 95.217.155.120
   TAG: sandbox3
   PROJECT: sandbox

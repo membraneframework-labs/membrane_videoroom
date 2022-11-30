@@ -6,7 +6,7 @@ config :esbuild,
   version: "0.12.15",
   default: [
     args:
-      ~w(src/index.ts --bundle --target=es2016 --outfile=../priv/static/assets/js/app.js --external:/images/*),
+      ~w(src/index.tsx --bundle --target=es2016 --outfile=../priv/static/assets/js/app.js --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]

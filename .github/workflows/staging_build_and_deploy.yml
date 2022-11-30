@@ -8,7 +8,7 @@ on:
       - "!README.md"
 
 env: 
-  VIRTUAL_HOST: staging-videoroom.membrane.work
+  VIRTUAL_HOST: videoroom.membrane.work
   EXTERNAL_IP: 135.181.41.84
   TAG: latest
   PROJECT: staging

@@ -9,24 +9,6 @@ defmodule VideoRoomWeb.PageController do
     )
   end
 
-  @spec enter(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
-  def enter(
-        conn,
-        %{"room_name" => room_name, "display_name" => display_name} = params
-      ) do
-    simulcast? = Map.get(params, "simulcast") == "true"
-
-    path =
-      Routes.room_path(
-        conn,
-        :index,
-        room_name,
-        %{"display_name" => display_name, "simulcast" => simulcast?}
-      )
-
-    redirect(conn, to: path)
-  end
-
   @spec healthcheck(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
   def healthcheck(conn, _params) do
     conn

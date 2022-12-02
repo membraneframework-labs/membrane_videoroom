@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
+import { selectBandwidthLimit } from "../bandwidth";
 
 export type MembraneStreaming = {
   tracksId: string[];
@@ -36,7 +37,8 @@ export const useMembraneMediaStreaming = (
           track,
           stream,
           defaultTrackMetadata,
-          type == "camera" && simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined
+          type == "camera" && simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
+          selectBandwidthLimit(type, simulcast)
         )
       );
 

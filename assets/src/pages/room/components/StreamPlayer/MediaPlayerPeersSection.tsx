@@ -13,6 +13,7 @@ export type TrackWithId = {
   encodingQuality?: TrackEncoding;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   enabled?: boolean;
+  vadStatus?: "speech" | "silence";
 };
 
 export type MediaPlayerTileConfig = {
@@ -23,6 +24,7 @@ export type MediaPlayerTileConfig = {
   video: TrackWithId[];
   audio: TrackWithId[];
   playAudio: boolean;
+  vadStatus: "speech" | "silence";
   screenSharing: TrackWithId[];
   showSimulcast?: boolean;
   remoteSimulcast?: boolean;
@@ -39,6 +41,7 @@ const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
         encodingQuality: track.encoding,
         metadata: track.metadata,
         enabled: true,
+        vadStatus: track.vadStatus,
       })
     );
 
@@ -47,6 +50,8 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
     const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
     const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
     const screenSharingTracks: TrackWithId[] = getTracks(peer.tracks, "screensharing");
+
+    const vadStatus = audioTracks.find((track) => track.vadStatus == "speech") ? "speech" : "silence";
 
     return {
       peerId: peer.id,
@@ -60,6 +65,7 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
       remoteSimulcast: true,
       streamSource: "remote",
       playAudio: true,
+      vadStatus: vadStatus
     };
   });
 };
@@ -124,6 +130,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}
+            vadStatus={config.vadStatus}
             layers={
               <>
                 {showDeveloperInfo && (

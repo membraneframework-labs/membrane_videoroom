@@ -96,6 +96,9 @@ export const useMembraneClient = (
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
+        onVadNotification: (peerId: string, trackId: string, vadStatus: "speech" | "silence") => {
+          api.setVadStatus(peerId, trackId, vadStatus);
+        }
       },
     });
 

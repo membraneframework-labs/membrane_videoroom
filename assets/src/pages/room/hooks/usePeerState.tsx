@@ -8,6 +8,7 @@ export type ApiTrack = {
   mediaStream?: MediaStream;
   metadata?: TrackMetadata;
   encoding?: TrackEncoding;
+  vadStatus?: "speech" | "silence";
 };
 
 export type RemotePeer = {
@@ -69,6 +70,7 @@ export type PeersApi = {
   setLocalStream: (type: TrackType, enabled: boolean, stream: MediaStream | undefined) => void;
   setLocalTrackId: (type: TrackType, trackId?: string) => void;
   setLocalTrackMetadata: (type: TrackType, metadata?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  setVadStatus: (peerId: string, trackId: string, vadStatus: "speech" | "silence") => void;
 };
 
 type UsePeersStateResult = {
@@ -142,6 +144,20 @@ export const usePeersState = (): UsePeersStateResult => {
       return { ...prevState, ...newPeers };
     });
   }, []);
+
+  const setVadStatus = useCallback((peerId: string, trackId: string, status: "speech" | "silence") => {
+    setRemotePeers((prev: PeersMap) => {
+      const peerCopy: RemotePeer = { ...prev[peerId] };
+      const trackCopy: ApiTrack | undefined = copyTrack(peerCopy, trackId);
+      if (!trackCopy) return prev;
+
+      trackCopy.vadStatus = status;
+
+      const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
+
+      return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
+    });
+  }, [])
 
   const removePeer = useCallback((peerId: string) => {
     setRemotePeers((prev) => {
@@ -231,6 +247,7 @@ export const usePeersState = (): UsePeersStateResult => {
       setLocalTrackId,
       setMetadata,
       setLocalTrackMetadata,
+      setVadStatus,
     }),
     [
       addPeers,
@@ -243,6 +260,7 @@ export const usePeersState = (): UsePeersStateResult => {
       setLocalTrackId,
       setMetadata,
       setLocalTrackMetadata,
+      setVadStatus
     ]
   );
 

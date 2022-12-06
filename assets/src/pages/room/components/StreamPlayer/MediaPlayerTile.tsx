@@ -18,6 +18,7 @@ export interface Props {
   streamSource?: StreamSource;
   layers?: JSX.Element;
   webrtc?: MembraneWebRTC;
+  vadStatus?: "speech" | "silence"
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -30,6 +31,7 @@ const MediaPlayerTile: FC<Props> = ({
   streamSource,
   layers,
   webrtc,
+  vadStatus
 }: Props) => {
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.trackId, webrtc);
 
@@ -45,6 +47,7 @@ const MediaPlayerTile: FC<Props> = ({
         audioStream={audioStream}
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}
+        vadStatus={vadStatus}
       />
       {layers}
       {showSimulcast && streamSource === "remote" && (

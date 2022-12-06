@@ -12,7 +12,7 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.RTC.Engine.MediaEvent
   alias Membrane.RTC.Engine.Message
-  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
+  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC, VAD}
 
   @mix_env Mix.env()
 
@@ -140,9 +140,9 @@ defmodule Videoroom.Room do
 
     webrtc_extensions =
       if state.simulcast? do
-        [Mid, Rid, TWCC]
+        [Mid, Rid, TWCC, VAD]
       else
-        [TWCC]
+        [TWCC, VAD]
       end
 
     endpoint = %WebRTC{
@@ -155,6 +155,9 @@ defmodule Videoroom.Room do
       log_metadata: [peer_id: peer.id],
       trace_context: state.trace_ctx,
       webrtc_extensions: webrtc_extensions,
+      extensions: %{
+        opus: Membrane.RTP.VAD
+      },
       simulcast_config: %SimulcastConfig{
         enabled: state.simulcast?,
         initial_target_variant: fn _track -> :medium end

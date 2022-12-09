@@ -1,5 +1,5 @@
 import { BandwidthLimit, SimulcastBandwidthLimit, TrackBandwidthLimit } from "../../../../../membrane-webrtc-js/src";
-import { TrackType } from "../types";
+import type { TrackType } from "../types";
 
 const NO_LIMIT: BandwidthLimit = 0;
 const DEFAULT_LIMIT: BandwidthLimit = 1500;

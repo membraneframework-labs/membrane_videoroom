@@ -3,10 +3,11 @@ import MediaPlayer from "./MediaPlayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
-import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, VadStatus } from "@membraneframework/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource } from "../../../types";
 import { TrackWithId } from "./MediaPlayerPeersSection";
+import clsx from "clsx";
 
 export interface Props {
   peerId?: string;
@@ -18,7 +19,7 @@ export interface Props {
   streamSource?: StreamSource;
   layers?: JSX.Element;
   webrtc?: MembraneWebRTC;
-  vadStatus?: "speech" | "silence"
+  vadStatus?: VadStatus
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -40,14 +41,17 @@ const MediaPlayerTile: FC<Props> = ({
   return (
     <div
       data-name="video-feed"
-      className="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video"
+      className={
+        clsx(
+        "relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video",
+        vadStatus === "speech" && "border-white border-2")
+        }
     >
       <MediaPlayer
         videoStream={video?.stream}
         audioStream={audioStream}
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}
-        vadStatus={vadStatus}
       />
       {layers}
       {showSimulcast && streamSource === "remote" && (

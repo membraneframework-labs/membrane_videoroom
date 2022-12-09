@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { RemotePeer, ApiTrack } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
-import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding, VadStatus } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
 import InfoLayer from "./PeerInfoLayer";
@@ -13,7 +13,7 @@ export type TrackWithId = {
   encodingQuality?: TrackEncoding;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   enabled?: boolean;
-  vadStatus?: "speech" | "silence";
+  vadStatus?: VadStatus;
 };
 
 export type MediaPlayerTileConfig = {
@@ -24,7 +24,7 @@ export type MediaPlayerTileConfig = {
   video: TrackWithId[];
   audio: TrackWithId[];
   playAudio: boolean;
-  vadStatus: "speech" | "silence";
+  vadStatus: VadStatus;
   screenSharing: TrackWithId[];
   showSimulcast?: boolean;
   remoteSimulcast?: boolean;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext, VadStatus } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
 import { TrackMetadata, PeerMetadata, PeersApi } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";
@@ -96,7 +96,7 @@ export const useMembraneClient = (
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
-        onVoiceActivityChanged: (peerId: string, trackId: string, vadStatus: "speech" | "silence") => {
+        onVoiceActivityChanged: (peerId: string, trackId: string, vadStatus: VadStatus) => {
           api.setVadStatus(peerId, trackId, vadStatus);
         }
       },

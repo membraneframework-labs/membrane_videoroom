@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { TrackEncoding, VadStatus } from "@membraneframework/membrane-webrtc-js";
 import { TrackType } from "../../types";
 
 export type ApiTrack = {
@@ -8,7 +8,7 @@ export type ApiTrack = {
   mediaStream?: MediaStream;
   metadata?: TrackMetadata;
   encoding?: TrackEncoding;
-  vadStatus?: "speech" | "silence";
+  vadStatus?: VadStatus;
 };
 
 export type RemotePeer = {
@@ -70,7 +70,7 @@ export type PeersApi = {
   setLocalStream: (type: TrackType, enabled: boolean, stream: MediaStream | undefined) => void;
   setLocalTrackId: (type: TrackType, trackId?: string) => void;
   setLocalTrackMetadata: (type: TrackType, metadata?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
-  setVadStatus: (peerId: string, trackId: string, vadStatus: "speech" | "silence") => void;
+  setVadStatus: (peerId: string, trackId: string, vadStatus: VadStatus) => void;
 };
 
 type UsePeersStateResult = {
@@ -145,7 +145,7 @@ export const usePeersState = (): UsePeersStateResult => {
     });
   }, []);
 
-  const setVadStatus = useCallback((peerId: string, trackId: string, status: "speech" | "silence") => {
+  const setVadStatus = useCallback((peerId: string, trackId: string, status: VadStatus) => {
     setRemotePeers((prev: PeersMap) => {
       const peerCopy: RemotePeer = { ...prev[peerId] };
       const trackCopy: ApiTrack | undefined = copyTrack(peerCopy, trackId);

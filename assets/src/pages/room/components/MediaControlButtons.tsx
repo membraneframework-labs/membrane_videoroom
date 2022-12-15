@@ -22,7 +22,7 @@ const getAutomaticControls = (
         icon: "/svg/mic-line.svg",
         hover: "Mute the microphone",
         onClick: () => {
-          userMediaAudio.stop();
+          userMediaAudio.disable();
           audioStreaming.setActive(false);
         },
       }
@@ -30,7 +30,8 @@ const getAutomaticControls = (
         icon: "/svg/mic-off-fill.svg",
         hover: "Unmute the microphone",
         onClick: () => {
-          userMediaAudio.start();
+          userMediaAudio.stream || userMediaAudio.start();
+          userMediaAudio.enable();
           audioStreaming.setActive(true);
         },
       },
@@ -39,7 +40,7 @@ const getAutomaticControls = (
         icon: "/svg/camera-line.svg",
         hover: "Turn off the camera",
         onClick: () => {
-          userMediaVideo.stop();
+          userMediaVideo.disable();
           cameraStreaming.setActive(false);
         },
       }
@@ -47,7 +48,8 @@ const getAutomaticControls = (
         hover: "Turn on the camera",
         icon: "/svg/camera-off-line.svg",
         onClick: () => {
-          userMediaVideo.start();
+          userMediaVideo.stream || userMediaVideo.start();
+          userMediaVideo.enable();
           cameraStreaming.setActive(true);
         },
       },

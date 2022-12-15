@@ -66,6 +66,13 @@ export const useMembraneClient = (
             }))
           );
         },
+        onTrackAdded: (ctx) => {
+          if (!ctx?.peer) return;
+          const metadata: TrackMetadata = parseMetadata(ctx);
+          // In onTrackAdded method we know, that peer has just added a new track, but right now, the server is still processing it.
+          // We register this empty track (with mediaStreamTrack and mediaStream set to undefined) to show the loading indicator.
+          api.addTrack(ctx.peer.id, ctx.trackId, undefined, undefined, metadata);
+        },
         onTrackReady: (ctx) => {
           if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
           const metadata: TrackMetadata = parseMetadata(ctx);

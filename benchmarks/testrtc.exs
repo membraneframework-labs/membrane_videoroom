@@ -37,5 +37,10 @@ end
 Beamchmark.run(TestRTCScenario,
   duration: 60,
   delay: 360,
-  output_dir: "/tmp/videoroom_benchmark/testRTC"
+  compare?: true,
+  output_dir: "beamchmark_output",
+  formatters: [
+    {Beamchmark.Formatters.HTML,
+     [output_path: "reports/beamchmark.html", auto_open?: false, inline_assets?: true]}
+  ]
 )

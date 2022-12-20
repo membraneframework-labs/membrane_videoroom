@@ -103,6 +103,7 @@ export const HomePage: FC = () => {
                 cameraAutostart.setCameraAutostart(autostartCameraAndMicInput);
               }}
               to={`/room/${roomIdInput}`}
+              id="join"
               className={clsx(
                 disabled ? "pointer-events-none cursor-default bg-gray-300" : "bg-membraneLight",
                 "w-full hover:bg-membraneLight/75 focus:ring ring-membraneDark focus:border-membraneDark text-membraneDark font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

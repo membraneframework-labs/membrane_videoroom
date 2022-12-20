@@ -21,7 +21,7 @@ export const HomePage: FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
 
-  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(false);
+  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
 
   const simulcastParam: string = searchParams?.get("simulcast") || "";
   const simulcastDefaultValue: boolean = simulcastParam === "true";

@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { RemotePeer, ApiTrack } from "../../hooks/usePeerState";
+import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
 import clsx from "clsx";
@@ -82,7 +82,10 @@ const MediaPlayerPeersSection: FC<Props> = ({
   webrtc,
   showDeveloperInfo,
 }: Props) => {
-  const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast)];
+  const allPeersConfig: MediaPlayerTileConfig[] = [
+    localUser,
+    ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
+  ];
 
   return (
     <div
@@ -120,7 +123,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
 
         return (
           <MediaPlayerTile
-            key={idx}
+            key={config.displayName === "Me" ? "Me" : config.peerId}
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}

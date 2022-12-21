@@ -24,7 +24,7 @@ const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontal
 
   return (
     <>
-      <audio muted={!playAudio} autoPlay ref={audioRef}></audio>
+      <audio muted={!playAudio} autoPlay ref={audioRef} />
       <video
         className={clsx("w-full h-full", flipHorizontally && "flip-horizontally")}
         autoPlay
@@ -32,7 +32,7 @@ const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontal
         controls={false}
         muted
         ref={videoRef}
-      ></video>
+      />
     </>
   );
 };

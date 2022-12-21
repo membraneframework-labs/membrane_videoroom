@@ -90,8 +90,8 @@ export const HomePage: FC = () => {
               placeholder="Display name"
             />
           </div>
-          {checkboxes.map(({ text, id, status, onChange }, index) => (
-            <Checkbox key={index} text={text} id={id} status={status} onChange={onChange} />
+          {checkboxes.map(({ text, id, status, onChange }) => (
+            <Checkbox key={id} text={text} id={id} status={status} onChange={onChange} />
           ))}
           <div className="flex items-center justify-between">
             <Link

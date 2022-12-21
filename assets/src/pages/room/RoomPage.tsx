@@ -62,7 +62,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     isSimulcastOn,
     webrtc,
     SCREEN_SHARING_TRACKS_CONFIG,
-    peerApi
+    peerApi,
+    false
   );
 
   return (

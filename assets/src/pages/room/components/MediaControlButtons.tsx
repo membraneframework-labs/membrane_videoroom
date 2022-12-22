@@ -31,7 +31,11 @@ const getControlsAutomatic = (
         icon: "/svg/mic-off-fill.svg",
         hover: "Unmute the microphone",
         onClick: () => {
-          userMediaAudio.enable();
+          if (userMediaAudio.stream) {
+            userMediaAudio.enable();
+          } else {
+            userMediaAudio.start();
+          }
           audioStreaming.setActive(true);
         },
       },
@@ -50,7 +54,11 @@ const getControlsAutomatic = (
         hover: "Turn on the camera",
         icon: "/svg/camera-off-line.svg",
         onClick: () => {
-          userMediaVideo.enable();
+          if (userMediaVideo.stream) {
+            userMediaVideo.enable();
+          } else {
+            userMediaVideo.start();
+          }
           cameraStreaming.setActive(true);
         },
       },

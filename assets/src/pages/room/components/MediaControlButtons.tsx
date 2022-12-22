@@ -103,20 +103,20 @@ const getManualControls = (
 ) => [
   userMediaAudio.stream
     ? {
-        id: "mic-start",
+        id: "mic-stop",
         icon: "/svg/mic-line.svg",
         hover: "Stop the microphone",
         onClick: () => userMediaAudio.stop(),
       }
     : {
-        id: "mic-stop",
+        id: "mic-start",
         icon: "/svg/mic-off-fill.svg",
         hover: "Start the microphone",
         onClick: () => userMediaAudio.start(),
       },
   userMediaAudio.isEnabled
     ? {
-        id: "mic-disale",
+        id: "mic-disable",
         icon: "/svg/mic-line.svg",
         hover: "Disable microphone stream",
         onClick: () => userMediaAudio.disable(),

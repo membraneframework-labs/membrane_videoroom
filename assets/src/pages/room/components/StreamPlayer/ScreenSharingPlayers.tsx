@@ -4,6 +4,7 @@ import { TrackWithId } from "./MediaPlayerPeersSection";
 import PeerInfoLayer from "./PeerInfoLayer";
 
 export type VideoStreamWithMetadata = {
+  mediaPlayerId: string;
   peerId?: string;
   peerIcon?: string;
   peerName?: string;
@@ -19,7 +20,7 @@ const ScreenSharingPlayers: FC<Props> = ({ streams }: Props) => {
     <div className="h-full mb-3 md:mr-3 md:mb-none active-screensharing-grid grid-cols-1 md:grid-cols-1">
       {streams.map((config) => (
         <MediaPlayerTile
-          key={config.video.stream?.id}
+          key={config.mediaPlayerId}
           video={config.video}
           streamSource={"local"}
           layers={

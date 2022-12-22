@@ -9,7 +9,7 @@ import PeerInfoLayer from "./PeerInfoLayer";
 
 export type TrackWithId = {
   stream?: MediaStream;
-  trackId?: string;
+  remoteTrackId?: string;
   encodingQuality?: TrackEncoding;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   enabled?: boolean;
@@ -27,6 +27,7 @@ export type MediaPlayerTileConfig = {
   showSimulcast?: boolean;
   remoteSimulcast?: boolean;
   streamSource: StreamSource;
+  mediaPlayerId: string;
 };
 
 const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
@@ -35,7 +36,7 @@ const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
     .map(
       (track): TrackWithId => ({
         stream: track.mediaStream,
-        trackId: track.trackId,
+        remoteTrackId: track.trackId,
         encodingQuality: track.encoding,
         metadata: track.metadata,
         enabled: true,
@@ -60,6 +61,7 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
       remoteSimulcast: true,
       streamSource: "remote",
       playAudio: true,
+      mediaPlayerId: peer.id,
     };
   });
 };
@@ -113,9 +115,9 @@ const MediaPlayerPeersSection: FC<Props> = ({
         const screenSharingStreamStatus = screenSharing?.enabled ? "🖥🟢" : "🖥🔴";
         const microphoneStreamStatus = audio?.enabled ? "🔊🟢" : "🔊🔴";
 
-        const cameraTrack = video?.trackId ? "📹🟢" : "📹🔴";
-        const screenSharingTrack = screenSharing?.trackId ? "🖥🟢" : "🖥🔴";
-        const microphoneTrack = audio?.trackId ? "🔊🟢" : "🔊🔴";
+        const cameraTrack = video?.remoteTrackId ? "📹🟢" : "📹🔴";
+        const screenSharingTrack = screenSharing?.remoteTrackId ? "🖥🟢" : "🖥🔴";
+        const microphoneTrack = audio?.remoteTrackId ? "🔊🟢" : "🔊🔴";
 
         const cameraMetadataStatus = video?.metadata?.active ? "📹🟢" : "📹🔴";
         const screenSharingMetadataStatus = screenSharing?.metadata?.active ? "🖥🟢" : "🖥🔴";
@@ -123,7 +125,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
 
         return (
           <MediaPlayerTile
-            key={config.displayName === "Me" ? "Me" : config.peerId}
+            key={config.mediaPlayerId}
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}

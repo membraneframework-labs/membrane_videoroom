@@ -6,6 +6,10 @@ import { DeveloperContext } from "../../contexts/developerContext";
 import { Checkbox, Props as CheckboxProps } from "./Checkbox";
 import { useToggle } from "../room/hooks/useToggle";
 import { useMediaDeviceManager } from "../room/hooks/useMediaDeviceManager";
+import {
+  DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE,
+  DEFAULT_MANUAL_MODE_CHECKBOX_VALUE
+} from "../room/consts";
 
 export const HomePage: FC = () => {
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
@@ -21,13 +25,13 @@ export const HomePage: FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
 
-  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
+  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE);
 
   const simulcastParam: string = searchParams?.get("simulcast") || "";
   const simulcastDefaultValue: boolean = simulcastParam === "true";
   const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
 
-  const [manualModeInput, toggleManualModeCheckbox] = useToggle(false);
+  const [manualModeInput, toggleManualModeCheckbox] = useToggle(DEFAULT_MANUAL_MODE_CHECKBOX_VALUE);
 
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
 

@@ -62,9 +62,7 @@ export const useMembraneMediaStreaming = (
       const track: MediaStreamTrack | undefined = tracks[0];
       if (!track) throw "Stream has no tracks!";
 
-      webrtc.replaceTrack(trackIds?.remoteId, track).then(() => {
-        return;
-      });
+      webrtc.replaceTrack(trackIds?.remoteId, track)
     },
     [trackIds, type, webrtc]
   );

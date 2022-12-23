@@ -1,18 +1,17 @@
 import React, { FC, useState } from "react";
 import { RouterProvider } from "react-router-dom";
-import { UserContext } from "./contexts/userContext";
 import { DeveloperContext } from "./contexts/developerContext";
 import { router } from "./Routes";
+import { UserProvider } from "./contexts/UserContext";
 
 const App: FC = () => {
-  const [username, setUsername] = useState<string>("");
   const [simulcast, setSimulcast] = useState<boolean>(false);
   const [manualMode, setManualMode] = useState<boolean>(false);
   const [cameraAutostart, setCameraAutostart] = useState<boolean>(false);
 
   return (
     <React.StrictMode>
-      <UserContext.Provider value={{ username, setUsername }}>
+      <UserProvider>
         <DeveloperContext.Provider
           value={{
             simulcast: { status: simulcast, setSimulcast: setSimulcast },
@@ -22,7 +21,7 @@ const App: FC = () => {
         >
           <RouterProvider router={router} />
         </DeveloperContext.Provider>
-      </UserContext.Provider>
+      </UserProvider>
     </React.StrictMode>
   );
 };

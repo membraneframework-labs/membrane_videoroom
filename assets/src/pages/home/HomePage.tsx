@@ -1,11 +1,15 @@
 import React, { FC, useContext, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
 import { DeveloperContext } from "../../contexts/developerContext";
 import { Checkbox, Props as CheckboxProps } from "./Checkbox";
 import { useToggle } from "../room/hooks/useToggle";
 import { useMediaDeviceManager } from "../room/hooks/useMediaDeviceManager";
+import {
+  DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE,
+  DEFAULT_MANUAL_MODE_CHECKBOX_VALUE,
+} from "../room/consts";
+import { useUser } from "../../contexts/UserContext";
 
 export const HomePage: FC = () => {
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
@@ -13,7 +17,7 @@ export const HomePage: FC = () => {
   const match = useParams();
   const [searchParams] = useSearchParams();
   const { manualMode, simulcast, cameraAutostart } = useContext(DeveloperContext);
-  const { setUsername } = useContext(UserContext);
+  const { setUsername } = useUser();
 
   const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
@@ -21,13 +25,15 @@ export const HomePage: FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
 
-  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
+  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(
+    DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE
+  );
 
   const simulcastParam: string = searchParams?.get("simulcast") || "";
   const simulcastDefaultValue: boolean = simulcastParam === "true";
   const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
 
-  const [manualModeInput, toggleManualModeCheckbox] = useToggle(false);
+  const [manualModeInput, toggleManualModeCheckbox] = useToggle(DEFAULT_MANUAL_MODE_CHECKBOX_VALUE);
 
   const disabled = displayNameInput.length === 0 || roomIdInput.length === 0;
 
@@ -90,8 +96,8 @@ export const HomePage: FC = () => {
               placeholder="Display name"
             />
           </div>
-          {checkboxes.map(({ text, id, status, onChange }, index) => (
-            <Checkbox key={index} text={text} id={id} status={status} onChange={onChange} />
+          {checkboxes.map(({ text, id, status, onChange }) => (
+            <Checkbox key={id} text={text} id={id} status={status} onChange={onChange} />
           ))}
           <div className="flex items-center justify-between">
             <Link

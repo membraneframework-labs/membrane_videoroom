@@ -23,7 +23,7 @@ export const HomePage: FC = () => {
 
   const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(true);
 
-  const simulcastParam: string = searchParams?.get("simulcast") || "";
+  const simulcastParam: string = searchParams?.get("simulcast") || "true";
   const simulcastDefaultValue: boolean = simulcastParam === "true";
   const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
 

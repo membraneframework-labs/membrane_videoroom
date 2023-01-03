@@ -4,7 +4,7 @@ import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
 
 export type MembraneStreaming = {
-  tracksId: string[];
+  trackId: string | null;
   removeTracks: () => void;
   addTracks: (stream: MediaStream) => void;
   setActive: (status: boolean) => void;
@@ -14,6 +14,11 @@ export type MembraneStreaming = {
 
 export type StreamingMode = "manual" | "automatic";
 
+type TrackIds = {
+  localId: string;
+  remoteId: string;
+};
+
 export const useMembraneMediaStreaming = (
   mode: StreamingMode,
   type: TrackType,
@@ -22,8 +27,8 @@ export const useMembraneMediaStreaming = (
   webrtc?: MembraneWebRTC,
   stream?: MediaStream
 ): MembraneStreaming => {
-  const [tracksId, setTracksId] = useState<string[]>([]);
-  const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | undefined>(webrtc);
+  const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
+  const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc || null);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   const defaultTrackMetadata = useMemo(() => ({ active: true, type }), [type]);
 
@@ -32,54 +37,74 @@ export const useMembraneMediaStreaming = (
       if (!webrtc) return;
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
-      const tracksId: string[] = tracks.map((track) =>
-        webrtc.addTrack(
-          track,
-          stream,
-          defaultTrackMetadata,
-          type == "camera" && simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
-          selectBandwidthLimit(type, simulcast)
-        )
+      const track: MediaStreamTrack | undefined = tracks[0];
+      if (!track) throw "Stream has no tracks!";
+
+      const remoteTrackId = webrtc.addTrack(
+        track,
+        stream,
+        defaultTrackMetadata,
+        type == "camera" && simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
+        selectBandwidthLimit(type, simulcast)
       );
 
-      setTracksId((prevState) => [...prevState, ...tracksId]);
+      setTrackIds({ localId: track.id, remoteId: remoteTrackId });
       setTrackMetadata(defaultTrackMetadata);
     },
     [defaultTrackMetadata, simulcast, type, webrtc]
   );
 
+  const replaceTrack = useCallback(
+    (stream: MediaStream) => {
+      if (!webrtc || !trackIds) return;
+      const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+
+      const track: MediaStreamTrack | undefined = tracks[0];
+      if (!track) throw "Stream has no tracks!";
+
+      webrtc.replaceTrack(trackIds?.remoteId, track)
+    },
+    [trackIds, type, webrtc]
+  );
+
   const removeTracks = useCallback(() => {
-    setTracksId([]);
-    tracksId.forEach((trackId) => {
-      webrtc?.removeTrack(trackId);
-    });
+    setTrackIds(null);
     setTrackMetadata(undefined);
-  }, [webrtc, tracksId]);
+
+    if (!webrtc || !trackIds) return;
+
+    webrtc.removeTrack(trackIds.remoteId);
+  }, [webrtc, trackIds]);
 
   useEffect(() => {
     if (!webrtc || !isConnected || mode !== "automatic") {
       return;
     }
 
-    if (stream && tracksId.length === 0) {
+    const tracks = type === "audio" ? stream?.getAudioTracks() : stream?.getVideoTracks();
+    const localTrackId: string | undefined = (tracks || [])[0]?.id;
+
+    if (stream && !trackIds) {
       addTracks(stream);
-    } else if (!stream && tracksId.length > 0) {
+    } else if (stream && trackIds && trackIds.localId !== localTrackId) {
+      replaceTrack(stream);
+    } else if (!stream && trackIds) {
       removeTracks();
     }
-  }, [webrtc, stream, type, isConnected, tracksId, addTracks, mode, removeTracks]);
+  }, [webrtc, stream, isConnected, addTracks, mode, removeTracks, trackIds, replaceTrack, type]);
 
   useEffect(() => {
-    setWebrtcState(webrtc);
+    setWebrtcState(webrtc || null);
   }, [webrtc, type]);
 
   const updateTrackMetadata = useCallback(
-    (metadata: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-      tracksId.forEach((trackId) => {
-        webrtcState?.updateTrackMetadata(trackId, metadata);
-      });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (metadata: any) => {
+      if (!trackIds) return;
+      webrtcState?.updateTrackMetadata(trackIds.remoteId, metadata);
       setTrackMetadata(metadata);
     },
-    [webrtcState, tracksId]
+    [webrtcState, trackIds]
   );
 
   const setActive = useCallback(
@@ -87,5 +112,12 @@ export const useMembraneMediaStreaming = (
     [trackMetadata, updateTrackMetadata]
   );
 
-  return { tracksId, removeTracks, addTracks, setActive, updateTrackMetadata, trackMetadata };
+  return {
+    trackId: trackIds?.remoteId || null,
+    removeTracks,
+    addTracks,
+    setActive,
+    updateTrackMetadata,
+    trackMetadata,
+  };
 };

@@ -29,7 +29,7 @@ export const HomePage: FC = () => {
     DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE
   );
 
-  const simulcastParam: string = searchParams?.get("simulcast") || "";
+  const simulcastParam: string = searchParams?.get("simulcast") || "true";
   const simulcastDefaultValue: boolean = simulcastParam === "true";
   const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
 

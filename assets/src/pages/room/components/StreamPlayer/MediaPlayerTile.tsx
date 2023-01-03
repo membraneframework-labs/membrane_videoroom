@@ -31,9 +31,9 @@ const MediaPlayerTile: FC<Props> = ({
   layers,
   webrtc,
 }: Props) => {
-  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.trackId, webrtc);
+  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.remoteTrackId, webrtc);
 
-  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.trackId, webrtc);
+  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId, webrtc);
 
   return (
     <div

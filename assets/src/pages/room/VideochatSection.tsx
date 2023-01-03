@@ -3,6 +3,7 @@ import MediaPlayerPeersSection, { MediaPlayerTileConfig } from "./components/Str
 import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
 import React, { FC } from "react";
+import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 
 type Props = {
   peers: RemotePeer[];
@@ -30,10 +31,11 @@ const prepareScreenSharingStreams = (
       ({ track, peerId, emoji, peerName }): VideoStreamWithMetadata => ({
         video: {
           stream: track.mediaStream,
-          trackId: track.trackId,
+          remoteTrackId: track.trackId,
           encodingQuality: track.encoding,
           metadata: track.metadata,
         },
+        mediaPlayerId: track.trackId,
         peerId: peerId,
         peerIcon: emoji,
         peerName: peerName,
@@ -46,7 +48,8 @@ const prepareScreenSharingStreams = (
           video: localPeer?.tracks["screensharing"],
           peerId: localPeer?.id,
           peerIcon: localPeer?.metadata?.emoji,
-          peerName: "Me",
+          peerName: LOCAL_PEER_NAME,
+          mediaPlayerId: LOCAL_SCREEN_SHARING_ID
         },
         ...peersScreenSharingTracks,
       ]
@@ -59,7 +62,7 @@ const prepareScreenSharingStreams = (
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc, showDeveloperInfo }: Props) => {
   const localUser: MediaPlayerTileConfig = {
     peerId: localPeer?.id,
-    displayName: "Me",
+    displayName: LOCAL_PEER_NAME,
     emoji: localPeer?.metadata?.emoji,
     video: localPeer?.tracks["camera"] ? [localPeer?.tracks["camera"]] : [],
     audio: localPeer?.tracks["audio"] ? [localPeer?.tracks["audio"]] : [],
@@ -68,6 +71,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     flipHorizontally: true,
     streamSource: "local",
     playAudio: false,
+    mediaPlayerId: LOCAL_VIDEO_ID,
   };
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);

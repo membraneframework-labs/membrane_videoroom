@@ -104,17 +104,17 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
             webrtc={webrtc}
           />
         </section>
-        <MediaControlButtons
-          mode={mode}
-          userMediaVideo={camera.local}
-          cameraStreaming={camera.remote}
-          userMediaAudio={audio.local}
-          audioStreaming={audio.remote}
-          displayMedia={screenSharing.local}
-          screenSharingStreaming={screenSharing.remote}
-        />
       </div>
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 md:right-2 md:-translate-x-1 md:left-auto flex flex-col items-stretch">
+      <MediaControlButtons
+        mode={mode}
+        userMediaVideo={camera.local}
+        cameraStreaming={camera.remote}
+        userMediaAudio={audio.local}
+        audioStreaming={audio.remote}
+        displayMedia={screenSharing.local}
+        screenSharingStreaming={screenSharing.remote}
+      />
+      <div className="absolute bottom-2 right-2 flex flex-col items-stretch">
         {isSimulcastOn && (
           <button
             onClick={toggleSimulcastMenu}

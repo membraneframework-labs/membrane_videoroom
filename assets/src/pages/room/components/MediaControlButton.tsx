@@ -16,10 +16,10 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className="group relative flex justify-center items-center z-10 mr-2 p-3 rounded-full transition duration-300 ease-in-out border-2 border-white bg-white/0 hover:bg-white/40 disabled:bg-white/50 disabled:pointer-events-none"
+      className="group min-w-[52px] relative flex justify-center items-center z-10 m-1 p-3 rounded-full transition duration-300 ease-in-out border-2 border-white bg-white/0 hover:bg-white/40 disabled:bg-white/50 disabled:pointer-events-none"
     >
       <img
-        className={`invert group-disabled:invert-80 ${imgClasses}`}
+        className={`invert group-disabled:invert-80 ${imgClasses || ""}`}
         height="26"
         width="26"
         src={icon}

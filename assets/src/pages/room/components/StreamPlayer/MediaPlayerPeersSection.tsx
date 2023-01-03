@@ -76,6 +76,9 @@ type Props = {
   webrtc?: MembraneWebRTC;
 };
 
+const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
+const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
+
 const MediaPlayerPeersSection: FC<Props> = ({
   peers,
   localUser,
@@ -207,15 +210,30 @@ const MediaPlayerPeersSection: FC<Props> = ({
                 <InfoLayer
                   bottomLeft={<div>{config.displayName}</div>}
                   topLeft={
-                    audio?.metadata?.active ? undefined : (
-                      <img
-                        className={`invert group-disabled:invert-80`}
-                        height="26"
-                        width="26"
-                        src="/svg/mic-off-fill.svg"
-                        alt="Microphone muted icon"
-                      />
-                    )
+                    <div className="flex flex-row">
+                      {showDisabledIcon(audio) && (
+                        <img
+                          className={clsx(`invert group-disabled:invert-80 m-1`, {
+                            "animate-spin": isLoading(audio),
+                          })}
+                          height="26"
+                          width="26"
+                          src="/svg/mic-off-fill.svg"
+                          alt="Microphone muted icon"
+                        />
+                      )}
+                      {showDisabledIcon(video) && (
+                        <img
+                          className={clsx(`invert group-disabled:invert-80 m-1`, {
+                            "animate-spin": isLoading(video),
+                          })}
+                          height="26"
+                          width="26"
+                          src="/svg/camera-off-line.svg"
+                          alt="Camera disabled icon"
+                        />
+                      )}
+                    </div>
                   }
                 />
               </>

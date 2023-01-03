@@ -67,7 +67,7 @@ export type PeersApi = {
   setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   setLocalPeer: (id: string, metadata?: PeerMetadata) => void;
   setLocalStream: (type: TrackType, enabled: boolean, stream: MediaStream | undefined) => void;
-  setLocalTrackId: (type: TrackType, trackId?: string) => void;
+  setLocalTrackId: (type: TrackType, trackId: string | null) => void;
   setLocalTrackMetadata: (type: TrackType, metadata?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
@@ -116,7 +116,7 @@ export const usePeersState = (): UsePeersStateResult => {
     });
   }, []);
 
-  const setLocalTrackId = useCallback((type: TrackType, trackId?: string) => {
+  const setLocalTrackId = useCallback((type: TrackType, trackId: string | null) => {
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const state: LocalPeer = prevState ? { ...prevState } : { tracks: {} };
       const newTrack = { ...state.tracks[type], trackId };
@@ -198,9 +198,9 @@ export const usePeersState = (): UsePeersStateResult => {
       const trackCopy: ApiTrack | undefined = copyTrack(peerCopy, trackId);
       if (!trackCopy) return prev;
 
-        trackCopy.metadata = metadata;
+      trackCopy.metadata = metadata;
 
-        const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
+      const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
 
       return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
     });

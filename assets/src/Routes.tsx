@@ -1,15 +1,15 @@
-import React, { FC, useContext } from "react";
+import React, { FC } from "react";
 import RoomPage from "./pages/room/RoomPage";
 import { HomePage } from "./pages/home/HomePage";
 import { createBrowserRouter, useParams } from "react-router-dom";
-import { UserContext } from "./contexts/userContext";
-import { DeveloperContext } from "./contexts/developerContext";
+import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";
+import { useUser } from "./contexts/UserContext";
 
 const RoomPageWrapper: FC = () => {
   const match = useParams();
   const roomId: string | undefined = match?.roomId;
-  const { username } = useContext(UserContext);
-  const { simulcast, manualMode, cameraAutostart } = useContext(DeveloperContext);
+  const { username } = useUser();
+  const { simulcast, manualMode, cameraAutostart } = useDeveloperInfo();
 
   return username && roomId ? (
     <RoomPage

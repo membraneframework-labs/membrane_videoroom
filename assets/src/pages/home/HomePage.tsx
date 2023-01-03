@@ -1,23 +1,23 @@
-import React, { FC, useContext, useState } from "react";
+import React, { FC, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { UserContext } from "../../contexts/userContext";
 import clsx from "clsx";
-import { DeveloperContext } from "../../contexts/developerContext";
+import { useDeveloperInfo } from "../../contexts/DeveloperInfoContext";
 import { Checkbox, Props as CheckboxProps } from "./Checkbox";
 import { useToggle } from "../room/hooks/useToggle";
 import { useMediaDeviceManager } from "../room/hooks/useMediaDeviceManager";
 import {
   DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE,
-  DEFAULT_MANUAL_MODE_CHECKBOX_VALUE
+  DEFAULT_MANUAL_MODE_CHECKBOX_VALUE,
 } from "../room/consts";
+import { useUser } from "../../contexts/UserContext";
 
 export const HomePage: FC = () => {
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
 
   const match = useParams();
   const [searchParams] = useSearchParams();
-  const { manualMode, simulcast, cameraAutostart } = useContext(DeveloperContext);
-  const { setUsername } = useContext(UserContext);
+  const { manualMode, simulcast, cameraAutostart } = useDeveloperInfo();
+  const { setUsername } = useUser();
 
   const roomId: string = match?.roomId || "";
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
@@ -25,7 +25,9 @@ export const HomePage: FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
   const [displayNameInput, setDisplayNameInput] = useState<string>(lastDisplayName || "");
 
-  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE);
+  const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(
+    DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE
+  );
 
   const simulcastParam: string = searchParams?.get("simulcast") || "true";
   const simulcastDefaultValue: boolean = simulcastParam === "true";

@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "@membraneframework/membrane-webrtc-js": "^0.3.1",
+    "@membraneframework/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#encoding-switch-reason",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
@@ -24,10 +24,10 @@
     "@types/phoenix": "^1.5.4",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
     "@types/react-page-visibility": "^6.4.1",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "autoprefixer": "^10.2.0",
     "eslint": "^8.25.0",
     "eslint-plugin-react": "^7.31.10",

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membraneframework/membrane-webrtc-js";
 import { Socket } from "phoenix";
 import { TrackMetadata, PeerMetadata, PeersApi } from "./usePeerState";
-import { isTrackEncoding, isTrackType } from "../../types";
+import { isTrackType } from "../../types";
 import { SetErrorMessage } from "../RoomPage";
 
 const parseMetadata = (context: TrackContext) => {
@@ -74,6 +74,11 @@ export const useMembraneClient = (
         onTrackAdded: (ctx) => {
           if (!ctx?.peer) return;
           const metadata: TrackMetadata = parseMetadata(ctx);
+
+          ctx.onEncodingChanged = () => {
+            api.setEncoding(ctx.peer.id, ctx.trackId, ctx.encoding!);
+          } 
+
           // In onTrackAdded method we know, that peer has just added a new track, but right now, the server is still processing it.
           // We register this empty track (with mediaStreamTrack and mediaStream set to undefined) to show the loading indicator.
           api.addTrack(ctx.peer.id, ctx.trackId, undefined, undefined, metadata);
@@ -95,10 +100,6 @@ export const useMembraneClient = (
         },
         onPeerLeft: (peer) => {
           api.removePeer(peer.id);
-        },
-        onTrackEncodingChanged: (peerId: string, trackId: string, encoding: string) => {
-          if (!isTrackEncoding(encoding)) return;
-          api.setEncoding(peerId, trackId, encoding);
         },
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);

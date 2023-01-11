@@ -25,6 +25,12 @@ const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   },
 };
 
+// TODO: use the global DisplayMediaStreamConstraints once typescript includes it by default
+export interface DisplayMediaStreamConstraints {
+  audio?: boolean | MediaTrackConstraints;
+  video?: boolean | MediaTrackConstraints;
+}
+
 const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
   video: {
     frameRate: { ideal: 10, max: 15 },

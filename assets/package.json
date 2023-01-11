@@ -1,10 +1,14 @@
 {
   "license": "MIT",
   "scripts": {
-    "deploy": "NODE_ENV=production tailwindcss --postcss --minify -i css/app.css -o ../priv/static/assets/css/app.css",
+    "deploy": "NODE_ENV=production tailwindcss --postcss --minify -i public/app.css -o ../priv/static/assets/css/app.css",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "start": "PORT=4001 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "@membraneframework/membrane-webrtc-js": "^0.3.1",
@@ -16,6 +20,8 @@
     "react-dom": "^18.2.0",
     "react-page-visibility": "^7.0.0",
     "react-router-dom": "^6.4.2",
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.9.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -24,10 +30,10 @@
     "@types/phoenix": "^1.5.4",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
     "@types/react-page-visibility": "^6.4.1",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "autoprefixer": "^10.2.0",
     "eslint": "^8.25.0",
     "eslint-plugin-react": "^7.31.10",
@@ -36,6 +42,18 @@
     "postcss": "^8.3.5",
     "postcss-import": "^14.0.2",
     "prettier": "^2.2.1",
-    "tailwindcss": "^2.2.4"
+    "tailwindcss": "^3.2.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

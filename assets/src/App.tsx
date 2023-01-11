@@ -3,6 +3,8 @@ import { RouterProvider } from "react-router-dom";
 import { DeveloperInfoProvider } from "./contexts/DeveloperInfoContext";
 import { router } from "./Routes";
 import { UserProvider } from "./contexts/UserContext";
+import "./index.css";
+
 
 const App: FC = () => {
   return (

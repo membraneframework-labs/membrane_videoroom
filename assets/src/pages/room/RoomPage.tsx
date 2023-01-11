@@ -20,6 +20,18 @@ type Props = {
 
 export type SetErrorMessage = (value: string) => void;
 
+type PropsDev = { text: string; onClick: () => void };
+
+const DeveloperButton = ({ text, onClick }: PropsDev) => (
+  <button
+    onClick={onClick}
+    className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
+    type="submit"
+  >
+    {text}
+  </button>
+);
+
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
   const wakeLock = useAcquireWakeLockAutomatically();
 
@@ -32,6 +44,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   const { state: peerState, api: peerApi } = usePeersState();
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+
+  // console.log({ peerState });
 
   const isConnected = !!peerState?.local?.id;
 
@@ -80,7 +94,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         <section className="flex flex-col h-screen mb-14">
           <header className="p-4">
             <div className="flex items-center">
-              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2" alt="Mini logo" />
+              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2" alt="Mini logo2" />
               <h2 className="text-2xl md:text-4xl text-center font-bold text-white">Membrane WebRTC video room demo</h2>
             </div>
             <h3 className="text-2xl font-semibold text-white mb-2">Room {roomId}</h3>
@@ -115,22 +129,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         screenSharingStreaming={screenSharing.remote}
       />
       <div className="absolute bottom-2 right-2 flex flex-col items-stretch">
-        {isSimulcastOn && (
-          <button
-            onClick={toggleSimulcastMenu}
-            className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
-            type="submit"
-          >
-            Show simulcast controls
-          </button>
-        )}
-        <button
-          onClick={toggleDeveloperInfo}
-          className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
-          type="submit"
-        >
-          Show developer info
-        </button>
+        {isSimulcastOn && <DeveloperButton onClick={toggleSimulcastMenu} text="Show simulcast controls" />}
+        <DeveloperButton onClick={toggleDeveloperInfo} text="Show developer info 2" />
       </div>
     </section>
   );

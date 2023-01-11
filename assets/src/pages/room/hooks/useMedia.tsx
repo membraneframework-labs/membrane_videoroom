@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { DisplayMediaStreamConstraints } from "../consts";
 
 export type UseMediaResult = MediaState & MediaApi;
 

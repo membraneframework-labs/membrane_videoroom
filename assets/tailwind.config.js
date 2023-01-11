@@ -1,5 +1,8 @@
 module.exports = {
   mode: "jit",
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
   purge: {
     content: ["./js/**/*.js", "../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
     safelist: [

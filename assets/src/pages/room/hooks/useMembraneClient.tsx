@@ -26,7 +26,8 @@ export const useMembraneClient = (
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
 
   useEffect(() => {
-    const socket = new Socket("/socket");
+    console.log("New connection!")
+    const socket = new Socket("ws://localhost:4000/socket");
     socket.connect();
     const socketOnCloseRef = socket.onClose(() => cleanUp());
     const socketOnErrorRef = socket.onError(() => cleanUp());
@@ -72,6 +73,7 @@ export const useMembraneClient = (
           api.addTrack(ctx.peer.id, ctx.trackId, ctx.track, ctx.stream, metadata);
         },
         onTrackAdded: (ctx) => {
+          console.log("On track added")
           if (!ctx?.peer) return;
           const metadata: TrackMetadata = parseMetadata(ctx);
           // In onTrackAdded method we know, that peer has just added a new track, but right now, the server is still processing it.
@@ -84,6 +86,7 @@ export const useMembraneClient = (
           api.removeTrack(peerId, ctx.trackId);
         },
         onPeerJoined: (peer) => {
+          console.log("onPeerJoined")
           api.addPeers([
             {
               id: peer.id,
@@ -94,6 +97,7 @@ export const useMembraneClient = (
           ]);
         },
         onPeerLeft: (peer) => {
+          console.log("onPeerLeft")
           api.removePeer(peer.id);
         },
         onTrackEncodingChanged: (peerId: string, trackId: string, encoding: string) => {
@@ -117,6 +121,7 @@ export const useMembraneClient = (
     webrtcChannel
       .join()
       .receive("ok", () => {
+        console.log("Connected!")
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
       })
@@ -134,6 +139,7 @@ export const useMembraneClient = (
     };
 
     return () => {
+      console.log("Cleanup!")
       cleanUp();
     };
   }, [api, isSimulcastOn, peerMetadata, roomId, setErrorMessage]);

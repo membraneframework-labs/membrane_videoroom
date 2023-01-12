@@ -1,9 +1,9 @@
 import React, { FC } from "react";
 import RoomPage from "./pages/room/RoomPage";
-import { HomePage } from "./pages/home/HomePage";
 import { createBrowserRouter, useParams } from "react-router-dom";
 import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";
 import { useUser } from "./contexts/UserContext";
+import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
 
 const RoomPageWrapper: FC = () => {
   const match = useParams();
@@ -20,14 +20,14 @@ const RoomPageWrapper: FC = () => {
       autostartStreaming={cameraAutostart.status}
     />
   ) : (
-    <HomePage />
+    <VideoroomHomePage />
   );
 };
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <VideoroomHomePage />,
   },
   {
     path: "/room/:roomId",

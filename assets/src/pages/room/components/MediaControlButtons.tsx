@@ -5,8 +5,18 @@ import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButto
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
 import { useToggle } from "../hooks/useToggle";
+import Microphone from "../../../features/room-page/icons/Microphone";
+import MicrophoneOff from "../../../features/room-page/icons/MicrophoneOff";
+import Camera from "../../../features/room-page/icons/Camera";
+import CameraOff from "../../../features/room-page/icons/CameraOff";
+import Screenshare from "../../../features/room-page/icons/Screenshare";
+import HangUp from "../../../features/room-page/icons/HangUp";
 
 type ControlButton = MediaControlButtonProps & { id: string };
+
+const neutralButtonStyle = "border-brand-dark-blue-400 text-brand-dark-blue-500 bg-white";
+const activeButtonStyle = "text-brand-white bg-brand-dark-blue-400 border-brand-dark-blue-400";
+const redButtonStyle = "text-brand-white bg-brand-red border-brand-red";
 
 const getAutomaticControls = (
   {
@@ -22,8 +32,9 @@ const getAutomaticControls = (
   userMediaAudio.isEnabled
     ? {
         id: "mic-mute",
-        icon: "/svg/mic-line.svg",
-        hover: "Mute the microphone",
+        icon: Microphone,
+        hover: "Turn off the microphone",
+        className: neutralButtonStyle,
         onClick: () => {
           userMediaAudio.disable();
           audioStreaming.setActive(false);
@@ -31,8 +42,9 @@ const getAutomaticControls = (
       }
     : {
         id: "mic-unmute",
-        icon: "/svg/mic-off-fill.svg",
-        hover: "Unmute the microphone",
+        icon: MicrophoneOff,
+        hover: "Turn on the microphone",
+        className: activeButtonStyle,
         onClick: () => {
           if (userMediaAudio.stream) {
             userMediaAudio.enable();
@@ -45,8 +57,9 @@ const getAutomaticControls = (
   userMediaVideo.isEnabled
     ? {
         id: "cam-off",
-        icon: "/svg/camera-line.svg",
+        icon: Camera,
         hover: "Turn off the camera",
+        className: neutralButtonStyle,
         onClick: () => {
           userMediaVideo.disable();
           cameraStreaming.setActive(false);
@@ -55,7 +68,8 @@ const getAutomaticControls = (
     : {
         id: "cam-on",
         hover: "Turn on the camera",
-        icon: "/svg/camera-off-line.svg",
+        icon: CameraOff,
+        className: activeButtonStyle,
         onClick: () => {
           if (userMediaVideo.stream) {
             userMediaVideo.enable();
@@ -68,8 +82,9 @@ const getAutomaticControls = (
   displayMedia.stream
     ? {
         id: "stream-stop",
-        icon: "/svg/computer-line.svg",
-        hover: "Stop the screensharing",
+        icon: Screenshare,
+        hover: "Stop sharing your screen",
+        className: neutralButtonStyle,
         onClick: () => {
           displayMedia.stop();
           screenSharingStreaming.setActive(false);
@@ -77,8 +92,9 @@ const getAutomaticControls = (
       }
     : {
         id: "stream-start",
-        icon: "/svg/computer-line.svg",
-        hover: "Start the screensharing",
+        icon: Screenshare,
+        hover: "Share your screen",
+        className: neutralButtonStyle,
         onClick: () => {
           displayMedia.start();
           screenSharingStreaming.setActive(true);
@@ -86,15 +102,16 @@ const getAutomaticControls = (
       },
   {
     id: "leave-room",
-    icon: "/svg/phone-fill.svg",
+    icon: HangUp,
     hover: "Leave the room",
-    imgClasses: "black-to-red transform rotate-135",
+    className: redButtonStyle,
     onClick: () => {
       navigate("/");
     },
   },
 ];
 
+//dev helpers
 const getManualControls = (
   {
     userMediaAudio,
@@ -110,52 +127,60 @@ const getManualControls = (
     userMediaAudio.stream
       ? {
           id: "mic-stop",
-          icon: "/svg/mic-line.svg",
+          icon: Microphone,
+          className: neutralButtonStyle,
           hover: "Start the microphone",
           onClick: () => userMediaAudio.stop(),
         }
       : {
           id: "mic-start",
-          icon: "/svg/mic-off-fill.svg",
+          icon: MicrophoneOff,
+          className: activeButtonStyle,
           hover: "Stop the microphone",
           onClick: () => userMediaAudio.start(),
         },
     userMediaAudio.isEnabled
       ? {
           id: "mic-disable",
-          icon: "/svg/mic-line.svg",
+          icon: Microphone,
+          className: neutralButtonStyle,
           hover: "Disable microphone stream",
           onClick: () => userMediaAudio.disable(),
         }
       : {
           id: "mic-enable",
-          icon: "/svg/mic-off-fill.svg",
+          icon: MicrophoneOff,
+          className: activeButtonStyle,
           hover: "Enable microphone stream",
           onClick: () => userMediaAudio.enable(),
         },
     audioStreaming.trackId
       ? {
           id: "mic-remove",
-          icon: "/svg/mic-line.svg",
+          icon: Microphone,
+          className: neutralButtonStyle,
           hover: "Remove microphone track",
           onClick: () => audioStreaming.removeTracks(),
         }
       : {
           id: "mic-add",
-          icon: "/svg/mic-off-fill.svg",
+          icon: MicrophoneOff,
+          className: activeButtonStyle,
           hover: "Add microphone track",
           onClick: () => userMediaAudio?.stream && audioStreaming.addTracks(userMediaAudio?.stream),
         },
     audioStreaming.trackMetadata?.active
       ? {
           id: "mic-metadata-false",
-          icon: "/svg/mic-line.svg",
+          icon: Microphone,
+          className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'false'",
           onClick: () => audioStreaming.setActive(false),
         }
       : {
           id: "mic-metadata-true",
-          icon: "/svg/mic-off-fill.svg",
+          icon: MicrophoneOff,
+          className: activeButtonStyle,
           hover: "Set 'active' metadata to 'true'",
           onClick: () => audioStreaming.setActive(true),
         },
@@ -164,52 +189,60 @@ const getManualControls = (
     userMediaVideo.stream
       ? {
           id: "cam-stop",
-          icon: "/svg/camera-line.svg",
+          icon: Camera,
+          className: neutralButtonStyle,
           hover: "Turn off the camera",
           onClick: () => userMediaVideo.stop(),
         }
       : {
           id: "cam-start",
           hover: "Turn on the camera",
-          icon: "/svg/camera-off-line.svg",
+          icon: CameraOff,
+          className: activeButtonStyle,
           onClick: () => userMediaVideo.start(),
         },
     userMediaVideo.isEnabled
       ? {
           id: "cam-disable",
-          icon: "/svg/camera-line.svg",
+          icon: Camera,
+          className: neutralButtonStyle,
           hover: "Disable the camera stream",
           onClick: () => userMediaVideo.disable(),
         }
       : {
           id: "cam-enable",
           hover: "Enable the the camera stream",
-          icon: "/svg/camera-off-line.svg",
+          icon: CameraOff,
+          className: activeButtonStyle,
           onClick: () => userMediaVideo.enable(),
         },
     cameraStreaming.trackId
       ? {
           id: "cam-remove",
-          icon: "/svg/camera-line.svg",
+          icon: Camera,
+          className: neutralButtonStyle,
           hover: "Remove camera track",
           onClick: () => cameraStreaming.removeTracks(),
         }
       : {
           id: "cam-add",
-          icon: "/svg/camera-off-line.svg",
+          icon: CameraOff,
+          className: activeButtonStyle,
           hover: "Add camera track",
           onClick: () => userMediaVideo?.stream && cameraStreaming.addTracks(userMediaVideo?.stream),
         },
     cameraStreaming.trackMetadata?.active
       ? {
           id: "cam-metadata-false",
-          icon: "/svg/camera-line.svg",
+          icon: Camera,
+          className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'false'",
           onClick: () => cameraStreaming.setActive(false),
         }
       : {
           id: "cam-metadata-true",
-          icon: "/svg/camera-off-line.svg",
+          icon: CameraOff,
+          className: activeButtonStyle,
           hover: "Set 'active' metadata to 'true'",
           onClick: () => cameraStreaming.setActive(true),
         },
@@ -218,53 +251,60 @@ const getManualControls = (
     displayMedia.stream
       ? {
           id: "screen-stop",
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Stop the screensharing",
           onClick: () => displayMedia.stop(),
         }
       : {
           id: "screen-start",
-
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Start the screensharing",
           onClick: () => displayMedia.start(),
         },
     displayMedia.isEnabled
       ? {
           id: "screen-disable",
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Disable screensharing stream",
           onClick: () => displayMedia.disable(),
         }
       : {
           id: "screen-enable",
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Enable screensharing stream",
           onClick: () => displayMedia.enable(),
         },
     screenSharingStreaming.trackId
       ? {
           id: "screen-remove",
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Remove screensharing track",
           onClick: () => screenSharingStreaming.removeTracks(),
         }
       : {
           id: "screen-add",
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Add screensharing track",
           onClick: () => displayMedia?.stream && screenSharingStreaming.addTracks(displayMedia?.stream),
         },
     screenSharingStreaming.trackMetadata?.active
       ? {
           id: "screen-metadata-false",
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'false'",
           onClick: () => screenSharingStreaming.setActive(false),
         }
       : {
           id: "screen-metadata-true",
-          icon: "/svg/computer-line.svg",
+          icon: Screenshare,
+          className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'true'",
           onClick: () => screenSharingStreaming.setActive(true),
         },
@@ -272,9 +312,9 @@ const getManualControls = (
   [
     {
       id: "leave-room",
-      icon: "/svg/phone-fill.svg",
+      icon: HangUp,
       hover: "Leave the room",
-      imgClasses: "black-to-red transform rotate-135",
+      className: redButtonStyle,
       onClick: () => {
         navigate("/");
       },
@@ -302,17 +342,17 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
   const controls: ControlButton[][] =
     props.mode === "manual" ? getManualControls(props, navigate) : [getAutomaticControls(props, navigate)];
   return (
-    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-50">
+    <div>
       <div
         onClick={toggleShow}
-        className="absolute w-[50px] h-[15px] bg-gray-700 left-1/2 -translate-x-1/2 top-[-15px] rounded-t-lg z-[-10] bg-opacity-70 hover:bg-gray-900 "
+        className="absolute w-[50px] h-[15px] left-1/2 -translate-x-1/2 top-[-15px] rounded-t-lg z-[-10] hover:bg-gray-700 hover:bg-opacity-90"
       ></div>
       {show && (
-        <div className="flex flex-wrap justify-center inset-x-0 p-2 rounded-t-md bg-gray-700 rounded-t-md z-10 bg-opacity-70">
+        <div className="flex flex-wrap justify-center gap-x-4 inset-x-0 p-2 rounded-t-md z-10">
           {controls.map((group, index) => (
-            <div key={index} className="flex justify-center">
-              {group.map(({ icon, hover, onClick, imgClasses, id }) => (
-                <MediaControlButton key={id} onClick={onClick} icon={icon} hover={hover} imgClasses={imgClasses} />
+            <div key={index} className="flex justify-center gap-x-4">
+              {group.map(({ hover, onClick, className, id, icon }) => (
+                <MediaControlButton key={id} onClick={onClick} hover={hover} className={className} icon={icon} />
               ))}
             </div>
           ))}

@@ -49,7 +49,7 @@ const prepareScreenSharingStreams = (
           peerId: localPeer?.id,
           peerIcon: localPeer?.metadata?.emoji,
           peerName: LOCAL_PEER_NAME,
-          mediaPlayerId: LOCAL_SCREEN_SHARING_ID
+          mediaPlayerId: LOCAL_SCREEN_SHARING_ID,
         },
         ...peersScreenSharingTracks,
       ]

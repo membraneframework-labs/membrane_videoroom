@@ -9,6 +9,8 @@ import { getRandomAnimalEmoji } from "./utils";
 import { useStreamManager } from "./hooks/useStreamManager";
 import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
+import PageLayout from "../../features/room-page/components/PageLayout";
+import Button from "../../features/shared/components/Button";
 
 type Props = {
   displayName: string;
@@ -67,72 +69,74 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   );
 
   return (
-    <section>
-      <div className="flex flex-col h-screen relative">
-        {errorMessage && <div className="bg-red-700 text-white p-1 w-full">{errorMessage}</div>}
+    <PageLayout>
+      <div className="flex flex-col gap-y-4 w-full h-full">
+        {/* main grid - videos + future chat */}
+        <section className="w-full h-full flex flex-col">
+          {errorMessage && <div className="bg-red-700 text-white p-1 w-full">{errorMessage}</div>}
 
-        {showDeveloperInfo && (
-          <div className="absolute text-white text-shadow-lg right-0 top-0 p-2 flex flex-col text-right">
-            <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
-          </div>
-        )}
-
-        <section className="flex flex-col h-screen mb-14">
-          <header className="p-4">
-            <div className="flex items-center">
-              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2" alt="Mini logo" />
-              <h2 className="text-2xl md:text-4xl text-center font-bold text-white">Membrane WebRTC video room demo</h2>
+          {showDeveloperInfo && (
+            <div className="absolute text-shadow-lg right-0 top-0 p-2 flex flex-col text-right">
+              <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
             </div>
-            <h3 className="text-2xl font-semibold text-white mb-2">Room {roomId}</h3>
-            <h3 className="text-xl font-medium text-white">
-              Participants{" "}
-              <span>
-                {peerMetadata.emoji} {peerMetadata.displayName}
-              </span>
-              {peerState.remote.map((peer: RemotePeer) => (
-                <span key={peer.id} title={peer.id}>
-                  {peer.emoji} {peer.displayName}
+          )}
+
+          <div className="flex flex-col">
+            <header>
+              <h3 className="text-2xl font-semibold mb-2">Room {roomId}</h3>
+              <h3 className="text-xl font-medium">
+                Participants{" "}
+                <span>
+                  {peerMetadata.emoji} {peerMetadata.displayName}
                 </span>
-              ))}
-            </h3>
-          </header>
-          <VideochatSection
-            peers={peerState.remote}
-            localPeer={peerState.local}
-            showSimulcast={showSimulcastMenu}
-            showDeveloperInfo={showDeveloperInfo}
-            webrtc={webrtc}
-          />
+                {peerState.remote.map((peer: RemotePeer) => (
+                  <span key={peer.id} title={peer.id}>
+                    {peer.emoji} {peer.displayName}
+                  </span>
+                ))}
+              </h3>
+            </header>
+            <VideochatSection
+              peers={peerState.remote}
+              localPeer={peerState.local}
+              showSimulcast={showSimulcastMenu}
+              showDeveloperInfo={showDeveloperInfo}
+              webrtc={webrtc}
+            />
+          </div>
         </section>
-      </div>
-      <MediaControlButtons
-        mode={mode}
-        userMediaVideo={camera.local}
-        cameraStreaming={camera.remote}
-        userMediaAudio={audio.local}
-        audioStreaming={audio.remote}
-        displayMedia={screenSharing.local}
-        screenSharingStreaming={screenSharing.remote}
-      />
-      <div className="absolute bottom-2 right-2 flex flex-col items-stretch">
-        {isSimulcastOn && (
-          <button
-            onClick={toggleSimulcastMenu}
-            className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
-            type="submit"
+
+        {/* menu tooltip */}
+        <MediaControlButtons
+          mode={mode}
+          userMediaVideo={camera.local}
+          cameraStreaming={camera.remote}
+          userMediaAudio={audio.local}
+          audioStreaming={audio.remote}
+          displayMedia={screenSharing.local}
+          screenSharingStreaming={screenSharing.remote}
+        />
+
+        {/* dev helpers */}
+        <div className="absolute bottom-4 right-3 flex flex-col items-stretch w-52">
+          {isSimulcastOn && (
+            <button
+              onClick={toggleSimulcastMenu}
+              className="bg-gray-700 hover:bg-gray-900 text-white py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
+              type="submit"
+            >
+              Show simulcast controls
+            </button>
+          )}
+          <Button
+            onClick={toggleDeveloperInfo}
+            className="bg-gray-700 hover:bg-gray-900 text-white py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
           >
-            Show simulcast controls
-          </button>
-        )}
-        <button
-          onClick={toggleDeveloperInfo}
-          className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
-          type="submit"
-        >
-          Show developer info
-        </button>
+            {showDeveloperInfo ? "Hide developer info" : "Show developer info"}
+          </Button>
+        </div>
       </div>
-    </section>
+    </PageLayout>
   );
 };
 

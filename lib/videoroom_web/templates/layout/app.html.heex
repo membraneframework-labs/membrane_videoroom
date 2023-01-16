@@ -15,12 +15,12 @@
     <script defer type="text/javascript" src={static_path(@conn, "/assets/js/app.js")}></script>
   </head>
 
-  <body class="bg-membraneDark h-screen relative">
+  <body class="h-screen relative">
       <main role="main h-screen">
         <%= @inner_content %>
       </main>
       <div>
-        <label class="absolute text-white text-xl left-0 bottom-2 left-2  invisible md:visible">Version: <%= version() %></label>
+        <label class="absolute text-brand-dark-blue-500 text-xl left-0 bottom-5 left-3 invisible md:visible">Version: <%= version() %></label>
       </div>
   </body>
 </html>

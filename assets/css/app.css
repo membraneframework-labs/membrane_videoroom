@@ -80,8 +80,13 @@
   min-height: 70px;
 }
 
-.black-to-red {
-  filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg) brightness(96%) contrast(99%);
+.triangle-down {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top-width: 8px;
+  border-top-style: solid;
 }
 
 /**

@@ -29,31 +29,6 @@ const getAutomaticControls = (
   }: LocalUserMediaControls,
   navigate: NavigateFunction
 ): ControlButton[] => [
-  userMediaAudio.isEnabled
-    ? {
-        id: "mic-mute",
-        icon: Microphone,
-        hover: "Turn off the microphone",
-        className: neutralButtonStyle,
-        onClick: () => {
-          userMediaAudio.disable();
-          audioStreaming.setActive(false);
-        },
-      }
-    : {
-        id: "mic-unmute",
-        icon: MicrophoneOff,
-        hover: "Turn on the microphone",
-        className: activeButtonStyle,
-        onClick: () => {
-          if (userMediaAudio.stream) {
-            userMediaAudio.enable();
-          } else {
-            userMediaAudio.start();
-          }
-          audioStreaming.setActive(true);
-        },
-      },
   userMediaVideo.isEnabled
     ? {
         id: "cam-off",
@@ -79,6 +54,40 @@ const getAutomaticControls = (
           cameraStreaming.setActive(true);
         },
       },
+  userMediaAudio.isEnabled
+    ? {
+        id: "mic-mute",
+        icon: Microphone,
+        hover: "Turn off the microphone",
+        className: neutralButtonStyle,
+        onClick: () => {
+          userMediaAudio.disable();
+          audioStreaming.setActive(false);
+        },
+      }
+    : {
+        id: "mic-unmute",
+        icon: MicrophoneOff,
+        hover: "Turn on the microphone",
+        className: activeButtonStyle,
+        onClick: () => {
+          if (userMediaAudio.stream) {
+            userMediaAudio.enable();
+          } else {
+            userMediaAudio.start();
+          }
+          audioStreaming.setActive(true);
+        },
+      },
+  {
+    id: "leave-room",
+    icon: HangUp,
+    hover: "Leave the room",
+    className: redButtonStyle,
+    onClick: () => {
+      navigate("/");
+    },
+  },
   displayMedia.stream
     ? {
         id: "stream-stop",
@@ -100,15 +109,14 @@ const getAutomaticControls = (
           screenSharingStreaming.setActive(true);
         },
       },
-  {
-    id: "leave-room",
-    icon: HangUp,
-    hover: "Leave the room",
-    className: redButtonStyle,
-    onClick: () => {
-      navigate("/");
-    },
-  },
+  //TODO enable when chat is implemented
+  // {
+  //   id: "chat",
+  //   icon: Chat,
+  //   hover: "Open the chat",
+  //   className: neutralButtonStyle,
+  //   onClick: () => undefined,
+  // },
 ];
 
 //dev helpers

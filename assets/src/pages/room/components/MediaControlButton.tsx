@@ -26,11 +26,11 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
     >
       {Icon && <Icon />}
 
-      <div className="transition-all duration-500 absolute bottom-0 flex flex-col opacity-0 items-center invisible mb-14 group-hover:visible group-hover:opacity-80 font-aktivGrotesk">
-        <span className="relative z-50 min-w-max px-2 py-3 text-sm font-normal leading-none rounded-lg text-white whitespace-no-wrap bg-brand-grey-120 shadow-lg">
+      <div className="transition-all duration-500 absolute bottom-0 flex flex-col opacity-0 items-center invisible mb-12 group-hover:visible group-hover:opacity-90 font-aktivGrotesk">
+        <span className="relative z-50 min-w-max px-4 py-3 text-sm font-normal leading-none rounded-lg text-white whitespace-no-wrap bg-brand-grey-120 shadow-lg">
           {hover}
         </span>
-        <div className="w-3 h-3 -mt-2 rotate-45 bg-brand-grey-120"></div>
+        <div className="triangle-down border-brand-grey-120"></div>
       </div>
     </Button>
   );

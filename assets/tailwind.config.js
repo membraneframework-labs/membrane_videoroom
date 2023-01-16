@@ -52,8 +52,6 @@ module.exports = {
         ],
       },
       colors: {
-        membraneDark: "#001A72",
-        membraneLight: "#87CCE8",
         "brand-white": "#FFFFFF",
         "brand-gray": "#B0B5D8",
         "brand-dark-gray": "#90A4AE",

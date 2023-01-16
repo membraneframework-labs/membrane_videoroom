@@ -22,10 +22,16 @@ const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, 
   }
 
   // external links
-  //TODO prevent defualt when onclick and href
   if (href?.startsWith("http://") || href?.startsWith("https://")) {
     return (
-      <a target="_blank" rel="noreferrer noopeer" href={href} className={clsx(className)} aria-label={name}>
+      <a
+        target="_blank"
+        rel="noreferrer noopeer"
+        href={href}
+        className={clsx(className)}
+        aria-label={name}
+        onClick={onClick}
+      >
         {children}
       </a>
     );

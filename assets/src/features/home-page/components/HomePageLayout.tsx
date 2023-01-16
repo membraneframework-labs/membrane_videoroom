@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React, { PropsWithChildren } from "react";
-import MembraneLogo from "../../shared/components/MembraneLogo";
-import PlainLink from "../../shared/components/PlainLink";
+
+import Navbar from "./Navbar";
 
 const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -19,12 +19,8 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
         backgroundPosition: "left -90px top 200px, right -170px top 120px",
       }}
     >
-      {/* navbar */}
-      <PlainLink href="/" name="home-page" className="self-start">
-        <MembraneLogo className="text-5xl" />
-      </PlainLink>
+      <Navbar />
 
-      {/* content */}
       <div className="flex items-center justify-center w-full h-full">{children}</div>
     </div>
   );

@@ -6,7 +6,7 @@ export default {
   component: Checkbox,
 };
 
-export const Checked = () => {
+export const Normal = () => {
   const [checked, setChecked] = useState(false);
   return (
     <Checkbox text="Simulcast" status={checked} id="example-checkbox" onChange={() => setChecked((prev) => !prev)} />

@@ -6,6 +6,8 @@ import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
 import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
+import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
+import CameraOff from "../../../../features/room-page/icons/CameraOff";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -210,29 +212,11 @@ const MediaPlayerPeersSection: FC<Props> = ({
                 <InfoLayer
                   bottomLeft={<div>{config.displayName}</div>}
                   topLeft={
-                    <div className="flex flex-row">
+                    <div className="flex flex-row items-center gap-x-2 text-xl">
                       {showDisabledIcon(audio) && (
-                        <img
-                          className={clsx(`invert group-disabled:invert-80 m-1`, {
-                            "animate-spin": isLoading(audio),
-                          })}
-                          height="26"
-                          width="26"
-                          src="/svg/mic-off-fill.svg"
-                          alt="Microphone muted icon"
-                        />
+                        <MicrophoneOff className={clsx(isLoading(audio) && "animate-spin")} />
                       )}
-                      {showDisabledIcon(video) && (
-                        <img
-                          className={clsx(`invert group-disabled:invert-80 m-1`, {
-                            "animate-spin": isLoading(video),
-                          })}
-                          height="26"
-                          width="26"
-                          src="/svg/camera-off-line.svg"
-                          alt="Camera disabled icon"
-                        />
-                      )}
+                      {showDisabledIcon(video) && <CameraOff className={clsx(isLoading(audio) && "animate-spin")} />}
                     </div>
                   }
                 />

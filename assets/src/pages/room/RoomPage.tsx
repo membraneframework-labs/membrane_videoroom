@@ -118,7 +118,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         />
 
         {/* dev helpers */}
-        <div className="absolute bottom-4 right-3 flex flex-col items-stretch w-52">
+        <div className="absolute bottom-4 right-3 flex flex-col items-stretch">
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}

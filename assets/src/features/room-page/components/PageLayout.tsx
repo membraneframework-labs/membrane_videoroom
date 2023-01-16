@@ -17,10 +17,8 @@ const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
         backgroundPosition: "center",
       }}
     >
-      {/* navbar */}
       <Navbar />
 
-      {/* content */}
       <div className="w-full h-full">{children}</div>
     </div>
   );

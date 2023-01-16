@@ -20,14 +20,14 @@ const Navbar: React.FC = () => {
       <PlainLink href="/" name="home-page" className="self-start">
         <MembraneVideoroomLogo className="text-5xl" />
       </PlainLink>
-      <div className="flex gap-x-4 items-center">
-        Invite link
+      <div className="flex gap-x-3 items-center">
+        <span className="mt-1">Invite link</span>
         <Button
           onClick={copyLink}
           className={clsx(
-            "px-5 pt-1 border border-brand-dark-blue-200 bg-brand-white rounded-3xl",
+            "px-5 pt-1 border border-brand-dark-blue-200 rounded-3xl",
             "flex items-center gap-x-2",
-            "btn-light"
+            "btn-light font-medium"
           )}
         >
           {roomId} <ShareSquare className="-mt-1" />

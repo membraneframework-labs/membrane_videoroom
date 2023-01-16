@@ -111,8 +111,8 @@ export const HomePage: FC = () => {
               to={`/room/${roomIdInput}`}
               id="join"
               className={clsx(
-                disabled ? "pointer-events-none cursor-default bg-gray-300" : "bg-membraneLight",
-                "w-full hover:bg-membraneLight/75 focus:ring ring-membraneDark focus:border-membraneDark text-membraneDark font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                disabled ? "pointer-events-none cursor-default bg-gray-300" : "bg-brand-sea-blue-300",
+                "w-full hover:bg-brand-sea-blue-300/75 focus:ring ring-brand-dark-blue-500 focus:border-brand-dark-blue-500 text-brand-dark-blue-500 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               )}
             >
               Join room!

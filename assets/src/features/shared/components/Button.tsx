@@ -7,12 +7,11 @@ type ButtonVariant = "normal" | "light" | "transparent" | "transparent-light";
 type ButtonProps = PlainLinkProps & { variant?: ButtonVariant };
 
 const Button: React.FC<ButtonProps> = (props) => {
-  console.log(props.variant);
   return (
     <PlainLink
       {...props}
       className={clsx(
-        buttonClassName,
+        props.variant && buttonDefaultClassName,
         props.disabled ? disabledButtonClassName : props.variant && BUTTON_CLASSES[props.variant],
         props.className
       )}
@@ -24,7 +23,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 
 export default Button;
 
-const buttonClassName = clsx(
+const buttonDefaultClassName = clsx(
   "inline-block whitespace-nowrap",
   "font-medium text-lg leading-[2.15rem] tracking-[0.05em]",
   "md:px-8 md:py-4 px-8 py-3",

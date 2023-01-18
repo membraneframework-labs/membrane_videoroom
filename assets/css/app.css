@@ -50,12 +50,7 @@
 }
 
 .triangle-down {
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top-width: 8px;
-  border-top-style: solid;
+  @apply w-0 h-0 border-solid border-b-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent;
 }
 
 /**

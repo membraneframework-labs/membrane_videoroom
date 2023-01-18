@@ -30,7 +30,12 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
         <span className="relative z-50 min-w-max px-4 py-3 text-sm font-normal leading-none rounded-lg text-white whitespace-no-wrap bg-brand-grey-120 shadow-lg">
           {hover}
         </span>
-        <div className="triangle-down border-brand-grey-120"></div>
+        <div
+          className={clsx(
+            "w-0 h-0",
+            "border-solid border-b-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-brand-grey-120"
+          )}
+        ></div>
       </div>
     </Button>
   );

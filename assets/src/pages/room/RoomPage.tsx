@@ -70,20 +70,20 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   return (
     <PageLayout>
-      <div className="flex flex-col gap-y-4 w-full h-full">
+      <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
-        <section className="w-full h-full flex flex-col">
-          {errorMessage && <div className="bg-red-700 text-white p-1 w-full">{errorMessage}</div>}
+        <section className="flex h-full w-full flex-col">
+          {errorMessage && <div className="w-full bg-red-700 p-1 text-white">{errorMessage}</div>}
 
           {showDeveloperInfo && (
-            <div className="absolute text-shadow-lg right-0 top-0 p-2 flex flex-col text-right">
+            <div className="text-shadow-lg absolute right-0 top-0 flex flex-col p-2 text-right">
               <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
             </div>
           )}
 
           <div className="flex flex-col">
             <header>
-              <h3 className="text-2xl font-semibold mb-2">Room {roomId}</h3>
+              <h3 className="mb-2 text-2xl font-semibold">Room {roomId}</h3>
               <h3 className="text-xl font-medium">
                 Participants{" "}
                 <span>
@@ -122,7 +122,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}
-              className="bg-gray-700 hover:bg-gray-900 text-white py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
+              className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-gray-700 py-2 px-4 text-white hover:bg-gray-900"
               type="submit"
             >
               Show simulcast controls
@@ -130,7 +130,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
           )}
           <Button
             onClick={toggleDeveloperInfo}
-            className="bg-gray-700 hover:bg-gray-900 text-white py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
+            className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-gray-700 py-2 px-4 text-white hover:bg-gray-900"
           >
             {showDeveloperInfo ? "Hide developer info" : "Show developer info"}
           </Button>

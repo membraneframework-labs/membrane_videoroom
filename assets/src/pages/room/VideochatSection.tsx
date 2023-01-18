@@ -77,8 +77,8 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
 
   return (
-    <div id="videochat" className="px-2 md:px-20 overflow-y-auto">
-      <div className="flex flex-col items-center md:flex-row md:items-start justify-center h-full">
+    <div id="videochat" className="overflow-y-auto px-2 md:px-20">
+      <div className="flex h-full flex-col items-center justify-center md:flex-row md:items-start">
         {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
 
         <MediaPlayerPeersSection

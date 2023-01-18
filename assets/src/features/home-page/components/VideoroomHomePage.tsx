@@ -63,7 +63,7 @@ const VideoroomHomePage: React.FC = () => {
     <HomePageLayout>
       <section className="flex flex-col items-center gap-y-18">
         {deviceManager.errorMessage && (
-          <div className="bg-red-700 text-white p-1 w-full">{deviceManager.errorMessage}</div>
+          <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
         <div className="flex flex-col items-center gap-y-6 text-center">
           <h2 className="text-3xl sm:text-5xl">Videoconferencing for everyone</h2>
@@ -95,7 +95,7 @@ const VideoroomHomePage: React.FC = () => {
               <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} />
             ))}
           </div>
-          <div className="flex items-center justify-center w-full">
+          <div className="flex w-full items-center justify-center">
             <Button
               onClick={() => {
                 localStorage.setItem("displayName", displayNameInput);

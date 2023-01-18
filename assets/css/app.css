@@ -18,48 +18,17 @@
   .videos-grid-with-screensharing {
     height: auto !important;
   }
-
-  .btn {
-    display: inline-block;
-    background-color: theme("colors.brand-dark-blue.500");
-    border-radius: theme("borderRadius.full");
-    color: theme("colors.brand-white");
-    line-height: 2.15rem;
-    white-space: nowrap;
-    @apply font-medium tracking-[0.05em] text-lg md:px-8 md:py-4 px-8 py-3 hover:bg-brand-white hover:text-brand-dark-blue-500 border-solid border-brand-dark-blue-500 border-2 focus:bg-brand-dark-blue-400 focus:border-brand-dark-blue-400 transition-all duration-100 ease-out;
-  }
-
-  .btn-light {
-    background-color: theme("colors.brand-white");
-    color: theme("colors.brand-dark-blue.500");
-    @apply hover:bg-brand-dark-blue-500 hover:text-brand-white border-solid border-brand-white border-2 focus:bg-brand-dark-blue-200 focus:border-brand-dark-blue-200 transition-all duration-100 ease-out;
-  }
-
-  .btn-transparent {
-    background-color: theme("colors.transparent");
-    color: theme("colors.brand-dark-blue.500");
-    @apply border-none hover:bg-transparent hover:text-brand-dark-blue-500 focus:!bg-transparent focus:!text-brand-dark-blue-500;
-  }
-
-  .btn-transparent-light {
-    background-color: theme("colors.transparent");
-    color: theme("colors.brand-white");
-    @apply border-none hover:bg-transparent hover:text-brand-white focus:!bg-transparent focus:!text-brand-white;
-  }
-
-  .btn-danger {
-    @apply bg-brand-pink-500 hover:text-brand-pink-500 focus:!text-brand-pink-500 border-solid border-brand-pink-500 border-2;
-  }
-
-  .btn-disabled {
-    background-color: theme("colors.brand-grey.60");
-    @apply pointer-events-none cursor-default border-brand-grey-60;
-  }
 }
 
 @layer base {
   html {
     @apply font-aktivGrotesk;
+  }
+}
+
+@layer utilities {
+  .black-to-red {
+    filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg) brightness(96%) contrast(99%);
   }
 }
 
@@ -78,10 +47,6 @@
 .video-divider {
   height: 70px;
   min-height: 70px;
-}
-
-.black-to-red {
-  filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg) brightness(96%) contrast(99%);
 }
 
 /**

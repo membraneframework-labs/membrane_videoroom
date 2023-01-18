@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import React, { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
@@ -106,7 +105,7 @@ const VideoroomHomePage: React.FC = () => {
               }}
               href={`/room/${roomIdInput}`}
               name="join"
-              className={clsx("btn")}
+              variant="normal"
               disabled={buttonDisabled}
             >
               Join the room

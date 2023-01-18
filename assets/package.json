@@ -16,6 +16,7 @@
     "react-dom": "^18.2.0",
     "react-page-visibility": "^7.0.0",
     "react-router-dom": "^6.4.2",
+    "react-swm-icon-pack": "^1.0.14",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -24,10 +25,10 @@
     "@types/phoenix": "^1.5.4",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
     "@types/react-page-visibility": "^6.4.1",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "autoprefixer": "^10.2.0",
     "eslint": "^8.25.0",
     "eslint-plugin-react": "^7.31.10",

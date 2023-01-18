@@ -38,7 +38,7 @@ const MediaPlayerTile: FC<Props> = ({
   return (
     <div
       data-name="video-feed"
-      className="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video"
+      className="aspect-video relative h-full w-full overflow-hidden rounded-md bg-gray-900 shadow"
     >
       <MediaPlayer
         videoStream={video?.stream}

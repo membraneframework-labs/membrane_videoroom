@@ -302,13 +302,13 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
   const controls: ControlButton[][] =
     props.mode === "manual" ? getManualControls(props, navigate) : [getAutomaticControls(props, navigate)];
   return (
-    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-50">
+    <div className="absolute bottom-0 left-1/2 z-50 -translate-x-1/2">
       <div
         onClick={toggleShow}
-        className="absolute w-[50px] h-[15px] bg-gray-700 left-1/2 -translate-x-1/2 top-[-15px] rounded-t-lg z-[-10] bg-opacity-70 hover:bg-gray-900 "
+        className="absolute left-1/2 top-[-15px] z-[-10] h-[15px] w-[50px] -translate-x-1/2 rounded-t-lg bg-gray-700 bg-opacity-70 hover:bg-gray-900 "
       ></div>
       {show && (
-        <div className="flex flex-wrap justify-center inset-x-0 p-2 rounded-t-md bg-gray-700 rounded-t-md z-10 bg-opacity-70">
+        <div className="inset-x-0 z-10 flex flex-wrap justify-center rounded-t-md rounded-t-md bg-gray-700 bg-opacity-70 p-2">
           {controls.map((group, index) => (
             <div key={index} className="flex justify-center">
               {group.map(({ icon, hover, onClick, imgClasses, id }) => (

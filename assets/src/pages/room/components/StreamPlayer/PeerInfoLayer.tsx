@@ -27,7 +27,7 @@ const PeerInfoLayer: FC<Props> = ({ topLeft, topRight, bottomLeft, bottomRight }
         <div
           key={`${corner.x}-${corner.y}`}
           data-name="video-label"
-          className={`absolute text-white text-shadow-lg ${corner.x}-0 ${corner.y}-0 p-2`}
+          className={`text-shadow-lg absolute text-white ${corner.x}-0 ${corner.y}-0 p-2`}
         >
           {corner.content}
         </div>

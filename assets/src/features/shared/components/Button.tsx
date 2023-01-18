@@ -7,7 +7,6 @@ type ButtonVariant = "normal" | "light" | "transparent" | "transparent-light";
 type ButtonProps = PlainLinkProps & { variant?: ButtonVariant };
 
 const Button: React.FC<ButtonProps> = (props) => {
-  console.log(props.variant);
   return (
     <PlainLink
       {...props}

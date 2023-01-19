@@ -6,11 +6,11 @@ jobs:
   lint_frontend:
     working_directory: ~/membrane_live/assets
     docker:
-      - image: cimg/node:18.4.0
+      - image: cimg/node:18.13.0
 
     steps:
       - checkout:
-          path: ~/membrane_live
+          path: ~/membrane_videoroom
       - run:
           command: npm install
           name: Install front-end dependencies

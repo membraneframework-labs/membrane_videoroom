@@ -68,22 +68,22 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   return (
     <section>
-      <div className="flex flex-col h-screen relative">
-        {errorMessage && <div className="bg-red-700 text-white p-1 w-full">{errorMessage}</div>}
+      <div className="relative flex h-screen flex-col">
+        {errorMessage && <div className="w-full bg-red-700 p-1 text-white">{errorMessage}</div>}
 
         {showDeveloperInfo && (
-          <div className="absolute text-white text-shadow-lg right-0 top-0 p-2 flex flex-col text-right">
+          <div className="text-shadow-lg absolute right-0 top-0 flex flex-col p-2 text-right text-white">
             <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
           </div>
         )}
 
-        <section className="flex flex-col h-screen mb-14">
+        <section className="mb-14 flex h-screen flex-col">
           <header className="p-4">
             <div className="flex items-center">
-              <img src="/svg/logo_min.svg" className="hidden md:block h-8 mr-2" alt="Mini logo" />
-              <h2 className="text-2xl md:text-4xl text-center font-bold text-white">Membrane WebRTC video room demo</h2>
+              <img src="/svg/logo_min.svg" className="mr-2 hidden h-8 md:block" alt="Mini logo" />
+              <h2 className="text-center text-2xl font-bold text-white md:text-4xl">Membrane WebRTC video room demo</h2>
             </div>
-            <h3 className="text-2xl font-semibold text-white mb-2">Room {roomId}</h3>
+            <h3 className="mb-2 text-2xl font-semibold text-white">Room {roomId}</h3>
             <h3 className="text-xl font-medium text-white">
               Participants{" "}
               <span>
@@ -118,7 +118,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         {isSimulcastOn && (
           <button
             onClick={toggleSimulcastMenu}
-            className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
+            className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-gray-700 py-2 px-4 font-bold text-white ring-gray-800 hover:bg-gray-900 focus:border-gray-800 focus:ring"
             type="submit"
           >
             Show simulcast controls
@@ -126,7 +126,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         )}
         <button
           onClick={toggleDeveloperInfo}
-          className="bg-gray-700 hover:bg-gray-900 focus:ring ring-gray-800 focus:border-gray-800 text-white font-bold py-2 px-4 m-1 rounded focus:outline-none focus:shadow-outline w-full"
+          className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-gray-700 py-2 px-4 font-bold text-white ring-gray-800 hover:bg-gray-900 focus:border-gray-800 focus:ring"
           type="submit"
         >
           Show developer info

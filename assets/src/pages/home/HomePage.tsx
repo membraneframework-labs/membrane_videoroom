@@ -61,16 +61,16 @@ export const HomePage: FC = () => {
   return (
     <section>
       {deviceManager.errorMessage && (
-        <div className="bg-red-700 text-white p-1 w-full">{deviceManager.errorMessage}</div>
+        <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
       )}
-      <div className="p-8 flex flex-col items-center">
+      <div className="flex flex-col items-center p-8">
         <div className="mb-4">
           <img src="/svg/logo.svg" className="mb-2" alt="logo" />
-          <h2 className="font-rocGrotesk font-medium text-4xl text-white mb-2 ">Videoroom</h2>
+          <h2 className="mb-2 font-rocGrotesk text-4xl font-medium text-white ">Videoroom</h2>
         </div>
-        <div className="bg-white shadow-md rounded max-w-md px-8 pt-6 pb-8 mb-4">
+        <div className="mb-4 max-w-md rounded bg-white px-8 pt-6 pb-8 shadow-md">
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="room_name">
+            <label className="mb-2 block text-sm font-bold text-gray-700" htmlFor="room_name">
               Room name
             </label>
             <input
@@ -80,17 +80,17 @@ export const HomePage: FC = () => {
               required
               name="room_name"
               placeholder="Room name"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="focus:outline-none focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="display_name">
+            <label className="mb-2 block text-sm font-bold text-gray-700" htmlFor="display_name">
               Display name
             </label>
             <input
               value={displayNameInput}
               onChange={(event) => setDisplayNameInput(event.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="focus:outline-none focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow"
               name="display_name"
               type="text"
               placeholder="Display name"
@@ -112,7 +112,7 @@ export const HomePage: FC = () => {
               id="join"
               className={clsx(
                 disabled ? "pointer-events-none cursor-default bg-gray-300" : "bg-membraneLight",
-                "w-full hover:bg-membraneLight/75 focus:ring ring-membraneDark focus:border-membraneDark text-membraneDark font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                "focus:outline-none focus:shadow-outline w-full rounded py-2 px-4 font-bold text-membraneDark ring-membraneDark hover:bg-membraneLight/75 focus:border-membraneDark focus:ring"
               )}
             >
               Join room!

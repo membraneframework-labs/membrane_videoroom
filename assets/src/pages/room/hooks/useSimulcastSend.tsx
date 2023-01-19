@@ -12,7 +12,9 @@ export type UseSimulcastLocalEncoding = {
 
 export const useSimulcastSend = (trackId?: string, webrtc?: MembraneWebRTC): UseSimulcastLocalEncoding => {
   const toggleRemoteEncoding = (status: boolean, encodingName: TrackEncoding) => {
-    if (!trackId) return;
+    if (!trackId) {
+      throw Error("Toggling simulcast layer is not possible when trackId is null");
+    }
 
     status ? webrtc?.enableTrackEncoding(trackId, encodingName) : webrtc?.disableTrackEncoding(trackId, encodingName);
   };

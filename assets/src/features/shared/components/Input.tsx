@@ -35,7 +35,7 @@ const Input: React.FC<InputProps> = ({
   return (
     <div className="space-y-2">
       {label && (
-        <label htmlFor={name} className="block text-brand-dark-blue-500 text-base font-aktivGrotesk">
+        <label htmlFor={name} className="block font-aktivGrotesk text-base text-brand-dark-blue-500">
           {label}
         </label>
       )}
@@ -44,11 +44,11 @@ const Input: React.FC<InputProps> = ({
         onChange={onChange}
         className={clsx(
           "w-full px-3.5 py-4",
-          "rounded-[40px] border-2 text-brand-dark-blue-500 focus:outline-none",
+          "focus:outline-none rounded-[40px] border-2 text-brand-dark-blue-500",
           error
             ? "border-brand-red"
             : disabled
-            ? "text-brand-grey-80 border-brand-grey-60 bg-white"
+            ? "border-brand-grey-60 bg-white text-brand-grey-80"
             : "border-brand-dark-blue-500 focus:border-brand-sea-blue-400",
           "appearance-none",
           className
@@ -63,7 +63,7 @@ const Input: React.FC<InputProps> = ({
       {additionalText && (
         <span
           className={clsx(
-            "block text-sm font-aktivGrotesk",
+            "block font-aktivGrotesk text-sm",
             disabled ? "text-brand-grey-80" : error ? "text-brand-red" : "text-brand-dark-blue-500"
           )}
         >

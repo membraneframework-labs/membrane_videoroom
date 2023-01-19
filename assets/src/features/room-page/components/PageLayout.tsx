@@ -7,8 +7,8 @@ const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
     <div
       className={clsx(
         "h-screen w-full",
-        "bg-brand-sea-blue-100 text-brand-dark-blue-500 font-rocGrotesk",
-        "flex flex-col items-center p-4 gap-y-4"
+        "bg-brand-sea-blue-100 font-rocGrotesk text-brand-dark-blue-500",
+        "flex flex-col items-center gap-y-4 p-4"
       )}
       style={{
         backgroundImage: "url('/images/videoroomBackground.png')",
@@ -19,7 +19,7 @@ const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
     >
       <Navbar />
 
-      <div className="w-full h-full">{children}</div>
+      <div className="h-full w-full">{children}</div>
     </div>
   );
 };

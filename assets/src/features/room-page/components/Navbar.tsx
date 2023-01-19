@@ -16,17 +16,17 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col sm:flex-row gap-y-4 w-full justify-between">
+    <div className="flex w-full flex-col justify-between gap-y-4 sm:flex-row">
       <PlainLink href="/" name="home-page" className="self-start">
         <MembraneVideoroomLogo className="text-5xl" />
       </PlainLink>
-      <div className="flex gap-x-3 items-center">
+      <div className="flex items-center gap-x-3">
         <span className="mt-1">Invite link</span>
         <Button
           onClick={copyLink}
           variant="light"
           className={clsx(
-            "!px-5 !pt-1 !pb-0 !border !border-brand-dark-blue-200 !rounded-3xl",
+            "!rounded-3xl !border !border-brand-dark-blue-200 !px-5 !pt-1 !pb-0",
             "flex items-center gap-x-2",
             "!text-base"
           )}

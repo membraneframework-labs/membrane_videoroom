@@ -98,11 +98,11 @@ const MediaPlayerPeersSection: FC<Props> = ({
     <div
       id="videos-grid"
       className={clsx({
-        "grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1 max-h-[32rem] 2xl:max-h-[43rem]": true, //TODO remove max-h whan a new grid is introduced
+        "grid h-full max-h-[32rem] flex-1 grid-flow-row grid-cols-1 justify-items-center gap-4 2xl:max-h-[65rem]": true, //TODO remove max-h whan a new grid is introduced
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {allPeersConfig.map((config, idx) => {
+      {allPeersConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
         const screenSharing: TrackWithId | undefined = config.screenSharing[0];

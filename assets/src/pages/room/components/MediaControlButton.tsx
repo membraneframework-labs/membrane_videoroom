@@ -19,21 +19,21 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
     <Button
       onClick={onClick}
       className={clsx(
-        "p-2.5 border outline-none rounded-full font-bold text-xl",
-        "group relative flex justify-center items-center z-10 rounded-full transition duration-300 ease-in-out disabled:pointer-events-none",
+        "outline-none rounded-full border p-2.5 text-xl font-bold",
+        "group relative z-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out disabled:pointer-events-none",
         className
       )}
     >
       {Icon && <Icon />}
 
-      <div className="transition-all duration-500 absolute bottom-0 flex flex-col opacity-0 items-center invisible mb-12 group-hover:visible group-hover:opacity-90 font-aktivGrotesk">
-        <span className="relative z-50 min-w-max px-4 py-3 text-sm font-normal leading-none rounded-lg text-white whitespace-no-wrap bg-brand-grey-120 shadow-lg">
+      <div className="invisible absolute bottom-0 mb-12 flex flex-col items-center font-aktivGrotesk opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-90">
+        <span className="whitespace-no-wrap relative z-50 min-w-max rounded-lg bg-brand-grey-120 px-4 py-3 text-sm font-normal leading-none text-white shadow-lg">
           {hover}
         </span>
         <div
           className={clsx(
-            "w-0 h-0",
-            "border-solid border-b-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-brand-grey-120"
+            "h-0 w-0",
+            "border-b-0 border-l-[6px] border-r-[6px] border-t-[8px] border-solid border-brand-grey-120 border-l-transparent border-r-transparent"
           )}
         ></div>
       </div>

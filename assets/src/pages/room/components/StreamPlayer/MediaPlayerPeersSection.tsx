@@ -96,7 +96,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
     <div
       id="videos-grid"
       className={clsx({
-        "grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1": true,
+        "grid h-full flex-1 grid-flow-row grid-cols-1 justify-items-center gap-4": true,
         "md:grid-cols-2": !oneColumn,
       })}
     >
@@ -213,7 +213,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
                     <div className="flex flex-row">
                       {showDisabledIcon(audio) && (
                         <img
-                          className={clsx(`invert group-disabled:invert-80 m-1`, {
+                          className={clsx(`group-disabled:invert-80 m-1 invert`, {
                             "animate-spin": isLoading(audio),
                           })}
                           height="26"
@@ -224,7 +224,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
                       )}
                       {showDisabledIcon(video) && (
                         <img
-                          className={clsx(`invert group-disabled:invert-80 m-1`, {
+                          className={clsx(`group-disabled:invert-80 m-1 invert`, {
                             "animate-spin": isLoading(video),
                           })}
                           height="26"

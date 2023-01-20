@@ -12,7 +12,7 @@ jobs:
       - checkout:
           path: ~/membrane_videoroom
       - run:
-          command: npm install
+          command: npm ci
           name: Install front-end dependencies
       - run:
           command: npm run format:check

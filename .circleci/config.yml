@@ -4,7 +4,7 @@ orbs:
 
 jobs:
   lint_frontend:
-    working_directory: ~/membrane_live/assets
+    working_directory: ~/membrane_videoroom/assets
     docker:
       - image: cimg/node:18.13.0
 

@@ -11,9 +11,17 @@ jobs:
     steps:
       - checkout:
           path: ~/membrane_videoroom
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
+            - npm-deps-
       - run:
           command: npm ci
           name: Install front-end dependencies
+      - save_cache:
+          key: npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
       - run:
           command: npm run format:check
           name: Run prettier on front-end

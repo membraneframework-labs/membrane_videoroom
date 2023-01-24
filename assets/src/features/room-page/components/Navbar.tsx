@@ -16,12 +16,12 @@ const Navbar: React.FC = () => {
   }, [currentUrl]);
 
   return (
-    <div className="flex w-full flex-col justify-between gap-y-4 sm:flex-row">
+    <div className="flex w-full flex-row justify-between gap-y-4">
       <PlainLink href="/" name="home-page" className="self-start">
         <MembraneVideoroomLogo className="text-5xl" />
       </PlainLink>
-      <div className="flex items-center gap-x-3 font-aktivGrotesk">
-        <span>Invite link</span>
+      <div className="flex flex-row items-center gap-x-3 font-aktivGrotesk">
+        <span className="hidden sm:inline-block">Invite link</span>
         <Button
           onClick={copyLink}
           variant="light"

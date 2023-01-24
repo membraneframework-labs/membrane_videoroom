@@ -98,7 +98,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
     <div
       id="videos-grid"
       className={clsx({
-        "grid h-full max-h-[32rem] flex-1 grid-flow-row grid-cols-1 justify-items-center gap-4 2xl:max-h-[65rem]": true, //TODO remove max-h whan a new grid is introduced
+        "grid h-full w-full flex-1 grid-flow-row grid-cols-1 justify-items-center gap-4": true,
         "md:grid-cols-2": !oneColumn,
       })}
     >

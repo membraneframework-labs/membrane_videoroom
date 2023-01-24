@@ -13,15 +13,15 @@ const Navbar: React.FC = () => {
 
   const copyLink = useCallback(async () => {
     await navigator.clipboard.writeText(currentUrl);
-  }, []);
+  }, [currentUrl]);
 
   return (
-    <div className="flex w-full flex-col justify-between gap-y-4 sm:flex-row">
+    <div className="flex w-full flex-row justify-between gap-y-4">
       <PlainLink href="/" name="home-page" className="self-start">
         <MembraneVideoroomLogo className="text-5xl" />
       </PlainLink>
       <div className="flex items-center gap-x-3">
-        <span className="mt-1">Invite link</span>
+        <span className="mt-1 hidden sm:inline-block">Invite link</span>
         <Button
           onClick={copyLink}
           variant="light"

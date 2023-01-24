@@ -79,7 +79,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   return (
     <div
       id="videochat"
-      className="grid-wrapper flex h-full flex-col items-center justify-center gap-3 md:flex-row md:items-start"
+      className="grid-wrapper flex h-full flex-col items-center justify-start gap-3 overflow-y-auto sm:justify-center md:flex-row md:items-start"
     >
       {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
 

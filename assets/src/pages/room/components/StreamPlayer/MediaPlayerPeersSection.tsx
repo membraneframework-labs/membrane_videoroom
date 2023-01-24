@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
-import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
 import InfoLayer from "./PeerInfoLayer";
@@ -100,7 +100,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {allPeersConfig.map((config, idx) => {
+      {allPeersConfig.map((config, _idx) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
         const screenSharing: TrackWithId | undefined = config.screenSharing[0];

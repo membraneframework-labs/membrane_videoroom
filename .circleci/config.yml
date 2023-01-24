@@ -2,6 +2,36 @@ version: 2.1
 orbs:
   elixir: membraneframework/elixir@1
 
+jobs:
+  lint_frontend:
+    working_directory: ~/membrane_videoroom/assets
+    docker:
+      - image: cimg/node:18.13.0
+
+    steps:
+      - checkout:
+          path: ~/membrane_videoroom
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
+            - npm-deps-
+      - run:
+          command: npm ci
+          name: Install front-end dependencies
+      - save_cache:
+          key: npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run:
+          command: npm run format:check
+          name: Run prettier on front-end
+      - run:
+          command: npm run typing:check
+          name: Run typescript typechecking on front-end
+      - run:
+          command: npm run lint:check
+          name: Run linter on front-end
+
 workflows:
   version: 2
   build:
@@ -11,4 +41,4 @@ workflows:
       - elixir/lint:
           docs: false
           dialyzer: false
-
+      - lint_frontend

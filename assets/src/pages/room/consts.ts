@@ -25,7 +25,7 @@ const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   },
 };
 
-const SCREENSHARING_MEDIA_CONSTRAINTS: DisplayMediaStreamConstraints = {
+const SCREENSHARING_MEDIA_CONSTRAINTS: MediaStreamConstraints = {
   video: {
     frameRate: { ideal: 10, max: 15 },
   },

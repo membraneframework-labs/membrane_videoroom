@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
-import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
 import InfoLayer from "./PeerInfoLayer";

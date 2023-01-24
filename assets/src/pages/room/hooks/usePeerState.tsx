@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 
 export type ApiTrack = {

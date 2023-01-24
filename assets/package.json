@@ -4,10 +4,11 @@
     "deploy": "NODE_ENV=production tailwindcss --postcss --minify -i css/app.css -o ../priv/static/assets/css/app.css",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint:check": "eslint . --ext .ts,.tsx",
+    "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@membraneframework/membrane-webrtc-js": "^0.3.1",
+    "@jellyfish-dev/membrane-webrtc-js": "^0.4.0",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",

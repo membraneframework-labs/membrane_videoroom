@@ -13,25 +13,25 @@ const Navbar: React.FC = () => {
 
   const copyLink = useCallback(async () => {
     await navigator.clipboard.writeText(currentUrl);
-  }, []);
+  }, [currentUrl]);
 
   return (
     <div className="flex w-full flex-col justify-between gap-y-4 sm:flex-row">
       <PlainLink href="/" name="home-page" className="self-start">
         <MembraneVideoroomLogo className="text-5xl" />
       </PlainLink>
-      <div className="flex items-center gap-x-3">
-        <span className="mt-1">Invite link</span>
+      <div className="flex items-center gap-x-3 font-aktivGrotesk">
+        <span>Invite link</span>
         <Button
           onClick={copyLink}
           variant="light"
           className={clsx(
-            "!rounded-3xl !border !border-brand-dark-blue-200 !px-5 !pt-1 !pb-0",
+            "!rounded-3xl !border !border-brand-dark-blue-200 !px-5 !py-1",
             "flex items-center gap-x-2",
             "!text-base"
           )}
         >
-          {roomId} <ShareSquare className="-mt-1" />
+          {roomId} <ShareSquare className="text-lg" />
         </Button>
       </div>
     </div>

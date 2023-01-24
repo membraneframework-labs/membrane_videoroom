@@ -7,17 +7,11 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <div
       className={clsx(
-        "h-screen w-full bg-brand-sea-blue-200 text-brand-dark-blue-500",
+        "home-page h-screen w-full bg-brand-sea-blue-200 text-brand-dark-blue-500",
         "font-rocGrotesk",
         "flex flex-col items-center p-4",
         "relative"
       )}
-      style={{
-        backgroundImage: "url('/images/backgroundLeft.png'), url('/images/backgroundRight.png')",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "contain",
-        backgroundPosition: "left -90px top 200px, right -170px top 120px",
-      }}
     >
       <Navbar />
 

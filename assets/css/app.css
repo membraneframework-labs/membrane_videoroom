@@ -57,3 +57,21 @@ Don't display screensharing control on mobile browsers
     display: none;
   }
 }
+
+@media (max-width: 768px) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -90px top 200px;
+  }
+}
+
+@media (min-width: 769px) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -90px top 200px, right -170px top 120px;
+  }
+}

@@ -9,7 +9,7 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
       className={clsx(
         "home-page h-screen w-full bg-brand-sea-blue-200 text-brand-dark-blue-500",
         "font-rocGrotesk",
-        "flex flex-col items-center p-4",
+        "flex flex-col items-center gap-y-4 p-4",
         "relative"
       )}
     >

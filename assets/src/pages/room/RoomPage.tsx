@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
-import { PeerMetadata, RemotePeer, usePeersState } from "./hooks/usePeerState";
+import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
 import { getRandomAnimalEmoji } from "./utils";
@@ -76,34 +76,18 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
           {errorMessage && <div className="w-full bg-red-700 p-1 text-white">{errorMessage}</div>}
 
           {showDeveloperInfo && (
-            <div className="text-shadow-lg absolute right-0 top-16 flex flex-col p-2 text-right">
+            <div className="text-shadow-lg absolute right-0 top-0 flex flex-col p-2 text-right">
               <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
             </div>
           )}
 
-          <div className="flex flex-col">
-            <header>
-              <h3 className="mb-2 text-2xl font-semibold">Room {roomId}</h3>
-              <h3 className="text-xl font-medium">
-                Participants{" "}
-                <span>
-                  {peerMetadata.emoji} {peerMetadata.displayName}
-                </span>
-                {peerState.remote.map((peer: RemotePeer) => (
-                  <span key={peer.id} title={peer.id}>
-                    {peer.emoji} {peer.displayName}
-                  </span>
-                ))}
-              </h3>
-            </header>
-            <VideochatSection
-              peers={peerState.remote}
-              localPeer={peerState.local}
-              showSimulcast={showSimulcastMenu}
-              showDeveloperInfo={showDeveloperInfo}
-              webrtc={webrtc}
-            />
-          </div>
+          <VideochatSection
+            peers={peerState.remote}
+            localPeer={peerState.local}
+            showSimulcast={showSimulcastMenu}
+            showDeveloperInfo={showDeveloperInfo}
+            webrtc={webrtc}
+          />
         </section>
 
         <MediaControlButtons
@@ -117,7 +101,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         />
 
         {/* dev helpers */}
-        <div className="absolute bottom-4 right-3 flex flex-col items-stretch">
+        <div className="invisible absolute bottom-4 right-3 flex flex-col items-stretch md:visible">
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}

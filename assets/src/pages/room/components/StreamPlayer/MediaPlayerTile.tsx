@@ -7,6 +7,7 @@ import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource } from "../../../types";
 import { TrackWithId } from "./MediaPlayerPeersSection";
+import clsx from "clsx";
 
 export interface Props {
   peerId?: string;
@@ -18,6 +19,7 @@ export interface Props {
   streamSource?: StreamSource;
   layers?: JSX.Element;
   webrtc?: MembraneWebRTC;
+  className?: string;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -30,6 +32,7 @@ const MediaPlayerTile: FC<Props> = ({
   streamSource,
   layers,
   webrtc,
+  className,
 }: Props) => {
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.remoteTrackId, webrtc);
 
@@ -38,7 +41,10 @@ const MediaPlayerTile: FC<Props> = ({
   return (
     <div
       data-name="video-feed"
-      className="aspect-video relative h-full w-full overflow-hidden rounded-md bg-gray-900 shadow"
+      className={clsx(
+        className,
+        "relative flex h-full w-full justify-center overflow-hidden rounded-lg bg-gray-900 shadow"
+      )}
     >
       <MediaPlayer
         videoStream={video?.stream}

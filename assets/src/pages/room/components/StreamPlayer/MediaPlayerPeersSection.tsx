@@ -8,6 +8,7 @@ import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
 import CameraOff from "../../../../features/room-page/icons/CameraOff";
+import { getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -74,7 +75,7 @@ type Props = {
   showSimulcast?: boolean;
   showDeveloperInfo?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  oneColumn?: boolean;
+  oneColumn?: boolean; // screensharing or pinned user
   webrtc?: MembraneWebRTC;
 };
 
@@ -94,13 +95,24 @@ const MediaPlayerPeersSection: FC<Props> = ({
     ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
   ];
 
+  const gridConfig = getGridConfig(allPeersConfig.length);
+
   return (
     <div
       id="videos-grid"
-      className={clsx({
-        "grid h-full max-h-[32rem] flex-1 grid-flow-row grid-cols-1 justify-items-center gap-4 2xl:max-h-[65rem]": true, //TODO remove max-h whan a new grid is introduced
-        "md:grid-cols-2": !oneColumn,
-      })}
+      className={clsx(
+        "h-full w-full",
+        oneColumn
+          ? "grid flex-1 grid-flow-row grid-cols-1 gap-y-3"
+          : clsx(
+              gridConfig.columns,
+              gridConfig.grid,
+              gridConfig.gap,
+              gridConfig.padding,
+              gridConfig.columns,
+              gridConfig.rows
+            )
+      )}
     >
       {allPeersConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
@@ -134,6 +146,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}
+            className={!oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : undefined}
             layers={
               <>
                 {showDeveloperInfo && (

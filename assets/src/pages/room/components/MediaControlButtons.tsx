@@ -356,7 +356,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
         className="absolute left-1/2 top-[-15px] z-[-10] h-[15px] w-[50px] -translate-x-1/2 rounded-t-lg hover:bg-gray-700 hover:bg-opacity-90"
       ></div>
       {show && (
-        <div className="inset-x-0 z-10 flex flex-wrap justify-center gap-x-4 rounded-t-md p-2">
+        <div className="inset-x-0 z-10 flex flex-wrap justify-center gap-x-4 rounded-t-md">
           {controls.map((group, index) => (
             <div key={index} className="flex justify-center gap-x-4">
               {group.map(({ hover, onClick, className, id, icon }) => (

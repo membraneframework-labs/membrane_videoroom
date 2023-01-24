@@ -34,10 +34,6 @@
   text-shadow: 3px 1px 10px rgb(22, 22, 22);
 }
 
-.ratio-video {
-  aspect-ratio: 16 / 9;
-}
-
 .video-divider {
   height: 70px;
   min-height: 70px;
@@ -50,4 +46,50 @@ Don't display screensharing control on mobile browsers
   #screensharing-control {
     display: none;
   }
+}
+
+.grid-wrapper {
+  max-height: calc(
+    100vh - 16px - 48px - 16px - 16px - 43px - 16px
+  ); //calculated based on paddings, margins, navbar and buttons menu heights
+}
+
+.video-tile-grid-2:last-child:nth-child(2n - 1) {
+  grid-column-end: 4;
+}
+
+.video-tile-grid-3:last-child:nth-child(3n - 1) {
+  grid-column-end: -2;
+}
+
+.video-tile-grid-3:nth-last-child(2):nth-child(3n + 1) {
+  grid-column-end: 4;
+}
+
+.video-tile-grid-3:last-child:nth-child(3n - 2) {
+  grid-column-end: 5;
+}
+
+.video-tile-grid-4:last-child:nth-child(4n + 2) {
+  grid-column-end: -3;
+}
+
+.video-tile-grid-4:nth-last-child(2):nth-child(4n + 1) {
+  grid-column-end: 5;
+}
+
+.video-tile-grid-4:last-child:nth-child(4n + 3) {
+  grid-column-end: 8;
+}
+
+.video-tile-grid-4:nth-last-child(2):nth-child(4n + 2) {
+  grid-column-end: 6;
+}
+
+.video-tile-grid-4:nth-last-child(3):nth-child(4n + 1) {
+  grid-column-end: 4;
+}
+
+.video-tile-grid-4:last-child:nth-child(4n - 3) {
+  grid-column-end: 6;
 }

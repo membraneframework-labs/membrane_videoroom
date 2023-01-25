@@ -13,7 +13,6 @@ module.exports = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
-    "storybook-addon-next-router",
     "storybook-css-modules-preset",
   ],
   framework: "@storybook/react",

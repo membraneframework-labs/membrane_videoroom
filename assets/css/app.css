@@ -26,6 +26,12 @@
   }
 }
 
+@layer utilities {
+  .black-to-red {
+    filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg) brightness(96%) contrast(99%);
+  }
+}
+
 .flip-horizontally {
   transform: scaleX(-1);
 }
@@ -43,15 +49,29 @@
   min-height: 70px;
 }
 
-.black-to-red {
-  filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg) brightness(96%) contrast(99%);
-}
-
 /**
 Don't display screensharing control on mobile browsers
 **/
 @media (max-width: 768px) {
   #screensharing-control {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -90px top 200px;
+  }
+}
+
+@media (min-width: 769px) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -90px top 200px, right -170px top 120px;
   }
 }

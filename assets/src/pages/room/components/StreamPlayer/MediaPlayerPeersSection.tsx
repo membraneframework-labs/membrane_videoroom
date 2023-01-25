@@ -100,7 +100,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {allPeersConfig.map((config, _idx) => {
+      {allPeersConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
         const screenSharing: TrackWithId | undefined = config.screenSharing[0];

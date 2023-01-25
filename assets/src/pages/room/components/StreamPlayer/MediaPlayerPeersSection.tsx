@@ -1,11 +1,13 @@
 import React, { FC } from "react";
 import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
-import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
 import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
+import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
+import CameraOff from "../../../../features/room-page/icons/CameraOff";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -96,11 +98,11 @@ const MediaPlayerPeersSection: FC<Props> = ({
     <div
       id="videos-grid"
       className={clsx({
-        "grid flex-1 grid-flow-row gap-4 justify-items-center h-full grid-cols-1": true,
+        "grid h-full w-full flex-1 grid-flow-row grid-cols-1 justify-items-center gap-4": true,
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {allPeersConfig.map((config, idx) => {
+      {allPeersConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
         const screenSharing: TrackWithId | undefined = config.screenSharing[0];
@@ -210,29 +212,11 @@ const MediaPlayerPeersSection: FC<Props> = ({
                 <InfoLayer
                   bottomLeft={<div>{config.displayName}</div>}
                   topLeft={
-                    <div className="flex flex-row">
+                    <div className="flex flex-row items-center gap-x-2 text-xl">
                       {showDisabledIcon(audio) && (
-                        <img
-                          className={clsx(`invert group-disabled:invert-80 m-1`, {
-                            "animate-spin": isLoading(audio),
-                          })}
-                          height="26"
-                          width="26"
-                          src="/svg/mic-off-fill.svg"
-                          alt="Microphone muted icon"
-                        />
+                        <MicrophoneOff className={clsx(isLoading(audio) && "animate-spin")} />
                       )}
-                      {showDisabledIcon(video) && (
-                        <img
-                          className={clsx(`invert group-disabled:invert-80 m-1`, {
-                            "animate-spin": isLoading(video),
-                          })}
-                          height="26"
-                          width="26"
-                          src="/svg/camera-off-line.svg"
-                          alt="Camera disabled icon"
-                        />
-                      )}
+                      {showDisabledIcon(video) && <CameraOff className={clsx(isLoading(audio) && "animate-spin")} />}
                     </div>
                   }
                 />

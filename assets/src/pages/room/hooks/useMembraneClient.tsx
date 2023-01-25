@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
 import { Socket } from "phoenix";
 import { TrackMetadata, PeerMetadata, PeersApi } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";

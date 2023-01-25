@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
 
@@ -62,7 +62,7 @@ export const useMembraneMediaStreaming = (
       const track: MediaStreamTrack | undefined = tracks[0];
       if (!track) throw "Stream has no tracks!";
 
-      webrtc.replaceTrack(trackIds?.remoteId, track)
+      webrtc.replaceTrack(trackIds?.remoteId, track);
     },
     [trackIds, type, webrtc]
   );

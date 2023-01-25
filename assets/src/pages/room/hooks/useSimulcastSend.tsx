@@ -1,5 +1,5 @@
 import { useToggle } from "./useToggle";
-import { MembraneWebRTC, TrackEncoding } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 export type UseSimulcastLocalEncoding = {
   highQuality: boolean;

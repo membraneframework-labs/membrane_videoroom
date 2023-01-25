@@ -188,7 +188,7 @@ export class MediaStreamConfig {
 export class DisplayMediaStreamConfig {
   private type = "DisplayMediaStreamConfig";
 
-  constructor(public constraints: DisplayMediaStreamConstraints) {
+  constructor(public constraints: MediaStreamConstraints) {
     this.constraints = constraints;
   }
 }

@@ -17,7 +17,7 @@ type Props = {
 
 const ScreenSharingPlayers: FC<Props> = ({ streams }: Props) => {
   return (
-    <div className="h-full mb-3 md:mr-3 md:mb-none active-screensharing-grid grid-cols-1 md:grid-cols-1">
+    <div className="md:mb-none active-screensharing-grid mb-3 h-full grid-cols-1 md:mr-3 md:grid-cols-1">
       {streams.map((config) => (
         <MediaPlayerTile
           key={config.mediaPlayerId}

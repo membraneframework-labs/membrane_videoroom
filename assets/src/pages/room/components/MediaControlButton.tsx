@@ -1,37 +1,43 @@
-import React, { FC } from "react";
+import clsx from "clsx";
+import React, { FC, SVGAttributes } from "react";
+import Button from "../../../features/shared/components/Button";
 
 export type MediaControlButtonProps = {
   onClick: () => void;
-  icon: string;
   hover: string;
-  imgClasses?: string;
+  className?: string;
+  icon: React.FC<SVGAttributes<SVGElement>>;
 };
 
 const MediaControlButton: FC<MediaControlButtonProps> = ({
   hover,
-  icon,
+  icon: Icon,
   onClick,
-  imgClasses,
+  className,
 }: MediaControlButtonProps) => {
   return (
-    <button
+    <Button
       onClick={onClick}
-      className="group min-w-[52px] relative flex justify-center items-center z-10 m-1 p-3 rounded-full transition duration-300 ease-in-out border-2 border-white bg-white/0 hover:bg-white/40 disabled:bg-white/50 disabled:pointer-events-none"
+      className={clsx(
+        "outline-none rounded-full border p-2.5 text-xl font-bold",
+        "group relative z-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out disabled:pointer-events-none",
+        className
+      )}
     >
-      <img
-        className={`invert group-disabled:invert-80 ${imgClasses || ""}`}
-        height="26"
-        width="26"
-        src={icon}
-        alt={hover + " button"}
-      />
-      <div className="transition-all duration-500 absolute bottom-0 flex flex-col opacity-0 items-center invisible mb-14 group-hover:visible group-hover:opacity-80">
-        <span className="relative z-50 w-32 p-2 text-xs leading-none rounded-md text-white whitespace-no-wrap bg-black shadow-lg">
+      {Icon && <Icon />}
+
+      <div className="invisible absolute bottom-0 mb-12 flex flex-col items-center font-aktivGrotesk opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-90">
+        <span className="whitespace-no-wrap relative z-50 min-w-max rounded-lg bg-brand-grey-120 px-4 py-3 text-sm font-normal leading-none text-white shadow-lg">
           {hover}
         </span>
-        <div className="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
+        <div
+          className={clsx(
+            "h-0 w-0",
+            "border-b-0 border-l-[6px] border-r-[6px] border-t-[8px] border-solid border-brand-grey-120 border-l-transparent border-r-transparent"
+          )}
+        ></div>
       </div>
-    </button>
+    </Button>
   );
 };
 

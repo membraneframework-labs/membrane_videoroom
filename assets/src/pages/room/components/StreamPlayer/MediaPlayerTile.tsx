@@ -3,7 +3,7 @@ import MediaPlayer from "./MediaPlayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
-import { MembraneWebRTC } from "@membraneframework/membrane-webrtc-js";
+import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource } from "../../../types";
 import { TrackWithId } from "./MediaPlayerPeersSection";
@@ -38,7 +38,7 @@ const MediaPlayerTile: FC<Props> = ({
   return (
     <div
       data-name="video-feed"
-      className="relative bg-gray-900 shadow rounded-md overflow-hidden h-full w-full aspect-video"
+      className="aspect-video relative h-full w-full overflow-hidden rounded-md bg-gray-900 shadow"
     >
       <MediaPlayer
         videoStream={video?.stream}

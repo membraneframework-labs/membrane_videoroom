@@ -26,12 +26,6 @@
   }
 }
 
-@layer utilities {
-  .black-to-red {
-    filter: invert(17%) sepia(81%) saturate(3321%) hue-rotate(352deg) brightness(96%) contrast(99%);
-  }
-}
-
 .flip-horizontally {
   transform: scaleX(-1);
 }
@@ -49,11 +43,15 @@
   min-height: 70px;
 }
 
+.grid-wrapper {
+  max-height: calc(100vh - 16px - 48px - 16px - 16px - 42px - 16px);
+}
+
 /**
 Don't display screensharing control on mobile browsers
 **/
 @media (max-width: 768px) {
-  #screensharing-control {
+  .screensharing-control {
     display: none;
   }
 }

@@ -126,13 +126,6 @@ module.exports = {
         18: "72px",
       },
     },
-    screens: {
-      sm: "640px",
-      md: "980px",
-      lg: "1024px",
-      xl: "1280px",
-      "2xl": "1536px",
-    },
   },
   variants: {
     extend: {

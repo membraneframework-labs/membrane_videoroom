@@ -335,7 +335,7 @@ type Props = {
   mode: StreamingMode;
 } & LocalUserMediaControls;
 
-type LocalUserMediaControls = {
+export type LocalUserMediaControls = {
   userMediaVideo: UseMediaResult;
   cameraStreaming: MembraneStreaming;
   userMediaAudio: UseMediaResult;

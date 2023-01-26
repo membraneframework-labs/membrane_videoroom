@@ -19,7 +19,8 @@ defmodule VideoRoom.Application do
          [metrics: Membrane.RTC.Engine.Metrics.metrics(), name: VideoRoomReporter]},
         VideoRoomWeb.Endpoint,
         {Phoenix.PubSub, name: VideoRoom.PubSub},
-        {Registry, keys: :unique, name: Videoroom.Room.Registry}
+        {Registry, keys: :unique, name: Videoroom.Room.Registry},
+        {Task.Supervisor, name: Videoroom.RoomMonitorSupervisor}
       ] ++
         if store_metrics do
           Application.ensure_all_started(:membrane_rtc_engine_timescaledb)

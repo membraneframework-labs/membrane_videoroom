@@ -20,10 +20,10 @@ defmodule VideoRoomWeb.PeerChannel do
     end
     |> case do
       {:ok, room_pid} ->
-        do_join(socket, room_pid, room_id)
+        do_join(socket, room_pid, room_id, simulcast?)
 
       {:error, {:already_started, room_pid}} ->
-        do_join(socket, room_pid, room_id)
+        do_join(socket, room_pid, room_id, simulcast?)
 
       {:error, reason} ->
         Logger.error("""
@@ -36,11 +36,29 @@ defmodule VideoRoomWeb.PeerChannel do
     end
   end
 
-  defp do_join(socket, room_pid, room_id) do
+  defp do_join(socket, room_pid, room_id, simulcast?) do
     peer_id = "#{UUID.uuid4()}"
     # TODO handle crash of room?
-    Process.monitor(room_pid)
-    send(room_pid, {:add_peer_channel, self(), peer_id})
+    room_pid =
+      try do
+        Videoroom.Room.add_peer_channel(room_pid, self(), peer_id)
+      catch
+        :exit, _reason ->
+          Logger.info("Room died when trying to join. Creating a new one.")
+
+          {:ok, room_pid} =
+            Videoroom.Room.start(%{room_id: room_id, simulcast?: simulcast?},
+              name: {:global, room_id}
+            )
+
+          :ok = Videoroom.Room.add_peer_channel(room_pid, self(), peer_id)
+          Process.monitor(room_pid)
+          room_pid
+      else
+        :ok ->
+          Process.monitor(room_pid)
+          room_pid
+      end
 
     {:ok,
      Phoenix.Socket.assign(socket, %{room_id: room_id, room_pid: room_pid, peer_id: peer_id})}

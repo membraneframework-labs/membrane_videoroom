@@ -77,20 +77,19 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
 
   return (
-    <div
-      id="videochat"
-      className="grid-wrapper flex h-full flex-col items-center justify-start gap-3 overflow-y-auto sm:justify-center md:flex-row md:items-start"
-    >
-      {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
+    <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
+      <div className="flex h-full w-full flex-col items-center justify-start gap-3 overflow-y-auto sm:justify-center md:flex-row md:items-start 3xl:max-w-[1728px]">
+        {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
 
-      <MediaPlayerPeersSection
-        peers={peers}
-        localUser={localUser}
-        showSimulcast={showSimulcast}
-        showDeveloperInfo={showDeveloperInfo}
-        oneColumn={isScreenSharingActive}
-        webrtc={webrtc}
-      />
+        <MediaPlayerPeersSection
+          peers={peers}
+          localUser={localUser}
+          showSimulcast={showSimulcast}
+          showDeveloperInfo={showDeveloperInfo}
+          oneColumn={isScreenSharingActive}
+          webrtc={webrtc}
+        />
+      </div>
     </div>
   );
 };

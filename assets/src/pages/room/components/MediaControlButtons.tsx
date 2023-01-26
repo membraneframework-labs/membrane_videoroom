@@ -11,6 +11,7 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
+import clsx from "clsx";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
@@ -93,7 +94,7 @@ const getAutomaticControls = (
         id: "stream-stop",
         icon: Screenshare,
         hover: "Stop sharing your screen",
-        className: neutralButtonStyle,
+        className: clsx(neutralButtonStyle, "screensharing-control"),
         onClick: () => {
           displayMedia.stop();
           screenSharingStreaming.setActive(false);
@@ -103,7 +104,7 @@ const getAutomaticControls = (
         id: "stream-start",
         icon: Screenshare,
         hover: "Share your screen",
-        className: neutralButtonStyle,
+        className: clsx(neutralButtonStyle, "screensharing-control"),
         onClick: () => {
           displayMedia.start();
           screenSharingStreaming.setActive(true);

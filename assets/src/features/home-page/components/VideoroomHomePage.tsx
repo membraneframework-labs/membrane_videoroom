@@ -60,7 +60,7 @@ const VideoroomHomePage: React.FC = () => {
 
   return (
     <HomePageLayout>
-      <section className="flex flex-col items-center gap-y-18">
+      <section className="flex flex-col items-center gap-y-12 sm:gap-y-18">
         {deviceManager.errorMessage && (
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}

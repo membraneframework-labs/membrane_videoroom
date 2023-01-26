@@ -133,6 +133,7 @@ defmodule Videoroom.Room do
       log_metadata: [peer_id: peer_id],
       trace_context: state.trace_ctx,
       webrtc_extensions: webrtc_extensions,
+      rtcp_sender_report_interval: Membrane.Time.seconds(1),
       simulcast_config: %SimulcastConfig{
         enabled: state.simulcast?,
         initial_target_variant: fn _track -> :medium end

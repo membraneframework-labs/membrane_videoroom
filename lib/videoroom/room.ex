@@ -37,6 +37,8 @@ defmodule Videoroom.Room do
   def init(args) do
     room_id = args.room_id
     simulcast? = args.simulcast?
+
+    Logger.metadata(room_id: room_id)
     Membrane.Logger.info("Spawning room process: #{inspect(self())}")
 
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)
@@ -204,7 +206,7 @@ defmodule Videoroom.Room do
       state.peer_channels
       |> Enum.find(fn {_peer_id, peer_channel_pid} -> peer_channel_pid == pid end)
 
-    Membrane.Logger.info("Peer #{inspect(peer_id)} left RTC Engine")
+    Membrane.Logger.info("Peer #{inspect(peer_id)} left")
 
     Engine.remove_endpoint(state.rtc_engine, peer_id)
     {_elem, state} = pop_in(state, [:peer_channels, peer_id])

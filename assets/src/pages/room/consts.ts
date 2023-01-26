@@ -28,6 +28,8 @@ const VIDEO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
 const SCREENSHARING_MEDIA_CONSTRAINTS: MediaStreamConstraints = {
   video: {
     frameRate: { ideal: 10, max: 15 },
+    width: {max: 1920, ideal: 1920},
+    height: {max: 1280, ideal: 1280}
   },
 };
 export const VIDEO_TRACKS_CONFIG = new MediaStreamConfig(VIDEO_TRACK_CONSTRAINTS);
@@ -40,11 +42,3 @@ export const LOCAL_SCREEN_SHARING_ID = "LOCAL_SCREEN_SHARING_ID";
 
 export const DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE = true;
 export const DEFAULT_MANUAL_MODE_CHECKBOX_VALUE = false;
-
-// todo implement
-const MBps = 1024 * 8;
-
-export const BANDWIDTH_LIMITS = {
-  video: 10 * MBps,
-  audio: 1 * MBps,
-};

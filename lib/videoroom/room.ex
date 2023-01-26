@@ -44,7 +44,8 @@ defmodule Videoroom.Room do
     rtc_engine_options = [
       id: room_id,
       trace_ctx: trace_ctx,
-      parent_span: room_span
+      parent_span: room_span,
+      toilet_capacity: 1000
     ]
 
     turn_cert_file =
@@ -134,6 +135,7 @@ defmodule Videoroom.Room do
       trace_context: state.trace_ctx,
       webrtc_extensions: webrtc_extensions,
       rtcp_sender_report_interval: Membrane.Time.seconds(1),
+      filter_codecs: &filter_codecs/1,
       simulcast_config: %SimulcastConfig{
         enabled: state.simulcast?,
         initial_target_variant: fn _track -> :medium end
@@ -196,6 +198,20 @@ defmodule Videoroom.Room do
       end
     end
   end
+
+  defp filter_codecs({%{encoding: "H264"}, fmtp}) do
+    import Bitwise
+
+    case fmtp.profile_level_id >>> 16 do
+      0x42 -> (fmtp.profile_level_id &&& 0x00_4F_00) == 0x00_40_00
+      0x4D -> (fmtp.profile_level_id &&& 0x00_8F_00) == 0x00_80_00
+      0x58 -> (fmtp.profile_level_id &&& 0x00_CF_00) == 0x00_C0_00
+      _otherwise -> false
+    end
+  end
+
+  defp filter_codecs({%{encoding: "opus"}, _}), do: true
+  defp filter_codecs(_rtp_mapping), do: false
 
   defp tracing_metadata(),
     do: [

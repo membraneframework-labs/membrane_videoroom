@@ -104,14 +104,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
         "h-full w-full",
         oneColumn
           ? "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3"
-          : clsx(
-              gridConfig.columns,
-              gridConfig.grid,
-              gridConfig.gap,
-              gridConfig.padding,
-              gridConfig.columns,
-              gridConfig.rows
-            )
+          : clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows)
       )}
     >
       {allPeersConfig.map((config) => {

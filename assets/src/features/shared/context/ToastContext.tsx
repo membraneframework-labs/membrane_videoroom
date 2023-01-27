@@ -1,9 +1,9 @@
 import React, { createContext, ReactNode, useCallback, useMemo, useState } from "react";
 import Toast from "../components/Toast";
 
-const TOAST_TIMEOUT = 2500;
+const DEFAULT_TOAST_TIMEOUT = 2500;
 
-export type ToastType = { id: string; message?: string };
+export type ToastType = { id: string; message?: string; timeout?: number };
 
 export const ToastContext = createContext({
   addToast: (newToast: ToastType) => console.log(`Unknown error while adding toast: ${newToast}`),
@@ -22,7 +22,7 @@ export const ToastProvder = ({ children }: { children?: ReactNode }) => {
       const timer = setTimeout(() => {
         removeToast(newToast.id);
         clearTimeout(timer);
-      }, TOAST_TIMEOUT);
+      }, newToast.timeout || DEFAULT_TOAST_TIMEOUT);
     },
     [toasts]
   );
@@ -38,8 +38,8 @@ export const ToastProvder = ({ children }: { children?: ReactNode }) => {
       {children}
 
       <div className="absolute left-1/2 top-4 -translate-x-1/2 transform space-y-2">
-        {toasts.map((toast) => (
-          <Toast {...toast} onClose={() => removeToast(toast.id)}></Toast>
+        {toasts.map((toast, idx) => (
+          <Toast key={`${toast.id}-${idx}`} {...toast} onClose={() => removeToast(toast.id)}></Toast>
         ))}
       </div>
     </ToastContext.Provider>

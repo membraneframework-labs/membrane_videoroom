@@ -12,7 +12,8 @@ const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
       className={clsx(
         "bg-brand-dark-blue-500 font-aktivGrotesk text-sm text-brand-white",
         "rounded-full px-6 py-4",
-        "flex gap-x-3 whitespace-nowrap"
+        "flex gap-x-3 whitespace-nowrap",
+        "fromTop"
       )}
     >
       {message}

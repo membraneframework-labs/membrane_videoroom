@@ -134,6 +134,7 @@ defmodule Videoroom.Room do
       trace_context: state.trace_ctx,
       webrtc_extensions: webrtc_extensions,
       rtcp_sender_report_interval: Membrane.Time.seconds(1),
+      rtcp_receiver_report_interval: Membrane.Time.seconds(1),
       filter_codecs: &filter_codecs/1,
       toilet_capacity: 1000,
       simulcast_config: %SimulcastConfig{

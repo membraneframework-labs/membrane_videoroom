@@ -81,6 +81,6 @@ defmodule VideoRoomWeb.PeerChannel do
       message: "WebRTC Endpoint has crashed. Please refresh the page to reconnect"
     })
 
-    {:noreply, socket}
+    {:stop, :normal, socket}
   end
 end

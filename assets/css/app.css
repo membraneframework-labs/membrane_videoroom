@@ -128,7 +128,7 @@ Don't display screensharing control on mobile browsers
 
 .fromTop {
   animation-name: from-top, fade-in;
-  animation-delay: 1.75s;
+  animation-delay: 0.5s;
   animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-timing-function: linear, ease-in-out;

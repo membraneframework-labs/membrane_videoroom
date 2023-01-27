@@ -114,6 +114,12 @@ export const useMembraneClient = (
       return;
     });
 
+    webrtcChannel.on("error", (error) => {
+      console.error("Received error report from the server: ", error.message);
+      setErrorMessage(error.message);
+      cleanUp();
+    });
+
     webrtcChannel
       .join()
       .receive("ok", () => {

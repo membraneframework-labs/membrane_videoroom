@@ -76,13 +76,14 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   };
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
+  const noPeers = !peers.length;
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
       <div
         className={clsx(
           "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]",
-          isScreenSharingActive && "sm:grid-cols-3/1"
+          isScreenSharingActive && (noPeers ? "relative" : "sm:grid-cols-3/1")
         )}
       >
         {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}

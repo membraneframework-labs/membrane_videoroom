@@ -96,17 +96,25 @@ const MediaPlayerPeersSection: FC<Props> = ({
   ];
 
   const gridConfig = getGridConfig(allPeersConfig.length);
+  function getGridStyle() {
+    const noPeers = !peers.length;
+
+    if (oneColumn) {
+      if (noPeers) {
+        // display video positioned absolute in another video
+        return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
+      } else {
+        return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
+      }
+    } else {
+      return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
+    }
+  }
+
+  const videoGridStyle = getGridStyle();
 
   return (
-    <div
-      id="videos-grid"
-      className={clsx(
-        "h-full w-full",
-        oneColumn
-          ? "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3"
-          : clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows)
-      )}
-    >
+    <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
       {allPeersConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];

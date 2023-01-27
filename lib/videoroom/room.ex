@@ -44,8 +44,7 @@ defmodule Videoroom.Room do
     rtc_engine_options = [
       id: room_id,
       trace_ctx: trace_ctx,
-      parent_span: room_span,
-      toilet_capacity: 1000
+      parent_span: room_span
     ]
 
     turn_cert_file =
@@ -136,6 +135,7 @@ defmodule Videoroom.Room do
       webrtc_extensions: webrtc_extensions,
       rtcp_sender_report_interval: Membrane.Time.seconds(1),
       filter_codecs: &filter_codecs/1,
+      toilet_capacity: 1000,
       simulcast_config: %SimulcastConfig{
         enabled: state.simulcast?,
         initial_target_variant: fn _track -> :medium end
@@ -161,7 +161,7 @@ defmodule Videoroom.Room do
     Membrane.Logger.error("Endpoint #{inspect(endpoint_id)} has crashed!")
     peer_channel = state.peer_channels[endpoint_id]
 
-    GenServer.stop(peer_channel, :endpoint_crashed)
+    send(peer_channel, :endpoint_crashed)
 
     {:noreply, state}
   end
@@ -202,6 +202,8 @@ defmodule Videoroom.Room do
   defp filter_codecs({%{encoding: "H264"}, fmtp}) do
     import Bitwise
 
+    # Only accept constrained baseline
+    # based on RFC 6184, Table 5.
     case fmtp.profile_level_id >>> 16 do
       0x42 -> (fmtp.profile_level_id &&& 0x00_4F_00) == 0x00_40_00
       0x4D -> (fmtp.profile_level_id &&& 0x00_8F_00) == 0x00_80_00

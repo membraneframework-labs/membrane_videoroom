@@ -23,7 +23,7 @@ export const useMembraneMediaStreaming = (
   mode: StreamingMode,
   type: TrackType,
   isConnected: boolean,
-  simulcast: boolean,
+  simulcastEnabled: boolean,
   webrtc?: MembraneWebRTC,
   stream?: MediaStream
 ): MembraneStreaming => {
@@ -36,6 +36,7 @@ export const useMembraneMediaStreaming = (
     (stream: MediaStream) => {
       if (!webrtc) return;
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+      const simulcast = simulcastEnabled && type === "camera";
 
       const track: MediaStreamTrack | undefined = tracks[0];
       if (!track) throw "Stream has no tracks!";
@@ -44,14 +45,14 @@ export const useMembraneMediaStreaming = (
         track,
         stream,
         defaultTrackMetadata,
-        type == "camera" && simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
+        simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
         selectBandwidthLimit(type, simulcast)
       );
 
       setTrackIds({ localId: track.id, remoteId: remoteTrackId });
       setTrackMetadata(defaultTrackMetadata);
     },
-    [defaultTrackMetadata, simulcast, type, webrtc]
+    [defaultTrackMetadata, simulcastEnabled, type, webrtc]
   );
 
   const replaceTrack = useCallback(

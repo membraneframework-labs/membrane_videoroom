@@ -28,7 +28,7 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:membrane_rtc_engine, "~> 0.8.0"},
+      {:membrane_rtc_engine, github: "jellyfish-dev/membrane_rtc_engine", override: true},
       {:membrane_rtp_plugin,
        github: "membraneframework/membrane_rtp_plugin",
        branch: "feature/outbound-retransmissions",

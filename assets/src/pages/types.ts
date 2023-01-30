@@ -1,6 +1,6 @@
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
-// todo Change TrackEncoding to something like EncodingType in "@jellyfish-dev/membrane-webrtc-js
+// todo Change TrackEncoding to something like EncodingType in "@jellyfish-dev/membrane-webrtc-js"
 const EncodingValues = ["l", "m", "h"] as const;
 type EncodingType = (typeof EncodingValues)[number]; // eslint-disable-line @typescript-eslint/no-unused-vars
 

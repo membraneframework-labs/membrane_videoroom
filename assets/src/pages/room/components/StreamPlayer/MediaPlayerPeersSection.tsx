@@ -160,9 +160,9 @@ const MediaPlayerPeersSection: FC<Props> = ({
             video={video}
             audioStream={audio?.stream}
             className={!oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : undefined}
-            cameraOffImage={showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}
             layers={
               <>
+                {showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}
                 {showDeveloperInfo && (
                   <PeerInfoLayer
                     topRight={

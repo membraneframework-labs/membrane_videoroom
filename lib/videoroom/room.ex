@@ -90,15 +90,11 @@ defmodule Videoroom.Room do
     {:ok, pid} = Membrane.RTC.Engine.start_link(rtc_engine_options, [])
     Engine.register(pid, self())
 
-    Task.Supervisor.start_child(
-      Videoroom.RoomMonitorSupervisor,
-      Videoroom.Room.Monitor,
-      :monitor,
-      [
-        self(),
-        room_id
-      ]
-    )
+    {:ok, _pid} =
+      DynamicSupervisor.start_child(
+        Videoroom.RoomMonitorSupervisor,
+        {Videoroom.Room.Monitor, [self(), room_id]}
+      )
 
     {:ok,
      %{

@@ -13,7 +13,7 @@ defmodule Videoroom.Room.Monitor do
   @impl true
   def init([room_pid, room_id]) do
     ref = Process.monitor(room_pid)
-    {:ok, %{ref: ref, room_pid: room_pid, room_id: room_id}}
+    {:ok, %{ref: ref, room_pid: room_pid, room_id: room_id}, :hibernate}
   end
 
   @impl true

@@ -3,7 +3,7 @@ import Toast from "../components/Toast";
 
 const DEFAULT_TOAST_TIMEOUT = 2500;
 
-export type ToastType = { id: string; message?: string; timeout?: number };
+export type ToastType = { id: string; message?: string; timeout?: number; type?: "information" | "error" };
 
 export const ToastContext = createContext({
   addToast: (newToast: ToastType) => console.log(`Unknown error while adding toast: ${newToast}`),

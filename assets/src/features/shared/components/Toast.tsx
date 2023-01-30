@@ -6,12 +6,13 @@ import Button from "./Button";
 
 type ToastProps = ToastType & { onClose: () => void };
 
-const Toast: React.FC<ToastProps> = ({ id, message, onClose }) => {
+const Toast: React.FC<ToastProps> = ({ id, message, onClose, type = "information" }) => {
   return (
     <div
       id={id}
       className={clsx(
-        "bg-brand-dark-blue-500 font-aktivGrotesk text-sm text-brand-white",
+        "font-aktivGrotesk text-sm text-brand-white",
+        type == "error" ? "bg-red-700" : "bg-brand-dark-blue-500",
         "rounded-full px-6 py-4",
         "flex gap-x-3 whitespace-nowrap",
         "fromTop"

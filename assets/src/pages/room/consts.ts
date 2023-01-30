@@ -34,7 +34,7 @@ export const VIDEO_TRACKS_CONFIG = new MediaStreamConfig(VIDEO_TRACK_CONSTRAINTS
 export const AUDIO_TRACKS_CONFIG = new MediaStreamConfig(AUDIO_TRACK_CONSTRAINTS);
 export const SCREEN_SHARING_TRACKS_CONFIG = new DisplayMediaStreamConfig(SCREENSHARING_MEDIA_CONSTRAINTS);
 
-export const LOCAL_PEER_NAME = "Me";
+export const LOCAL_PEER_NAME = "You";
 export const LOCAL_VIDEO_ID = "LOCAL_VIDEO_ID";
 export const LOCAL_SCREEN_SHARING_ID = "LOCAL_SCREEN_SHARING_ID";
 

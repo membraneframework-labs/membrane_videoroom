@@ -50,6 +50,15 @@ defmodule VideoRoomWeb.PeerChannel do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_info(:endpoint_crashed, socket) do
+    push(socket, "error", %{
+      message: "WebRTC Endpoint has crashed. Please refresh the page to reconnect"
+    })
+
+    {:stop, :normal, socket}
+  end
+
   defp handle_start_room_result(start_room_result, socket, room_id, simulcast?) do
     case start_room_result do
       {:ok, room_pid} ->

@@ -13,14 +13,10 @@ const Navbar: React.FC = () => {
   const roomId: string = match?.roomId || "";
   const { addToast } = useToast();
 
-  const copyLink = useCallback(async () => {
+  const onLinkCopy = useCallback(async () => {
     await navigator.clipboard.writeText(currentUrl);
-  }, [currentUrl]);
-
-  const onLinkCopy = useCallback(() => {
-    copyLink();
     addToast({ id: "toast-link-copied", message: "Link copied to clipboard" });
-  }, [addToast, copyLink]);
+  }, [addToast, currentUrl]);
 
   return (
     <div className="flex w-full flex-row justify-between gap-y-4">

@@ -128,10 +128,17 @@ Don't display screensharing control on mobile browsers
 
 .fromTop {
   animation-name: from-top, fade-in;
-  animation-delay: 0.5s;
-  animation-duration: 0.5s;
+  animation-delay: 0.1s;
+  animation-duration: 0.25s;
   animation-iteration-count: 1;
   animation-timing-function: linear, ease-in-out;
+  animation-fill-mode: both;
+}
+
+.fadeOut {
+  animation-name: fade-out;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: both;
 }
 
@@ -150,5 +157,14 @@ Don't display screensharing control on mobile browsers
   }
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }

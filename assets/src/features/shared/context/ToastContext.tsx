@@ -28,7 +28,11 @@ export const ToastProvder = ({ children }: { children?: ReactNode }) => {
   );
 
   const removeToast = (toastId: string) => {
-    setToasts((prev) => prev.filter((t) => t.id != toastId));
+    document.getElementById(toastId)?.classList.add("fadeOut");
+    const timer = setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id != toastId));
+      clearTimeout(timer);
+    }, 2000);
   };
 
   const value = useMemo(() => ({ addToast }), [addToast]);

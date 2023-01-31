@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
@@ -9,6 +9,8 @@ import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
 import { getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage, { computeInitials } from "../../../../features/room-page/components/InitialsImage";
+import { PinIndicator, PinTileButton } from "../../../../features/room-page/components/PinComponents";
+import usePinning, { PinningApi } from "../../../../features/room-page/utils/usePinning";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -108,6 +110,9 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
   const videoGridStyle = getGridStyle();
   const tileSize = allPeersConfig.length >= 7 ? "M" : "L";
 
+  const pinningApi = usePinning();
+  const {pinnedTrackId, pin, unpin} : PinningApi = pinningApi;  
+
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
       {allPeersConfig.map((config) => {
@@ -115,6 +120,8 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
         const video: TrackWithId | undefined = config.video[0];
         const audio: TrackWithId | undefined = config.audio[0];
 
+        const isPinned: boolean = video?.trackId === pinnedTrackId;
+        const onPinButtonClick: () => void = isPinned ? unpin : () => pin(video?.trackId || "");
         return (
           <MediaPlayerTile
             key={config.mediaPlayerId}
@@ -132,8 +139,10 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
                       {showDisabledIcon(audio) && <DisabledMicIcon isLoading={isLoading(audio)} />}
                     </div>
                   }
+                  topRight={isPinned ? <PinIndicator/> : <></>}
                   tileSize={tileSize}
                 />
+                <PinTileButton pinned={isPinned} onClick={onPinButtonClick}/>
               </>
             }
             showSimulcast={showSimulcast}

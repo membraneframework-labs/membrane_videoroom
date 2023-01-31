@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 
 import { LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
 import MediaPlayerPeersSection, {
@@ -92,6 +92,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
   const noPeers = !peers.length;
+  const [pinnedPeerId, setPinnedPeerId] = useState<string | null>(null);
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">

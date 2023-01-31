@@ -10,7 +10,7 @@ export type UseSimulcastLocalEncoding = {
   toggleLowQuality: () => void;
 };
 
-export const useSimulcastSend = (trackId?: string, webrtc?: MembraneWebRTC): UseSimulcastLocalEncoding => {
+export const useSimulcastSend = (trackId: string | null, webrtc: MembraneWebRTC | null): UseSimulcastLocalEncoding => {
   const toggleRemoteEncoding = (status: boolean, encodingName: TrackEncoding) => {
     if (!trackId) {
       throw Error("Toggling simulcast layer is not possible when trackId is null");

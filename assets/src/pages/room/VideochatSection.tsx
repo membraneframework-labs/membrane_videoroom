@@ -1,4 +1,4 @@
-import { LocalPeer, RemotePeer } from "./hooks/usePeerState";
+import {LocalPeer, RemotePeer, Track} from "./hooks/usePeerState";
 import MediaPlayerPeersSection, { MediaPlayerTileConfig, TrackWithId } from "./components/StreamPlayer/MediaPlayerPeersSection";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";

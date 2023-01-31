@@ -11,6 +11,13 @@ import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import Button from "../../features/shared/components/Button";
+import { useLibraryMembraneClient } from "../../library/useLibraryMembraneClient";
+import { useLog } from "../../helpers/UseLog";
+import { useSelector } from "../../library/useSelector";
+import { createFullStateSelector } from "../../library/selectors";
+import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
+import { UseMembraneClientType } from "../../library/types";
+import { TrackMetadata } from "../../libraryUsage/types";
 
 type Props = {
   displayName: string;
@@ -32,39 +39,47 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   const [showDeveloperInfo, toggleDeveloperInfo] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
-  const { state: peerState, api: peerApi } = usePeersState();
-  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+  const clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null = useLibraryMembraneClient(
+    roomId,
+    peerMetadata,
+    isSimulcastOn,
+    setErrorMessage
+  );
+  const fullState = useSelector(clientWrapper, createFullStateSelector());
 
-  const isConnected = !!peerState?.local?.id;
+  useLog(clientWrapper?.store, "State");
+  useLog(fullState, "Full state");
 
-  const camera = useStreamManager(
+  // const { state: peerState, api: peerApi } = usePeersState();
+  // const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+
+  const isConnected = !!fullState?.local.id;
+
+  const camera = useLibraryStreamManager(
     "camera",
     mode,
     isConnected,
     isSimulcastOn,
-    webrtc,
+    clientWrapper,
     VIDEO_TRACKS_CONFIG,
-    peerApi,
     autostartStreaming
   );
-  const audio = useStreamManager(
+  const audio = useLibraryStreamManager(
     "audio",
     mode,
     isConnected,
     isSimulcastOn,
-    webrtc,
+    clientWrapper,
     AUDIO_TRACKS_CONFIG,
-    peerApi,
     autostartStreaming
   );
-  const screenSharing = useStreamManager(
+  const screenSharing = useLibraryStreamManager(
     "screensharing",
     mode,
     isConnected,
     isSimulcastOn,
-    webrtc,
+    clientWrapper,
     SCREEN_SHARING_TRACKS_CONFIG,
-    peerApi,
     false
   );
 
@@ -81,13 +96,13 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
             </div>
           )}
 
-          <VideochatSection
-            peers={peerState.remote}
-            localPeer={peerState.local}
-            showSimulcast={showSimulcastMenu}
-            showDeveloperInfo={showDeveloperInfo}
-            webrtc={webrtc}
-          />
+          {/*<VideochatSection*/}
+          {/*  peers={peerState.remote}*/}
+          {/*  localPeer={peerState.local}*/}
+          {/*  showSimulcast={showSimulcastMenu}*/}
+          {/*  showDeveloperInfo={showDeveloperInfo}*/}
+          {/*  webrtc={webrtc}*/}
+          {/*/>*/}
         </section>
 
         <MediaControlButtons

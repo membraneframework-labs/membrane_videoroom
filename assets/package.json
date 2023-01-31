@@ -10,6 +10,9 @@
   "dependencies": {
     "@jellyfish-dev/membrane-webrtc-js": "^0.4.4",
     "clsx": "^1.2.1",
+    "events": "^3.3.0",
+    "lodash.groupby": "^4.6.0",
+    "lodash.isequal": "^4.5.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "query-string": "^7.0.0",
@@ -22,6 +25,8 @@
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.3.0",
     "@types/dom-screen-wake-lock": "^1.0.0",
+    "@types/lodash.groupby": "^4.6.7",
+    "@types/lodash.isequal": "^4.5.6",
     "@types/phoenix": "^1.5.4",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
@@ -29,6 +34,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
+    "@welldone-software/why-did-you-render": "^7.0.1",
     "autoprefixer": "^10.2.0",
     "eslint": "^8.25.0",
     "eslint-plugin-react": "^7.31.10",
@@ -36,8 +42,8 @@
     "playwright": "1.17",
     "postcss": "^8.3.5",
     "postcss-import": "^14.0.2",
-    "prettier": "^2.8.3",
-    "prettier-plugin-tailwindcss": "^0.2.1",
-    "tailwindcss": "^2.2.4"
+    "prettier": "^2.2.1",
+    "tailwindcss": "^2.2.4",
+    "typed-emitter": "^2.1.0"
   }
 }

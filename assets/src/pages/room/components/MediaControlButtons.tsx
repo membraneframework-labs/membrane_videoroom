@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 
-import { UseMediaResult } from "../hooks/useMedia";
+import { LocalMedia } from "../hooks/useMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
@@ -336,11 +336,11 @@ type Props = {
 } & LocalUserMediaControls;
 
 type LocalUserMediaControls = {
-  userMediaVideo: UseMediaResult;
+  userMediaVideo: LocalMedia;
   cameraStreaming: MembraneStreaming;
-  userMediaAudio: UseMediaResult;
+  userMediaAudio: LocalMedia;
   audioStreaming: MembraneStreaming;
-  displayMedia: UseMediaResult;
+  displayMedia: LocalMedia;
   screenSharingStreaming: MembraneStreaming;
 };
 

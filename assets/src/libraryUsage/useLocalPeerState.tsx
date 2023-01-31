@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { TrackType } from "../../types";
+import {TrackType} from "../pages/types";
 
 export type ApiTrack = {
   trackId: string;
@@ -27,8 +27,9 @@ export type NewPeer = {
 };
 
 export type TrackMetadata = {
+  // todo do we need TrackType?
   type?: TrackType;
-  active?: boolean
+  active: boolean;
 };
 
 export type PeersState = {
@@ -38,14 +39,16 @@ export type PeersState = {
 
 export type Track = {
   stream?: MediaStream;
-  trackId: string | null;
+  trackId?: string;
   enabled: boolean;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
-export type Tracks = {
-  [Property in TrackType]?: Track;
-};
+// export type Tracks = {
+//   [Property in TrackType]?: Track;
+// };
+
+export type Tracks = Partial<Record<TrackType, Track>>;
 
 export type LocalPeer = {
   id?: string;
@@ -72,7 +75,7 @@ export type PeersApi = {
   setLocalTrackMetadata: (type: TrackType, metadata?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
-type UsePeersStateResult = {
+export type UsePeersStateResult = {
   state: PeersState;
   api: PeersApi;
 };

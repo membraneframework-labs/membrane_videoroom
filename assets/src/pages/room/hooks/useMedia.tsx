@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-export type UseMediaResult = MediaState & MediaApi;
+export type LocalMedia = MediaState & MediaApi;
 
-type MediaState = {
+export type MediaState = {
   isError: boolean;
   isSuccess: boolean;
   stream?: MediaStream;
@@ -26,7 +26,7 @@ const stopTracks = (stream: MediaStream) => {
   });
 };
 
-export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
+export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): LocalMedia => {
   const [state, setState] = useState<MediaState>({
     isError: false,
     isSuccess: true,
@@ -172,7 +172,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
     }
   }, [startStream, setEnable, state]);
 
-  const result: UseMediaResult = useMemo(() => ({ ...api, ...state }), [api, state]);
+  const result: LocalMedia = useMemo(() => ({ ...api, ...state }), [api, state]);
 
   return result;
 };
@@ -188,7 +188,7 @@ export class MediaStreamConfig {
 export class DisplayMediaStreamConfig {
   private type = "DisplayMediaStreamConfig";
 
-  constructor(public constraints: MediaStreamConstraints) {
+  constructor(public constraints: DisplayMediaStreamConstraints) {
     this.constraints = constraints;
   }
 }
@@ -196,7 +196,7 @@ export class DisplayMediaStreamConfig {
 export const useMedia = (
   config: MediaStreamConfig | DisplayMediaStreamConfig,
   startOnMount = false
-): UseMediaResult => {
+): LocalMedia => {
   const mediaStreamSupplier = useCallback(() => {
     return config instanceof DisplayMediaStreamConfig
       ? navigator.mediaDevices.getDisplayMedia(config.constraints)

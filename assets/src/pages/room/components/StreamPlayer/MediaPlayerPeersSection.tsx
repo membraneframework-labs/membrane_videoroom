@@ -12,7 +12,7 @@ import InitialsImage, { computeInitials } from "../../../../features/room-page/c
 
 export type TrackWithId = {
   stream?: MediaStream;
-  remoteTrackId?: string;
+  remoteTrackId: string | null;
   encodingQuality?: TrackEncoding;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   enabled?: boolean;

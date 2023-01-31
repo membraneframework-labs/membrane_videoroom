@@ -32,6 +32,8 @@ config :membrane_rtc_engine_timescaledb, repo: VideoRoom.Repo
 
 config :membrane_videoroom_demo, ecto_repos: [VideoRoom.Repo]
 
-config :logger, :console, metadata: [:room, :peer]
+config :logger, :console,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:file, :line, :room_id, :rtc_engine, :webrtc_endpoint]
 
 import_config("#{config_env()}.exs")

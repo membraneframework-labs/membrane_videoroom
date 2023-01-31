@@ -18,11 +18,19 @@ type Props = {
   isSimulcastOn: boolean;
   manualMode: boolean;
   autostartStreaming?: boolean;
+  audioAutoStreaming?: boolean;
 };
 
 export type SetErrorMessage = (value: string) => void;
 
-const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
+const RoomPage: FC<Props> = ({
+  roomId,
+  displayName,
+  isSimulcastOn,
+  manualMode,
+  autostartStreaming,
+  audioAutoStreaming,
+}: Props) => {
   const wakeLock = useAcquireWakeLockAutomatically();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
@@ -55,7 +63,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     webrtc,
     AUDIO_TRACKS_CONFIG,
     peerApi,
-    autostartStreaming
+    audioAutoStreaming
   );
   const screenSharing = useStreamManager(
     "screensharing",

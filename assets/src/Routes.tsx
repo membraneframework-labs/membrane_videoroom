@@ -9,7 +9,7 @@ const RoomPageWrapper: FC = () => {
   const match = useParams();
   const roomId: string | undefined = match?.roomId;
   const { username } = useUser();
-  const { simulcast, manualMode, cameraAutostart } = useDeveloperInfo();
+  const { simulcast, manualMode, cameraAutostart, audioAutostart } = useDeveloperInfo();
 
   return username && roomId ? (
     <RoomPage
@@ -18,6 +18,7 @@ const RoomPageWrapper: FC = () => {
       isSimulcastOn={simulcast.status}
       manualMode={manualMode.status}
       autostartStreaming={cameraAutostart.status}
+      audioAutoStreaming={audioAutostart.status}
     />
   ) : (
     <VideoroomHomePage />

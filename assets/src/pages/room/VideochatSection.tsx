@@ -3,17 +3,20 @@ import MediaPlayerPeersSection, {
   MediaPlayerTileConfig,
   TrackWithId,
 } from "./components/StreamPlayer/MediaPlayerPeersSection";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+// import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
 import React, { FC } from "react";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
+import { UseMembraneClientType } from "../../library/types";
+import { PeerMetadata, TrackMetadata } from "../../libraryUsage/types";
 
 type Props = {
-  peers: RemotePeer[];
-  localPeer?: LocalPeer;
-  showSimulcast?: boolean;
-  showDeveloperInfo?: boolean;
-  webrtc?: MembraneWebRTC;
+  // peers: RemotePeer[];
+  // localPeer?: LocalPeer;
+  // showSimulcast?: boolean;
+  // showDeveloperInfo?: boolean;
+  // webrtc?: MembraneWebRTC;
+  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata>;
 };
 
 const localPeerToScreenSharingStream = (localPeer: LocalPeer): VideoStreamWithMetadata => {
@@ -72,39 +75,40 @@ const prepareScreenSharingStreams = (
 const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
   localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
-export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc, showDeveloperInfo }: Props) => {
-  const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
-  const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
-  const screenSharing: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["screensharing"]);
+export const VideochatSection: FC<Props> = ({ clientWrapper }: Props) => {
+  // const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
+  // const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
+  // const screenSharing: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["screensharing"]);
 
-  const localUser: MediaPlayerTileConfig = {
-    peerId: localPeer?.id,
-    displayName: LOCAL_PEER_NAME,
-    emoji: localPeer?.metadata?.emoji,
-    video: video ? [video] : [],
-    audio: audio ? [audio] : [],
-    screenSharing: screenSharing ? [screenSharing] : [],
-    showSimulcast: showSimulcast,
-    flipHorizontally: true,
-    streamSource: "local",
-    playAudio: false,
-    mediaPlayerId: LOCAL_VIDEO_ID,
-  };
+  // const localUser: MediaPlayerTileConfig = {
+  //   peerId: localPeer?.id,
+  //   displayName: LOCAL_PEER_NAME,
+  //   emoji: localPeer?.metadata?.emoji,
+  //   video: video ? [video] : [],
+  //   audio: audio ? [audio] : [],
+  //   screenSharing: screenSharing ? [screenSharing] : [],
+  //   showSimulcast: showSimulcast,
+  //   flipHorizontally: true,
+  //   streamSource: "local",
+  //   playAudio: false,
+  //   mediaPlayerId: LOCAL_VIDEO_ID,
+  // };
 
-  const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
+  // const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
 
   return (
     <div id="videochat" className="overflow-y-auto">
       <div className="grid-wrapper flex h-full flex-col items-center justify-start md:flex-row md:items-start">
-        {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
+        {/*{isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}*/}
 
         <MediaPlayerPeersSection
-          peers={peers}
-          localUser={localUser}
-          showSimulcast={showSimulcast}
-          showDeveloperInfo={showDeveloperInfo}
-          oneColumn={isScreenSharingActive}
-          webrtc={webrtc}
+          clientWrapper={clientWrapper}
+          // peers={peers}
+          // localUser={localUser}
+          // showSimulcast={showSimulcast}
+          // showDeveloperInfo={showDeveloperInfo}
+          oneColumn={false}
+          // webrtc={webrtc}
         />
       </div>
     </div>

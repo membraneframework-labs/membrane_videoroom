@@ -24,7 +24,7 @@ export type LibraryTrack<TrackMetadataGeneric> = {
 export type LibraryLocalPeer<PeerMetadataGeneric, TrackMetadataGeneric> = {
   id: PeerId | null;
   metadata: PeerMetadataGeneric | null;
-  tracks: Partial<Record<TrackId, LibraryTrack<TrackMetadataGeneric>>>;
+  tracks: Record<TrackId, LibraryTrack<TrackMetadataGeneric>>;
 };
 
 export type LibraryRemotePeer<PeerMetadataGeneric, TrackMetadataGeneric> = {

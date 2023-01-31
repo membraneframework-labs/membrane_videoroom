@@ -3,8 +3,8 @@ import clsx from "clsx";
 
 export interface Props {
   flipHorizontally?: boolean;
-  videoStream?: MediaStream;
-  audioStream?: MediaStream;
+  videoStream: MediaStream | null;
+  audioStream: MediaStream | null;
   playAudio?: boolean;
 }
 

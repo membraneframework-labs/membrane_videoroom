@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
@@ -8,6 +8,16 @@ import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
 import CameraOff from "../../../../features/room-page/icons/CameraOff";
+import { useSelector } from "../../../../library/useSelector";
+import { LibraryTrackMinimal, PeerId, TrackId, UseMembraneClientType } from "../../../../library/types";
+import { PeerMetadata, TrackMetadata } from "../../../../libraryUsage/types";
+import {
+  createLocalPeerIdsSelector,
+  createLocalTracksIdsSelector,
+  createLocalTracksSelector,
+  createPeerIdsSelector,
+} from "../../../../library/selectors";
+import { createLocalTracksRecordSelector, createTracksRecordSelector } from "../../../../libraryUsage/customSelectors";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -69,30 +79,79 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
 };
 
 type Props = {
-  peers: RemotePeer[];
-  localUser: MediaPlayerTileConfig;
-  showSimulcast?: boolean;
-  showDeveloperInfo?: boolean;
-  selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
+  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata>;
+  // peers: RemotePeer[];
+  // localUser: MediaPlayerTileConfig;
+  // showSimulcast?: boolean;
+  // showDeveloperInfo?: boolean;
+  // selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn?: boolean;
-  webrtc?: MembraneWebRTC;
+  // webrtc?: MembraneWebRTC;
 };
 
 const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
 const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
+type MediaPlayerTileWrapperProps = {
+  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
+  peerId: string;
+};
+//
+const RemoteMediaPlayerTileWrapper = ({ clientWrapper, peerId }: MediaPlayerTileWrapperProps) => {
+  const tracks = useSelector(clientWrapper, createTracksRecordSelector(peerId));
+
+  return (
+    <MediaPlayerTile
+      audioStream={tracks.audio?.stream || null}
+      videoStream={tracks.camera?.stream || null}
+      playAudio={true}
+    />
+  );
+};
+
+// const usePlayerTileHook = (clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata>, peerId: string) => {
+//   const tracks = useSelector(clientWrapper, createTracksRecordSelector(peerId));
+//   useMemo(() => ({
+//     audio: tracks.audio.
+//   }), [tracks])
+// };
+
+type LocalPeerMediaPlayerWrapperProps = {
+  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
+};
+
+const LocalPeerMediaPlayerWrapper = ({ clientWrapper }: LocalPeerMediaPlayerWrapperProps) => {
+  const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector(
+    clientWrapper,
+    createLocalTracksRecordSelector()
+  );
+
+  return (
+    <MediaPlayerTile
+      audioStream={null}
+      videoStream={tracks.camera?.stream || null}
+      flipHorizontally={true}
+      playAudio={false}
+    />
+  );
+};
+
 const MediaPlayerPeersSection: FC<Props> = ({
-  peers,
-  localUser,
-  showSimulcast,
+  // peers,
+  // localUser,
+  // showSimulcast,
   oneColumn,
-  webrtc,
-  showDeveloperInfo,
-}: Props) => {
-  const allPeersConfig: MediaPlayerTileConfig[] = [
-    localUser,
-    ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
-  ];
+  clientWrapper,
+}: // webrtc,
+// showDeveloperInfo,
+Props) => {
+  // const allPeersConfig: MediaPlayerTileConfig[] = [
+  //   localUser,
+  //   ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
+  // ];
+
+  const localPeerId: PeerId | null = useSelector(clientWrapper, createLocalPeerIdsSelector());
+  const remotePeersIds: Array<PeerId> = useSelector(clientWrapper, createPeerIdsSelector());
 
   return (
     <div
@@ -102,134 +161,140 @@ const MediaPlayerPeersSection: FC<Props> = ({
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {allPeersConfig.map((config) => {
-        // todo for now only first audio, video and screen sharing stream are handled
-        const video: TrackWithId | undefined = config.video[0];
-        const screenSharing: TrackWithId | undefined = config.screenSharing[0];
-        const audio: TrackWithId | undefined = config.audio[0];
+      {localPeerId && <LocalPeerMediaPlayerWrapper clientWrapper={clientWrapper} />}
+      {remotePeersIds.map((peerId) => (
+        <RemoteMediaPlayerTileWrapper key={peerId} clientWrapper={clientWrapper} peerId={peerId} />
+      ))}
 
-        const emoji = config.emoji || "";
-        const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };
+      {/*<MediaPlayerTile />*/}
+      {/*{allPeersConfig.map((config) => {*/}
+      {/*  // todo for now only first audio, video and screen sharing stream are handled*/}
+      {/*  const video: TrackWithId | undefined = config.video[0];*/}
+      {/*  const screenSharing: TrackWithId | undefined = config.screenSharing[0];*/}
+      {/*  const audio: TrackWithId | undefined = config.audio[0];*/}
 
-        // todo refactor to separate component / layer
-        const cameraDevice = video?.stream ? "📹🟢" : "📹🔴";
-        const screenSharingDevice = screenSharing?.stream ? "🖥🟢" : "🖥🔴";
-        const microphoneDevice = audio?.stream ? "🔊🟢" : "🔊🔴";
+      {/*  const emoji = config.emoji || "";*/}
+      {/*  const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };*/}
 
-        const cameraStreamStatus = video?.enabled ? "📹🟢" : "📹🔴";
-        const screenSharingStreamStatus = screenSharing?.enabled ? "🖥🟢" : "🖥🔴";
-        const microphoneStreamStatus = audio?.enabled ? "🔊🟢" : "🔊🔴";
+      {/*  // todo refactor to separate component / layer*/}
+      {/*  const cameraDevice = video?.stream ? "📹🟢" : "📹🔴";*/}
+      {/*  const screenSharingDevice = screenSharing?.stream ? "🖥🟢" : "🖥🔴";*/}
+      {/*  const microphoneDevice = audio?.stream ? "🔊🟢" : "🔊🔴";*/}
 
-        const cameraTrack = video?.remoteTrackId ? "📹🟢" : "📹🔴";
-        const screenSharingTrack = screenSharing?.remoteTrackId ? "🖥🟢" : "🖥🔴";
-        const microphoneTrack = audio?.remoteTrackId ? "🔊🟢" : "🔊🔴";
+      {/*  const cameraStreamStatus = video?.enabled ? "📹🟢" : "📹🔴";*/}
+      {/*  const screenSharingStreamStatus = screenSharing?.enabled ? "🖥🟢" : "🖥🔴";*/}
+      {/*  const microphoneStreamStatus = audio?.enabled ? "🔊🟢" : "🔊🔴";*/}
 
-        const cameraMetadataStatus = video?.metadata?.active ? "📹🟢" : "📹🔴";
-        const screenSharingMetadataStatus = screenSharing?.metadata?.active ? "🖥🟢" : "🖥🔴";
-        const microphoneMetadataStatus = audio?.metadata?.active ? "🔊🟢" : "🔊🔴";
+      {/*  const cameraTrack = video?.remoteTrackId ? "📹🟢" : "📹🔴";*/}
+      {/*  const screenSharingTrack = screenSharing?.remoteTrackId ? "🖥🟢" : "🖥🔴";*/}
+      {/*  const microphoneTrack = audio?.remoteTrackId ? "🔊🟢" : "🔊🔴";*/}
 
-        return (
-          <MediaPlayerTile
-            key={config.mediaPlayerId}
-            peerId={config.peerId}
-            video={video}
-            audioStream={audio?.stream}
-            layers={
-              <>
-                {showDeveloperInfo && (
-                  <PeerInfoLayer
-                    topLeft={<div>{emoji}</div>}
-                    topRight={
-                      <div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Device:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingDevice}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraDevice}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneDevice}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Stream status:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingStreamStatus}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraStreamStatus}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneStreamStatus}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Active tracks:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingTrack}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraTrack}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneTrack}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Metadata:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingMetadataStatus}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraMetadataStatus}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneMetadataStatus}
-                          </span>
-                        </div>
-                      </div>
-                    }
-                    bottomRight={
-                      <div className="text-right">
-                        <span className="ml-2">Allow audio playing:</span>
-                        <span title={localAudio.title} className="ml-2">
-                          {localAudio.emoji}
-                        </span>
-                      </div>
-                    }
-                  />
-                )}
-                <InfoLayer
-                  bottomLeft={<div>{config.displayName}</div>}
-                  topLeft={
-                    <div className="flex flex-row items-center gap-x-2 text-xl">
-                      {showDisabledIcon(audio) && (
-                        <MicrophoneOff className={clsx(isLoading(audio) && "animate-spin")} />
-                      )}
-                      {showDisabledIcon(video) && <CameraOff className={clsx(isLoading(audio) && "animate-spin")} />}
-                    </div>
-                  }
-                />
-              </>
-            }
-            showSimulcast={showSimulcast}
-            streamSource={config.streamSource}
-            flipHorizontally={config.flipHorizontally}
-            webrtc={webrtc}
-            playAudio={config.playAudio}
-          />
-        );
-      })}
+      {/*  const cameraMetadataStatus = video?.metadata?.active ? "📹🟢" : "📹🔴";*/}
+      {/*  const screenSharingMetadataStatus = screenSharing?.metadata?.active ? "🖥🟢" : "🖥🔴";*/}
+      {/*  const microphoneMetadataStatus = audio?.metadata?.active ? "🔊🟢" : "🔊🔴";*/}
+
+      {/*  return (*/}
+      {/*    <MediaPlayerTile*/}
+      {/*      key={config.mediaPlayerId}*/}
+      {/*      peerId={config.peerId}*/}
+      {/*      video={video}*/}
+      {/*      audioStream={audio?.stream}*/}
+      {/*      layers={*/}
+      {/*        <>*/}
+      {/*          {showDeveloperInfo && (*/}
+      {/*            <PeerInfoLayer*/}
+      {/*              topLeft={<div>{emoji}</div>}*/}
+      {/*              topRight={*/}
+      {/*                <div>*/}
+      {/*                  <div className="text-right">*/}
+      {/*                    <span title="Streaming" className="ml-2">*/}
+      {/*                      Device:*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Screen Sharing" className="ml-2">*/}
+      {/*                      {screenSharingDevice}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Camera" className="ml-2">*/}
+      {/*                      {cameraDevice}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Audio" className="ml-2">*/}
+      {/*                      {microphoneDevice}*/}
+      {/*                    </span>*/}
+      {/*                  </div>*/}
+      {/*                  <div className="text-right">*/}
+      {/*                    <span title="Streaming" className="ml-2">*/}
+      {/*                      Stream status:*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Screen Sharing" className="ml-2">*/}
+      {/*                      {screenSharingStreamStatus}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Camera" className="ml-2">*/}
+      {/*                      {cameraStreamStatus}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Audio" className="ml-2">*/}
+      {/*                      {microphoneStreamStatus}*/}
+      {/*                    </span>*/}
+      {/*                  </div>*/}
+      {/*                  <div className="text-right">*/}
+      {/*                    <span title="Streaming" className="ml-2">*/}
+      {/*                      Active tracks:*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Screen Sharing" className="ml-2">*/}
+      {/*                      {screenSharingTrack}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Camera" className="ml-2">*/}
+      {/*                      {cameraTrack}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Audio" className="ml-2">*/}
+      {/*                      {microphoneTrack}*/}
+      {/*                    </span>*/}
+      {/*                  </div>*/}
+      {/*                  <div className="text-right">*/}
+      {/*                    <span title="Streaming" className="ml-2">*/}
+      {/*                      Metadata:*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Screen Sharing" className="ml-2">*/}
+      {/*                      {screenSharingMetadataStatus}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Camera" className="ml-2">*/}
+      {/*                      {cameraMetadataStatus}*/}
+      {/*                    </span>*/}
+      {/*                    <span title="Audio" className="ml-2">*/}
+      {/*                      {microphoneMetadataStatus}*/}
+      {/*                    </span>*/}
+      {/*                  </div>*/}
+      {/*                </div>*/}
+      {/*              }*/}
+      {/*              bottomRight={*/}
+      {/*                <div className="text-right">*/}
+      {/*                  <span className="ml-2">Allow audio playing:</span>*/}
+      {/*                  <span title={localAudio.title} className="ml-2">*/}
+      {/*                    {localAudio.emoji}*/}
+      {/*                  </span>*/}
+      {/*                </div>*/}
+      {/*              }*/}
+      {/*            />*/}
+      {/*          )}*/}
+      {/*          <InfoLayer*/}
+      {/*            bottomLeft={<div>{config.displayName}</div>}*/}
+      {/*            topLeft={*/}
+      {/*              <div className="flex flex-row items-center gap-x-2 text-xl">*/}
+      {/*                {showDisabledIcon(audio) && (*/}
+      {/*                  <MicrophoneOff className={clsx(isLoading(audio) && "animate-spin")} />*/}
+      {/*                )}*/}
+      {/*                {showDisabledIcon(video) && <CameraOff className={clsx(isLoading(audio) && "animate-spin")} />}*/}
+      {/*              </div>*/}
+      {/*            }*/}
+      {/*          />*/}
+      {/*        </>*/}
+      {/*      }*/}
+      {/*      showSimulcast={showSimulcast}*/}
+      {/*      streamSource={config.streamSource}*/}
+      {/*      flipHorizontally={config.flipHorizontally}*/}
+      {/*      webrtc={webrtc}*/}
+      {/*      playAudio={config.playAudio}*/}
+      {/*    />*/}
+      {/*  );*/}
+      {/*})}*/}
     </div>
   );
 };

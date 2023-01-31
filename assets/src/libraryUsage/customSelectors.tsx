@@ -1,6 +1,6 @@
 import { TrackType } from "../pages/types";
 import { PeerMetadata, TrackMetadata } from "../pages/room/hooks/usePeerState";
-import {LibraryPeersState, LibraryTrack, LibraryTrackMinimal, PeerId, Selector} from "../library/types";
+import { LibraryPeersState, LibraryTrack, LibraryTrackMinimal, PeerId, Selector } from "../library/types";
 
 export type PeerGui = { id: PeerId; emoji: string | null; name: string | null };
 export type CreatePeersGuiSelector = () => Selector<PeerMetadata, TrackMetadata, Array<PeerGui>>;
@@ -53,5 +53,38 @@ export const createTracksRecordSelector: CreateTracksRecordSelector =
     );
     const result: Partial<Record<TrackType, LibraryTrackMinimal>> = Object.fromEntries(trackTuples);
 
+    // todo refactor delete to filter
+    delete result["screensharing"];
+
     return result;
   };
+
+type CreateLocalTracksRecordSelector = () => Selector<PeerMetadata, TrackMetadata, Partial<Record<TrackType, LibraryTrackMinimal>>>;
+export const createLocalTracksRecordSelector: CreateLocalTracksRecordSelector =
+    (): Selector<PeerMetadata, TrackMetadata, Partial<Record<TrackType, LibraryTrackMinimal>>> =>
+        (
+            snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null
+        ): Partial<Record<TrackType, LibraryTrackMinimal>> => {
+            const tracks: Record<string, LibraryTrack<TrackMetadata>> = snapshot?.local?.tracks || {};
+            const trackTuples: Array<[TrackType | null, LibraryTrackMinimal]> = Object.entries(tracks).map(
+                ([trackId, track]) => {
+                    const trackType: TrackType | null = track.metadata?.type || null;
+                    if (!trackType) {
+                        console.warn(`Track '${trackId}' has empty type`);
+                    }
+                    const libraryMinimalTrack: LibraryTrackMinimal = {
+                        stream: track.stream,
+                        trackId: track.trackId,
+                        simulcastConfig: track.simulcastConfig ? { ...track.simulcastConfig } : null,
+                        track: track.track,
+                    };
+                    return [trackType, libraryMinimalTrack];
+                }
+            );
+            const result: Partial<Record<TrackType, LibraryTrackMinimal>> = Object.fromEntries(trackTuples);
+
+            // todo refactor delete to filter
+            delete result["screensharing"];
+
+            return result;
+        };

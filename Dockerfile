@@ -1,4 +1,4 @@
-FROM elixir:1.13.4-alpine AS build
+FROM elixir:1.14.3-alpine AS build
 
 # install build dependencies
 RUN \
@@ -70,7 +70,7 @@ ENV HOME=/app
 
 EXPOSE 4000
 
-HEALTHCHECK CMD curl --fail http://localhost:4000 || exit 1  
+HEALTHCHECK CMD curl --fail http://localhost:4000 || exit 1
 
 COPY --chown=nobody:nobody docker-entrypoint.sh ./docker-entrypoint.sh
 

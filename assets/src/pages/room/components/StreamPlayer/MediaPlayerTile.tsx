@@ -20,7 +20,7 @@ export interface Props {
   layers?: JSX.Element;
   webrtc?: MembraneWebRTC;
   className?: string;
-  screenShare?: boolean;
+  blockFillContent?: boolean;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -34,7 +34,7 @@ const MediaPlayerTile: FC<Props> = ({
   layers,
   webrtc,
   className,
-  screenShare,
+  blockFillContent,
 }: Props) => {
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding("m", peerId, video?.remoteTrackId, webrtc);
 
@@ -53,7 +53,7 @@ const MediaPlayerTile: FC<Props> = ({
         audioStream={audioStream}
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}
-        screenShare={screenShare}
+        blockFillContent={blockFillContent}
       />
       {layers}
       {showSimulcast && streamSource === "remote" && (

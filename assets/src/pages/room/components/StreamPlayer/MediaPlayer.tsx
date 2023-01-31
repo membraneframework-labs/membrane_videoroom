@@ -6,7 +6,7 @@ export interface Props {
   videoStream?: MediaStream;
   audioStream?: MediaStream;
   playAudio?: boolean;
-  screenShare?: boolean;
+  blockFillContent?: boolean;
 }
 
 const MediaPlayer: React.FC<Props> = ({
@@ -14,7 +14,7 @@ const MediaPlayer: React.FC<Props> = ({
   audioStream,
   flipHorizontally,
   playAudio,
-  screenShare,
+  blockFillContent,
 }: Props) => {
   const videoRef: RefObject<HTMLVideoElement> = useRef<HTMLVideoElement>(null);
   const audioRef: RefObject<HTMLAudioElement> = useRef<HTMLAudioElement>(null);
@@ -40,7 +40,7 @@ const MediaPlayer: React.FC<Props> = ({
     };
 
     const setFillContentState = (videoElement: HTMLVideoElement): void => {
-      const newValue = isVideoHorizontal(videoElement) && !screenShare;
+      const newValue = !blockFillContent && isVideoHorizontal(videoElement);
       shouldFillContent(newValue);
     };
 
@@ -55,7 +55,7 @@ const MediaPlayer: React.FC<Props> = ({
     return () => {
       if (video) video.onresize = null;
     };
-  }, [videoStream, fillContent, screenShare]);
+  }, [videoStream, fillContent, blockFillContent]);
 
   return (
     <>

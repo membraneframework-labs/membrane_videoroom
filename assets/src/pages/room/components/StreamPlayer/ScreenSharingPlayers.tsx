@@ -21,11 +21,10 @@ const ScreenSharingPlayers: FC<Props> = ({ streams }: Props) => {
     <div className="active-screensharing-grid h-full grid-cols-1">
       {streams.map((config) => (
         <MediaPlayerTile
-          screenShare
+          blockFillContent
           key={config.mediaPlayerId}
           video={config.video}
           streamSource={"local"}
-          cameraOffImage={null}
           layers={<PeerInfoLayer bottomLeft={<NameTag name={config.peerName || "Unknown"} />} />}
         />
       ))}

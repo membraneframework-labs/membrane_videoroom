@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -18,6 +18,7 @@ import { createFullStateSelector } from "../../library/selectors";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
 import { UseMembraneClientType } from "../../library/types";
 import { TrackMetadata } from "../../libraryUsage/types";
+import { createMembraneClient } from "../../library/createMembraneClinet";
 
 type Props = {
   displayName: string;
@@ -29,6 +30,8 @@ type Props = {
 
 export type SetErrorMessage = (value: string) => void;
 
+const { useClient } = createMembraneClient();
+
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
   const wakeLock = useAcquireWakeLockAutomatically();
 
@@ -39,13 +42,20 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   const [showDeveloperInfo, toggleDeveloperInfo] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
-  const clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null = useLibraryMembraneClient(
-    roomId,
-    peerMetadata,
-    isSimulcastOn,
-    setErrorMessage
-  );
-  const fullState = useSelector(clientWrapper, createFullStateSelector());
+  // const clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null = useLibraryMembraneClient(
+  //   roomId,
+  //   peerMetadata,
+  //   isSimulcastOn,
+  //   setErrorMessage
+  // );
+
+  const client = useClient();
+
+  useEffect(() => {
+    client.connect(roomId, peerMetadata, isSimulcastOn);
+  }, [client, isSimulcastOn, peerMetadata, roomId]);
+
+  const fullState = useSelector(client, createFullStateSelector());
 
   useLog(clientWrapper?.store, "State");
   useLog(fullState, "Full state");

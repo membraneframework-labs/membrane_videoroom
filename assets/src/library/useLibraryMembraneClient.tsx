@@ -355,7 +355,7 @@ export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGener
       removeTrack: (trackId) => {
         webrtc.removeTrack(trackId);
         store.setStore((prevState: StateShorthand): StateShorthand => {
-          const tracksCopy: Partial<Record<TrackId, LibraryTrack<TrackMetadataGeneric>>> | undefined =
+          const tracksCopy: Record<TrackId, LibraryTrack<TrackMetadataGeneric>> | undefined =
             prevState?.local?.tracks;
           delete tracksCopy[trackId];
 

@@ -54,11 +54,11 @@ export type ConnectionStatus = "before-connection" | "connected" | "connecting" 
 
 
 export type UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> = {
-  webrtc: MembraneWebRTC;
-  messageEmitter: TypedEmitter<Partial<Callbacks>>;
-  signaling: Channel;
-  webrtcConnectionStatus: ConnectionStatus;
-  signalingStatus: ConnectionStatus;
+  webrtc?: MembraneWebRTC;
+  messageEmitter?: TypedEmitter<Partial<Callbacks>>;
+  signaling?: Channel;
+  webrtcConnectionStatus?: ConnectionStatus;
+  signalingStatus?: ConnectionStatus;
   store: Store<PeerMetadataGeneric, TrackMetadataGeneric>;
   api: MembraneApi<TrackMetadataGeneric> | null;
 };

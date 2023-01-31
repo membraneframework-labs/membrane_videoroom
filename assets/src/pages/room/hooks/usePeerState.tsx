@@ -37,7 +37,7 @@ export type PeersState = {
 
 export type Track = {
   stream?: MediaStream;
-  trackId?: string;
+  trackId: string | null;
   enabled: boolean;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };

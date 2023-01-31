@@ -1,10 +1,12 @@
+import React, { FC } from "react";
+
 import { LocalPeer, RemotePeer } from "./hooks/usePeerState";
 import MediaPlayerPeersSection, { MediaPlayerTileConfig } from "./components/StreamPlayer/MediaPlayerPeersSection";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
-import React, { FC } from "react";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
+import { computeInitials } from "../../features/room-page/components/InitialsImage";
 
 type Props = {
   peers: RemotePeer[];
@@ -64,7 +66,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const localUser: MediaPlayerTileConfig = {
     peerId: localPeer?.id,
     displayName: LOCAL_PEER_NAME,
-    emoji: localPeer?.metadata?.emoji,
+    initials: computeInitials(localPeer?.metadata?.displayName || ""),
     video: localPeer?.tracks["camera"] ? [localPeer?.tracks["camera"]] : [],
     audio: localPeer?.tracks["audio"] ? [localPeer?.tracks["audio"]] : [],
     screenSharing: localPeer?.tracks["screensharing"] ? [localPeer?.tracks["screensharing"]] : [],

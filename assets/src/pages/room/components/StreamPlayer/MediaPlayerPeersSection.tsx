@@ -4,11 +4,11 @@ import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
-import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
-import CameraOff from "../../../../features/room-page/icons/CameraOff";
 import { getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
+import NameTag from "../../../../features/room-page/components/NameTag";
+import InitialsImage, { computeInitials } from "../../../../features/room-page/components/InitialsImage";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -20,9 +20,9 @@ export type TrackWithId = {
 
 export type MediaPlayerTileConfig = {
   peerId?: string;
-  emoji?: string;
   flipHorizontally?: boolean;
   displayName?: string;
+  initials: string;
   video: TrackWithId[];
   audio: TrackWithId[];
   playAudio: boolean;
@@ -54,8 +54,8 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
 
     return {
       peerId: peer.id,
-      emoji: peer.emoji,
       displayName: peer.displayName,
+      initials: computeInitials(peer.displayName || ""),
       video: videoTracks,
       audio: audioTracks,
       screenSharing: screenSharingTracks,
@@ -67,6 +67,18 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
       mediaPlayerId: peer.id,
     };
   });
+};
+
+type DisabledMicIconProps = {
+  isLoading: boolean;
+};
+
+const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
+  return (
+    <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
+      <MicrophoneOff className={isLoading ? "animate-spin" : ""} fill="#001A72" />
+    </div>
+  );
 };
 
 type Props = {
@@ -95,8 +107,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
     ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
   ];
 
-  const gridConfig = getGridConfig(allPeersConfig.length);
-  function getGridStyle() {
+  const getGridStyle = () => {
     const noPeers = !peers.length;
 
     if (oneColumn) {
@@ -109,9 +120,11 @@ const MediaPlayerPeersSection: FC<Props> = ({
     } else {
       return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
     }
-  }
+  };
 
+  const gridConfig = getGridConfig(allPeersConfig.length);
   const videoGridStyle = getGridStyle();
+  const tileSize = allPeersConfig.length >= 7 ? "M" : "L";
 
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
@@ -121,7 +134,6 @@ const MediaPlayerPeersSection: FC<Props> = ({
         const screenSharing: TrackWithId | undefined = config.screenSharing[0];
         const audio: TrackWithId | undefined = config.audio[0];
 
-        const emoji = config.emoji || "";
         const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };
 
         // todo refactor to separate component / layer
@@ -150,9 +162,9 @@ const MediaPlayerPeersSection: FC<Props> = ({
             className={!oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : undefined}
             layers={
               <>
+                {showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}
                 {showDeveloperInfo && (
                   <PeerInfoLayer
-                    topLeft={<div>{emoji}</div>}
                     topRight={
                       <div>
                         <div className="text-right">
@@ -223,16 +235,14 @@ const MediaPlayerPeersSection: FC<Props> = ({
                     }
                   />
                 )}
-                <InfoLayer
-                  bottomLeft={<div>{config.displayName}</div>}
+                <PeerInfoLayer
+                  bottomLeft={<NameTag name={config.displayName || "Unknown"} />}
                   topLeft={
                     <div className="flex flex-row items-center gap-x-2 text-xl">
-                      {showDisabledIcon(audio) && (
-                        <MicrophoneOff className={clsx(isLoading(audio) && "animate-spin")} />
-                      )}
-                      {showDisabledIcon(video) && <CameraOff className={clsx(isLoading(audio) && "animate-spin")} />}
+                      {showDisabledIcon(audio) && <DisabledMicIcon isLoading={isLoading(audio)} />}
                     </div>
                   }
+                  tileSize={tileSize}
                 />
               </>
             }

@@ -59,32 +59,52 @@ export const createTracksRecordSelector: CreateTracksRecordSelector =
     return result;
   };
 
-type CreateLocalTracksRecordSelector = () => Selector<PeerMetadata, TrackMetadata, Partial<Record<TrackType, LibraryTrackMinimal>>>;
+type CreateLocalTracksRecordSelector = () => Selector<
+  PeerMetadata,
+  TrackMetadata,
+  Partial<Record<TrackType, LibraryTrackMinimal>>
+>;
 export const createLocalTracksRecordSelector: CreateLocalTracksRecordSelector =
-    (): Selector<PeerMetadata, TrackMetadata, Partial<Record<TrackType, LibraryTrackMinimal>>> =>
-        (
-            snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null
-        ): Partial<Record<TrackType, LibraryTrackMinimal>> => {
-            const tracks: Record<string, LibraryTrack<TrackMetadata>> = snapshot?.local?.tracks || {};
-            const trackTuples: Array<[TrackType | null, LibraryTrackMinimal]> = Object.entries(tracks).map(
-                ([trackId, track]) => {
-                    const trackType: TrackType | null = track.metadata?.type || null;
-                    if (!trackType) {
-                        console.warn(`Track '${trackId}' has empty type`);
-                    }
-                    const libraryMinimalTrack: LibraryTrackMinimal = {
-                        stream: track.stream,
-                        trackId: track.trackId,
-                        simulcastConfig: track.simulcastConfig ? { ...track.simulcastConfig } : null,
-                        track: track.track,
-                    };
-                    return [trackType, libraryMinimalTrack];
-                }
-            );
-            const result: Partial<Record<TrackType, LibraryTrackMinimal>> = Object.fromEntries(trackTuples);
-
-            // todo refactor delete to filter
-            delete result["screensharing"];
-
-            return result;
+  (): Selector<PeerMetadata, TrackMetadata, Partial<Record<TrackType, LibraryTrackMinimal>>> =>
+  (
+    snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null
+  ): Partial<Record<TrackType, LibraryTrackMinimal>> => {
+    const tracks: Record<string, LibraryTrack<TrackMetadata>> = snapshot?.local?.tracks || {};
+    const trackTuples: Array<[TrackType | null, LibraryTrackMinimal]> = Object.entries(tracks).map(
+      ([trackId, track]) => {
+        const trackType: TrackType | null = track.metadata?.type || null;
+        if (!trackType) {
+          console.warn(`Track '${trackId}' has empty type`);
+        }
+        const libraryMinimalTrack: LibraryTrackMinimal = {
+          stream: track.stream,
+          trackId: track.trackId,
+          simulcastConfig: track.simulcastConfig ? { ...track.simulcastConfig } : null,
+          track: track.track,
         };
+        return [trackType, libraryMinimalTrack];
+      }
+    );
+    const result: Partial<Record<TrackType, LibraryTrackMinimal>> = Object.fromEntries(trackTuples);
+
+    // todo refactor delete to filter
+    delete result["screensharing"];
+
+    return result;
+  };
+
+export type TrackStatus = "active" | "muted" | null;
+type CreateAudioTrackStatusSelector = (peerId: PeerId) => Selector<PeerMetadata, TrackMetadata, TrackStatus>;
+export const createAudioTrackStatusSelector: CreateAudioTrackStatusSelector =
+  (peerId: PeerId): Selector<PeerMetadata, TrackMetadata, TrackStatus> =>
+  (snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null): TrackStatus => {
+    if (!snapshot) return null;
+    const peer = snapshot.remote[peerId];
+    if (!peer) return null;
+
+    const track = Object.values(peer.tracks).find((track) => track?.metadata?.type === "audio");
+    if (!track) return null;
+
+    if (track.metadata?.active === undefined) return null;
+    return track.metadata.active ? "active" : "muted";
+  };

@@ -17,7 +17,7 @@ export interface Props {
   playAudio?: boolean;
   // showSimulcast?: boolean;
   // streamSource?: StreamSource;
-  // layers?: JSX.Element;
+  layers?: JSX.Element;
   // webrtc?: MembraneWebRTC;
 }
 
@@ -28,9 +28,9 @@ const MediaPlayerTile: FC<Props> = ({
   videoStream,
   flipHorizontally,
   audioStream,
+  layers,
 }: // showSimulcast,
 // streamSource,
-// layers,
 // webrtc,
 Props) => {
   // const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
@@ -48,13 +48,13 @@ Props) => {
       className="aspect-video relative h-full w-full overflow-hidden rounded-md bg-gray-900 shadow"
     >
       <MediaPlayer
-          videoStream={videoStream}
+        videoStream={videoStream}
         // videoStream={video?.stream}
         audioStream={audioStream}
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}
       />
-      {/*{layers}*/}
+      {layers}
       {/*{showSimulcast && streamSource === "remote" && (*/}
       {/*  <SimulcastRemoteLayer*/}
       {/*    desiredEncoding={desiredEncoding}*/}

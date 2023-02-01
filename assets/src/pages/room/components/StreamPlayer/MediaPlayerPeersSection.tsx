@@ -17,8 +17,13 @@ import {
   createLocalTracksSelector,
   createPeerIdsSelector,
 } from "../../../../library/selectors";
-import { createLocalTracksRecordSelector, createTracksRecordSelector } from "../../../../libraryUsage/customSelectors";
+import {
+  createAudioTrackStatusSelector,
+  createLocalTracksRecordSelector,
+  createTracksRecordSelector,
+} from "../../../../libraryUsage/customSelectors";
 import { useSelector2 } from "../../../../libraryUsage/setup";
+import { useLog } from "../../../../helpers/UseLog";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -106,6 +111,7 @@ const RemoteMediaPlayerTileWrapper = ({ peerId }: MediaPlayerTileWrapperProps) =
       audioStream={tracks.audio?.stream || null}
       videoStream={tracks.camera?.stream || null}
       playAudio={true}
+      layers={<RemoteLayer peerId={peerId} />}
     />
   );
 };
@@ -119,6 +125,27 @@ const RemoteMediaPlayerTileWrapper = ({ peerId }: MediaPlayerTileWrapperProps) =
 
 type LocalPeerMediaPlayerWrapperProps = {
   // clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
+};
+
+type RemoteLayerProps = {
+  peerId: PeerId;
+};
+
+const RemoteLayer = ({ peerId }: RemoteLayerProps) => {
+  const audioStatus = useSelector2(createAudioTrackStatusSelector(peerId));
+
+  useLog(audioStatus, "Audio status");
+  return (
+    <InfoLayer
+      topLeft={
+        <div className="flex flex-row items-center gap-x-2 text-xl">
+          {audioStatus === "muted" && <MicrophoneOff />}
+          {audioStatus === "active" && "Active"}
+          {audioStatus === null && "None"}
+        </div>
+      }
+    />
+  );
 };
 
 const LocalPeerMediaPlayerWrapper = (props: LocalPeerMediaPlayerWrapperProps) => {

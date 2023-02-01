@@ -3,7 +3,7 @@ import { PeerMetadata, TrackMetadata } from "../pages/room/hooks/usePeerState";
 import { TrackType } from "../pages/types";
 import { selectBandwidthLimit } from "../pages/room/bandwidth";
 import { UseMembraneClientType } from "../library/types";
-import { useClientApi, useSelector2 } from "./setup";
+import { useSelector2 } from "./setup";
 import { createConnectivitySelector } from "../library/selectors";
 import {useLog} from "../helpers/UseLog";
 
@@ -32,7 +32,7 @@ export const useMembraneMediaStreaming = (
 ): MembraneStreaming => {
   const api = useSelector2(createConnectivitySelector());
 
-  useLog(api, "API!!")
+  // useLog(api, "API!!")
 
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
   const [trackMetadata, setTrackMetadata] = useState<TrackMetadata | null>(null);
@@ -85,7 +85,7 @@ export const useMembraneMediaStreaming = (
   }, [api, trackIds]);
 
   useEffect(() => {
-    console.log({ name: "autostart", api, isConnected, mode });
+    // console.log({ name: "autostart", api, isConnected, mode });
     if (!api || !isConnected || mode !== "automatic") {
       return;
     }

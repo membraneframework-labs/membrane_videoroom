@@ -4,10 +4,11 @@ import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
-import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
-import CameraOff from "../../../../features/room-page/icons/CameraOff";
+import { getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
+import NameTag from "../../../../features/room-page/components/NameTag";
+import InitialsImage, { computeInitials } from "../../../../features/room-page/components/InitialsImage";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -19,9 +20,9 @@ export type TrackWithId = {
 
 export type MediaPlayerTileConfig = {
   peerId?: string;
-  emoji?: string;
   flipHorizontally?: boolean;
   displayName?: string;
+  initials: string;
   video: TrackWithId[];
   audio: TrackWithId[];
   playAudio: boolean;
@@ -53,8 +54,8 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
 
     return {
       peerId: peer.id,
-      emoji: peer.emoji,
       displayName: peer.displayName,
+      initials: computeInitials(peer.displayName || ""),
       video: videoTracks,
       audio: audioTracks,
       screenSharing: screenSharingTracks,
@@ -68,13 +69,25 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
   });
 };
 
+type DisabledMicIconProps = {
+  isLoading: boolean;
+};
+
+const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
+  return (
+    <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
+      <MicrophoneOff className={isLoading ? "animate-spin" : ""} fill="#001A72" />
+    </div>
+  );
+};
+
 type Props = {
   peers: RemotePeer[];
   localUser: MediaPlayerTileConfig;
   showSimulcast?: boolean;
   showDeveloperInfo?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  oneColumn?: boolean;
+  oneColumn?: boolean; // screensharing or pinned user
   webrtc?: MembraneWebRTC;
 };
 
@@ -94,21 +107,33 @@ const MediaPlayerPeersSection: FC<Props> = ({
     ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
   ];
 
+  const getGridStyle = () => {
+    const noPeers = !peers.length;
+
+    if (oneColumn) {
+      if (noPeers) {
+        // display video positioned absolute in another video
+        return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
+      } else {
+        return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
+      }
+    } else {
+      return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
+    }
+  };
+
+  const gridConfig = getGridConfig(allPeersConfig.length);
+  const videoGridStyle = getGridStyle();
+  const tileSize = allPeersConfig.length >= 7 ? "M" : "L";
+
   return (
-    <div
-      id="videos-grid"
-      className={clsx({
-        "grid h-full w-full flex-1 grid-flow-row grid-cols-1 justify-items-center gap-4": true,
-        "md:grid-cols-2": !oneColumn,
-      })}
-    >
+    <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
       {allPeersConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
         const screenSharing: TrackWithId | undefined = config.screenSharing[0];
         const audio: TrackWithId | undefined = config.audio[0];
 
-        const emoji = config.emoji || "";
         const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };
 
         // todo refactor to separate component / layer
@@ -134,11 +159,12 @@ const MediaPlayerPeersSection: FC<Props> = ({
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}
+            className={!oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : undefined}
             layers={
               <>
+                {showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}
                 {showDeveloperInfo && (
                   <PeerInfoLayer
-                    topLeft={<div>{emoji}</div>}
                     topRight={
                       <div>
                         <div className="text-right">
@@ -209,16 +235,14 @@ const MediaPlayerPeersSection: FC<Props> = ({
                     }
                   />
                 )}
-                <InfoLayer
-                  bottomLeft={<div>{config.displayName}</div>}
+                <PeerInfoLayer
+                  bottomLeft={<NameTag name={config.displayName || "Unknown"} />}
                   topLeft={
                     <div className="flex flex-row items-center gap-x-2 text-xl">
-                      {showDisabledIcon(audio) && (
-                        <MicrophoneOff className={clsx(isLoading(audio) && "animate-spin")} />
-                      )}
-                      {showDisabledIcon(video) && <CameraOff className={clsx(isLoading(audio) && "animate-spin")} />}
+                      {showDisabledIcon(audio) && <DisabledMicIcon isLoading={isLoading(audio)} />}
                     </div>
                   }
+                  tileSize={tileSize}
                 />
               </>
             }

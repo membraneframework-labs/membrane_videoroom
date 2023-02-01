@@ -76,7 +76,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
           {errorMessage && <div className="w-full bg-red-700 p-1 text-white">{errorMessage}</div>}
 
           {showDeveloperInfo && (
-            <div className="text-shadow-lg absolute right-0 top-16 flex flex-col p-2 text-right">
+            <div className="text-shadow-lg absolute right-0 top-0 flex flex-col p-2 text-right">
               <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
             </div>
           )}
@@ -101,7 +101,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         />
 
         {/* dev helpers */}
-        <div className="absolute bottom-4 right-3 flex flex-col items-stretch">
+        <div className="invisible absolute bottom-4 right-3 flex flex-col items-stretch md:visible">
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}

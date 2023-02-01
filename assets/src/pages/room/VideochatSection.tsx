@@ -1,3 +1,5 @@
+import React, { FC } from "react";
+
 import { LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
 import MediaPlayerPeersSection, {
   MediaPlayerTileConfig,
@@ -5,8 +7,9 @@ import MediaPlayerPeersSection, {
 } from "./components/StreamPlayer/MediaPlayerPeersSection";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
-import React, { FC } from "react";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
+import clsx from "clsx";
+import { computeInitials } from "../../features/room-page/components/InitialsImage";
 
 type Props = {
   peers: RemotePeer[];
@@ -80,7 +83,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const localUser: MediaPlayerTileConfig = {
     peerId: localPeer?.id,
     displayName: LOCAL_PEER_NAME,
-    emoji: localPeer?.metadata?.emoji,
+    initials: computeInitials(localPeer?.metadata?.displayName || ""),
     video: video ? [video] : [],
     audio: audio ? [audio] : [],
     screenSharing: screenSharing ? [screenSharing] : [],
@@ -92,10 +95,16 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   };
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
+  const noPeers = !peers.length;
 
   return (
-    <div id="videochat" className="overflow-y-auto">
-      <div className="grid-wrapper flex h-full flex-col items-center justify-start md:flex-row md:items-start">
+    <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
+      <div
+        className={clsx(
+          "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]",
+          isScreenSharingActive && (noPeers ? "relative" : "sm:grid-cols-3/1")
+        )}
+      >
         {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
 
         <MediaPlayerPeersSection

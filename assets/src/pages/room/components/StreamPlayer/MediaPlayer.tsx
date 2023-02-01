@@ -5,6 +5,7 @@ export interface Props {
   flipHorizontally?: boolean;
   videoStream: MediaStream | null;
   audioStream: MediaStream | null;
+  // todo remove because we could remove audioStream
   playAudio?: boolean;
 }
 

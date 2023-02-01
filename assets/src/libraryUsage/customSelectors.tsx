@@ -35,6 +35,21 @@ export const createPeerGuiSelector: CreatePeerGuiSelector =
     };
   };
 
+export type CreateLocalPeerGuiSelector = () => Selector<PeerMetadata, TrackMetadata, PeerGui | null>;
+export const createLocalPeerGuiSelector: CreateLocalPeerGuiSelector =
+  (): Selector<PeerMetadata, TrackMetadata, PeerGui | null> =>
+  (snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null): PeerGui | null => {
+    if (!snapshot) return null;
+    const peer = snapshot.local;
+    if(!peer.id) throw Error("Local peerId is empty!")
+
+    return {
+      id: peer.id,
+      emoji: peer.metadata?.emoji || null,
+      name: peer.metadata?.displayName || null,
+    };
+  };
+
 type CreateTracksRecordSelector = (
   peerId: PeerId
 ) => Selector<PeerMetadata, TrackMetadata, Partial<Record<TrackType, LibraryTrackMinimal>>>;

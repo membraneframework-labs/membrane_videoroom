@@ -19,8 +19,11 @@ import {
 } from "../../../../library/selectors";
 import {
   createAudioTrackStatusSelector,
+  createLocalPeerGuiSelector,
   createLocalTracksRecordSelector,
+  createPeerGuiSelector,
   createTracksRecordSelector,
+  PeerGui,
 } from "../../../../libraryUsage/customSelectors";
 import { useSelector2 } from "../../../../libraryUsage/setup";
 import { useLog } from "../../../../helpers/UseLog";
@@ -105,13 +108,25 @@ type MediaPlayerTileWrapperProps = {
 //
 const RemoteMediaPlayerTileWrapper = ({ peerId }: MediaPlayerTileWrapperProps) => {
   const tracks = useSelector2(createTracksRecordSelector(peerId));
+  const peer: PeerGui | null = useSelector2(createPeerGuiSelector(peerId));
 
   return (
     <MediaPlayerTile
       audioStream={tracks.audio?.stream || null}
       videoStream={tracks.camera?.stream || null}
       playAudio={true}
-      layers={<RemoteLayer peerId={peerId} />}
+      layers={
+        <>
+          <PeerInfoLayer
+            bottomLeft={
+              <div>
+                {peer?.emoji} {peer?.name}
+              </div>
+            }
+          />
+          <RemoteLayer peerId={peerId} />
+        </>
+      }
     />
   );
 };
@@ -122,10 +137,6 @@ const RemoteMediaPlayerTileWrapper = ({ peerId }: MediaPlayerTileWrapperProps) =
 //     audio: tracks.audio.
 //   }), [tracks])
 // };
-
-type LocalPeerMediaPlayerWrapperProps = {
-  // clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
-};
 
 type RemoteLayerProps = {
   peerId: PeerId;
@@ -148,8 +159,9 @@ const RemoteLayer = ({ peerId }: RemoteLayerProps) => {
   );
 };
 
-const LocalPeerMediaPlayerWrapper = (props: LocalPeerMediaPlayerWrapperProps) => {
+const LocalPeerMediaPlayerWrapper = () => {
   const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector2(createLocalTracksRecordSelector());
+  const peer: PeerGui | null = useSelector2(createLocalPeerGuiSelector());
 
   return (
     <MediaPlayerTile
@@ -157,6 +169,15 @@ const LocalPeerMediaPlayerWrapper = (props: LocalPeerMediaPlayerWrapperProps) =>
       videoStream={tracks.camera?.stream || null}
       flipHorizontally={true}
       playAudio={false}
+      layers={
+        <PeerInfoLayer
+          bottomLeft={
+            <div>
+              {peer?.emoji} {peer?.name}
+            </div>
+          }
+        />
+      }
     />
   );
 };

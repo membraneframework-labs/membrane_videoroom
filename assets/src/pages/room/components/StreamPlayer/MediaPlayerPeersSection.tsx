@@ -83,12 +83,13 @@ type Props = {
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn?: boolean; // screensharing or pinned user
   webrtc?: MembraneWebRTC;
+  pinningApi: PinningApi;
 };
 
 const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
 const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
-const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {
+const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
 
   const getGridStyle = () => {
@@ -110,7 +111,6 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
   const videoGridStyle = getGridStyle();
   const tileSize = allPeersConfig.length >= 7 ? "M" : "L";
 
-  const pinningApi = usePinning();
   const {pinnedTrackId, pin, unpin} : PinningApi = pinningApi;  
 
   return (

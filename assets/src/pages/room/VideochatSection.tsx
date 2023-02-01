@@ -10,6 +10,7 @@ import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/Stre
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
+import usePinning from "../../features/room-page/utils/usePinning";
 
 type Props = {
   peers: RemotePeer[];
@@ -92,7 +93,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
   const noPeers = !peers.length;
-  const [pinnedPeerId, setPinnedPeerId] = useState<string | null>(null);
+  const pinningApi = usePinning();
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
@@ -102,7 +103,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           isScreenSharingActive && (noPeers ? "relative" : "sm:grid-cols-3/1")
         )}
       >
-        {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}
+        {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>}
 
         <MediaPlayerPeersSection
           peers={peers}
@@ -110,6 +111,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           showSimulcast={showSimulcast}
           oneColumn={isScreenSharingActive}
           webrtc={webrtc}
+          pinningApi={pinningApi}
         />
       </div>
     </div>

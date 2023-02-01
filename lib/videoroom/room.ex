@@ -26,10 +26,20 @@ defmodule Videoroom.Room do
     GenServer.start_link(__MODULE__, [], opts)
   end
 
+  @spec add_peer_channel(pid(), pid(), String.t()) :: :ok
+  def add_peer_channel(room_pid, peer_channel_pid, peer_id) do
+    GenServer.call(room_pid, {:add_peer_channel, peer_channel_pid, peer_id})
+  end
+
+  @spec room_span_id(String.t()) :: String.t()
+  def room_span_id(id), do: "room:#{id}"
+
   @impl true
   def init(args) do
     room_id = args.room_id
     simulcast? = args.simulcast?
+
+    Logger.metadata(room_id: room_id)
     Membrane.Logger.info("Spawning room process: #{inspect(self())}")
 
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)
@@ -77,9 +87,14 @@ defmodule Videoroom.Room do
       TURNManager.ensure_tls_turn_launched(integrated_turn_options, port: tls_turn_port)
     end
 
-    {:ok, _supervisor, pid} = Membrane.RTC.Engine.start(rtc_engine_options, [])
+    {:ok, pid} = Membrane.RTC.Engine.start_link(rtc_engine_options, [])
     Engine.register(pid, self())
-    Process.monitor(pid)
+
+    {:ok, _pid} =
+      DynamicSupervisor.start_child(
+        Videoroom.RoomMonitorSupervisor,
+        {Videoroom.Room.Monitor, [self(), room_id]}
+      )
 
     {:ok,
      %{
@@ -93,7 +108,7 @@ defmodule Videoroom.Room do
   end
 
   @impl true
-  def handle_info({:add_peer_channel, peer_channel_pid, peer_id}, state) do
+  def handle_call({:add_peer_channel, peer_channel_pid, peer_id}, _from, state) do
     state = put_in(state, [:peer_channels, peer_id], peer_channel_pid)
     send(peer_channel_pid, {:simulcast_config, state.simulcast?})
     Process.monitor(peer_channel_pid)
@@ -146,7 +161,7 @@ defmodule Videoroom.Room do
 
     :ok = Engine.add_endpoint(state.rtc_engine, endpoint, peer_id: peer_id, node: peer_node)
 
-    {:noreply, state}
+    {:reply, :ok, state}
   end
 
   @impl true
@@ -163,7 +178,15 @@ defmodule Videoroom.Room do
     Membrane.Logger.error("Endpoint #{inspect(endpoint_id)} has crashed!")
     peer_channel = state.peer_channels[endpoint_id]
 
-    send(peer_channel, :endpoint_crashed)
+    if peer_channel do
+      send(peer_channel, :endpoint_crashed)
+    else
+      Membrane.Logger.warn("""
+      No peer corresponding to endpoint: #{inspect(endpoint_id)}.
+      It might have left just before the crash happend or the
+      crash happend as a result of peer leaving.
+      """)
+    end
 
     {:noreply, state}
   end
@@ -177,27 +200,33 @@ defmodule Videoroom.Room do
 
   @impl true
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    if pid == state.rtc_engine do
-      room_span_id(state.room_id)
-      |> Membrane.OpenTelemetry.end_span()
+    {peer_id, _peer_channel_id} =
+      state.peer_channels
+      |> Enum.find(fn {_peer_id, peer_channel_pid} -> peer_channel_pid == pid end)
 
-      {:stop, :normal, state}
-    else
-      {peer_id, _peer_channel_id} =
-        state.peer_channels
-        |> Enum.find(fn {_peer_id, peer_channel_pid} -> peer_channel_pid == pid end)
+    Membrane.Logger.info("Peer #{inspect(peer_id)} left")
 
-      Membrane.Logger.info("Peer #{inspect(peer_id)} left RTC Engine")
+    Engine.remove_endpoint(state.rtc_engine, peer_id)
+    {_elem, state} = pop_in(state, [:peer_channels, peer_id])
 
-      Engine.remove_endpoint(state.rtc_engine, peer_id)
-      {_elem, state} = pop_in(state, [:peer_channels, peer_id])
+    if state.peer_channels == %{} do
+      Membrane.Logger.info("Last peer left the room. Terminating engine.")
 
-      if state.peer_channels == %{} do
-        Engine.terminate(state.rtc_engine)
-        {:stop, :normal, state}
-      else
-        {:noreply, state}
+      case Engine.terminate(state.rtc_engine, blocking?: true) do
+        :ok ->
+          Membrane.Logger.info("Engine terminated.")
+          {:stop, :normal, state}
+
+        error ->
+          Membrane.Logger.error(
+            "Couldn't terminate engine gracefully: #{inspect(error)}. Forcing termination."
+          )
+
+          Process.exit(state.rtc_engine, :kill)
+          {:noreply, state}
       end
+    else
+      {:noreply, state}
     end
   end
 
@@ -223,6 +252,4 @@ defmodule Videoroom.Room do
       {:"library.name", :membrane_rtc_engine},
       {:"library.version", "server:#{Application.spec(:membrane_rtc_engine, :vsn)}"}
     ]
-
-  defp room_span_id(id), do: "room:#{id}"
 end

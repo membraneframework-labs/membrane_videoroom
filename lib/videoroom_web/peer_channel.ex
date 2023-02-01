@@ -18,32 +18,7 @@ defmodule VideoRoomWeb.PeerChannel do
       pid ->
         {:ok, pid}
     end
-    |> case do
-      {:ok, room_pid} ->
-        do_join(socket, room_pid, room_id)
-
-      {:error, {:already_started, room_pid}} ->
-        do_join(socket, room_pid, room_id)
-
-      {:error, reason} ->
-        Logger.error("""
-        Failed to start room.
-        Room: #{inspect(room_id)}
-        Reason: #{inspect(reason)}
-        """)
-
-        {:error, %{reason: "failed to start room"}}
-    end
-  end
-
-  defp do_join(socket, room_pid, room_id) do
-    peer_id = "#{UUID.uuid4()}"
-    # TODO handle crash of room?
-    Process.monitor(room_pid)
-    send(room_pid, {:add_peer_channel, self(), peer_id})
-
-    {:ok,
-     Phoenix.Socket.assign(socket, %{room_id: room_id, room_pid: room_pid, peer_id: peer_id})}
+    |> handle_start_room_result(socket, room_id, simulcast?)
   end
 
   @impl true
@@ -82,5 +57,47 @@ defmodule VideoRoomWeb.PeerChannel do
     })
 
     {:stop, :normal, socket}
+  end
+
+  defp handle_start_room_result(start_room_result, socket, room_id, simulcast?) do
+    case start_room_result do
+      {:ok, room_pid} ->
+        do_join(socket, room_pid, room_id, simulcast?)
+
+      {:error, {:already_started, room_pid}} ->
+        do_join(socket, room_pid, room_id, simulcast?)
+
+      {:error, reason} ->
+        Logger.error("""
+        Failed to start room.
+        Room: #{inspect(room_id)}
+        Reason: #{inspect(reason)}
+        """)
+
+        {:error, %{reason: "failed to start room"}}
+    end
+  end
+
+  defp do_join(socket, room_pid, room_id, simulcast?) do
+    peer_id = "#{UUID.uuid4()}"
+    # TODO handle crash of room?
+
+    try do
+      Videoroom.Room.add_peer_channel(room_pid, self(), peer_id)
+    catch
+      :exit, _reason ->
+        Logger.info("Room #{inspect(room_id)} died when trying to join. Creating a new one.")
+
+        Videoroom.Room.start(%{room_id: room_id, simulcast?: simulcast?},
+          name: {:global, room_id}
+        )
+        |> handle_start_room_result(socket, room_id, simulcast?)
+    else
+      :ok ->
+        Process.monitor(room_pid)
+
+        {:ok,
+         Phoenix.Socket.assign(socket, %{room_id: room_id, room_pid: room_pid, peer_id: peer_id})}
+    end
   end
 end

@@ -9,6 +9,8 @@ import React, { FC } from "react";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import { UseMembraneClientType } from "../../library/types";
 import { PeerMetadata, TrackMetadata } from "../../libraryUsage/types";
+import { useSelector2 } from "../../libraryUsage/setup";
+import { createIsScreenSharingActiveSelector } from "../../libraryUsage/customSelectors";
 
 type Props = {
   // peers: RemotePeer[];
@@ -95,11 +97,13 @@ export const VideochatSection: FC<Props> = (props: Props) => {
   // };
 
   // const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
+  const isScreenSharingActive = useSelector2(createIsScreenSharingActiveSelector());
 
   return (
     <div id="videochat" className="overflow-y-auto">
       <div className="grid-wrapper flex h-full flex-col items-center justify-start md:flex-row md:items-start">
-        {/*{isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}*/}
+        {isScreenSharingActive && <ScreenSharingPlayers />}
+        {/*{isScreenSharingActive && "ScreenSharing active"}*/}
 
         <MediaPlayerPeersSection
           // clientWrapper={clientWrapper}
@@ -107,7 +111,7 @@ export const VideochatSection: FC<Props> = (props: Props) => {
           // localUser={localUser}
           // showSimulcast={showSimulcast}
           // showDeveloperInfo={showDeveloperInfo}
-          oneColumn={false}
+          oneColumn={!isScreenSharingActive}
           // webrtc={webrtc}
         />
       </div>

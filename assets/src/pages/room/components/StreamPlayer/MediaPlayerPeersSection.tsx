@@ -18,6 +18,7 @@ import {
   createPeerIdsSelector,
 } from "../../../../library/selectors";
 import { createLocalTracksRecordSelector, createTracksRecordSelector } from "../../../../libraryUsage/customSelectors";
+import { useSelector2 } from "../../../../libraryUsage/setup";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -79,7 +80,7 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
 };
 
 type Props = {
-  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata>;
+  // clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata>;
   // peers: RemotePeer[];
   // localUser: MediaPlayerTileConfig;
   // showSimulcast?: boolean;
@@ -93,12 +94,12 @@ const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.
 const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
 type MediaPlayerTileWrapperProps = {
-  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
+  // clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
   peerId: string;
 };
 //
-const RemoteMediaPlayerTileWrapper = ({ clientWrapper, peerId }: MediaPlayerTileWrapperProps) => {
-  const tracks = useSelector(clientWrapper, createTracksRecordSelector(peerId));
+const RemoteMediaPlayerTileWrapper = ({ peerId }: MediaPlayerTileWrapperProps) => {
+  const tracks = useSelector2(createTracksRecordSelector(peerId));
 
   return (
     <MediaPlayerTile
@@ -117,14 +118,11 @@ const RemoteMediaPlayerTileWrapper = ({ clientWrapper, peerId }: MediaPlayerTile
 // };
 
 type LocalPeerMediaPlayerWrapperProps = {
-  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
+  // clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
 };
 
-const LocalPeerMediaPlayerWrapper = ({ clientWrapper }: LocalPeerMediaPlayerWrapperProps) => {
-  const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector(
-    clientWrapper,
-    createLocalTracksRecordSelector()
-  );
+const LocalPeerMediaPlayerWrapper = (props: LocalPeerMediaPlayerWrapperProps) => {
+  const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector2(createLocalTracksRecordSelector());
 
   return (
     <MediaPlayerTile
@@ -141,8 +139,8 @@ const MediaPlayerPeersSection: FC<Props> = ({
   // localUser,
   // showSimulcast,
   oneColumn,
-  clientWrapper,
-}: // webrtc,
+}: // clientWrapper,
+// webrtc,
 // showDeveloperInfo,
 Props) => {
   // const allPeersConfig: MediaPlayerTileConfig[] = [
@@ -150,8 +148,8 @@ Props) => {
   //   ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
   // ];
 
-  const localPeerId: PeerId | null = useSelector(clientWrapper, createLocalPeerIdsSelector());
-  const remotePeersIds: Array<PeerId> = useSelector(clientWrapper, createPeerIdsSelector());
+  const localPeerId: PeerId | null = useSelector2(createLocalPeerIdsSelector());
+  const remotePeersIds: Array<PeerId> = useSelector2(createPeerIdsSelector());
 
   return (
     <div
@@ -161,9 +159,9 @@ Props) => {
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {localPeerId && <LocalPeerMediaPlayerWrapper clientWrapper={clientWrapper} />}
+      {localPeerId && <LocalPeerMediaPlayerWrapper />}
       {remotePeersIds.map((peerId) => (
-        <RemoteMediaPlayerTileWrapper key={peerId} clientWrapper={clientWrapper} peerId={peerId} />
+        <RemoteMediaPlayerTileWrapper key={peerId} peerId={peerId} />
       ))}
 
       {/*<MediaPlayerTile />*/}

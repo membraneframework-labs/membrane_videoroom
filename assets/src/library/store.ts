@@ -2,17 +2,37 @@ import { LibraryPeersState } from "./types";
 
 export type Store<PeerMetadataGeneric, TrackMetadataGeneric> = {
   getSnapshot: () => LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>;
-  setStore: (setter: (prevState: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>) => LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>) => void;
+  setStore: (
+    setter: (
+      prevState: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
+    ) => LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
+  ) => void;
   subscribe: (onStoreChange: () => void) => () => void;
 };
 
 export type Listener = () => void;
 
-export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): Store<PeerMetadataGeneric, TrackMetadataGeneric> => {
-  type StateType = LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
+export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): Store<
+  PeerMetadataGeneric,
+  TrackMetadataGeneric
+> => {
+  type StateType = LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>;
 
   let listeners: Listener[] = [];
-  let store: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = { local: { id: null, tracks: {}, metadata: null }, remote: {} };
+  let store: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
+    local: {
+      id: null,
+      tracks: {},
+      metadata: null,
+    },
+    remote: {},
+    connectivity: {
+      api: null,
+      webrtc: null,
+      signaling: null,
+      socket: null,
+    }
+  };
 
   const getSnapshot = (): StateType => {
     return store;
@@ -32,6 +52,8 @@ export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): Store<
     listeners.forEach((listener) => {
       listener();
     });
+
+    console.log({ name: "fullStore", store });
   };
 
   return { getSnapshot, subscribe, setStore };

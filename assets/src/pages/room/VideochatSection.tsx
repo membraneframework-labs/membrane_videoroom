@@ -16,7 +16,7 @@ type Props = {
   // showSimulcast?: boolean;
   // showDeveloperInfo?: boolean;
   // webrtc?: MembraneWebRTC;
-  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata>;
+  // clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata>;
 };
 
 const localPeerToScreenSharingStream = (localPeer: LocalPeer): VideoStreamWithMetadata => {
@@ -75,7 +75,7 @@ const prepareScreenSharingStreams = (
 const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
   localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
-export const VideochatSection: FC<Props> = ({ clientWrapper }: Props) => {
+export const VideochatSection: FC<Props> = (props: Props) => {
   // const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   // const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
   // const screenSharing: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["screensharing"]);
@@ -102,7 +102,7 @@ export const VideochatSection: FC<Props> = ({ clientWrapper }: Props) => {
         {/*{isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} />}*/}
 
         <MediaPlayerPeersSection
-          clientWrapper={clientWrapper}
+          // clientWrapper={clientWrapper}
           // peers={peers}
           // localUser={localUser}
           // showSimulcast={showSimulcast}

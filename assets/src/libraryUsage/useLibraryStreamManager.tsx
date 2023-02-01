@@ -6,6 +6,7 @@ import { TrackType } from "../pages/types";
 // import { useSetLocalTrackMetadata } from "./useLibrarySetLocalTrackMetadata";
 import { UseMembraneClientType } from "../library/types";
 import { PeerMetadata, TrackMetadata } from "./types";
+import {useSelector2} from "./setup";
 
 export type Streams = {
   remote: MembraneStreaming;
@@ -17,7 +18,6 @@ export const useLibraryStreamManager = (
   mode: StreamingMode,
   isConnected: boolean,
   simulcast: boolean,
-  clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null,
   config: MediaStreamConfig | DisplayMediaStreamConfig,
   autostartStreaming?: boolean
 ): Streams => {
@@ -28,7 +28,6 @@ export const useLibraryStreamManager = (
     isConnected,
     simulcast,
     localMedia.stream || null,
-    clientWrapper
   );
   // useSetLocalUserTrack(type, , localMedia.stream, localMedia.isEnabled);
   // useSetRemoteTrackId(type, peersApi.setLocalTrackId, remote.trackId);

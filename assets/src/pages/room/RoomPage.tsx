@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, {FC, useCallback, useEffect, useState} from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -14,11 +14,12 @@ import Button from "../../features/shared/components/Button";
 import { useLibraryMembraneClient } from "../../library/useLibraryMembraneClient";
 import { useLog } from "../../helpers/UseLog";
 import { useSelector } from "../../library/useSelector";
-import { createFullStateSelector } from "../../library/selectors";
+import {createFullStateSelector, createIsConnectedSelector} from "../../library/selectors";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
 import { UseMembraneClientType } from "../../library/types";
 import { TrackMetadata } from "../../libraryUsage/types";
-import { createMembraneClient } from "../../library/createMembraneClinet";
+import { createMembraneClient } from "../../library/createMembraneClient";
+import {useClient, useClient2, useSelector2} from "../../libraryUsage/setup";
 
 type Props = {
   displayName: string;
@@ -29,8 +30,6 @@ type Props = {
 };
 
 export type SetErrorMessage = (value: string) => void;
-
-const { useClient } = createMembraneClient();
 
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
   const wakeLock = useAcquireWakeLockAutomatically();
@@ -51,26 +50,30 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   const client = useClient();
 
-  useEffect(() => {
-    client.connect(roomId, peerMetadata, isSimulcastOn);
-  }, [client, isSimulcastOn, peerMetadata, roomId]);
+  // useEffect(() => {
+  //   client.connect(roomId, peerMetadata, isSimulcastOn);
+  //
+  //   return () => {
+  //     client.disconnect()
+  //   }
+  // }, []);
 
-  const fullState = useSelector(client, createFullStateSelector());
+  // const fullState = useSelector2(createFullStateSelector());
+  const isConnected = useSelector2(createIsConnectedSelector())
 
-  useLog(clientWrapper?.store, "State");
-  useLog(fullState, "Full state");
+  // useLog(clientWrapper?.store, "State");
+  // useLog(fullState, "Full state from selector");
 
   // const { state: peerState, api: peerApi } = usePeersState();
   // const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
-  const isConnected = !!fullState?.local.id;
+  // const isConnected = !!fullState?.local.id;
 
   const camera = useLibraryStreamManager(
     "camera",
     mode,
     isConnected,
     isSimulcastOn,
-    clientWrapper,
     VIDEO_TRACKS_CONFIG,
     autostartStreaming
   );
@@ -79,7 +82,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     mode,
     isConnected,
     isSimulcastOn,
-    clientWrapper,
     AUDIO_TRACKS_CONFIG,
     autostartStreaming
   );
@@ -88,13 +90,13 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     mode,
     isConnected,
     isSimulcastOn,
-    clientWrapper,
     SCREEN_SHARING_TRACKS_CONFIG,
     false
   );
 
   return (
     <PageLayout>
+      <button onClick={() => client.connect(roomId, peerMetadata, isSimulcastOn)}>Connect</button>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section className="flex h-full w-full flex-col">
@@ -106,16 +108,16 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
             </div>
           )}
 
-          {clientWrapper && (
+          {/*{clientWrapper && (*/}
             <VideochatSection
-              clientWrapper={clientWrapper}
+              // clientWrapper={clientWrapper}
               // peers={peerState.remote}
               // localPeer={peerState.local}
               // showSimulcast={showSimulcastMenu}
               // showDeveloperInfo={showDeveloperInfo}
               // webrtc={webrtc}
             />
-          )}
+          {/*)}*/}
         </section>
 
         <MediaControlButtons

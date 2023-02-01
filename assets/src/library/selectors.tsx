@@ -1,4 +1,5 @@
 import type { LibraryPeersState, Selector, LibraryTrackMinimal, PeerId, TrackId } from "./types";
+import { Connectivity } from "./types";
 
 type S<PeerM, TrackM> = LibraryPeersState<PeerM, TrackM>;
 
@@ -7,6 +8,13 @@ export const createFullStateSelector: CreateFullStateSelector =
   <PeerM, TrackM>(): Selector<PeerM, TrackM, LibraryPeersState<PeerM, TrackM> | null> =>
   (snapshot: LibraryPeersState<PeerM, TrackM> | null): LibraryPeersState<PeerM, TrackM> | null =>
     snapshot || null;
+
+type CreateIsConnectedSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, boolean>;
+export const createIsConnectedSelector: CreateIsConnectedSelector =
+    <PeerM, TrackM>(): Selector<PeerM, TrackM, boolean> =>
+        (snapshot: LibraryPeersState<PeerM, TrackM> | null): boolean =>
+            !!snapshot?.local?.id || false;
+
 
 type CreateLocalPeerIdsSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, PeerId | null>;
 export const createLocalPeerIdsSelector: CreateLocalPeerIdsSelector =
@@ -28,9 +36,9 @@ export const createTracksIdsSelector: CreateTracksIdsSelector =
 
 type CreateLocalTracksIdsSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, Array<TrackId>>;
 export const createLocalTracksIdsSelector: CreateLocalTracksIdsSelector =
-    <PeerM, TrackM>(): Selector<PeerM, TrackM, Array<PeerId>> =>
-        (snapshot: LibraryPeersState<PeerM, TrackM> | null): Array<TrackId> =>
-            Object.values(snapshot?.local?.tracks || {}).map((track) => track.trackId);
+  <PeerM, TrackM>(): Selector<PeerM, TrackM, Array<PeerId>> =>
+  (snapshot: LibraryPeersState<PeerM, TrackM> | null): Array<TrackId> =>
+    Object.values(snapshot?.local?.tracks || {}).map((track) => track.trackId);
 
 type CreateTracksSelector = <PeerM, TrackM>(peerId: PeerId) => Selector<PeerM, TrackM, Array<LibraryTrackMinimal>>;
 export const createTracksSelector: CreateTracksSelector =
@@ -60,3 +68,9 @@ export const createTrackMetadataSelector: CreateTrackMetadataSelector =
   <PeerM, TrackM>(peerId: string, trackId: string): Selector<PeerM, TrackM, object> =>
   (snapshot: LibraryPeersState<PeerM, TrackM> | null): object =>
     snapshot?.remote[peerId]?.tracks[trackId]?.metadata || {};
+
+type CreateApiSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, Connectivity<TrackM>>;
+export const createConnectivitySelector: CreateApiSelector =
+  <PeerM, TrackM>(): Selector<PeerM, TrackM, Connectivity<TrackM>> =>
+  (snapshot: LibraryPeersState<PeerM, TrackM> | null): Connectivity<TrackM> =>
+    snapshot?.connectivity || { webrtc: null, signaling: null, socket: null, api: null };

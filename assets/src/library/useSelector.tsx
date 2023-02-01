@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { cache } from "./cache";
-import {Selector, Subscribe, UseMembraneClientType} from "./types";
-import { Listener } from "./store";
+import { Selector, Subscribe } from "./types";
+import { Listener, Store } from "./store";
 
 export const useSelector = <Result, PeerMetadataGeneric, TrackMetadataGeneric>(
-  clientWrapper: UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> | null,
+  store: Store<PeerMetadataGeneric, TrackMetadataGeneric> | null,
   selector: Selector<PeerMetadataGeneric, TrackMetadataGeneric, Result>
 ): Result => {
   const cachedSelector: Selector<PeerMetadataGeneric, TrackMetadataGeneric, Result> = useMemo(
@@ -14,7 +14,7 @@ export const useSelector = <Result, PeerMetadataGeneric, TrackMetadataGeneric>(
 
   const subscribe: Subscribe = useCallback(
     (listener: Listener) => {
-      const sub: Subscribe | undefined = clientWrapper?.store?.subscribe;
+      const sub: Subscribe | undefined = store?.subscribe;
 
       // return () => {};
       // todo refactor add guard statement
@@ -24,12 +24,12 @@ export const useSelector = <Result, PeerMetadataGeneric, TrackMetadataGeneric>(
         return sub(listener);
       }
     },
-    [clientWrapper]
+    [store]
   );
 
   const getSnapshotWithSelector = useCallback(() => {
-    return cachedSelector(clientWrapper?.store?.getSnapshot() || null);
-  }, [clientWrapper, cachedSelector]);
+    return cachedSelector(store?.getSnapshot() || null);
+  }, [store, cachedSelector]);
 
   const result: Result = useSyncExternalStore(subscribe, getSnapshotWithSelector);
 

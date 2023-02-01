@@ -1,8 +1,9 @@
 import { Callbacks, MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import TypedEmitter from "typed-emitter";
-import { Channel } from "phoenix";
+import { Channel, Socket } from "phoenix";
 import { Store } from "./store";
 import { MembraneApi } from "./api";
+import { Something } from "./createMembraneClient";
 
 export type TrackId = string;
 export type PeerId = string;
@@ -33,9 +34,17 @@ export type LibraryRemotePeer<PeerMetadataGeneric, TrackMetadataGeneric> = {
   tracks: Record<TrackId, LibraryTrack<TrackMetadataGeneric>>;
 };
 
+export type Connectivity<TrackMetadataGeneric> = {
+  socket: Socket | null;
+  signaling: Channel | null;
+  webrtc: MembraneWebRTC | null;
+  api: MembraneApi<TrackMetadataGeneric> | null
+};
+
 export type LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
   local: LibraryLocalPeer<PeerMetadataGeneric, TrackMetadataGeneric>;
   remote: Record<PeerId, LibraryRemotePeer<PeerMetadataGeneric, TrackMetadataGeneric>>;
+  connectivity: Connectivity<TrackMetadataGeneric>;
 };
 
 // --- selectors
@@ -49,9 +58,7 @@ export type LibraryTrackMinimal = {
   simulcastConfig: LibrarySimulcastConfig | null;
 };
 
-
 export type ConnectionStatus = "before-connection" | "connected" | "connecting" | "error";
-
 
 export type UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> = {
   webrtc?: MembraneWebRTC;
@@ -59,6 +66,6 @@ export type UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> = {
   signaling?: Channel;
   webrtcConnectionStatus?: ConnectionStatus;
   signalingStatus?: ConnectionStatus;
-  store: Store<PeerMetadataGeneric, TrackMetadataGeneric>;
+  // store: Store<PeerMetadataGeneric, TrackMetadataGeneric>;
   api: MembraneApi<TrackMetadataGeneric> | null;
 };

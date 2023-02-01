@@ -25,6 +25,8 @@ import { Store } from "./store";
 
 type UseLibraryMembraneClient2ReturnType<PeerMetadataGeneric, TrackMetadataGeneric> = {
   connect: (roomId: string, peerMetadata: PeerMetadataGeneric, isSimulcastOn: boolean) => void;
+  disconnect: () => void;
+  store: Store<PeerMetadataGeneric, TrackMetadataGeneric>;
 } & Partial<UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric>>;
 
 // todo extract callbacks
@@ -72,7 +74,7 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
               signaling,
               signalingStatus: "connected",
               webrtcConnectionStatus: "error",
-              store,
+              // store,
               api: null,
             });
             messageEmitter.emit("onConnectionError", message);
@@ -87,10 +89,10 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
               signaling,
               signalingStatus: "connected",
               webrtcConnectionStatus: "connected",
-              store,
+              // store,
               api: prevState?.api || null,
             }));
-            store.setStore((): StateShorthand => {
+            store.setStore((prevState): StateShorthand => {
               const remote: Record<string, RemotePeerShorthand> = Object.fromEntries(
                 new Map(
                   peersInRoom.map((peer) => [
@@ -107,11 +109,11 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
               // todo add your own metadata
               const local: LocalPeerShorthand = {
                 id: peerId,
-                metadata: null,
+                metadata: peerMetadata,
                 tracks: {},
               };
 
-              return { local, remote };
+              return { ...prevState, local, remote };
             });
             messageEmitter.emit("onJoinSuccess", peerId, peersInRoom);
           },
@@ -400,13 +402,25 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
         return;
       });
 
+      store.setStore((prevState: StateShorthand): StateShorthand => {
+        return {
+          ...prevState,
+          connectivity: {
+            socket: socket,
+            api: api,
+            webrtc: webrtc,
+            signaling: signaling,
+          },
+        };
+      });
+
       setState({
         webrtc,
         messageEmitter,
         signaling,
         signalingStatus: "connecting",
         webrtcConnectionStatus: "before-connection",
-        store,
+        // store,
         api,
       });
 
@@ -420,7 +434,7 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
             signaling,
             signalingStatus: "connected",
             webrtcConnectionStatus: "connecting",
-            store,
+            // store,
             api,
           });
         })
@@ -435,7 +449,7 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
             signaling,
             signalingStatus: "error",
             webrtcConnectionStatus: "before-connection",
-            store,
+            // store,
             api,
           });
         });
@@ -454,7 +468,15 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
     [store]
   );
 
+  const disconnect = useCallback(() => {
+    if (!state) return;
+    state.webrtc?.leave();
+    state.signaling?.leave();
+    // state?.socket?.off([socketOnCloseRef, socketOnErrorRef]);
+    setState(null);
+  }, [state]);
+
   return useMemo(() => {
-    return { ...state, connect };
-  }, [state, connect]);
+    return { ...state, connect, disconnect, store };
+  }, [state, connect, disconnect, store]);
 };

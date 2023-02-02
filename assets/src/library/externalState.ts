@@ -1,6 +1,6 @@
-import { LibraryPeersState } from "./types";
+import { LibraryPeersState } from "./state.types";
 
-export type Store<PeerMetadataGeneric, TrackMetadataGeneric> = {
+export type ExternalState<PeerMetadataGeneric, TrackMetadataGeneric> = {
   getSnapshot: () => LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>;
   setStore: (
     setter: (
@@ -12,7 +12,7 @@ export type Store<PeerMetadataGeneric, TrackMetadataGeneric> = {
 
 export type Listener = () => void;
 
-export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): Store<
+export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): ExternalState<
   PeerMetadataGeneric,
   TrackMetadataGeneric
 > => {
@@ -31,7 +31,7 @@ export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): Store<
       webrtc: null,
       signaling: null,
       socket: null,
-    }
+    },
   };
 
   const getSnapshot = (): StateType => {
@@ -58,3 +58,4 @@ export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): Store<
 
   return { getSnapshot, subscribe, setStore };
 };
+export type Subscribe = (onStoreChange: () => void) => () => void;

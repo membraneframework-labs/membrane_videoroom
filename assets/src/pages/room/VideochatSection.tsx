@@ -7,7 +7,7 @@ import MediaPlayerPeersSection, {
 import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
 import React, { FC } from "react";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
-import { UseMembraneClientType } from "../../library/types";
+import { UseMembraneClientType } from "../../library/state.types";
 import { PeerMetadata, TrackMetadata } from "../../libraryUsage/types";
 import { useSelector2 } from "../../libraryUsage/setup";
 import { createIsScreenSharingActiveSelector } from "../../libraryUsage/customSelectors";

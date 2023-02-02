@@ -1,6 +1,6 @@
 import { Callbacks } from "@jellyfish-dev/membrane-webrtc-js";
 import { useEffect, useMemo } from "react";
-import {UseMembraneClientType} from "./types";
+import {UseMembraneClientType} from "./state.types";
 
 // TODO remove
 export const useClientErrorState = <GenericPeerMetadata, GenericTrackMetadata>(

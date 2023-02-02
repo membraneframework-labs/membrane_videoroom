@@ -21,9 +21,9 @@ import {
   LibraryTrack,
   TrackId,
   UseMembraneClientType,
-} from "./types";
-import {MembraneApi} from "./api";
-import {createStore} from "./store";
+} from "./state.types";
+import {storeApi} from "./storeApi";
+import {createStore} from "./externalState";
 
 // todo extract callbacks
 export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGeneric>(
@@ -292,7 +292,7 @@ export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGener
       },
     });
 
-    const api: MembraneApi<TrackMetadataGeneric> = {
+    const api: storeApi<TrackMetadataGeneric> = {
       addTrack: (
         track: MediaStreamTrack,
         stream: MediaStream,

@@ -9,7 +9,7 @@ import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
 import CameraOff from "../../../../features/room-page/icons/CameraOff";
 import { useSelector } from "../../../../library/useSelector";
-import { LibraryTrackMinimal, PeerId, TrackId, UseMembraneClientType } from "../../../../library/types";
+import { LibraryTrackMinimal, PeerId, TrackId, UseMembraneClientType } from "../../../../library/state.types";
 import { PeerMetadata, TrackMetadata } from "../../../../libraryUsage/types";
 import {
   createLocalPeerIdsSelector,
@@ -18,15 +18,19 @@ import {
   createPeerIdsSelector,
 } from "../../../../library/selectors";
 import {
-  createAudioTrackStatusSelector,
-  createLocalPeerGuiSelector,
-  createLocalTracksRecordSelector,
-  createPeerGuiSelector,
-  createTracksRecordSelector,
-  PeerGui,
+    createAudioTrackStatusSelector,
+    createLocalPeerGuiSelector,
+    createLocalTracksRecordSelector,
+    createPeerGuiSelector, createTrackEncodingSelector,
+    createTracksRecordSelector,
+    PeerGui,
 } from "../../../../libraryUsage/customSelectors";
 import { useSelector2 } from "../../../../libraryUsage/setup";
 import { useLog } from "../../../../helpers/UseLog";
+import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
+import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
+import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
+import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -104,11 +108,18 @@ const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || 
 type MediaPlayerTileWrapperProps = {
   // clientWrapper: UseMembraneClientType<PeerMetadata, TrackMetadata> | null;
   peerId: string;
+  showSimulcast?: boolean;
 };
 //
-const RemoteMediaPlayerTileWrapper = ({ peerId }: MediaPlayerTileWrapperProps) => {
-  const tracks = useSelector2(createTracksRecordSelector(peerId));
+const RemoteMediaPlayerTileWrapper = ({ peerId, showSimulcast }: MediaPlayerTileWrapperProps) => {
+  const tracks: Partial<Record<string, LibraryTrackMinimal>> = useSelector2(createTracksRecordSelector(peerId));
   const peer: PeerGui | null = useSelector2(createPeerGuiSelector(peerId));
+  const encoding = useSelector2(createTrackEncodingSelector(tracks?.camera?.trackId || null));
+  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
+    "m",
+    peerId || null,
+    tracks.camera?.trackId || null
+  );
 
   return (
     <MediaPlayerTile
@@ -125,6 +136,14 @@ const RemoteMediaPlayerTileWrapper = ({ peerId }: MediaPlayerTileWrapperProps) =
             }
           />
           <RemoteLayer peerId={peerId} />
+          {showSimulcast && (
+            <SimulcastRemoteLayer
+              desiredEncoding={desiredEncoding}
+              setDesiredEncoding={setDesiredEncoding}
+              currentEncoding={encoding}
+              disabled={!tracks.camera?.stream}
+            />
+          )}
         </>
       }
     />
@@ -145,7 +164,7 @@ type RemoteLayerProps = {
 const RemoteLayer = ({ peerId }: RemoteLayerProps) => {
   const audioStatus = useSelector2(createAudioTrackStatusSelector(peerId));
 
-  useLog(audioStatus, "Audio status");
+  // useLog(audioStatus, "Audio status");
   return (
     <InfoLayer
       topLeft={
@@ -159,9 +178,14 @@ const RemoteLayer = ({ peerId }: RemoteLayerProps) => {
   );
 };
 
-const LocalPeerMediaPlayerWrapper = () => {
+export type LocalPeerMediaPlayerWrapperProps = {
+  showSimulcast?: boolean;
+};
+
+const LocalPeerMediaPlayerWrapper = ({ showSimulcast }: LocalPeerMediaPlayerWrapperProps) => {
   const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector2(createLocalTracksRecordSelector());
   const peer: PeerGui | null = useSelector2(createLocalPeerGuiSelector());
+  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(tracks.camera?.trackId || null);
 
   return (
     <MediaPlayerTile
@@ -170,13 +194,16 @@ const LocalPeerMediaPlayerWrapper = () => {
       flipHorizontally={true}
       playAudio={false}
       layers={
-        <PeerInfoLayer
-          bottomLeft={
-            <div>
-              {peer?.emoji} {peer?.name}
-            </div>
-          }
-        />
+        <>
+          <PeerInfoLayer
+            bottomLeft={
+              <div>
+                {peer?.emoji} {peer?.name}
+              </div>
+            }
+          />
+          {showSimulcast && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!tracks.camera?.stream}/>}
+        </>
       }
     />
   );
@@ -207,9 +234,9 @@ Props) => {
         "md:grid-cols-2": !oneColumn,
       })}
     >
-      {localPeerId && <LocalPeerMediaPlayerWrapper />}
+      {localPeerId && <LocalPeerMediaPlayerWrapper showSimulcast={true} />}
       {remotePeersIds.map((peerId) => (
-        <RemoteMediaPlayerTileWrapper key={peerId} peerId={peerId} />
+        <RemoteMediaPlayerTileWrapper key={peerId} peerId={peerId} showSimulcast={true} />
       ))}
 
       {/*<MediaPlayerTile />*/}

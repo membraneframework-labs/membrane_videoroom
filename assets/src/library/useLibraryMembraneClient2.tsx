@@ -1,46 +1,43 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Callbacks,
-  MembraneWebRTC,
-  Peer,
-  SerializedMediaEvent,
-  SimulcastConfig,
-  TrackBandwidthLimit,
-  TrackContext,
-  TrackEncoding,
-} from "@jellyfish-dev/membrane-webrtc-js";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Callbacks, MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
 import { Channel, Socket } from "phoenix";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
+import { LibraryPeersState, UseMembraneClientType } from "./state.types";
+import { createApiWrapper, storeApi } from "./storeApi";
+import { ExternalState } from "./externalState";
 import {
-  LibraryLocalPeer,
-  LibraryPeersState,
-  LibraryRemotePeer,
-  LibraryTrack,
-  TrackId,
-  UseMembraneClientType,
-} from "./types";
-import { MembraneApi } from "./api";
-import { Store } from "./store";
+  onJoinSuccess,
+  onPeerJoined,
+  onPeerLeft,
+  onTrackAdded,
+  onTrackEncodingChanged,
+  onTrackReady,
+  onTrackRemoved,
+  onTrackUpdated,
+} from "./state_mappers";
 
 type UseLibraryMembraneClient2ReturnType<PeerMetadataGeneric, TrackMetadataGeneric> = {
   connect: (roomId: string, peerMetadata: PeerMetadataGeneric, isSimulcastOn: boolean) => void;
   disconnect: () => void;
-  store: Store<PeerMetadataGeneric, TrackMetadataGeneric>;
+  store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric>;
 } & Partial<UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric>>;
 
 // todo extract callbacks
 export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGeneric>(
-  store: Store<PeerMetadataGeneric, TrackMetadataGeneric>
+  store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric>
 ): UseLibraryMembraneClient2ReturnType<PeerMetadataGeneric, TrackMetadataGeneric> => {
-  type StateShorthand = LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>;
-  type LocalPeerShorthand = LibraryLocalPeer<PeerMetadataGeneric, TrackMetadataGeneric>;
-  type RemotePeerShorthand = LibraryRemotePeer<PeerMetadataGeneric, TrackMetadataGeneric>;
-
   const [state, setState] = useState<UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> | null>(null);
+  const disconnectCallback = useRef<() => void>(() => {
+    return;
+  });
 
   const connect = useCallback(
     (roomId: string, peerMetadata: PeerMetadataGeneric, isSimulcastOn: boolean): void => {
+      if (disconnectCallback.current) {
+        disconnectCallback.current();
+      }
+
       const messageEmitter: TypedEmitter<Partial<Callbacks>> = new EventEmitter() as TypedEmitter<Partial<Callbacks>>;
 
       const socket = new Socket("/socket");
@@ -82,7 +79,6 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
           // todo [Peer] -> Peer[] ???
           onJoinSuccess: (peerId, peersInRoom: [Peer]) => {
             console.log({ name: "onJoinSuccess", peerId, peersInRoom });
-
             setState((prevState) => ({
               webrtc,
               messageEmitter,
@@ -92,307 +88,65 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
               // store,
               api: prevState?.api || null,
             }));
-            store.setStore((prevState): StateShorthand => {
-              const remote: Record<string, RemotePeerShorthand> = Object.fromEntries(
-                new Map(
-                  peersInRoom.map((peer) => [
-                    peer.id,
-                    {
-                      id: peer.id,
-                      metadata: peer.metadata,
-                      tracks: {},
-                    },
-                  ])
-                )
-              );
-
-              // todo add your own metadata
-              const local: LocalPeerShorthand = {
-                id: peerId,
-                metadata: peerMetadata,
-                tracks: {},
-              };
-
-              return { ...prevState, local, remote };
-            });
+            store.setStore(onJoinSuccess(peersInRoom, peerId, peerMetadata));
             messageEmitter.emit("onJoinSuccess", peerId, peersInRoom);
           },
           onRemoved: (reason) => {
             console.log({ name: "onRemoved", reason });
-
             messageEmitter.emit("onRemoved", reason);
             // todo handle
           },
           onPeerJoined: (peer) => {
             console.log({ name: "onPeerJoined", peer });
-
-            store.setStore((prevState: StateShorthand) => {
-              const remote: Record<string, RemotePeerShorthand> = {
-                ...prevState.remote,
-                [peer.id]: { id: peer.id, metadata: peer.metadata, tracks: {} },
-              };
-
-              return { ...prevState, remote };
-            });
+            store.setStore(onPeerJoined(peer));
             messageEmitter.emit("onPeerJoined", peer);
           },
           onPeerLeft: (peer) => {
             console.log({ name: "onPeerLeft", peer });
-
-            store.setStore((prevState: StateShorthand) => {
-              const remote: Record<string, RemotePeerShorthand> = {
-                ...prevState.remote,
-              };
-
-              delete remote[peer.id];
-
-              return { ...prevState, remote };
-            });
+            store.setStore(onPeerLeft(peer));
             messageEmitter.emit("onPeerLeft", peer);
           },
           onPeerUpdated: (peer: Peer) => {
             console.log({ name: "onPeerUpdated", peer });
-
             messageEmitter.emit("onPeerUpdated", peer);
           },
           onTrackReady: (ctx) => {
             console.log({ name: "onTrackReady", ctx });
-
-            store.setStore((prevState: StateShorthand) => {
-              if (!ctx.stream) return prevState;
-              if (!ctx.peer) return prevState;
-              if (!ctx.trackId) return prevState;
-
-              const remote: Record<string, RemotePeerShorthand> = {
-                ...prevState.remote,
-              };
-
-              // todo fix this mutation
-              remote[ctx.peer.id].tracks[ctx.trackId] = {
-                trackId: ctx.trackId,
-                metadata: ctx.metadata,
-                stream: ctx.stream,
-                track: ctx.track,
-                simulcastConfig: ctx.simulcastConfig
-                  ? {
-                      enabled: ctx.simulcastConfig.enabled,
-                      activeEncodings: [...ctx.simulcastConfig.active_encodings],
-                    }
-                  : null,
-              };
-
-              return { ...prevState, remote: remote };
-            });
+            store.setStore(onTrackReady(ctx));
             messageEmitter.emit("onTrackReady", ctx);
           },
           onTrackAdded: (ctx) => {
             console.log({ name: "onTrackAdded", ctx });
-
-            store.setStore((prevState: StateShorthand) => {
-              if (!ctx.peer) return prevState;
-              if (!ctx.trackId) return prevState;
-
-              const remote: Record<string, RemotePeerShorthand> = {
-                ...prevState.remote,
-              };
-
-              // todo fix this mutation
-              remote[ctx.peer.id].tracks[ctx.trackId] = {
-                trackId: ctx.trackId,
-                metadata: ctx.metadata,
-                simulcastConfig: ctx.simulcastConfig
-                  ? {
-                      enabled: ctx.simulcastConfig.enabled,
-                      activeEncodings: [...ctx.simulcastConfig.active_encodings],
-                    }
-                  : null,
-                stream: ctx.stream,
-                track: ctx.track,
-              };
-
-              return { ...prevState, remote: remote };
-            });
+            store.setStore(onTrackAdded(ctx));
             messageEmitter.emit("onTrackReady", ctx);
           },
           onTrackRemoved: (ctx) => {
             console.log({ name: "onTrackRemoved", ctx });
-
-            store.setStore((prevState: StateShorthand) => {
-              if (!ctx.peer) return prevState;
-              if (!ctx.trackId) return prevState;
-
-              const remote: Record<string, RemotePeerShorthand> = {
-                ...prevState.remote,
-              };
-
-              delete remote[ctx.peer.id].tracks[ctx.trackId];
-
-              return { ...prevState, remote: remote };
-            });
+            store.setStore(onTrackRemoved(ctx));
             messageEmitter.emit("onTrackRemoved", ctx);
           },
-          onTrackEncodingChanged: (peerId: string, trackId: string, encoding: TrackEncoding) => {
+          onTrackEncodingChanged: (peerId, trackId, encoding) => {
             console.log({ name: "onTrackEncodingChanged", peerId, trackId, encoding });
-
-            store.setStore((prevState: StateShorthand) => {
-              const remote: Record<string, RemotePeerShorthand> = {
-                ...prevState.remote,
-              };
-
-              const peer = remote[peerId];
-
-              const track = { ...peer.tracks[trackId], encoding };
-
-              return {
-                ...prevState,
-                remote: {
-                  ...prevState.remote,
-                  [peerId]: { ...peer, tracks: { ...peer.tracks, [trackId]: track } },
-                },
-              };
-            });
+            store.setStore(onTrackEncodingChanged(peerId, trackId, encoding));
             messageEmitter.emit("onTrackEncodingChanged", peerId, trackId, encoding);
           },
           onTrackUpdated: (ctx: TrackContext) => {
             console.log({ name: "onTrackUpdated", ctx });
-
-            store.setStore((prevState: StateShorthand) => {
-              const remote: Record<string, RemotePeerShorthand> = {
-                ...prevState.remote,
-              };
-
-              const peer = remote[ctx.peer.id];
-
-              const track: LibraryTrack<TrackMetadataGeneric> = {
-                ...peer.tracks[ctx.trackId],
-                stream: ctx.stream,
-                metadata: ctx.metadata,
-              };
-
-              return {
-                ...prevState,
-                remote: {
-                  ...prevState.remote,
-                  [ctx.peer.id]: { ...peer, tracks: { ...peer.tracks, [ctx.trackId]: track } },
-                },
-              };
-            });
-
+            store.setStore(onTrackUpdated(ctx));
             messageEmitter.emit("onTrackUpdated", ctx);
           },
           onTracksPriorityChanged: (enabledTracks: TrackContext[], disabledTracks: TrackContext[]) => {
             console.log({ name: "onTracksPriorityChanged", enabledTracks, disabledTracks });
-
             messageEmitter.emit("onTracksPriorityChanged", enabledTracks, disabledTracks);
           },
           onJoinError: (metadata) => {
             console.log({ name: "onJoinError", metadata });
-
             messageEmitter.emit("onJoinError", metadata);
           },
         },
       });
 
-      const api: MembraneApi<TrackMetadataGeneric> = {
-        addTrack: (
-          track: MediaStreamTrack,
-          stream: MediaStream,
-          trackMetadata?: TrackMetadataGeneric,
-          simulcastConfig?: SimulcastConfig,
-          maxBandwidth?: TrackBandwidthLimit
-        ) => {
-          const remoteTrackId = webrtc.addTrack(track, stream, trackMetadata, simulcastConfig, maxBandwidth);
-          store.setStore((prevState: StateShorthand): StateShorthand => {
-            return {
-              ...prevState,
-              local: {
-                ...prevState.local,
-                tracks: {
-                  ...prevState.local.tracks,
-                  [remoteTrackId]: {
-                    track: track,
-                    trackId: remoteTrackId,
-                    stream: stream,
-                    metadata: trackMetadata || null,
-                    simulcastConfig: simulcastConfig
-                      ? {
-                          enabled: simulcastConfig?.enabled,
-                          activeEncodings: [...simulcastConfig.active_encodings],
-                        }
-                      : null,
-                  },
-                },
-              },
-            };
-          });
-          return remoteTrackId;
-        },
-
-        replaceTrack: (trackId, newTrack, newTrackMetadata) => {
-          const promise = webrtc.replaceTrack(trackId, newTrack, newTrackMetadata);
-          store.setStore((prevState: StateShorthand): StateShorthand => {
-            const prevTrack: LibraryTrack<TrackMetadataGeneric> | null = prevState?.local?.tracks[trackId] || null;
-            if (!prevTrack) return prevState;
-
-            return {
-              ...prevState,
-              local: {
-                ...prevState.local,
-                tracks: {
-                  ...prevState.local.tracks,
-                  [trackId]: {
-                    ...prevTrack,
-                    track: newTrack,
-                    trackId: trackId,
-                    metadata: newTrackMetadata ? { ...newTrackMetadata } : null,
-                  },
-                },
-              },
-            };
-          });
-          return promise;
-        },
-
-        removeTrack: (trackId) => {
-          webrtc.removeTrack(trackId);
-          store.setStore((prevState: StateShorthand): StateShorthand => {
-            const tracksCopy: Record<TrackId, LibraryTrack<TrackMetadataGeneric>> | undefined =
-              prevState?.local?.tracks;
-            delete tracksCopy[trackId];
-
-            return {
-              ...prevState,
-              local: {
-                ...prevState.local,
-                tracks: tracksCopy,
-              },
-            };
-          });
-        },
-
-        updateTrackMetadata: (trackId, trackMetadata) => {
-          webrtc.updateTrackMetadata(trackId, trackMetadata);
-
-          store.setStore((prevState: StateShorthand): StateShorthand => {
-            const prevTrack: LibraryTrack<TrackMetadataGeneric> | null = prevState?.local?.tracks[trackId] || null;
-            if (!prevTrack) return prevState;
-
-            return {
-              ...prevState,
-              local: {
-                ...prevState.local,
-                tracks: {
-                  ...prevState.local.tracks,
-                  [trackId]: {
-                    ...prevTrack,
-                    metadata: trackMetadata ? { ...trackMetadata } : null,
-                  },
-                },
-              },
-            };
-          });
-        },
-      };
+      const api: storeApi<TrackMetadataGeneric> = createApiWrapper(webrtc, store);
 
       signaling.on("mediaEvent", (event) => {
         webrtc.receiveMediaEvent(event.data);
@@ -402,17 +156,21 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
         return;
       });
 
-      store.setStore((prevState: StateShorthand): StateShorthand => {
-        return {
-          ...prevState,
-          connectivity: {
-            socket: socket,
-            api: api,
-            webrtc: webrtc,
-            signaling: signaling,
-          },
-        };
-      });
+      store.setStore(
+        (
+          prevState: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
+        ): LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> => {
+          return {
+            ...prevState,
+            connectivity: {
+              socket: socket,
+              api: api,
+              webrtc: webrtc,
+              signaling: signaling,
+            },
+          };
+        }
+      );
 
       setState({
         webrtc,
@@ -455,11 +213,35 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
         });
 
       const cleanUp = () => {
+        store.setStore((): LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> => {
+          return {
+            local: {
+              id: null,
+              tracks: {},
+              metadata: null,
+            },
+            remote: {},
+            connectivity: {
+              api: null,
+              webrtc: null,
+              signaling: null,
+              socket: null,
+            },
+          };
+        });
+
         webrtc.leave();
         signaling.leave();
         socket.off([socketOnCloseRef, socketOnErrorRef]);
         setState(null);
+        disconnectCallback.current = () => {
+          return;
+        };
       };
+
+      if (disconnectCallback.current) {
+        disconnectCallback.current = cleanUp;
+      }
 
       // return () => {
       //   cleanUp();
@@ -469,12 +251,8 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
   );
 
   const disconnect = useCallback(() => {
-    if (!state) return;
-    state.webrtc?.leave();
-    state.signaling?.leave();
-    // state?.socket?.off([socketOnCloseRef, socketOnErrorRef]);
-    setState(null);
-  }, [state]);
+    disconnectCallback?.current();
+  }, []);
 
   return useMemo(() => {
     return { ...state, connect, disconnect, store };

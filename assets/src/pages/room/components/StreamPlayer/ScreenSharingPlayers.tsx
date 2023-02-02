@@ -12,7 +12,7 @@ import {
   createUsersIdsWithScreenSharingSelector,
   PeerGui,
 } from "../../../../libraryUsage/customSelectors";
-import { LibraryTrackMinimal, PeerId } from "../../../../library/types";
+import { LibraryTrackMinimal, PeerId } from "../../../../library/state.types";
 import { useLog } from "../../../../helpers/UseLog";
 
 export type VideoStreamWithMetadata = {

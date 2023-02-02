@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useState} from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -14,12 +14,12 @@ import Button from "../../features/shared/components/Button";
 import { useLibraryMembraneClient } from "../../library/useLibraryMembraneClient";
 import { useLog } from "../../helpers/UseLog";
 import { useSelector } from "../../library/useSelector";
-import {createFullStateSelector, createIsConnectedSelector} from "../../library/selectors";
+import { createFullStateSelector, createIsConnectedSelector } from "../../library/selectors";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
-import { UseMembraneClientType } from "../../library/types";
+import { UseMembraneClientType } from "../../library/state.types";
 import { TrackMetadata } from "../../libraryUsage/types";
 import { createMembraneClient } from "../../library/createMembraneClient";
-import {useClient, useClient2, useSelector2} from "../../libraryUsage/setup";
+import { useClient, useSelector2 } from "../../libraryUsage/setup";
 
 type Props = {
   displayName: string;
@@ -50,16 +50,16 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   const client = useClient();
 
-  // useEffect(() => {
-  //   client.connect(roomId, peerMetadata, isSimulcastOn);
-  //
-  //   return () => {
-  //     client.disconnect()
-  //   }
-  // }, []);
+  useEffect(() => {
+    client.connect(roomId, peerMetadata, isSimulcastOn);
+
+    return () => {
+      client.disconnect();
+    };
+  }, [isSimulcastOn, peerMetadata, roomId]);
 
   // const fullState = useSelector2(createFullStateSelector());
-  const isConnected = useSelector2(createIsConnectedSelector())
+  const isConnected = useSelector2(createIsConnectedSelector());
 
   // useLog(clientWrapper?.store, "State");
   // useLog(fullState, "Full state from selector");
@@ -109,14 +109,14 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
           )}
 
           {/*{clientWrapper && (*/}
-            <VideochatSection
-              // clientWrapper={clientWrapper}
-              // peers={peerState.remote}
-              // localPeer={peerState.local}
-              // showSimulcast={showSimulcastMenu}
-              // showDeveloperInfo={showDeveloperInfo}
-              // webrtc={webrtc}
-            />
+          <VideochatSection
+          // clientWrapper={clientWrapper}
+          // peers={peerState.remote}
+          // localPeer={peerState.local}
+          // showSimulcast={showSimulcastMenu}
+          // showDeveloperInfo={showDeveloperInfo}
+          // webrtc={webrtc}
+          />
           {/*)}*/}
         </section>
 

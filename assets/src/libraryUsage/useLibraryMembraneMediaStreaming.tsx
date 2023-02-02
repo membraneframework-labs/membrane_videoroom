@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { PeerMetadata, TrackMetadata } from "../pages/room/hooks/usePeerState";
 import { TrackType } from "../pages/types";
 import { selectBandwidthLimit } from "../pages/room/bandwidth";
-import { UseMembraneClientType } from "../library/types";
+import { UseMembraneClientType } from "../library/state.types";
 import { useSelector2 } from "./setup";
 import { createConnectivitySelector } from "../library/selectors";
 import {useLog} from "../helpers/UseLog";
@@ -93,7 +93,7 @@ export const useMembraneMediaStreaming = (
     const tracks = type === "audio" ? stream?.getAudioTracks() : stream?.getVideoTracks();
     const localTrackId: string | undefined = (tracks || [])[0]?.id;
 
-    console.log({ name: "after autostart", api, isConnected, mode });
+    // console.log({ name: "after autostart", api, isConnected, mode });
 
     if (stream && !trackIds) {
       addTracks(stream);

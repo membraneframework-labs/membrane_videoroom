@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { TrackType } from "../../pages/types";
-import { LibraryLocalPeer, LibraryTrack, TrackId, Tracks } from "../../library/types";
+import { LibraryLocalPeer, LibraryTrack, TrackId, Tracks } from "../../library/state.types";
 
 export type SetLocalPeer<GenericPeerMetadata> = (id: string, metadata: GenericPeerMetadata | null) => void;
 export type SetLocalStream = (type: TrackType, enabled: boolean, stream: MediaStream | undefined) => void;

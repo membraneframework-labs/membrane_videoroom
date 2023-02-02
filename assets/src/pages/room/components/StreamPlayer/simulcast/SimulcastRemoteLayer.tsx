@@ -5,7 +5,7 @@ import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 type Props = {
   setDesiredEncoding: (encoding: TrackEncoding) => void;
-  currentEncoding?: TrackEncoding;
+  currentEncoding: TrackEncoding | null;
   desiredEncoding?: TrackEncoding;
   disabled?: boolean;
 };

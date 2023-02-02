@@ -55,17 +55,6 @@ Props) => {
         playAudio={playAudio}
       />
       {layers}
-      {/*{showSimulcast && streamSource === "remote" && (*/}
-      {/*  <SimulcastRemoteLayer*/}
-      {/*    desiredEncoding={desiredEncoding}*/}
-      {/*    setDesiredEncoding={setDesiredEncoding}*/}
-      {/*    currentEncoding={video?.encodingQuality}*/}
-      {/*    disabled={!video?.stream}*/}
-      {/*  />*/}
-      {/*)}*/}
-      {/*{showSimulcast && streamSource === "local" && (*/}
-      {/*  <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />*/}
-      {/*)}*/}
     </div>
   );
 };

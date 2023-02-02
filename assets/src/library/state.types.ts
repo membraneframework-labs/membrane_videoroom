@@ -1,21 +1,20 @@
 import { Callbacks, MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import TypedEmitter from "typed-emitter";
 import { Channel, Socket } from "phoenix";
-import { Store } from "./store";
-import { MembraneApi } from "./api";
-import { Something } from "./createMembraneClient";
+import { storeApi } from "./storeApi";
 
 export type TrackId = string;
 export type PeerId = string;
 export type Tracks<Metadata> = Record<TrackId, LibraryTrack<Metadata>>;
 
 export type LibrarySimulcastConfig = {
-  enabled: boolean;
+  enabled: boolean | null;
   activeEncodings: TrackEncoding[];
 };
 
 export type LibraryTrack<TrackMetadataGeneric> = {
   stream: MediaStream | null;
+  encoding: TrackEncoding | null,
   trackId: TrackId;
   metadata: TrackMetadataGeneric | null; // eslint-disable-line @typescript-eslint/no-explicit-any
   simulcastConfig: LibrarySimulcastConfig | null;
@@ -38,7 +37,7 @@ export type Connectivity<TrackMetadataGeneric> = {
   socket: Socket | null;
   signaling: Channel | null;
   webrtc: MembraneWebRTC | null;
-  api: MembraneApi<TrackMetadataGeneric> | null
+  api: storeApi<TrackMetadataGeneric> | null
 };
 
 export type LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
@@ -49,7 +48,6 @@ export type LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
 
 // --- selectors
 export type Selector<PeerM, TrackM, Result> = (snapshot: LibraryPeersState<PeerM, TrackM> | null) => Result;
-export type Subscribe = (onStoreChange: () => void) => () => void;
 
 export type LibraryTrackMinimal = {
   stream: MediaStream | null;
@@ -67,5 +65,5 @@ export type UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> = {
   webrtcConnectionStatus?: ConnectionStatus;
   signalingStatus?: ConnectionStatus;
   // store: Store<PeerMetadataGeneric, TrackMetadataGeneric>;
-  api: MembraneApi<TrackMetadataGeneric> | null;
+  api: storeApi<TrackMetadataGeneric> | null;
 };

@@ -8,7 +8,8 @@ import {
   PeerId,
   Selector,
   TrackId,
-} from "../library/types";
+} from "../library/state.types";
+import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 export type PeerGui = { id: PeerId; emoji: string | null; name: string | null };
 export type CreatePeersGuiSelector = () => Selector<PeerMetadata, TrackMetadata, Array<PeerGui>>;
@@ -41,7 +42,7 @@ export const createLocalPeerGuiSelector: CreateLocalPeerGuiSelector =
   (snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null): PeerGui | null => {
     if (!snapshot) return null;
     const peer = snapshot.local;
-    if(!peer.id) throw Error("Local peerId is empty!")
+    if (!peer.id) throw Error("Local peerId is empty!");
 
     return {
       id: peer.id,
@@ -63,7 +64,7 @@ export const createTracksRecordSelector: CreateTracksRecordSelector =
       ([trackId, track]) => {
         const trackType: TrackType | null = track.metadata?.type || null;
         if (!trackType) {
-          console.warn(`Track '${trackId}' has empty type`);
+          console.warn(`1 Track '${trackId}' has empty type`);
         }
         const libraryMinimalTrack: LibraryTrackMinimal = {
           stream: track.stream,
@@ -80,6 +81,19 @@ export const createTracksRecordSelector: CreateTracksRecordSelector =
     delete result["screensharing"];
 
     return result;
+  };
+
+type CreateTrackEncodingSelector = (trackId: TrackId | null) => Selector<PeerMetadata, TrackMetadata, TrackEncoding | null>;
+export const createTrackEncodingSelector: CreateTrackEncodingSelector =
+  (trackId: TrackId | null): Selector<PeerMetadata, TrackMetadata, TrackEncoding | null> =>
+  (snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null): TrackEncoding | null => {
+      if (!snapshot) return null;
+      const localTracks: LibraryTrack<TrackMetadata>[] = Object.values(snapshot.local.tracks);
+
+      const peers: LibraryRemotePeer<PeerMetadata, TrackMetadata>[] = Object.values(snapshot.remote);
+      const tracks: LibraryTrack<TrackMetadata>[] = peers.flatMap((peer) => Object.values(peer.tracks));
+      const result = [...localTracks, ...tracks].find((track) => track.trackId === trackId);
+      return result?.encoding || null;
   };
 
 type CreateScreenSharingTracksSelector = (
@@ -102,7 +116,7 @@ export const createScreenSharingTracksSelector: CreateScreenSharingTracksSelecto
       ([trackId, track]) => {
         const trackType: TrackType | null = track.metadata?.type || null;
         if (!trackType) {
-          console.warn(`Track '${trackId}' has empty type`);
+          console.warn(`2 Track '${trackId}' has empty type`);
         }
         const libraryMinimalTrack: LibraryTrackMinimal = {
           stream: track.stream,
@@ -134,7 +148,8 @@ export const createLocalTracksRecordSelector: CreateLocalTracksRecordSelector =
       ([trackId, track]) => {
         const trackType: TrackType | null = track.metadata?.type || null;
         if (!trackType) {
-          console.warn(`Track '${trackId}' has empty type`);
+          console.log({ track });
+          console.warn(`3 Track '${trackId}' has empty type`);
         }
         const libraryMinimalTrack: LibraryTrackMinimal = {
           stream: track.stream,

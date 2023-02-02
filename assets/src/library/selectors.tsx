@@ -1,5 +1,5 @@
-import type { LibraryPeersState, Selector, LibraryTrackMinimal, PeerId, TrackId } from "./types";
-import { Connectivity } from "./types";
+import type { LibraryPeersState, Selector, LibraryTrackMinimal, PeerId, TrackId } from "./state.types";
+import { Connectivity } from "./state.types";
 
 type S<PeerM, TrackM> = LibraryPeersState<PeerM, TrackM>;
 

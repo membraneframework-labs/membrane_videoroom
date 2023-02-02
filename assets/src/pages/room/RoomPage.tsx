@@ -11,6 +11,8 @@ import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import Button from "../../features/shared/components/Button";
+import useToast from "../../features/shared/hooks/useToast";
+import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 
 type Props = {
   displayName: string;
@@ -68,13 +70,19 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     false
   );
 
+  const { addToast } = useToast();
+
+  useEffectOnChange(errorMessage, () => {
+    if (errorMessage) {
+      addToast({ id: "room-error-message", message: errorMessage, timeout: 6000, type: "error" });
+    }
+  });
+
   return (
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section className="flex h-full w-full flex-col">
-          {errorMessage && <div className="w-full bg-red-700 p-1 text-white">{errorMessage}</div>}
-
           {showDeveloperInfo && (
             <div className="text-shadow-lg absolute right-0 top-0 flex flex-col p-2 text-right">
               <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>

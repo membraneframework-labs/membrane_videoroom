@@ -21,9 +21,8 @@ export const ToastProvider = ({ children }: { children?: ReactNode }) => {
       setToasts((prev) => [...prev, newToast]);
       if (newToast.timeout === "INFINITY") return;
 
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         removeToast(newToast.id);
-        clearTimeout(timer);
       }, newToast.timeout || DEFAULT_TOAST_TIMEOUT);
     },
     [toasts]
@@ -31,9 +30,8 @@ export const ToastProvider = ({ children }: { children?: ReactNode }) => {
 
   const removeToast = (toastId: string) => {
     document.getElementById(toastId)?.classList.add("fadeOut");
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id != toastId));
-      clearTimeout(timer);
     }, 2000);
   };
 

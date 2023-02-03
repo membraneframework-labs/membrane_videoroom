@@ -3,13 +3,13 @@ import Toast from "../components/Toast";
 
 const DEFAULT_TOAST_TIMEOUT = 2500;
 
-export type ToastType = { id: string; message?: string; timeout?: number; type?: "information" | "error" };
+export type ToastType = { id: string; message?: string; timeout?: number | "INFINITY"; type?: "information" | "error" };
 
 export const ToastContext = createContext({
   addToast: (newToast: ToastType) => console.log(`Unknown error while adding toast: ${newToast}`),
 });
 
-export const ToastProvder = ({ children }: { children?: ReactNode }) => {
+export const ToastProvider = ({ children }: { children?: ReactNode }) => {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
   const addToast = useCallback(
@@ -19,6 +19,8 @@ export const ToastProvder = ({ children }: { children?: ReactNode }) => {
       if (toastExists) return;
 
       setToasts((prev) => [...prev, newToast]);
+      if (newToast.timeout === "INFINITY") return;
+
       const timer = setTimeout(() => {
         removeToast(newToast.id);
         clearTimeout(timer);

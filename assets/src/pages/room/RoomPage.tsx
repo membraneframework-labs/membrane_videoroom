@@ -11,14 +11,14 @@ import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import Button from "../../features/shared/components/Button";
-import { useLibraryMembraneClient } from "../../library/useLibraryMembraneClient";
+import { useLibraryMembraneClient } from "../../library/withEventEmitter/useLibraryMembraneClient";
 import { useLog } from "../../helpers/UseLog";
-import { useSelector } from "../../library/useSelector";
+import { useSelector } from "../../library/noContext/useSelector";
 import { createFullStateSelector, createIsConnectedSelector } from "../../library/selectors";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
 import { UseMembraneClientType } from "../../library/state.types";
 import { TrackMetadata } from "../../libraryUsage/types";
-import { createMembraneClient } from "../../library/createMembraneClient";
+import { createMembraneClient } from "../../library/noContext/noContextProvider";
 import { useClient, useSelector2 } from "../../libraryUsage/setup";
 
 type Props = {

@@ -8,7 +8,7 @@ import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
 import CameraOff from "../../../../features/room-page/icons/CameraOff";
-import { useSelector } from "../../../../library/useSelector";
+import { useSelector } from "../../../../library/noContext/useSelector";
 import { LibraryTrackMinimal, PeerId, TrackId, UseMembraneClientType } from "../../../../library/state.types";
 import { PeerMetadata, TrackMetadata } from "../../../../libraryUsage/types";
 import {

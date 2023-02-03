@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
-import { cache } from "./cache";
-import { Selector } from "./state.types";
-import {Listener, ExternalState, Subscribe} from "./externalState";
+import { cache } from "../cache";
+import { Selector } from "../state.types";
+import {Listener, ExternalState, Subscribe} from "../externalState";
 
 export const useSelector = <Result, PeerMetadataGeneric, TrackMetadataGeneric>(
   store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric> | null,

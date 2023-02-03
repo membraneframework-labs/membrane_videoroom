@@ -1,16 +1,33 @@
 import { LibraryPeersState } from "./state.types";
 
+export type SetStore<PeerMetadataGeneric, TrackMetadataGeneric> = (
+  setter: (
+    prevState: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
+  ) => LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
+) => void;
+
 export type ExternalState<PeerMetadataGeneric, TrackMetadataGeneric> = {
   getSnapshot: () => LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>;
-  setStore: (
-    setter: (
-      prevState: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
-    ) => LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
-  ) => void;
+  setStore: SetStore<PeerMetadataGeneric, TrackMetadataGeneric>;
   subscribe: (onStoreChange: () => void) => () => void;
 };
 
 export type Listener = () => void;
+
+export const DEFAULT_STORE = {
+  local: {
+    id: null,
+    tracks: {},
+    metadata: null,
+  },
+  remote: {},
+  connectivity: {
+    api: null,
+    webrtc: null,
+    signaling: null,
+    socket: null,
+  },
+};
 
 export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): ExternalState<
   PeerMetadataGeneric,
@@ -19,20 +36,7 @@ export const createStore = <PeerMetadataGeneric, TrackMetadataGeneric>(): Extern
   type StateType = LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>;
 
   let listeners: Listener[] = [];
-  let store: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
-    local: {
-      id: null,
-      tracks: {},
-      metadata: null,
-    },
-    remote: {},
-    connectivity: {
-      api: null,
-      webrtc: null,
-      signaling: null,
-      socket: null,
-    },
-  };
+  let store: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = DEFAULT_STORE;
 
   const getSnapshot = (): StateType => {
     return store;

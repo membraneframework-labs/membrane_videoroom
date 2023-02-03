@@ -13,7 +13,7 @@ import {Channel, Socket} from "phoenix";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 // todo delete
-import {SetErrorMessage} from "../pages/room/RoomPage";
+import {SetErrorMessage} from "../../pages/room/RoomPage";
 import {
   LibraryLocalPeer,
   LibraryPeersState,
@@ -21,9 +21,9 @@ import {
   LibraryTrack,
   TrackId,
   UseMembraneClientType,
-} from "./state.types";
-import {storeApi} from "./storeApi";
-import {createStore} from "./externalState";
+} from "../state.types";
+import {StoreApi} from "../storeApi";
+import {createStore} from "../externalState";
 
 // todo extract callbacks
 export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGeneric>(
@@ -292,7 +292,7 @@ export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGener
       },
     });
 
-    const api: storeApi<TrackMetadataGeneric> = {
+    const api: StoreApi<TrackMetadataGeneric> = {
       addTrack: (
         track: MediaStreamTrack,
         stream: MediaStream,

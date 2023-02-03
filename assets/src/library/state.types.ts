@@ -1,7 +1,7 @@
 import { Callbacks, MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import TypedEmitter from "typed-emitter";
 import { Channel, Socket } from "phoenix";
-import { storeApi } from "./storeApi";
+import { StoreApi } from "./storeApi";
 
 export type TrackId = string;
 export type PeerId = string;
@@ -37,7 +37,7 @@ export type Connectivity<TrackMetadataGeneric> = {
   socket: Socket | null;
   signaling: Channel | null;
   webrtc: MembraneWebRTC | null;
-  api: storeApi<TrackMetadataGeneric> | null
+  api: StoreApi<TrackMetadataGeneric> | null
 };
 
 export type LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
@@ -65,5 +65,5 @@ export type UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> = {
   webrtcConnectionStatus?: ConnectionStatus;
   signalingStatus?: ConnectionStatus;
   // store: Store<PeerMetadataGeneric, TrackMetadataGeneric>;
-  api: storeApi<TrackMetadataGeneric> | null;
+  api: StoreApi<TrackMetadataGeneric> | null;
 };

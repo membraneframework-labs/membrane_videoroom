@@ -3,9 +3,9 @@ import { Callbacks, MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } f
 import { Channel, Socket } from "phoenix";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { LibraryPeersState, UseMembraneClientType } from "./state.types";
-import { createApiWrapper, storeApi } from "./storeApi";
-import { ExternalState } from "./externalState";
+import { LibraryPeersState, UseMembraneClientType } from "../state.types";
+import { createApiWrapper, StoreApi } from "../storeApi";
+import { ExternalState } from "../externalState";
 import {
   onJoinSuccess,
   onPeerJoined,
@@ -15,7 +15,7 @@ import {
   onTrackReady,
   onTrackRemoved,
   onTrackUpdated,
-} from "./state_mappers";
+} from "../stateMappers";
 
 type UseLibraryMembraneClient2ReturnType<PeerMetadataGeneric, TrackMetadataGeneric> = {
   connect: (roomId: string, peerMetadata: PeerMetadataGeneric, isSimulcastOn: boolean) => void;
@@ -24,7 +24,7 @@ type UseLibraryMembraneClient2ReturnType<PeerMetadataGeneric, TrackMetadataGener
 } & Partial<UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric>>;
 
 // todo extract callbacks
-export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGeneric>(
+export const useNoContextMembraneRTCWrapper = <PeerMetadataGeneric, TrackMetadataGeneric>(
   store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric>
 ): UseLibraryMembraneClient2ReturnType<PeerMetadataGeneric, TrackMetadataGeneric> => {
   const [state, setState] = useState<UseMembraneClientType<PeerMetadataGeneric, TrackMetadataGeneric> | null>(null);
@@ -146,7 +146,7 @@ export const useLibraryMembraneClient2 = <PeerMetadataGeneric, TrackMetadataGene
         },
       });
 
-      const api: storeApi<TrackMetadataGeneric> = createApiWrapper(webrtc, store);
+      const api: StoreApi<TrackMetadataGeneric> = createApiWrapper(webrtc, store);
 
       signaling.on("mediaEvent", (event) => {
         webrtc.receiveMediaEvent(event.data);

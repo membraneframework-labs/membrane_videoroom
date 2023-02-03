@@ -1,9 +1,9 @@
 import { MembraneWebRTC, SimulcastConfig, TrackBandwidthLimit, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { ExternalState } from "./externalState";
-import { addTrack, removeTrack, replaceTrack, updateTrackMetadata } from "./state_mappers";
+import { addTrack, removeTrack, replaceTrack, updateTrackMetadata } from "./stateMappers";
 
 // Potrzebujemy tej fasady, żeby automatycznie budować sobie wewnętrzny stan dla tracków użytkownika
-export type storeApi<TrackMetadataGeneric> = {
+export type StoreApi<TrackMetadataGeneric> = {
   addTrack: (
     track: MediaStreamTrack,
     stream: MediaStream,
@@ -26,7 +26,7 @@ export type storeApi<TrackMetadataGeneric> = {
 export const createApiWrapper = <PeerMetadataGeneric, TrackMetadataGeneric>(
   webrtc: MembraneWebRTC,
   store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric>
-): storeApi<TrackMetadataGeneric> => ({
+): StoreApi<TrackMetadataGeneric> => ({
   addTrack: (
     track: MediaStreamTrack,
     stream: MediaStream,

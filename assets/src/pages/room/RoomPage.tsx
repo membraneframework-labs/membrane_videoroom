@@ -8,11 +8,11 @@ import { VideochatSection } from "./VideochatSection";
 import { getRandomAnimalEmoji } from "./utils";
 import { useStreamManager } from "./hooks/useStreamManager";
 import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
-import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 import { ErrorMessage, messageComparator } from "./errorMessage";
+import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 
 type Props = {
   displayName: string;
@@ -23,7 +23,7 @@ type Props = {
 };
 
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
-  const wakeLock = useAcquireWakeLockAutomatically();
+  useAcquireWakeLockAutomatically();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
 
@@ -108,7 +108,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         />
 
         {/* dev helpers */}
-        <div className="invisible absolute bottom-3 right-3 flex flex-row items-stretch md:visible">
+        <div className="invisible absolute bottom-3 right-3 flex flex-col items-stretch md:visible">
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}
@@ -118,9 +118,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
               Show simulcast controls
             </button>
           )}
-          <div className="m-1 rounded bg-brand-grey-100 p-2 text-right text-brand-white">
-            <span className="whitespace-nowrap">WakeLock {wakeLock.isSupported ? "🟢" : "🔴"}</span>
-          </div>
         </div>
       </div>
     </PageLayout>

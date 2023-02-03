@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
 import { Channel, Socket } from "phoenix";
-import { SetStore } from "./externalState";
+import { DEFAULT_STORE, SetStore } from "./externalState";
 import { LibraryPeersState } from "./state.types";
 import {
   onJoinSuccess,
@@ -45,7 +45,9 @@ export const useSyncMembraneWebRTCState = <PeerMetadataGeneric, TrackMetadataGen
         onSendMediaEvent: (mediaEvent: SerializedMediaEvent) => {
           signaling.push("mediaEvent", { data: mediaEvent });
         },
-        onConnectionError: (message) => {},
+        onConnectionError: (message) => {
+          return;
+        },
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: [Peer]) => {
           console.log({ name: "onJoinSuccess", peerId, peersInRoom });
@@ -95,7 +97,7 @@ export const useSyncMembraneWebRTCState = <PeerMetadataGeneric, TrackMetadataGen
       },
     });
 
-    const api: StoreApi<TrackMetadataGeneric> = createApiWrapper(webrtc, store);
+    const api: StoreApi<TrackMetadataGeneric> = createApiWrapper(webrtc, setStore);
 
     signaling.on("mediaEvent", (event) => {
       webrtc.receiveMediaEvent(event.data);
@@ -133,22 +135,7 @@ export const useSyncMembraneWebRTCState = <PeerMetadataGeneric, TrackMetadataGen
       });
 
     const cleanUp = () => {
-      setStore((): LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> => {
-        return {
-          local: {
-            id: null,
-            tracks: {},
-            metadata: null,
-          },
-          remote: {},
-          connectivity: {
-            api: null,
-            webrtc: null,
-            signaling: null,
-            socket: null,
-          },
-        };
-      });
+      setStore(() => DEFAULT_STORE);
 
       webrtc.leave();
       signaling.leave();
@@ -158,5 +145,5 @@ export const useSyncMembraneWebRTCState = <PeerMetadataGeneric, TrackMetadataGen
     return () => {
       cleanUp();
     };
-  }, [isSimulcastOn, peerMetadata, roomId, store]);
+  }, [isSimulcastOn, peerMetadata, roomId, setStore]);
 };

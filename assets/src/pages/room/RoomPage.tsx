@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
-import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
 import { useToggle } from "./hooks/useToggle";
@@ -20,6 +19,7 @@ import { UseMembraneClientType } from "../../library/state.types";
 import { TrackMetadata } from "../../libraryUsage/types";
 import { createMembraneClient } from "../../library/noContext/noContextProvider";
 import { useClient, useSelector2 } from "../../libraryUsage/setup";
+import { useMembraneClient } from "../../library/useMembraneClient";
 
 type Props = {
   displayName: string;
@@ -48,18 +48,21 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   //   setErrorMessage
   // );
 
-  const client = useClient();
+  const membrane = useMembraneClient(roomId, peerMetadata, isSimulcastOn);
+  useLog(membrane, "membrane state")
 
-  useEffect(() => {
-    client.connect(roomId, peerMetadata, isSimulcastOn);
-
-    return () => {
-      client.disconnect();
-    };
-  }, [isSimulcastOn, peerMetadata, roomId]);
+  // const client = useClient();
+  //
+  // useEffect(() => {
+  //   client.connect(roomId, peerMetadata, isSimulcastOn);
+  //
+  //   return () => {
+  //     client.disconnect();
+  //   };
+  // }, [isSimulcastOn, peerMetadata, roomId]);
 
   // const fullState = useSelector2(createFullStateSelector());
-  const isConnected = useSelector2(createIsConnectedSelector());
+  // const isConnected = useSelector2(createIsConnectedSelector());
 
   // useLog(clientWrapper?.store, "State");
   // useLog(fullState, "Full state from selector");
@@ -67,7 +70,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   // const { state: peerState, api: peerApi } = usePeersState();
   // const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
-  // const isConnected = !!fullState?.local.id;
+  const isConnected = !!membrane?.local.id;
 
   const camera = useLibraryStreamManager(
     "camera",
@@ -96,7 +99,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   return (
     <PageLayout>
-      <button onClick={() => client.connect(roomId, peerMetadata, isSimulcastOn)}>Connect</button>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section className="flex h-full w-full flex-col">
@@ -109,14 +111,14 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
           )}
 
           {/*{clientWrapper && (*/}
-          <VideochatSection
-          // clientWrapper={clientWrapper}
-          // peers={peerState.remote}
-          // localPeer={peerState.local}
-          // showSimulcast={showSimulcastMenu}
-          // showDeveloperInfo={showDeveloperInfo}
-          // webrtc={webrtc}
-          />
+          {/*<VideochatSection*/}
+          {/*// clientWrapper={clientWrapper}*/}
+          {/*// peers={peerState.remote}*/}
+          {/*// localPeer={peerState.local}*/}
+          {/*// showSimulcast={showSimulcastMenu}*/}
+          {/*// showDeveloperInfo={showDeveloperInfo}*/}
+          {/*// webrtc={webrtc}*/}
+          {/*/>*/}
           {/*)}*/}
         </section>
 

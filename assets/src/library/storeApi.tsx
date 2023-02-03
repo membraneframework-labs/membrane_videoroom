@@ -1,5 +1,5 @@
 import { MembraneWebRTC, SimulcastConfig, TrackBandwidthLimit, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { ExternalState } from "./externalState";
+import { SetStore } from "./externalState";
 import { addTrack, removeTrack, replaceTrack, updateTrackMetadata } from "./stateMappers";
 
 // Potrzebujemy tej fasady, żeby automatycznie budować sobie wewnętrzny stan dla tracków użytkownika
@@ -25,7 +25,7 @@ export type StoreApi<TrackMetadataGeneric> = {
 
 export const createApiWrapper = <PeerMetadataGeneric, TrackMetadataGeneric>(
   webrtc: MembraneWebRTC,
-  store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric>
+  setStore: SetStore<PeerMetadataGeneric, TrackMetadataGeneric>
 ): StoreApi<TrackMetadataGeneric> => ({
   addTrack: (
     track: MediaStreamTrack,
@@ -35,24 +35,24 @@ export const createApiWrapper = <PeerMetadataGeneric, TrackMetadataGeneric>(
     maxBandwidth?: TrackBandwidthLimit
   ) => {
     const remoteTrackId = webrtc.addTrack(track, stream, trackMetadata, simulcastConfig, maxBandwidth);
-    store.setStore(addTrack(remoteTrackId, track, stream, trackMetadata, simulcastConfig));
+    setStore(addTrack(remoteTrackId, track, stream, trackMetadata, simulcastConfig));
     return remoteTrackId;
   },
 
   replaceTrack: (trackId, newTrack, newTrackMetadata) => {
     const promise = webrtc.replaceTrack(trackId, newTrack, newTrackMetadata);
-    store.setStore(replaceTrack(trackId, newTrack, newTrackMetadata));
+    setStore(replaceTrack(trackId, newTrack, newTrackMetadata));
     return promise;
   },
 
   removeTrack: (trackId) => {
     webrtc.removeTrack(trackId);
-    store.setStore(removeTrack(trackId));
+    setStore(removeTrack(trackId));
   },
 
   updateTrackMetadata: (trackId, trackMetadata) => {
     webrtc.updateTrackMetadata(trackId, trackMetadata);
-    store.setStore(updateTrackMetadata(trackId, trackMetadata));
+    setStore(updateTrackMetadata(trackId, trackMetadata));
   },
 
   enableTrackEncoding: (trackId, encoding) => {

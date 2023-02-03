@@ -10,17 +10,17 @@ type Props = {
 };
 
 type Corner = {
-  x: "left" | "right";
-  y: "top" | "bottom";
+  x: "left-0" | "right-0";
+  y: "top-0" | "bottom-0";
   content?: JSX.Element;
 };
 
 const PeerInfoLayer: FC<Props> = ({ topLeft, topRight, bottomLeft, bottomRight, tileSize = "L" }: Props) => {
   const corners: Corner[] = [
-    { x: "left", y: "top", content: topLeft },
-    { x: "right", y: "top", content: topRight },
-    { x: "left", y: "bottom", content: bottomLeft },
-    { x: "right", y: "bottom", content: bottomRight },
+    { x: "left-0", y: "top-0", content: topLeft },
+    { x: "right-0", y: "top-0", content: topRight },
+    { x: "left-0", y: "bottom-0", content: bottomLeft },
+    { x: "right-0", y: "bottom-0", content: bottomRight },
   ];
 
   const paddingClassName = { M: "p-3", L: "p-4" };
@@ -31,7 +31,7 @@ const PeerInfoLayer: FC<Props> = ({ topLeft, topRight, bottomLeft, bottomRight, 
         <div
           key={`${corner.x}-${corner.y}`}
           data-name="video-label"
-          className={clsx(`absolute text-white ${corner.x}-0 ${corner.y}-0`, paddingClassName[tileSize])}
+          className={clsx(`absolute text-white ${corner.x} ${corner.y}`, paddingClassName[tileSize])}
         >
           {corner.content}
         </div>

@@ -135,7 +135,7 @@ export const useMembraneClient = (
         setWebrtc(webrtc);
       })
       .receive("error", (response) => {
-        handleError(`Connecting error occurred`);
+        handleError(`Couldn't establish signaling connection`);
       });
 
     const cleanUp = () => {

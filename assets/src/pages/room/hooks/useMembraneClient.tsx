@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
 import { Socket } from "phoenix";
-import { TrackMetadata, PeerMetadata, PeersApi } from "./usePeerState";
+import { PeerMetadata, PeersApi, TrackMetadata } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";
-import { SetErrorMessage } from "../RoomPage";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
@@ -21,24 +20,33 @@ export const useMembraneClient = (
   peerMetadata: PeerMetadata,
   isSimulcastOn: boolean,
   api: PeersApi,
-  setErrorMessage: SetErrorMessage
+  setErrorMessage: (value: string) => void
 ): UseSetupResult => {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
+
+  const handleError = useCallback(
+    (text: string) => {
+      console.error(text);
+      setErrorMessage(text);
+    },
+    [setErrorMessage]
+  );
 
   useEffect(() => {
     const socket = new Socket("/socket");
     socket.connect();
     const socketOnCloseRef = socket.onClose(() => cleanUp());
-    const socketOnErrorRef = socket.onError(() => cleanUp());
+    const socketOnErrorRef = socket.onError(() => {
+      handleError(`Socket error occurred.`);
+      cleanUp();
+    });
 
     const webrtcChannel = socket.channel(`room:${roomId}`, {
       isSimulcastOn: isSimulcastOn,
     });
 
     webrtcChannel.onError((reason) => {
-      console.error("WebrtcChannel error occurred");
-      console.error(reason);
-      setErrorMessage("WebrtcChannel error occurred");
+      handleError(`Webrtc channel error occurred. ${reason}`);
     });
     webrtcChannel.onClose(() => {
       return;
@@ -50,9 +58,7 @@ export const useMembraneClient = (
           webrtcChannel.push("mediaEvent", { data: mediaEvent });
         },
         onConnectionError: (message) => {
-          console.error("onConnectionError occurred");
-          console.error(message);
-          setErrorMessage(message);
+          handleError(`Connection error occurred. ${message}`);
         },
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
@@ -103,6 +109,9 @@ export const useMembraneClient = (
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
+        onJoinError: (metadata) => {
+          handleError(`Failed to join the room'`);
+        },
       },
     });
 
@@ -115,8 +124,7 @@ export const useMembraneClient = (
     });
 
     webrtcChannel.on("error", (error) => {
-      console.error("Received error report from the server: ", error.message);
-      setErrorMessage(error.message);
+      handleError(`Received error report from the server: ${error.message}`);
       cleanUp();
     });
 
@@ -127,9 +135,7 @@ export const useMembraneClient = (
         setWebrtc(webrtc);
       })
       .receive("error", (response) => {
-        setErrorMessage("Connecting error");
-        console.error("Received error status");
-        console.error(response);
+        handleError(`Couldn't establish signaling connection`);
       });
 
     const cleanUp = () => {
@@ -142,7 +148,7 @@ export const useMembraneClient = (
     return () => {
       cleanUp();
     };
-  }, [api, isSimulcastOn, peerMetadata, roomId, setErrorMessage]);
+  }, [api, handleError, isSimulcastOn, peerMetadata, roomId, setErrorMessage]);
 
   return { webrtc };
 };

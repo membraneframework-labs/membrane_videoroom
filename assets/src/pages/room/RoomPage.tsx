@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -12,7 +12,6 @@ import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutom
 import PageLayout from "../../features/room-page/components/PageLayout";
 import Button from "../../features/shared/components/Button";
 import useToast from "../../features/shared/hooks/useToast";
-import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 
 type Props = {
   displayName: string;
@@ -22,20 +21,30 @@ type Props = {
   autostartStreaming?: boolean;
 };
 
-export type SetErrorMessage = (value: string) => void;
-
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
   const wakeLock = useAcquireWakeLockAutomatically();
+  const { addToast } = useToast();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
 
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const showErrorMessage = useCallback(
+    (errorMessage: string) => {
+      addToast({
+        id: crypto.randomUUID(),
+        message: errorMessage,
+        timeout: "INFINITY",
+        type: "error",
+      });
+    },
+    [addToast]
+  );
+
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
   const [showDeveloperInfo, toggleDeveloperInfo] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
   const { state: peerState, api: peerApi } = usePeersState();
-  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, showErrorMessage);
 
   const isConnected = !!peerState?.local?.id;
 
@@ -69,14 +78,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     peerApi,
     false
   );
-
-  const { addToast } = useToast();
-
-  useEffectOnChange(errorMessage, () => {
-    if (errorMessage) {
-      addToast({ id: "room-error-message", message: errorMessage, timeout: 6000, type: "error" });
-    }
-  });
 
   return (
     <PageLayout>

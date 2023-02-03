@@ -24,3 +24,8 @@ export const useUser = (): UserContextType => {
   if (!context) throw new Error("useUser must be used within a UserProvider");
   return context;
 };
+
+
+export const createMembraneWebrtcContext = <PeerMetadataGeneric, TrackMetadataGeneric>() => {
+
+}

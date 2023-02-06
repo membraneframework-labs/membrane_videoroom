@@ -18,8 +18,7 @@ import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamMana
 import { UseMembraneClientType } from "../../library/state.types";
 import { TrackMetadata } from "../../libraryUsage/types";
 import { createMembraneClient } from "../../library/noContext/noContextProvider";
-import { useClient, useSelector2 } from "../../libraryUsage/setup";
-import { useMembraneClient } from "../../library/useMembraneClient";
+import { useMembraneClient } from "../../libraryUsage/setup";
 
 type Props = {
   displayName: string;
@@ -28,6 +27,9 @@ type Props = {
   manualMode: boolean;
   autostartStreaming?: boolean;
 };
+
+
+
 
 export type SetErrorMessage = (value: string) => void;
 
@@ -48,8 +50,15 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   //   setErrorMessage
   // );
 
-  const membrane = useMembraneClient(roomId, peerMetadata, isSimulcastOn);
-  useLog(membrane, "membrane state")
+  const membrane = useMembraneClient();
+  useLog(membrane, "membrane state");
+  // useEffect(() => {
+  //   if (!membrane?.connectivity?.connect) return;
+  //   if (membrane.status === null) {
+  //     console.log("Connecting!");
+  //     return membrane.connectivity.connect(roomId, peerMetadata, isSimulcastOn);
+  //   }
+  // }, [isSimulcastOn, membrane, peerMetadata, roomId]);
 
   // const client = useClient();
   //
@@ -100,6 +109,14 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   return (
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
+        <button
+          onClick={() => {
+            if (!membrane?.connectivity?.connect) return;
+            membrane?.connectivity?.connect(roomId, peerMetadata, isSimulcastOn);
+          }}
+        >
+          Connect!
+        </button>
         {/* main grid - videos + future chat */}
         <section className="flex h-full w-full flex-col">
           {errorMessage && <div className="w-full bg-red-700 p-1 text-white">{errorMessage}</div>}

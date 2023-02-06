@@ -2,6 +2,7 @@ import { Callbacks, MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membran
 import TypedEmitter from "typed-emitter";
 import { Channel, Socket } from "phoenix";
 import { StoreApi } from "./storeApi";
+import { SetStore } from "./externalState";
 
 export type TrackId = string;
 export type PeerId = string;
@@ -14,7 +15,7 @@ export type LibrarySimulcastConfig = {
 
 export type LibraryTrack<TrackMetadataGeneric> = {
   stream: MediaStream | null;
-  encoding: TrackEncoding | null,
+  encoding: TrackEncoding | null;
   trackId: TrackId;
   metadata: TrackMetadataGeneric | null; // eslint-disable-line @typescript-eslint/no-explicit-any
   simulcastConfig: LibrarySimulcastConfig | null;
@@ -33,17 +34,19 @@ export type LibraryRemotePeer<PeerMetadataGeneric, TrackMetadataGeneric> = {
   tracks: Record<TrackId, LibraryTrack<TrackMetadataGeneric>>;
 };
 
-export type Connectivity<TrackMetadataGeneric> = {
+export type Connectivity<PeerMetadataGeneric, TrackMetadataGeneric> = {
   socket: Socket | null;
   signaling: Channel | null;
   webrtc: MembraneWebRTC | null;
-  api: StoreApi<TrackMetadataGeneric> | null
+  api: StoreApi<TrackMetadataGeneric> | null;
+  connect: ((roomId: string, peerMetadata: PeerMetadataGeneric, isSimulcastOn: boolean) => () => void) | null;
 };
 
 export type LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
   local: LibraryLocalPeer<PeerMetadataGeneric, TrackMetadataGeneric>;
   remote: Record<PeerId, LibraryRemotePeer<PeerMetadataGeneric, TrackMetadataGeneric>>;
-  connectivity: Connectivity<TrackMetadataGeneric>;
+  status: "connecting" | "connected" | "error" | null,
+  connectivity: Connectivity<PeerMetadataGeneric, TrackMetadataGeneric>;
 };
 
 // --- selectors

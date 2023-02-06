@@ -161,7 +161,7 @@ export const onJoinSuccess =
       tracks: {},
     };
 
-    return { ...prevState, local, remote };
+    return { ...prevState, local, remote, status: "connected" };
   };
 export const addTrack =
   <PeerMetadataGeneric, TrackMetadataGeneric>(

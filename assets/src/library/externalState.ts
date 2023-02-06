@@ -21,11 +21,13 @@ export const DEFAULT_STORE = {
     metadata: null,
   },
   remote: {},
+  status: null,
   connectivity: {
     api: null,
     webrtc: null,
     signaling: null,
     socket: null,
+    connect: null
   },
 };
 

@@ -3,22 +3,12 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
-import MediaControlButton from "../../../pages/room/components/MediaControlButton";
-import { MediaPlayerTileConfig } from "../../../pages/room/components/StreamPlayer/MediaPlayerPeersSection";
-import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
-import { AUDIO_TRACKS_CONFIG, LOCAL_PEER_NAME, LOCAL_VIDEO_ID, VIDEO_TRACKS_CONFIG } from "../../../pages/room/consts";
 import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
-import { usePeersState } from "../../../pages/room/hooks/usePeerState";
-import { useStreamManager } from "../../../pages/room/hooks/useStreamManager";
-import Camera from "../../room-page/icons/Camera";
-import Microphone from "../../room-page/icons/Microphone";
 import Button from "../../shared/components/Button";
 import Input from "../../shared/components/Input";
 import HomePageLayout from "./HomePageLayout";
 
-import { activeButtonStyle, neutralButtonStyle } from "../../../pages/room/components/MediaControlButtons";
-import CameraOff from "../../room-page/icons/CameraOff";
-import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
+import HomePageVideoTile from "./HomePageVideoTile";
 
 const VideoroomHomePage: React.FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
@@ -31,51 +21,11 @@ const VideoroomHomePage: React.FC = () => {
   const buttonDisabled = !displayNameInput || !roomIdInput;
 
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
-  const { cameraAutostart, audioAutostart } = useDeveloperInfo();
+  const { simulcast } = useDeveloperInfo();
 
-  const { state: peerState, api: peerApi } = usePeersState();
-
-  const isConnected = !!peerState?.local?.id;
-
-  const camera = useStreamManager(
-    "camera",
-    "automatic",
-    isConnected,
-    true,
-    undefined,
-    VIDEO_TRACKS_CONFIG,
-    peerApi,
-    cameraAutostart.status
-  );
-  const audio = useStreamManager(
-    "audio",
-    "automatic",
-    isConnected,
-    true,
-    undefined,
-    AUDIO_TRACKS_CONFIG,
-    peerApi,
-    audioAutostart.status
-  );
-
-  const localPeer = peerState.local;
-
-  const localUser: MediaPlayerTileConfig = {
-    peerId: localPeer?.id,
-    displayName: LOCAL_PEER_NAME,
-    emoji: localPeer?.metadata?.emoji,
-    video: localPeer?.tracks["camera"] ? [localPeer?.tracks["camera"]] : [],
-    audio: localPeer?.tracks["audio"] ? [localPeer?.tracks["audio"]] : [],
-    screenSharing: localPeer?.tracks["screensharing"] ? [localPeer?.tracks["screensharing"]] : [],
-    showSimulcast: false,
-    flipHorizontally: true,
-    streamSource: "local",
-    playAudio: false,
-    mediaPlayerId: LOCAL_VIDEO_ID,
-  };
   return (
     <HomePageLayout>
-      <section className="flex flex-col items-center gap-y-12 sm:gap-y-18">
+      <section className="flex flex-col items-center gap-y-12 sm:justify-around sm:gap-y-0">
         {deviceManager.errorMessage && (
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
@@ -83,81 +33,11 @@ const VideoroomHomePage: React.FC = () => {
           <h2 className="text-3xl sm:text-5xl">Videoconferencing for everyone</h2>
           <p className="font-aktivGrotesk text-xl">Join the existing room or create a new one to start the meeting</p>
         </div>
-        <div className="flex h-full w-full justify-between gap-x-24">
-          <div className=" h-[400px] w-[600px]">
-            <MediaPlayerTile
-              key="room-preview"
-              peerId={localUser.peerId}
-              video={localUser.video[0]}
-              audioStream={localUser.audio[0]?.stream}
-              playAudio={localUser.playAudio}
-              streamSource={localUser.streamSource}
-              flipHorizontally
-              layers={
-                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
-                  {camera?.local.isEnabled ? (
-                    <MediaControlButton
-                      key={"cam-off"}
-                      icon={Camera}
-                      hover="Turn off the camera"
-                      className={neutralButtonStyle}
-                      onClick={() => {
-                        camera.remote.setActive(false);
-                        camera.local.disable();
-                        cameraAutostart.setCameraAutostart(false);
-                      }}
-                    />
-                  ) : (
-                    <MediaControlButton
-                      key={"cam-on"}
-                      icon={CameraOff}
-                      hover="Turn on the camera"
-                      className={activeButtonStyle}
-                      onClick={() => {
-                        if (camera?.local.stream) {
-                          camera.local.enable();
-                        } else {
-                          camera?.local.start();
-                        }
-                        camera?.remote.setActive(true);
-                        cameraAutostart.setCameraAutostart(true);
-                      }}
-                    />
-                  )}
-                  {audio?.local.isEnabled ? (
-                    <MediaControlButton
-                      key={"mic-mute"}
-                      icon={Microphone}
-                      hover="Turn off the microphone"
-                      className={neutralButtonStyle}
-                      onClick={() => {
-                        audio.local.disable();
-                        audio.remote.setActive(false);
-                        audioAutostart.setAudioAutostart(false);
-                      }}
-                    />
-                  ) : (
-                    <MediaControlButton
-                      key={"mic-unmute"}
-                      icon={MicrophoneOff}
-                      hover="Turn on the microphone"
-                      className={activeButtonStyle}
-                      onClick={() => {
-                        if (audio?.local.stream) {
-                          audio.local.enable();
-                        } else {
-                          audio?.local.start();
-                        }
-                        audio?.remote.setActive(true);
-                        audioAutostart.setAudioAutostart(true);
-                      }}
-                    />
-                  )}
-                </div>
-              }
-            />
+        <div className="flex max-h-[400px] w-full flex-col justify-between gap-x-24 gap-y-8 sm:flex-row 2xl:max-h-[500px]">
+          <div className="h-full w-full sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
+            <HomePageVideoTile displayName={displayNameInput} />
           </div>
-          <div className={clsx("mt-8 flex flex-col items-center", roomId ? "gap-y-12" : "gap-y-6")}>
+          <div className={clsx("flex flex-col items-center justify-center", roomId ? "gap-y-12" : "gap-y-6")}>
             {roomId ? (
               <div className="flex w-full flex-col items-center justify-center text-center">
                 <span>You are joining:</span>
@@ -190,9 +70,7 @@ const VideoroomHomePage: React.FC = () => {
                 onClick={() => {
                   localStorage.setItem("displayName", displayNameInput);
                   setUsername(displayNameInput);
-                  // simulcast.setSimulcast(simulcastInput);
-                  // manualMode.setManualMode(manualModeInput);
-                  // cameraAutostart.setCameraAutostart(autostartCameraAndMicInput);
+                  simulcast.setSimulcast(true); //always join the room with simulcast turn on
                 }}
                 href={`/room/${roomIdInput}`}
                 name="join"

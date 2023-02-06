@@ -111,7 +111,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
   const videoGridStyle = getGridStyle();
   const tileSize = allPeersConfig.length >= 7 ? "M" : "L";
 
-  const {pinnedTrackId, pin, unpin} : PinningApi = pinningApi;  
+  const {pinnedTileId, pin, unpin} : PinningApi = pinningApi;  
 
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
@@ -120,8 +120,8 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
         const video: TrackWithId | undefined = config.video[0];
         const audio: TrackWithId | undefined = config.audio[0];
 
-        const isPinned: boolean = video?.trackId === pinnedTrackId;
-        const onPinButtonClick: () => void = isPinned ? unpin : () => pin(video?.trackId || "");
+        const isPinned: boolean = config.mediaPlayerId === pinnedTileId;
+        const onPinButtonClick: () => void = isPinned ? unpin : () => pin(config.mediaPlayerId);
         return (
           <MediaPlayerTile
             key={config.mediaPlayerId}

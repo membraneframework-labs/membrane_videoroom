@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
 export type PinningApi = {
-    pinnedTrackId: string;
-    pin: (trackId: string) => void;
+    pinnedTileId: string;
+    pin: (tileId: string) => void;
     unpin: () => void;
 } 
 
 const usePinning = () : PinningApi => {
-    const [pinnedTrackId, setPinnedTrackId] = useState<string>("");
+    const [pinnedTileId, setPinnedTileId] = useState<string>("");
     
-    return {pinnedTrackId: pinnedTrackId,
-         pin: setPinnedTrackId,
-         unpin: () => setPinnedTrackId("")}
+    return {pinnedTileId,
+         pin: setPinnedTileId,
+         unpin: () => setPinnedTileId("")}
         };
 
 export default usePinning;

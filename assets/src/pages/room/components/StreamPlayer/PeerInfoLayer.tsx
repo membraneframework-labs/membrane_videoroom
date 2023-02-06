@@ -22,7 +22,6 @@ const PeerInfoLayer: FC<Props> = ({ topLeft, topRight, bottomLeft, bottomRight, 
     { x: "left-0", y: "bottom-0", content: bottomLeft },
     { x: "right-0", y: "bottom-0", content: bottomRight },
   ];
-
   const paddingClassName = { M: "p-3", L: "p-4" };
 
   return (

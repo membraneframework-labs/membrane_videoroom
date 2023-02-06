@@ -7,6 +7,7 @@ import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource } from "../../../types";
 import { TrackWithId } from "./MediaPlayerPeersSection";
+import clsx from "clsx";
 
 export interface Props {
   // peerId?: string;
@@ -18,6 +19,9 @@ export interface Props {
   // showSimulcast?: boolean;
   // streamSource?: StreamSource;
   layers?: JSX.Element;
+  webrtc?: MembraneWebRTC;
+  className?: string;
+  blockFillContent?: boolean;
   // webrtc?: MembraneWebRTC;
 }
 
@@ -29,23 +33,17 @@ const MediaPlayerTile: FC<Props> = ({
   flipHorizontally,
   audioStream,
   layers,
-}: // showSimulcast,
-// streamSource,
-// webrtc,
-Props) => {
-  // const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
-  //   "m",
-  //   peerId || null,
-  //   video?.remoteTrackId || null,
-  //   webrtc || null
-  // );
-
-  // const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null, webrtc || null);
-
+  webrtc,
+  className,
+  blockFillContent,
+}: Props) => {
   return (
     <div
       data-name="video-feed"
-      className="aspect-video relative h-full w-full overflow-hidden rounded-md bg-gray-900 shadow"
+      className={clsx(
+        className,
+        "relative flex h-full w-full justify-center overflow-hidden rounded-xl border border-brand-dark-blue-300 bg-gray-900"
+      )}
     >
       <MediaPlayer
         videoStream={videoStream}
@@ -53,6 +51,7 @@ Props) => {
         audioStream={audioStream}
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}
+        blockFillContent={blockFillContent}
       />
       {layers}
     </div>

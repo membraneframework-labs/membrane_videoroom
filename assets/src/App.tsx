@@ -4,6 +4,7 @@ import { DeveloperInfoProvider } from "./contexts/DeveloperInfoContext";
 import { router } from "./Routes";
 import { UserProvider } from "./contexts/UserContext";
 import { MembraneContextProvider } from "./libraryUsage/setup";
+import { ToastProvider } from "./features/shared/context/ToastContext";
 
 const App: FC = () => {
   return (
@@ -11,7 +12,9 @@ const App: FC = () => {
       <UserProvider>
         <DeveloperInfoProvider>
           <MembraneContextProvider>
-            <RouterProvider router={router} />
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
           </MembraneContextProvider>
         </DeveloperInfoProvider>
       </UserProvider>

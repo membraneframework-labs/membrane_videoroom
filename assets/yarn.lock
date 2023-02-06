@@ -57,10 +57,10 @@
   "resolved" "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   "version" "1.2.1"
 
-"@jellyfish-dev/membrane-webrtc-js@^0.4.4":
-  "integrity" "sha512-HkBXQYavEXfV4Loo8ggsCdrYCk/E2geoPsVWa67lhWl3qnH4WQ/Cv/rC160ecA0PjiV0TJgrimI21uXoY/7kug=="
-  "resolved" "https://registry.npmjs.org/@jellyfish-dev/membrane-webrtc-js/-/membrane-webrtc-js-0.4.4.tgz"
-  "version" "0.4.4"
+"@jellyfish-dev/membrane-webrtc-js@^0.4.5":
+  "integrity" "sha512-YwfecgZZt6K6Cmq7AAf6TqDM0whLZM6FpxuvxXgBKnAJi3DMg+m3GqYTklM3r1g2MneIVIsPiNtjYszGaBsAvg=="
+  "resolved" "https://registry.npmjs.org/@jellyfish-dev/membrane-webrtc-js/-/membrane-webrtc-js-0.4.5.tgz"
+  "version" "0.4.5"
   dependencies:
     "uuid" "^8.3.2"
 

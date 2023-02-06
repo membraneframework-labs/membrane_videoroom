@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { TrackWithId } from "./MediaPlayerPeersSection";
 import PeerInfoLayer from "./PeerInfoLayer";
+import NameTag from "../../../../features/room-page/components/NameTag";
 import { useSelector } from "../../../../libraryUsage/setup";
 import {
   createIsScreenSharingActiveSelector,
@@ -55,7 +56,7 @@ const ScreenSharingPlayers: FC = () => {
   const peerIds: PeerId[] = useSelector(createUsersIdsWithScreenSharingSelector());
 
   return (
-    <div className="md:mb-none active-screensharing-grid mb-3 h-full grid-cols-1 md:mr-3 md:grid-cols-1">
+    <div className="active-screensharing-grid h-full grid-cols-1">
       {peerIds.map((peerId) => (
         <ScreenSharingPlayersWrapper key={peerId} peerId={peerId} />
       ))}

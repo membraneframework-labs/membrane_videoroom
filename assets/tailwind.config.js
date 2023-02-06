@@ -125,6 +125,12 @@ module.exports = {
       gap: {
         18: "72px",
       },
+      screens: {
+        "3xl": "1728px",
+      },
+      gridTemplateColumns: {
+        "3/1": "3fr 1fr",
+      },
     },
   },
   variants: {

@@ -24,7 +24,14 @@ const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, 
   // external links
   if (href?.startsWith("http://") || href?.startsWith("https://")) {
     return (
-      <a target="_blank" rel="noreferrer" href={href} className={clsx(className)} aria-label={name} onClick={onClick}>
+      <a
+        target="_blank"
+        rel="noreferrer"
+        href={disabled || !href ? "" : href}
+        className={clsx(className)}
+        aria-label={name}
+        onClick={onClick}
+      >
         {children}
       </a>
     );
@@ -32,7 +39,7 @@ const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, 
 
   // internal links
   return (
-    <Link onClick={onClick} to={href || ""} id={name} className={className}>
+    <Link onClick={disabled ? () => null : onClick} to={disabled || !href ? "" : href} id={name} className={className}>
       {children}
     </Link>
   );

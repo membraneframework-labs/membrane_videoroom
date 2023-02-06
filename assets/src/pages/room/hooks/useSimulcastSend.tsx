@@ -1,6 +1,6 @@
 import { useToggle } from "./useToggle";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import {useSelector2} from "../../../libraryUsage/setup";
+import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { useSelector } from "../../../libraryUsage/setup";
 import {createConnectivitySelector} from "../../../library/selectors";
 
 export type UseSimulcastLocalEncoding = {
@@ -13,7 +13,7 @@ export type UseSimulcastLocalEncoding = {
 };
 
 export const useSimulcastSend = (trackId: string | null): UseSimulcastLocalEncoding => {
-  const api = useSelector2(createConnectivitySelector());
+  const api = useSelector(createConnectivitySelector());
 
   const toggleRemoteEncoding = (status: boolean, encodingName: TrackEncoding) => {
     if (!trackId) {

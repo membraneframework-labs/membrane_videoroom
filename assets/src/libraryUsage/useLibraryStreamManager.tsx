@@ -6,7 +6,6 @@ import { TrackType } from "../pages/types";
 // import { useSetLocalTrackMetadata } from "./useLibrarySetLocalTrackMetadata";
 import { UseMembraneClientType } from "../library/state.types";
 import { PeerMetadata, TrackMetadata } from "./types";
-import {useSelector2} from "./setup";
 
 export type Streams = {
   remote: MembraneStreaming;

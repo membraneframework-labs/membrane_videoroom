@@ -3,7 +3,7 @@ import { PeerMetadata, TrackMetadata } from "../pages/room/hooks/usePeerState";
 import { TrackType } from "../pages/types";
 import { selectBandwidthLimit } from "../pages/room/bandwidth";
 import { UseMembraneClientType } from "../library/state.types";
-import { useSelector2 } from "./setup";
+import { useSelector } from "./setup";
 import { createConnectivitySelector } from "../library/selectors";
 import {useLog} from "../helpers/UseLog";
 
@@ -30,7 +30,7 @@ export const useMembraneMediaStreaming = (
   simulcast: boolean,
   stream: MediaStream | null
 ): MembraneStreaming => {
-  const api = useSelector2(createConnectivitySelector());
+  const api = useSelector(createConnectivitySelector());
 
   // useLog(api, "API!!")
 

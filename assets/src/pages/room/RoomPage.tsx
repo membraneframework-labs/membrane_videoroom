@@ -127,16 +127,14 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
             </div>
           )}
 
-          {/*{clientWrapper && (*/}
-          {/*<VideochatSection*/}
-          {/*// clientWrapper={clientWrapper}*/}
-          {/*// peers={peerState.remote}*/}
-          {/*// localPeer={peerState.local}*/}
-          {/*// showSimulcast={showSimulcastMenu}*/}
-          {/*// showDeveloperInfo={showDeveloperInfo}*/}
-          {/*// webrtc={webrtc}*/}
-          {/*/>*/}
-          {/*)}*/}
+          <VideochatSection
+          // clientWrapper={clientWrapper}
+          // peers={peerState.remote}
+          // localPeer={peerState.local}
+          // showSimulcast={showSimulcastMenu}
+          // showDeveloperInfo={showDeveloperInfo}
+          // webrtc={webrtc}
+          />
         </section>
 
         <MediaControlButtons

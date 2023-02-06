@@ -1,36 +1,28 @@
-import React, { FC, useMemo } from "react";
+import React, { FC } from "react";
 import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
 import MediaPlayerTile from "./MediaPlayerTile";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { StreamSource, TrackType } from "../../../types";
 import InfoLayer from "./PeerInfoLayer";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
-import CameraOff from "../../../../features/room-page/icons/CameraOff";
-import { useSelector } from "../../../../library/noContext/useSelector";
-import { LibraryTrackMinimal, PeerId, TrackId, UseMembraneClientType } from "../../../../library/state.types";
-import { PeerMetadata, TrackMetadata } from "../../../../libraryUsage/types";
+import { LibraryTrackMinimal, PeerId } from "../../../../library/state.types";
+import { createLocalPeerIdsSelector, createPeerIdsSelector } from "../../../../library/selectors";
 import {
-  createLocalPeerIdsSelector,
-  createLocalTracksIdsSelector,
-  createLocalTracksSelector,
-  createPeerIdsSelector,
-} from "../../../../library/selectors";
-import {
-    createAudioTrackStatusSelector,
-    createLocalPeerGuiSelector,
-    createLocalTracksRecordSelector,
-    createPeerGuiSelector, createTrackEncodingSelector,
-    createTracksRecordSelector,
-    PeerGui,
+  createAudioTrackStatusSelector,
+  createLocalPeerGuiSelector,
+  createLocalTracksRecordSelector,
+  createPeerGuiSelector,
+  createTrackEncodingSelector,
+  createTracksRecordSelector,
+  PeerGui,
 } from "../../../../libraryUsage/customSelectors";
-import { useSelector2 } from "../../../../libraryUsage/setup";
-import { useLog } from "../../../../helpers/UseLog";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
+import { useSelector } from "../../../../libraryUsage/setup";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -112,9 +104,9 @@ type MediaPlayerTileWrapperProps = {
 };
 //
 const RemoteMediaPlayerTileWrapper = ({ peerId, showSimulcast }: MediaPlayerTileWrapperProps) => {
-  const tracks: Partial<Record<string, LibraryTrackMinimal>> = useSelector2(createTracksRecordSelector(peerId));
-  const peer: PeerGui | null = useSelector2(createPeerGuiSelector(peerId));
-  const encoding = useSelector2(createTrackEncodingSelector(tracks?.camera?.trackId || null));
+  const tracks: Partial<Record<string, LibraryTrackMinimal>> = useSelector(createTracksRecordSelector(peerId));
+  const peer: PeerGui | null = useSelector(createPeerGuiSelector(peerId));
+  const encoding = useSelector(createTrackEncodingSelector(tracks?.camera?.trackId || null));
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
     "m",
     peerId || null,
@@ -162,7 +154,7 @@ type RemoteLayerProps = {
 };
 
 const RemoteLayer = ({ peerId }: RemoteLayerProps) => {
-  const audioStatus = useSelector2(createAudioTrackStatusSelector(peerId));
+  const audioStatus = useSelector(createAudioTrackStatusSelector(peerId));
 
   // useLog(audioStatus, "Audio status");
   return (
@@ -183,8 +175,8 @@ export type LocalPeerMediaPlayerWrapperProps = {
 };
 
 const LocalPeerMediaPlayerWrapper = ({ showSimulcast }: LocalPeerMediaPlayerWrapperProps) => {
-  const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector2(createLocalTracksRecordSelector());
-  const peer: PeerGui | null = useSelector2(createLocalPeerGuiSelector());
+  const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector(createLocalTracksRecordSelector());
+  const peer: PeerGui | null = useSelector(createLocalPeerGuiSelector());
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(tracks.camera?.trackId || null);
 
   return (
@@ -202,7 +194,7 @@ const LocalPeerMediaPlayerWrapper = ({ showSimulcast }: LocalPeerMediaPlayerWrap
               </div>
             }
           />
-          {showSimulcast && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!tracks.camera?.stream}/>}
+          {showSimulcast && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!tracks.camera?.stream} />}
         </>
       }
     />
@@ -223,8 +215,8 @@ Props) => {
   //   ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
   // ];
 
-  const localPeerId: PeerId | null = useSelector2(createLocalPeerIdsSelector());
-  const remotePeersIds: Array<PeerId> = useSelector2(createPeerIdsSelector());
+  const localPeerId: PeerId | null = useSelector(createLocalPeerIdsSelector());
+  const remotePeersIds: Array<PeerId> = useSelector(createPeerIdsSelector());
 
   return (
     <div

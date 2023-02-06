@@ -9,7 +9,7 @@ import React, { FC } from "react";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import { UseMembraneClientType } from "../../library/state.types";
 import { PeerMetadata, TrackMetadata } from "../../libraryUsage/types";
-import { useSelector2 } from "../../libraryUsage/setup";
+import { useSelector } from "../../libraryUsage/setup";
 import { createIsScreenSharingActiveSelector } from "../../libraryUsage/customSelectors";
 
 type Props = {
@@ -97,7 +97,7 @@ export const VideochatSection: FC<Props> = (props: Props) => {
   // };
 
   // const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
-  const isScreenSharingActive = useSelector2(createIsScreenSharingActiveSelector());
+  const isScreenSharingActive = useSelector(createIsScreenSharingActiveSelector());
 
   return (
     <div id="videochat" className="overflow-y-auto">

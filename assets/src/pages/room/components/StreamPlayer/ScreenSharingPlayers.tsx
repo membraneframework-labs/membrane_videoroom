@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { TrackWithId } from "./MediaPlayerPeersSection";
 import PeerInfoLayer from "./PeerInfoLayer";
-import { useSelector2 } from "../../../../libraryUsage/setup";
+import { useSelector } from "../../../../libraryUsage/setup";
 import {
   createIsScreenSharingActiveSelector,
   createPeerGuiSelector,
@@ -28,8 +28,8 @@ type Props = {
 };
 
 const ScreenSharingPlayersWrapper = ({ peerId }: Props) => {
-  const track: LibraryTrackMinimal | null = useSelector2(createScreenSharingTracksSelector(peerId));
-  const peer: PeerGui | null = useSelector2(createPeerGuiSelector(peerId));
+  const track: LibraryTrackMinimal | null = useSelector(createScreenSharingTracksSelector(peerId));
+  const peer: PeerGui | null = useSelector(createPeerGuiSelector(peerId));
 
   useLog(track, "screenSharingTrack");
 
@@ -52,7 +52,7 @@ const ScreenSharingPlayersWrapper = ({ peerId }: Props) => {
 };
 
 const ScreenSharingPlayers: FC = () => {
-  const peerIds: PeerId[] = useSelector2(createUsersIdsWithScreenSharingSelector());
+  const peerIds: PeerId[] = useSelector(createUsersIdsWithScreenSharingSelector());
 
   return (
     <div className="md:mb-none active-screensharing-grid mb-3 h-full grid-cols-1 md:mr-3 md:grid-cols-1">

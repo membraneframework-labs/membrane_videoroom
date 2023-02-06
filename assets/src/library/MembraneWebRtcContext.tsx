@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
-import { LibraryPeersState } from "./state.types";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { LibraryPeersState, Selector } from "./state.types";
 import { DEFAULT_STORE } from "./externalState";
 import { connectFunction } from "./connectFunction";
+import { useSelector } from "./noContext/useSelector";
 
 type Props = {
   children: React.ReactNode;
@@ -53,10 +54,23 @@ export const createMembrane = <PeerMetadataGeneric, TrackMetadataGeneric>() => {
     return state;
   };
 
+  const useSelector = <Result,>(
+    selector: Selector<PeerMetadataGeneric, TrackMetadataGeneric, Result>
+  ): Result => {
+    const { state } = useMembraneContext();
+
+    const result: Result = useMemo(() => {
+      return selector(state);
+    }, [selector, state]);
+
+    return result;
+  };
+
   return {
     MembraneContext,
     MembraneContextProvider,
     useMembraneContext,
     useMembraneClient,
+    useSelector,
   };
 };

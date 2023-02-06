@@ -20,12 +20,12 @@ type Props = {
 };
 
 const ScreenSharingPlayers: FC<Props> = ({ streams, pinningApi }: Props) => {
-  const {pinnedTrackId, pin, unpin} = pinningApi;
+  const {pinnedTileId, pin, unpin} = pinningApi;
   return (
     <div className="active-screensharing-grid h-full grid-cols-1">
       {streams.map((config) => {
-        const isPinned = config.video.trackId === pinnedTrackId;
-        const onPinButtonClick = isPinned ? unpin : () => pin(config.video.trackId);
+        const isPinned = config.mediaPlayerId === pinnedTileId;
+        const onPinButtonClick = isPinned ? unpin : () => pin(config.mediaPlayerId);
 
         return <MediaPlayerTile
           blockFillContent

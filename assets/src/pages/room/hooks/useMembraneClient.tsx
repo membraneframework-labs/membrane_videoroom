@@ -144,7 +144,7 @@ export const useMembraneClient = (
       })
       .receive("error", (response) => {
         if (response === "server_full") {
-          handleError("Server is full");
+          handleError("Server has reached maximum allowed load. Disconnecting");
           cleanUp();
         } else {
           handleError(`Couldn't establish signaling connection`);

@@ -27,7 +27,7 @@ defmodule Videoroom.Room do
     GenServer.start_link(__MODULE__, [], opts)
   end
 
-  @spec add_peer_channel(pid(), pid(), String.t()) :: :ok
+  @spec add_peer_channel(pid(), pid(), String.t()) :: :ok | {:error, :server_full}
   def add_peer_channel(room_pid, peer_channel_pid, peer_id) do
     GenServer.call(room_pid, {:add_peer_channel, peer_channel_pid, peer_id})
   end
@@ -118,54 +118,7 @@ defmodule Videoroom.Room do
         state = put_in(state, [:peer_channels, peer_id], peer_channel_pid)
         send(peer_channel_pid, {:simulcast_config, state.simulcast?})
         Process.monitor(peer_channel_pid)
-
-        Membrane.Logger.info("New peer: #{inspect(peer_id)}. Accepting.")
-        peer_node = node(peer_channel_pid)
-
-        handshake_opts =
-          if state.network_options[:dtls_pkey] &&
-               state.network_options[:dtls_cert] do
-            [
-              client_mode: false,
-              dtls_srtp: true,
-              pkey: state.network_options[:dtls_pkey],
-              cert: state.network_options[:dtls_cert]
-            ]
-          else
-            [
-              client_mode: false,
-              dtls_srtp: true
-            ]
-          end
-
-        webrtc_extensions =
-          if state.simulcast? do
-            [Mid, Rid, TWCC]
-          else
-            [TWCC]
-          end
-
-        endpoint = %WebRTC{
-          rtc_engine: state.rtc_engine,
-          ice_name: peer_id,
-          owner: self(),
-          integrated_turn_options: state.network_options[:integrated_turn_options],
-          integrated_turn_domain: state.network_options[:integrated_turn_domain],
-          handshake_opts: handshake_opts,
-          log_metadata: [peer_id: peer_id],
-          trace_context: state.trace_ctx,
-          webrtc_extensions: webrtc_extensions,
-          rtcp_sender_report_interval: Membrane.Time.seconds(1),
-          rtcp_receiver_report_interval: Membrane.Time.seconds(1),
-          filter_codecs: &filter_codecs/1,
-          toilet_capacity: 1000,
-          simulcast_config: %SimulcastConfig{
-            enabled: state.simulcast?,
-            initial_target_variant: fn _track -> :medium end
-          }
-        }
-
-        :ok = Engine.add_endpoint(state.rtc_engine, endpoint, peer_id: peer_id, node: peer_node)
+        add_peer(peer_id, peer_channel_pid, state)
 
         {:reply, :ok, state}
     end
@@ -236,6 +189,56 @@ defmodule Videoroom.Room do
     else
       {:noreply, state}
     end
+  end
+
+  defp add_peer(peer_id, peer_channel_pid, state) do
+    Membrane.Logger.info("New peer: #{inspect(peer_id)}. Accepting.")
+    peer_node = node(peer_channel_pid)
+
+    handshake_opts =
+      if state.network_options[:dtls_pkey] &&
+           state.network_options[:dtls_cert] do
+        [
+          client_mode: false,
+          dtls_srtp: true,
+          pkey: state.network_options[:dtls_pkey],
+          cert: state.network_options[:dtls_cert]
+        ]
+      else
+        [
+          client_mode: false,
+          dtls_srtp: true
+        ]
+      end
+
+    webrtc_extensions =
+      if state.simulcast? do
+        [Mid, Rid, TWCC]
+      else
+        [TWCC]
+      end
+
+    endpoint = %WebRTC{
+      rtc_engine: state.rtc_engine,
+      ice_name: peer_id,
+      owner: self(),
+      integrated_turn_options: state.network_options[:integrated_turn_options],
+      integrated_turn_domain: state.network_options[:integrated_turn_domain],
+      handshake_opts: handshake_opts,
+      log_metadata: [peer_id: peer_id],
+      trace_context: state.trace_ctx,
+      webrtc_extensions: webrtc_extensions,
+      rtcp_sender_report_interval: Membrane.Time.seconds(1),
+      rtcp_receiver_report_interval: Membrane.Time.seconds(1),
+      filter_codecs: &filter_codecs/1,
+      toilet_capacity: 1000,
+      simulcast_config: %SimulcastConfig{
+        enabled: state.simulcast?,
+        initial_target_variant: fn _track -> :medium end
+      }
+    }
+
+    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, peer_id: peer_id, node: peer_node)
   end
 
   defp filter_codecs({%{encoding: "H264"}, fmtp}) do

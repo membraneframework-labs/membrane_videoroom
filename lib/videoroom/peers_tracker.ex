@@ -14,7 +14,7 @@ defmodule Videoroom.PeersTracker do
   @spec try_add(peer_id()) :: :ok | {:error, :full}
   def try_add(peer_id) do
     if Registry.count(__MODULE__) == Application.fetch_env!(:membrane_videoroom_demo, :max_peers) do
-      {:error, :full}
+      {:error, :server_full}
     else
       Registry.register(__MODULE__, peer_id, nil)
       :ok

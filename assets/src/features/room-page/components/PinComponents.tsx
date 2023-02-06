@@ -32,5 +32,7 @@ export const PinTileButton: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUs
 };
 
 export const PinIndicator: FC = () => {
-  return <div className="bg-black text-white opacity-50">Pinned</div>
+  return     <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
+  <Pin stroke="#001A72" />
+</div>
 }

@@ -20,7 +20,8 @@ defmodule VideoRoom.Application do
         VideoRoomWeb.Endpoint,
         {Phoenix.PubSub, name: VideoRoom.PubSub},
         {Registry, keys: :unique, name: Videoroom.Room.Registry},
-        {DynamicSupervisor, strategy: :one_for_one, name: Videoroom.RoomMonitorSupervisor}
+        {DynamicSupervisor, strategy: :one_for_one, name: Videoroom.RoomMonitorSupervisor},
+        Videoroom.PeersTracker
       ] ++
         if store_metrics do
           Application.ensure_all_started(:membrane_rtc_engine_timescaledb)

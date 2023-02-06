@@ -98,6 +98,9 @@ defmodule VideoRoomWeb.PeerChannel do
 
         {:ok,
          Phoenix.Socket.assign(socket, %{room_id: room_id, room_pid: room_pid, peer_id: peer_id})}
+
+      {:error, :full} ->
+        {:error, :server_full}
     end
   end
 end

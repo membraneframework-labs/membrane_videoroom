@@ -116,6 +116,14 @@ export const useMembraneClient = (
       },
     });
 
+    const cleanUp = () => {
+      webrtc.leave();
+      webrtcChannel.leave();
+      socket.off([socketOnCloseRef, socketOnErrorRef]);
+      setWebrtc(undefined);
+    };
+
+
     webrtcChannel.on("mediaEvent", (event) => {
       webrtc.receiveMediaEvent(event.data);
     });
@@ -135,16 +143,14 @@ export const useMembraneClient = (
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
       })
-      .receive("error", (_response) => {
-        handleError(`Couldn't establish signaling connection`);
+      .receive("error", (response) => {
+        if(response === "server_full") {
+          handleError("Server is full")
+          cleanUp()
+        } else {
+          handleError(`Couldn't establish signaling connection`);
+        }
       });
-
-    const cleanUp = () => {
-      webrtc.leave();
-      webrtcChannel.leave();
-      socket.off([socketOnCloseRef, socketOnErrorRef]);
-      setWebrtc(undefined);
-    };
 
     return () => {
       cleanUp();

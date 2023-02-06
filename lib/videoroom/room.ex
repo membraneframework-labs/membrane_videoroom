@@ -13,6 +13,8 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Message
   alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
 
+  alias Videoroom.PeersTracker
+
   @mix_env Mix.env()
 
   @spec start(any(), list()) :: {:ok, pid()}
@@ -108,59 +110,65 @@ defmodule Videoroom.Room do
 
   @impl true
   def handle_call({:add_peer_channel, peer_channel_pid, peer_id}, _from, state) do
-    state = put_in(state, [:peer_channels, peer_id], peer_channel_pid)
-    send(peer_channel_pid, {:simulcast_config, state.simulcast?})
-    Process.monitor(peer_channel_pid)
+    case PeersTracker.try_add(peer_id) do
+      {:error, _reason} = error ->
+        {:reply, error, state}
 
-    Membrane.Logger.info("New peer: #{inspect(peer_id)}. Accepting.")
-    peer_node = node(peer_channel_pid)
+      :ok ->
+        state = put_in(state, [:peer_channels, peer_id], peer_channel_pid)
+        send(peer_channel_pid, {:simulcast_config, state.simulcast?})
+        Process.monitor(peer_channel_pid)
 
-    handshake_opts =
-      if state.network_options[:dtls_pkey] &&
-           state.network_options[:dtls_cert] do
-        [
-          client_mode: false,
-          dtls_srtp: true,
-          pkey: state.network_options[:dtls_pkey],
-          cert: state.network_options[:dtls_cert]
-        ]
-      else
-        [
-          client_mode: false,
-          dtls_srtp: true
-        ]
-      end
+        Membrane.Logger.info("New peer: #{inspect(peer_id)}. Accepting.")
+        peer_node = node(peer_channel_pid)
 
-    webrtc_extensions =
-      if state.simulcast? do
-        [Mid, Rid, TWCC]
-      else
-        [TWCC]
-      end
+        handshake_opts =
+          if state.network_options[:dtls_pkey] &&
+               state.network_options[:dtls_cert] do
+            [
+              client_mode: false,
+              dtls_srtp: true,
+              pkey: state.network_options[:dtls_pkey],
+              cert: state.network_options[:dtls_cert]
+            ]
+          else
+            [
+              client_mode: false,
+              dtls_srtp: true
+            ]
+          end
 
-    endpoint = %WebRTC{
-      rtc_engine: state.rtc_engine,
-      ice_name: peer_id,
-      owner: self(),
-      integrated_turn_options: state.network_options[:integrated_turn_options],
-      integrated_turn_domain: state.network_options[:integrated_turn_domain],
-      handshake_opts: handshake_opts,
-      log_metadata: [peer_id: peer_id],
-      trace_context: state.trace_ctx,
-      webrtc_extensions: webrtc_extensions,
-      rtcp_sender_report_interval: Membrane.Time.seconds(1),
-      rtcp_receiver_report_interval: Membrane.Time.seconds(1),
-      filter_codecs: &filter_codecs/1,
-      toilet_capacity: 1000,
-      simulcast_config: %SimulcastConfig{
-        enabled: state.simulcast?,
-        initial_target_variant: fn _track -> :medium end
-      }
-    }
+        webrtc_extensions =
+          if state.simulcast? do
+            [Mid, Rid, TWCC]
+          else
+            [TWCC]
+          end
 
-    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, peer_id: peer_id, node: peer_node)
+        endpoint = %WebRTC{
+          rtc_engine: state.rtc_engine,
+          ice_name: peer_id,
+          owner: self(),
+          integrated_turn_options: state.network_options[:integrated_turn_options],
+          integrated_turn_domain: state.network_options[:integrated_turn_domain],
+          handshake_opts: handshake_opts,
+          log_metadata: [peer_id: peer_id],
+          trace_context: state.trace_ctx,
+          webrtc_extensions: webrtc_extensions,
+          rtcp_sender_report_interval: Membrane.Time.seconds(1),
+          rtcp_receiver_report_interval: Membrane.Time.seconds(1),
+          filter_codecs: &filter_codecs/1,
+          toilet_capacity: 1000,
+          simulcast_config: %SimulcastConfig{
+            enabled: state.simulcast?,
+            initial_target_variant: fn _track -> :medium end
+          }
+        }
 
-    {:reply, :ok, state}
+        :ok = Engine.add_endpoint(state.rtc_engine, endpoint, peer_id: peer_id, node: peer_node)
+
+        {:reply, :ok, state}
+    end
   end
 
   @impl true
@@ -205,6 +213,7 @@ defmodule Videoroom.Room do
 
     Membrane.Logger.info("Peer #{inspect(peer_id)} left")
 
+    PeersTracker.remove(peer_id)
     Engine.remove_endpoint(state.rtc_engine, peer_id)
     {_elem, state} = pop_in(state, [:peer_channels, peer_id])
 
@@ -214,7 +223,6 @@ defmodule Videoroom.Room do
       case Engine.terminate(state.rtc_engine, blocking?: true) do
         :ok ->
           Membrane.Logger.info("Engine terminated.")
-          {:stop, :normal, state}
 
         error ->
           Membrane.Logger.error(
@@ -222,8 +230,10 @@ defmodule Videoroom.Room do
           )
 
           Process.exit(state.rtc_engine, :kill)
-          {:noreply, state}
       end
+
+      PeersTracker.remove_all()
+      {:stop, :normal, state}
     else
       {:noreply, state}
     end

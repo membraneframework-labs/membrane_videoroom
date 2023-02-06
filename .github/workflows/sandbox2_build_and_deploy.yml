@@ -69,6 +69,7 @@ jobs:
         run: |
           echo "VIRTUAL_HOST=$VIRTUAL_HOST 
           EXTERNAL_IP=$EXTERNAL_IP 
+          MAX_PEERS=4
           TAG=$TAG 
           DB_USERNAME=$DB_USERNAME 
           DB_PASSWORD=$DB_PASSWORD

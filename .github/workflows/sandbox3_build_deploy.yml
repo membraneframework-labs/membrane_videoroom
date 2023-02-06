@@ -68,6 +68,7 @@ jobs:
           GF_SECURITY_ADMIN_USER: ${{ secrets.GF_SECURITY_ADMIN_USER  }}
         run: |
           echo "VIRTUAL_HOST=$VIRTUAL_HOST 
+          MAX_PEERS=4
           EXTERNAL_IP=$EXTERNAL_IP 
           TAG=$TAG 
           DB_USERNAME=$DB_USERNAME 

@@ -223,6 +223,7 @@ defmodule Videoroom.Room do
       case Engine.terminate(state.rtc_engine, blocking?: true) do
         :ok ->
           Membrane.Logger.info("Engine terminated.")
+          {:stop, :normal, state}
 
         error ->
           Membrane.Logger.error(
@@ -230,10 +231,8 @@ defmodule Videoroom.Room do
           )
 
           Process.exit(state.rtc_engine, :kill)
+          {:noreply, state}
       end
-
-      PeersTracker.remove_all()
-      {:stop, :normal, state}
     else
       {:noreply, state}
     end

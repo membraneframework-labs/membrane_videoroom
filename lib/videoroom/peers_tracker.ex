@@ -28,7 +28,7 @@ defmodule Videoroom.PeersTracker do
     internal_pid = {self(), pid}
 
     Agent.get_and_update(__MODULE__, fn state ->
-      if Enum.count(state.peers) == state.max_peers do 
+      if Enum.count(state.peers) == state.max_peers do
         {{:error, :full}, state}
       else
         {:ok, %{state | peers: MapSet.put(state.peers, internal_pid)}}

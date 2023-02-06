@@ -123,7 +123,6 @@ export const useMembraneClient = (
       setWebrtc(undefined);
     };
 
-
     webrtcChannel.on("mediaEvent", (event) => {
       webrtc.receiveMediaEvent(event.data);
     });
@@ -144,9 +143,9 @@ export const useMembraneClient = (
         setWebrtc(webrtc);
       })
       .receive("error", (response) => {
-        if(response === "server_full") {
-          handleError("Server is full")
-          cleanUp()
+        if (response === "server_full") {
+          handleError("Server is full");
+          cleanUp();
         } else {
           handleError(`Couldn't establish signaling connection`);
         }

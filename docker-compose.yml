@@ -12,6 +12,7 @@ services:
       INTEGRATED_TCP_TURN_PORT: "49999"
       STORE_METRICS: "true"
       DATABASE: "membrane"
+      MAX_PEERS: "${MAX_PEERS}"
       DB_USERNAME: "${DB_USERNAME}"
       DB_PASSWORD: "${DB_PASSWORD}"
       DB_HOSTNAME: "127.0.0.1"

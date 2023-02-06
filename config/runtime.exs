@@ -62,6 +62,7 @@ defmodule ConfigParser do
 end
 
 config :membrane_videoroom_demo,
+  max_peers: "MAX_PEERS" |> System.get_env("5") |> String.to_integer(),
   integrated_turn_ip:
     System.get_env("EXTERNAL_IP", "127.0.0.1") |> ConfigParser.parse_integrated_turn_ip(),
   integrated_turn_port_range:

@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { TrackWithId } from "./MediaPlayerPeersSection";
 import PeerInfoLayer from "./PeerInfoLayer";
+import NameTag from "../../../../features/room-page/components/NameTag";
 
 export type VideoStreamWithMetadata = {
   mediaPlayerId: string;
@@ -17,21 +18,14 @@ type Props = {
 
 const ScreenSharingPlayers: FC<Props> = ({ streams }: Props) => {
   return (
-    <div className="md:mb-none active-screensharing-grid mb-3 h-full grid-cols-1 md:mr-3 md:grid-cols-1">
+    <div className="active-screensharing-grid h-full grid-cols-1">
       {streams.map((config) => (
         <MediaPlayerTile
+          blockFillContent
           key={config.mediaPlayerId}
           video={config.video}
           streamSource={"local"}
-          layers={
-            <PeerInfoLayer
-              bottomLeft={
-                <div>
-                  ({config.peerIcon} {config.peerName}) Screen
-                </div>
-              }
-            />
-          }
+          layers={<PeerInfoLayer bottomLeft={<NameTag name={config.peerName || "Unknown"} />} />}
         />
       ))}
     </div>

@@ -12,6 +12,8 @@ import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import clsx from "clsx";
+import useToast from "../../../features/shared/hooks/useToast";
+import { ToastType } from "../../../features/shared/context/ToastContext";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
@@ -28,7 +30,8 @@ const getAutomaticControls = (
     displayMedia,
     screenSharingStreaming,
   }: LocalUserMediaControls,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  addToast: (t: ToastType) => void
 ): ControlButton[] => [
   userMediaVideo.isEnabled
     ? {
@@ -108,6 +111,7 @@ const getAutomaticControls = (
         onClick: () => {
           displayMedia.start();
           screenSharingStreaming.setActive(true);
+          addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 5000 });
         },
       },
   //TODO enable when chat is implemented
@@ -346,10 +350,11 @@ type LocalUserMediaControls = {
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
+  const { addToast } = useToast();
 
   const navigate = useNavigate();
   const controls: ControlButton[][] =
-    props.mode === "manual" ? getManualControls(props, navigate) : [getAutomaticControls(props, navigate)];
+    props.mode === "manual" ? getManualControls(props, navigate) : [getAutomaticControls(props, navigate, addToast)];
   return (
     <div>
       <div

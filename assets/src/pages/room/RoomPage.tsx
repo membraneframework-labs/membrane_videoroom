@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -11,6 +11,7 @@ import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import Button from "../../features/shared/components/Button";
+import useToast from "../../features/shared/hooks/useToast";
 
 type Props = {
   displayName: string;
@@ -21,8 +22,6 @@ type Props = {
   audioAutoStreaming?: boolean;
 };
 
-export type SetErrorMessage = (value: string) => void;
-
 const RoomPage: FC<Props> = ({
   roomId,
   displayName,
@@ -32,16 +31,28 @@ const RoomPage: FC<Props> = ({
   audioAutoStreaming,
 }: Props) => {
   const wakeLock = useAcquireWakeLockAutomatically();
+  const { addToast } = useToast();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
 
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const showErrorMessage = useCallback(
+    (errorMessage: string) => {
+      addToast({
+        id: crypto.randomUUID(),
+        message: errorMessage,
+        timeout: "INFINITY",
+        type: "error",
+      });
+    },
+    [addToast]
+  );
+
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
   const [showDeveloperInfo, toggleDeveloperInfo] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
   const { state: peerState, api: peerApi } = usePeersState();
-  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, showErrorMessage);
 
   const isConnected = !!peerState?.local?.id;
 
@@ -81,10 +92,8 @@ const RoomPage: FC<Props> = ({
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section className="flex h-full w-full flex-col">
-          {errorMessage && <div className="w-full bg-red-700 p-1 text-white">{errorMessage}</div>}
-
           {showDeveloperInfo && (
-            <div className="text-shadow-lg absolute right-0 top-16 flex flex-col p-2 text-right">
+            <div className="text-shadow-lg absolute right-0 top-0 flex flex-col p-2 text-right">
               <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
             </div>
           )}
@@ -109,7 +118,7 @@ const RoomPage: FC<Props> = ({
         />
 
         {/* dev helpers */}
-        <div className="absolute bottom-4 right-3 flex flex-col items-stretch">
+        <div className="invisible absolute bottom-4 right-3 flex flex-col items-stretch md:visible">
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}

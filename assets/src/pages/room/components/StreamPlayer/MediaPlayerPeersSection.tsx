@@ -34,6 +34,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ oneColumn, showSimulcast }: Props)
 
   const gridConfig: GridConfigType = getGridConfig(remotePeersIds.length + 1);
   const videoGridStyle = getGridStyle(!remotePeersIds.length, !oneColumn, gridConfig);
+  const tileSize = remotePeersIds.length >= 7 ? "M" : "L";
 
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
@@ -49,6 +50,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ oneColumn, showSimulcast }: Props)
           peerId={peerId}
           showSimulcast={showSimulcast}
           className={!oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : undefined}
+          tileSize={tileSize}
         />
       ))}
     </div>

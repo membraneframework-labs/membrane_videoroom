@@ -46,8 +46,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   useLog(localPeerId, "localPeerId");
   const isConnected = !!localPeerId;
 
-  const state = useSelector(createFullStateSelector());
-  useLog(state, "Full state");
+  // const state = useSelector(createFullStateSelector());
+  // useLog(state, "Full state");
 
   const camera = useLibraryStreamManager(
     "camera",

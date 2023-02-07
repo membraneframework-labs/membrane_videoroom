@@ -1,7 +1,8 @@
-import { LibraryTrackMinimal, PeerId } from "../../../../library/state.types";
+import { LibraryTrackMinimal, PeerId, TrackId } from "../../../../library/state.types";
 import { useSelector } from "../../../../libraryUsage/setup";
 import {
   createAudioTrackStatusSelector,
+  createIsActiveTrackSelector,
   createPeerGuiSelector,
   createTrackEncodingSelector,
   createTracksRecordSelector,
@@ -14,16 +15,81 @@ import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncodi
 import MediaPlayerTile from "./MediaPlayerTile";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
+import { TrackType } from "../../../types";
+
+type InitialsImageWrapperProps = {
+  initials: string;
+  peerId: PeerId;
+  videoTrackId: TrackId | null;
+};
+
+const InitialsImageWrapper = ({ peerId, videoTrackId, initials }: InitialsImageWrapperProps) => {
+  const enable = useSelector(createIsActiveTrackSelector(peerId, videoTrackId));
+
+  return !enable ? <InitialsImage initials={initials} /> : <></>;
+};
+
+type DisabledMicIconProps = {
+  isLoading: boolean;
+};
+
+const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
+  return (
+    <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
+      <MicrophoneOff className={isLoading ? "animate-spin" : ""} fill="#001A72" />
+    </div>
+  );
+};
+
+export type MicIconWrapperProps = {
+  peerId: PeerId;
+  audioTrackId: TrackId | null;
+};
+
+const MicIconWrapper = ({ peerId, audioTrackId }: MicIconWrapperProps) => {
+  const enable = useSelector(createIsActiveTrackSelector(peerId, audioTrackId));
+
+  return (
+    <div className="flex flex-row items-center gap-x-2 text-xl">{!enable && <DisabledMicIcon isLoading={false} />}</div>
+  );
+};
+
+export type PeerInfoWrapperProps = {
+  peerId: string;
+  tileSize: "L" | "M";
+  audioTrackId: TrackId | null;
+};
+
+const PeerInfoWrapper = ({ peerId, tileSize, audioTrackId }: PeerInfoWrapperProps) => {
+  const peer: PeerGui | null = useSelector(createPeerGuiSelector(peerId));
+
+  return (
+    <PeerInfoLayer
+      bottomLeft={
+        <div>
+          {peer?.emoji} {peer?.name}
+        </div>
+      }
+      topLeft={<MicIconWrapper audioTrackId={audioTrackId} peerId={peerId} />}
+      tileSize={tileSize}
+    />
+  );
+};
 
 export type MediaPlayerTileWrapperProps = {
   peerId: string;
   showSimulcast?: boolean;
   className?: string;
+  tileSize: "L" | "M";
 };
 
-export const RemoteMediaPlayerTileWrapper = ({ peerId, showSimulcast, className }: MediaPlayerTileWrapperProps) => {
-  const tracks: Partial<Record<string, LibraryTrackMinimal>> = useSelector(createTracksRecordSelector(peerId));
-  const peer: PeerGui | null = useSelector(createPeerGuiSelector(peerId));
+export const RemoteMediaPlayerTileWrapper = ({
+  peerId,
+  showSimulcast,
+  className,
+  tileSize,
+}: MediaPlayerTileWrapperProps) => {
+  const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector(createTracksRecordSelector(peerId));
   const encoding = useSelector(createTrackEncodingSelector(tracks?.camera?.trackId || null));
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
     "m",
@@ -39,16 +105,8 @@ export const RemoteMediaPlayerTileWrapper = ({ peerId, showSimulcast, className 
       className={className}
       layers={
         <>
-          {/* TODO handle initials and disabled track*/}
-          {tracks.camera?.stream ? null : <InitialsImage initials={"XX"} />}
-          <PeerInfoLayer
-            bottomLeft={
-              <div>
-                {peer?.emoji} {peer?.name}
-              </div>
-            }
-          />
-          <RemoteLayer peerId={peerId} />
+          <InitialsImageWrapper peerId={peerId} videoTrackId={tracks.camera?.trackId || null} initials={"WW"} />
+          <PeerInfoWrapper tileSize={tileSize} peerId={peerId} audioTrackId={tracks.audio?.trackId || null} />
           {showSimulcast && (
             <SimulcastRemoteLayer
               desiredEncoding={desiredEncoding}

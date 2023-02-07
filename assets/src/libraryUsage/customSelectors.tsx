@@ -135,7 +135,6 @@ export const createScreenSharingTracksSelector: CreateScreenSharingTracksSelecto
     return result["screensharing"] || null;
   };
 
-
 type CreateLocalTracksRecordSelector = () => Selector<
   PeerMetadata,
   TrackMetadata,
@@ -224,4 +223,15 @@ export const createUsersIdsWithScreenSharingSelector: CreateUsersIdsWithScreenSh
     const localId = localUserScreenSharingTrack?.trackId && snapshot.local?.id ? [snapshot.local.id] : [];
 
     return [...localId, ...peersIds];
+  };
+
+type CreateIsActiveTrackSelector = (
+  peerId: PeerId,
+  trackId: TrackId | null
+) => Selector<PeerMetadata, TrackMetadata, boolean>;
+export const createIsActiveTrackSelector: CreateIsActiveTrackSelector =
+  (peerId: PeerId, trackId: TrackId | null): Selector<PeerMetadata, TrackMetadata, boolean> =>
+  (snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null): boolean => {
+    if (!trackId) return false;
+    return snapshot?.remote[peerId]?.tracks[trackId]?.metadata?.active || false;
   };

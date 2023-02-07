@@ -12,8 +12,7 @@ export interface Props {
   peerId?: string;
   video: TrackWithId | null;
   flipHorizontally?: boolean;
-  audioStream?: MediaStream;
-  playAudio?: boolean;
+  audio: TrackWithId | null;
   showSimulcast?: boolean;
   streamSource?: StreamSource;
   layers?: JSX.Element;
@@ -24,10 +23,9 @@ export interface Props {
 
 const MediaPlayerTile: FC<Props> = ({
   peerId,
-  playAudio,
   video,
+  audio,
   flipHorizontally,
-  audioStream,
   showSimulcast,
   streamSource,
   layers,
@@ -43,6 +41,8 @@ const MediaPlayerTile: FC<Props> = ({
   );
 
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null, webrtc || null);
+  const videoStream = video?.stream || null;
+  const audioStream = audio?.stream || null;
 
   return (
     <div
@@ -55,10 +55,9 @@ const MediaPlayerTile: FC<Props> = ({
       )}
     >
       <MediaPlayer
-        videoStream={video?.stream}
+        videoStream={videoStream}
         audioStream={audioStream}
         flipHorizontally={flipHorizontally}
-        playAudio={playAudio}
         blockFillContent={blockFillContent}
       />
       {layers}

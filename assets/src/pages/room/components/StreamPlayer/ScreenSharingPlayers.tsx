@@ -11,6 +11,7 @@ type Props = {
   pinningApi: PinningApi;
 };
 
+// TODO change this component to PinnedTiles
 const ScreenSharingPlayers: FC<Props> = ({ streams, pinningApi }: Props) => {
   const {pinnedTileId, pin, unpin} = pinningApi;
   return (
@@ -18,7 +19,7 @@ const ScreenSharingPlayers: FC<Props> = ({ streams, pinningApi }: Props) => {
       {streams.map((config) => {
         const isPinned = config.mediaPlayerId === pinnedTileId;
         const onPinButtonClick = isPinned ? unpin : () => pin(config.mediaPlayerId);
-
+        
         return <MediaPlayerTile
           blockFillContent
           key={config.mediaPlayerId}

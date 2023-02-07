@@ -1,15 +1,14 @@
-import React, { FC, useState } from "react";
-import { ApiTrack, RemotePeer } from "../../hooks/usePeerState";
+import React, { FC } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
-import { MediaPlayerTileConfig, StreamSource, TrackType, TrackWithId } from "../../../types";
+import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
 import { getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
-import { PinIndicator, PinTileButton } from "../../../../features/room-page/components/PinComponents";
+import { PinTileButton } from "../../../../features/room-page/components/PinComponents";
 import { PinningApi } from "../../../../features/room-page/utils/usePinning";
 
 type DisabledMicIconProps = {
@@ -24,8 +23,8 @@ const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
   );
 };
 
-const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
-const showDisabledIcon = (track: TrackWithId | null) => track?.stream === undefined || track?.metadata?.active === false;
+const isLoading = (track: TrackWithId | null) => track !== null && track?.stream === undefined && track?.metadata?.active === true;
+const showDisabledIcon = (track: TrackWithId | null) => track !== null && track?.stream === undefined || track?.metadata?.active === false;
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -34,10 +33,11 @@ type Props = {
   oneColumn: boolean; // screensharing or pinned user
   webrtc?: MembraneWebRTC;
   pinningApi: PinningApi;
+  blockPinning: boolean;
 };
 
 
-const MediaPlayerPeersSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
+const MediaPlayerPeersSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn, webrtc, pinningApi, blockPinning}: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
   const getGridStyle = () => {
     if (oneColumn) {
@@ -56,41 +56,37 @@ const MediaPlayerPeersSection: FC<Props> = ({tileConfigs, showSimulcast, oneColu
   const tileStyle = !oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : "";
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
-  const {pinnedTileId, pin, unpin} : PinningApi = pinningApi;  
-
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
       {tileConfigs.map((config) => {
         const video: TrackWithId | null = config.video;
-        // const audio: TrackWithId | undefined = config.audio[0];   TODO add a default value or something idk
+        const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
+        const hasInitials = config.typeName === "local" || config.typeName === "remote";
 
-        const isPinned: boolean = config.mediaPlayerId === pinnedTileId;
-        const onPinButtonClick: () => void = isPinned ? unpin : () => pin(config.mediaPlayerId);
         return (
           <MediaPlayerTile
-            key={config.mediaPlayerId}
-            peerId={config.peerId}
-            video={video}
-            // audioStream={audio?.stream}
-            className={tileStyle}
-            layers={
-              <>
-                {/* {showDisabledIcon(video) ? <InitialsImage initials={config.initials ?? "SCREEEEEEEEN"} /> : null} */}
+          key={config.mediaPlayerId}
+          peerId={config.peerId}
+          video={video}
+          audio={config.typeName === "remote" ? config.audio : null}
+          className={tileStyle}
+          layers={
+            <>
+                { (hasInitials && showDisabledIcon(video)) ? <InitialsImage initials={config.initials} /> : null}
                 <PeerInfoLayer
-                  bottomLeft={<NameTag name={config.displayName || "Unknown"} />}
-                  // topLeft={showDisabledIcon(audio) ? <DisabledMicIcon isLoading={isLoading(audio)}/> : <></>}
-                  topRight={isPinned ? <PinIndicator/> : <></>}
+                  bottomLeft={<NameTag name={config.displayName} />}
+                  topLeft={(hasInitials && showDisabledIcon(config.audio) )? <DisabledMicIcon isLoading={isLoading(audio)}/> : <></>}
                   tileSize={tileSize}
-                />
-                <PinTileButton pinned={isPinned} onClick={onPinButtonClick}/>
+                  />
+                {!blockPinning ? <PinTileButton pinned={false} onClick={() => pinningApi.pin(config.mediaPlayerId)}/> : <></>}
               </>
             }
             showSimulcast={showSimulcast}
             streamSource={config.streamSource}
-            // flipHorizontally={config.flipHorizontally}
+            flipHorizontally={config.typeName === "local"}
             webrtc={webrtc}
-            // playAudio={config.playAudio}
-          />
+            blockFillContent={config.typeName === "screenShare"}
+            />
         );
       })}
     </div>

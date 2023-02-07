@@ -9,7 +9,9 @@ import { computeInitials } from "../../features/room-page/components/InitialsIma
 import usePinning from "../../features/room-page/utils/usePinning";
 import { LocalTileConfig, MediaPlayerTileConfig, RemoteTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
 import MediaPlayerTile from "./components/StreamPlayer/MediaPlayerTile";
-import { PinTileButton } from "../../features/room-page/components/PinComponents";
+import { PinIndicator, PinTileButton } from "../../features/room-page/components/PinComponents";
+import NameTag from "../../features/room-page/components/NameTag";
+import PeerInfoLayer from "./components/StreamPlayer/PeerInfoLayer";
 
 type Props = {
   peers: RemotePeer[];
@@ -63,7 +65,6 @@ const localPeerToScreenSharingStream = (localPeer: LocalPeer): ScreenShareTileCo
     peerId: localPeer?.id ?? "Unknown",
     displayName: LOCAL_PEER_NAME,
     streamSource: "local",
-    blockFillContent: true,
   };
 };
 
@@ -94,7 +95,6 @@ const prepareScreenSharingStreams = (
         mediaPlayerId: track.trackId,
         peerId: peerId,
         displayName: peerName ?? "Unknown",
-        blockFillContent: true,
       })
     );
 
@@ -116,14 +116,15 @@ const takeOutPinnedTile = (tiles: MediaPlayerTileConfig[], pinnedTileId: string)
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
-
+  const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
+  
   const localUser: LocalTileConfig = {
     typeName: "local",
     peerId: localPeer?.id ?? "Unknown",
     displayName: LOCAL_PEER_NAME,
     initials: computeInitials(localPeer?.metadata?.displayName || ""),
     video: video,
-    flipHorizontally: true,
+    audio: audio,
     streamSource: "local",
     mediaPlayerId: LOCAL_VIDEO_ID,
   };
@@ -150,12 +151,25 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
         className={getWrapperClass()}
       >
         {/* {isSomeTilePinned && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
+        {/* TODO seperate this expression to a different component */}
         {pinnedTile && <div className="active-screensharing-grid h-full grid-cols-1">
           <MediaPlayerTile
             key={pinnedTile.mediaPlayerId}
             peerId={pinnedTile.peerId}
             video={pinnedTile.video}
-            layers={<PinTileButton pinned={true} onClick={pinningApi.unpin}/>}/>
+            audio={pinnedTile.typeName === "remote" ? pinnedTile.audio : null}
+            streamSource={pinnedTile.streamSource}
+            blockFillContent={pinnedTile.typeName === "screenShare"}
+            flipHorizontally={pinnedTile.typeName === "local"}
+            layers={<>
+              <PeerInfoLayer 
+                topRight={<PinIndicator/>}
+                bottomLeft={<NameTag name={pinnedTile.displayName} />}/>
+              <PinTileButton pinned={true} onClick={pinningApi.unpin}/>
+              </>}
+            showSimulcast={showSimulcast}
+            webrtc={webrtc}
+            />
           </div>}
 
         <MediaPlayerPeersSection
@@ -164,6 +178,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           oneColumn={isSomeTilePinned}
           webrtc={webrtc}
           pinningApi={pinningApi}
+          blockPinning={allTilesConfig.length === 1}
         />
       </div>
     </div>

@@ -34,19 +34,18 @@ type CommonTile = {
 
 export type LocalTileConfig = {
   typeName: "local";
-  flipHorizontally: true;
+  audio: TrackWithId | null;
   initials: string;
 } & CommonTile
 
 export type RemoteTileConfig = {
   typeName: "remote";
-  audio: TrackWithId;
+  audio: TrackWithId | null;
   initials: string;
 } & CommonTile
 
 export type ScreenShareTileConfig = {
   typeName: "screenShare";
-  blockFillContent: true;
 } & CommonTile
 
 

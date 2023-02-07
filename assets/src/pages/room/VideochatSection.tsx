@@ -114,13 +114,14 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
         className={getWrapperClass()}
       >
         {/* {isSomeTilePinned && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
+        {isSomeTilePinned && <div className="relative h-full w-full bg-black">I'm a block element</div>}
 
         <MediaPlayerPeersSection
           peers={peers}
           localUser={localUser}
           screenShareConfigs={screenSharingStreams}
           showSimulcast={showSimulcast}
-          // oneColumn={isScreenSharingActive}
+          oneColumn={isSomeTilePinned}
           webrtc={webrtc}
           pinningApi={pinningApi}
         />

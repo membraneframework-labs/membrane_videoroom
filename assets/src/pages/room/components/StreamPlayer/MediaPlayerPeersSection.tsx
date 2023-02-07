@@ -45,6 +45,9 @@ const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
   );
 };
 
+const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
+const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
+
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
@@ -54,12 +57,8 @@ type Props = {
   pinningApi: PinningApi;
 };
 
-const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
-const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
 const MediaPlayerPeersSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
-
-
   const gridConfig = getGridConfig(tileConfigs.length);
   const getGridStyle = () => {
     if (oneColumn) {

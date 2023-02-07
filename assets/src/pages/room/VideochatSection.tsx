@@ -12,6 +12,8 @@ import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
 import usePinning from "../../features/room-page/utils/usePinning";
 import { TrackType } from "../types";
+import MediaPlayerTile from "./components/StreamPlayer/MediaPlayerTile";
+import { PinTileButton } from "../../features/room-page/components/PinComponents";
 
 type Props = {
   peers: RemotePeer[];
@@ -113,6 +115,12 @@ const prepareScreenSharingStreams = (
 const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
   localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
+const takeOutPinnedTile = (tiles: MediaPlayerTileConfig[], pinnedTileId: string): {pinnedTile: MediaPlayerTileConfig | null, restTiles: MediaPlayerTileConfig[]} => {
+  const pinnedTile = tiles.find( (tile) => tile.mediaPlayerId === pinnedTileId) ?? null;
+  const restTiles = tiles.filter( (tile) => tile.mediaPlayerId !== pinnedTileId);
+  return {pinnedTile, restTiles};
+}
+
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
@@ -133,9 +141,10 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
-
+  
   const pinningApi = usePinning();
-  const isSomeTilePinned = !!pinningApi.pinnedTileId;
+  const {pinnedTile, restTiles} = takeOutPinnedTile(allTilesConfig, pinningApi.pinnedTileId);
+  const isSomeTilePinned = !!pinnedTile;
 
   const getWrapperClass = useCallback(() => {
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
@@ -150,10 +159,16 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
         className={getWrapperClass()}
       >
         {/* {isSomeTilePinned && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
-        {isSomeTilePinned && <div className="active-screensharing-grid h-full grid-cols-1"><div className="bg-black">I'm a block element</div></div>}
+        {pinnedTile && <div className="active-screensharing-grid h-full grid-cols-1">
+          <MediaPlayerTile
+            key={pinnedTile.mediaPlayerId}
+            peerId={pinnedTile.peerId}
+            video={pinnedTile.video[0]}
+            layers={<PinTileButton pinned={true} onClick={pinningApi.unpin}/>}/>
+          </div>}
 
         <MediaPlayerPeersSection
-          tileConfigs={allTilesConfig}
+          tileConfigs={restTiles}
           showSimulcast={showSimulcast}
           oneColumn={isSomeTilePinned}
           webrtc={webrtc}

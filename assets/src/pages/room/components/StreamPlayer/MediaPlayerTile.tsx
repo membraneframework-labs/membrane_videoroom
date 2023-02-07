@@ -5,13 +5,12 @@ import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
-import { StreamSource } from "../../../types";
-import { TrackWithId } from "./MediaPlayerPeersSection";
+import { StreamSource, TrackWithId } from "../../../types";
 import clsx from "clsx";
 
 export interface Props {
   peerId?: string;
-  video?: TrackWithId;
+  video: TrackWithId | null;
   flipHorizontally?: boolean;
   audioStream?: MediaStream;
   playAudio?: boolean;

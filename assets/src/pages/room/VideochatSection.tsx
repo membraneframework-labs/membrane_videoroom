@@ -1,17 +1,13 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
-import MediaPlayerPeersSection, {
-  MediaPlayerTileConfig,
-  TrackWithId,
-} from "./components/StreamPlayer/MediaPlayerPeersSection";
+import MediaPlayerPeersSection from "./components/StreamPlayer/MediaPlayerPeersSection";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
-import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/StreamPlayer/ScreenSharingPlayers";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
 import usePinning from "../../features/room-page/utils/usePinning";
-import { TrackType } from "../types";
+import { LocalTileConfig, MediaPlayerTileConfig, RemoteTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
 import MediaPlayerTile from "./components/StreamPlayer/MediaPlayerTile";
 import { PinTileButton } from "../../features/room-page/components/PinComponents";
 
@@ -22,7 +18,7 @@ type Props = {
   webrtc?: MembraneWebRTC;
 };
 
-const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
+const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId =>
   tracks
     .filter((track) => track?.metadata?.type === type)
     .map(
@@ -33,28 +29,27 @@ const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
         metadata: track.metadata,
         enabled: true,
       })
-    );
+    )[0];
 
-const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): MediaPlayerTileConfig[] => {
-  return peers.map((peer: RemotePeer): MediaPlayerTileConfig => {
-    const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
-    const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
+const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): RemoteTileConfig[] => {
+  return peers.map((peer: RemotePeer): RemoteTileConfig => {
+    const videoTrack: TrackWithId = getTrack(peer.tracks, "camera");
+    const audioTrack: TrackWithId = getTrack(peer.tracks, "audio");
 
     return {
-      peerId: peer.id,
-      displayName: peer.displayName,
-      initials: computeInitials(peer.displayName || ""),
-      video: videoTracks,
-      audio: audioTracks,
-      flipHorizontally: false,
-      streamSource: "remote",
-      playAudio: true,
       mediaPlayerId: peer.id,
+      typeName: "remote",
+      peerId: peer.id,
+      displayName: peer.displayName || "Unknown",
+      initials: computeInitials(peer.displayName || ""),
+      video: videoTrack,
+      audio: audioTrack,
+      streamSource: "remote",
     };
   });
 };
 
-const localPeerToScreenSharingStream = (localPeer: LocalPeer): MediaPlayerTileConfig => {
+const localPeerToScreenSharingStream = (localPeer: LocalPeer): ScreenShareTileConfig => {
   const videoTrack = remoteTrackToLocalTrack(localPeer?.tracks["screensharing"]);
 
   if (!videoTrack) {
@@ -62,22 +57,21 @@ const localPeerToScreenSharingStream = (localPeer: LocalPeer): MediaPlayerTileCo
   }
 
   return {
-    video: [videoTrack],
-    peerId: localPeer?.id,
-    displayName: LOCAL_PEER_NAME,
-    initials: computeInitials(localPeer.metadata?.displayName || ""),
     mediaPlayerId: LOCAL_SCREEN_SHARING_ID,
-    audio: [],
-    playAudio: false,
+    typeName: "screenShare",
+    video: videoTrack,
+    peerId: localPeer?.id ?? "Unknown",
+    displayName: LOCAL_PEER_NAME,
     streamSource: "local",
+    blockFillContent: true,
   };
 };
 
 const prepareScreenSharingStreams = (
   peers: RemotePeer[],
   localPeer?: LocalPeer
-): MediaPlayerTileConfig[] => {
-  const peersScreenSharingTracks: MediaPlayerTileConfig[] = peers
+): ScreenShareTileConfig[] => {
+  const peersScreenSharingTracks: ScreenShareTileConfig[] = peers
     .flatMap((peer) =>
       peer.tracks.map((track) => ({
         peerId: peer.id,
@@ -88,24 +82,23 @@ const prepareScreenSharingStreams = (
     )
     .filter((element) => element.track?.metadata?.type === "screensharing")
     .map(
-      ({ track, peerId, peerName }): MediaPlayerTileConfig => ({
-        video: [{
+      ({ track, peerId, peerName }): ScreenShareTileConfig => ({
+        typeName: "screenShare",
+        video: {
           stream: track.mediaStream,
           remoteTrackId: track.trackId,
           encodingQuality: track.encoding,
           metadata: track.metadata,
-        }],
-        audio: [],
-        playAudio: false,
+        },
         streamSource: "local",
         mediaPlayerId: track.trackId,
         peerId: peerId,
-        displayName: peerName,
-        initials: computeInitials(peerName || ""),
+        displayName: peerName ?? "Unknown",
+        blockFillContent: true,
       })
     );
 
-  const screenSharingStreams: MediaPlayerTileConfig[] = localPeer?.tracks["screensharing"]?.stream
+  const screenSharingStreams: ScreenShareTileConfig[] = localPeer?.tracks["screensharing"]?.stream
     ? [localPeerToScreenSharingStream(localPeer), ...peersScreenSharingTracks]
     : peersScreenSharingTracks;
 
@@ -123,17 +116,15 @@ const takeOutPinnedTile = (tiles: MediaPlayerTileConfig[], pinnedTileId: string)
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
-  const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
 
-  const localUser: MediaPlayerTileConfig = {
-    peerId: localPeer?.id,
+  const localUser: LocalTileConfig = {
+    typeName: "local",
+    peerId: localPeer?.id ?? "Unknown",
     displayName: LOCAL_PEER_NAME,
     initials: computeInitials(localPeer?.metadata?.displayName || ""),
-    video: video ? [video] : [],
-    audio: audio ? [audio] : [],
+    video: video,
     flipHorizontally: true,
     streamSource: "local",
-    playAudio: false,
     mediaPlayerId: LOCAL_VIDEO_ID,
   };
 
@@ -163,7 +154,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           <MediaPlayerTile
             key={pinnedTile.mediaPlayerId}
             peerId={pinnedTile.peerId}
-            video={pinnedTile.video[0]}
+            video={pinnedTile.video}
             layers={<PinTileButton pinned={true} onClick={pinningApi.unpin}/>}/>
           </div>}
 

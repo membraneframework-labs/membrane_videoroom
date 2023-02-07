@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata } from "./hooks/usePeerState";
@@ -13,7 +13,7 @@ import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import { useLog } from "../../helpers/UseLog";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
-import { useMembraneClient } from "../../libraryUsage/setup";
+import { useConnect, useMembraneState } from "../../libraryUsage/setup";
 
 type Props = {
   displayName: string;
@@ -35,7 +35,13 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
-  const membrane = useMembraneClient();
+  const connect = useConnect();
+  useEffect(() => {
+    console.log({ connect, isSimulcastOn, peerMetadata, roomId });
+    return connect(roomId, peerMetadata, isSimulcastOn);
+  }, [connect, isSimulcastOn, peerMetadata, roomId]);
+
+  const membrane = useMembraneState();
   useLog(membrane, "membrane state");
   const isConnected = !!membrane?.local.id;
 

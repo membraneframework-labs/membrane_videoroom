@@ -83,17 +83,19 @@ export const createTracksRecordSelector: CreateTracksRecordSelector =
     return result;
   };
 
-type CreateTrackEncodingSelector = (trackId: TrackId | null) => Selector<PeerMetadata, TrackMetadata, TrackEncoding | null>;
+type CreateTrackEncodingSelector = (
+  trackId: TrackId | null
+) => Selector<PeerMetadata, TrackMetadata, TrackEncoding | null>;
 export const createTrackEncodingSelector: CreateTrackEncodingSelector =
   (trackId: TrackId | null): Selector<PeerMetadata, TrackMetadata, TrackEncoding | null> =>
   (snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null): TrackEncoding | null => {
-      if (!snapshot) return null;
-      const localTracks: LibraryTrack<TrackMetadata>[] = Object.values(snapshot.local.tracks);
+    if (!snapshot) return null;
+    const localTracks: LibraryTrack<TrackMetadata>[] = Object.values(snapshot.local.tracks);
 
-      const peers: LibraryRemotePeer<PeerMetadata, TrackMetadata>[] = Object.values(snapshot.remote);
-      const tracks: LibraryTrack<TrackMetadata>[] = peers.flatMap((peer) => Object.values(peer.tracks));
-      const result = [...localTracks, ...tracks].find((track) => track.trackId === trackId);
-      return result?.encoding || null;
+    const peers: LibraryRemotePeer<PeerMetadata, TrackMetadata>[] = Object.values(snapshot.remote);
+    const tracks: LibraryTrack<TrackMetadata>[] = peers.flatMap((peer) => Object.values(peer.tracks));
+    const result = [...localTracks, ...tracks].find((track) => track.trackId === trackId);
+    return result?.encoding || null;
   };
 
 type CreateScreenSharingTracksSelector = (
@@ -133,6 +135,7 @@ export const createScreenSharingTracksSelector: CreateScreenSharingTracksSelecto
     return result["screensharing"] || null;
   };
 
+
 type CreateLocalTracksRecordSelector = () => Selector<
   PeerMetadata,
   TrackMetadata,
@@ -143,6 +146,7 @@ export const createLocalTracksRecordSelector: CreateLocalTracksRecordSelector =
   (
     snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null
   ): Partial<Record<TrackType, LibraryTrackMinimal>> => {
+    console.log({ snapshot, name: "3 track snapshot" });
     const tracks: Record<string, LibraryTrack<TrackMetadata>> = snapshot?.local?.tracks || {};
     const trackTuples: Array<[TrackType | null, LibraryTrackMinimal]> = Object.entries(tracks).map(
       ([trackId, track]) => {

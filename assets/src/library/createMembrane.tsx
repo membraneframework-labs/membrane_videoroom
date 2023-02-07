@@ -47,7 +47,6 @@ export const createMembrane = <PeerMetadataGeneric, TrackMetadataGeneric>() => {
     return context;
   };
 
-
   // todo remove
   const useMembraneState = () => {
     const { state } = useMembraneContext();
@@ -76,11 +75,9 @@ export const createMembrane = <PeerMetadataGeneric, TrackMetadataGeneric>() => {
     return result;
   };
 
-  const useConnect = (): ((
-    roomId: string,
-    peerMetadata: PeerMetadataGeneric,
-    isSimulcastOn: boolean
-  ) => () => void) => {
+  type UseConnect = (roomId: string, peerMetadata: PeerMetadataGeneric, isSimulcastOn: boolean) => () => void;
+
+  const useConnect = (): UseConnect => {
     const { setState }: MembraneContextType<PeerMetadataGeneric, TrackMetadataGeneric> = useMembraneContext();
 
     return useMemo(() => connectFunction(setState), []);
@@ -89,7 +86,7 @@ export const createMembrane = <PeerMetadataGeneric, TrackMetadataGeneric>() => {
   return {
     // MembraneContext,
     MembraneContextProvider,
-    useMembraneContext,
+    // useMembraneContext,
     // useMembraneState,
     useSelector,
     useConnect,

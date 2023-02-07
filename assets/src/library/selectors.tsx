@@ -51,6 +51,7 @@ export const createTracksSelector: CreateTracksSelector =
       track: track.track,
     }));
 
+// todo remove
 type CreateLocalTracksSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, Array<LibraryTrackMinimal>>;
 export const createLocalTracksSelector: CreateLocalTracksSelector =
   <PeerM, TrackM>(): Selector<PeerM, TrackM, Array<LibraryTrackMinimal>> =>

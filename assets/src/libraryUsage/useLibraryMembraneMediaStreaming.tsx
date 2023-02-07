@@ -5,7 +5,7 @@ import { selectBandwidthLimit } from "../pages/room/bandwidth";
 import { UseMembraneClientType } from "../library/state.types";
 import { useSelector } from "./setup";
 import { createConnectivitySelector } from "../library/selectors";
-import {useLog} from "../helpers/UseLog";
+import { useLog } from "../helpers/UseLog";
 
 export type MembraneStreaming = {
   trackId: string | null;
@@ -41,6 +41,7 @@ export const useMembraneMediaStreaming = (
   const addTracks = useCallback(
     (stream: MediaStream) => {
       if (!api?.api) return;
+      console.log({ name: "addTracks" });
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
       const track: MediaStreamTrack | undefined = tracks[0];
@@ -64,18 +65,22 @@ export const useMembraneMediaStreaming = (
     (stream: MediaStream) => {
       if (!trackIds) return;
       if (!api) return;
+      console.log({ name: "replaceTrack" });
+
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
       const track: MediaStreamTrack | undefined = tracks[0];
       if (!track) throw "Stream has no tracks!";
 
-      api.api?.replaceTrack(trackIds?.remoteId, track);
+      api.api?.replaceTrack(trackIds?.remoteId, track, stream, trackMetadata || undefined);
     },
-    [api, trackIds, type]
+    [api, trackIds, trackMetadata, type]
   );
 
   const removeTracks = useCallback(() => {
     if (!api) return;
+    console.log({ name: "removeTracks" });
+
     setTrackIds(null);
     setTrackMetadata(null);
 

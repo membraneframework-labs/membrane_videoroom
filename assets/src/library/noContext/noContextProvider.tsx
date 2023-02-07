@@ -1,22 +1,8 @@
-import { useNoContextMembraneRTCWrapper } from "./useNoContextMembraneRTCWrapper";
 import { createStore, ExternalState } from "../externalState";
 import { useSelector } from "./useSelector";
-import { LibraryLocalPeer, LibraryPeersState, LibraryRemotePeer, LibraryTrack, Selector, TrackId } from "../state.types";
-import { Channel, Socket } from "phoenix";
-import {
-  MembraneWebRTC,
-  Peer,
-  SerializedMediaEvent,
-  SimulcastConfig,
-  TrackBandwidthLimit,
-  TrackContext,
-  TrackEncoding,
-} from "@jellyfish-dev/membrane-webrtc-js";
-import { StoreApi } from "../storeApi";
-
-export type Something<TrackMetadataGeneric> = {
-  api: StoreApi<TrackMetadataGeneric> | null;
-};
+import { Selector } from "../state.types";
+import { useMemo } from "react";
+import { connectFunction } from "../connectFunction";
 
 export const createMembraneClient = <PeerMetadataGeneric, TrackMetadataGeneric>() => {
   const store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric> = createStore<
@@ -25,10 +11,10 @@ export const createMembraneClient = <PeerMetadataGeneric, TrackMetadataGeneric>(
   >();
 
   return {
-    useClient: () => {
-      return useNoContextMembraneRTCWrapper(store);
+    useConnect: () => {
+      return useMemo(() => connectFunction(store.setStore), []);
     },
-    useSelector2: <Result,>(selector: Selector<PeerMetadataGeneric, TrackMetadataGeneric, Result>): Result => {
+    useSelector: <Result,>(selector: Selector<PeerMetadataGeneric, TrackMetadataGeneric, Result>): Result => {
       return useSelector(store, selector);
     },
   };

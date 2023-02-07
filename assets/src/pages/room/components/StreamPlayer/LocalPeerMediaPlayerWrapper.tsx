@@ -12,6 +12,7 @@ import PeerInfoLayer from "./PeerInfoLayer";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import React from "react";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
+import { useLog } from "../../../../helpers/UseLog";
 
 export type LocalPeerMediaPlayerWrapperProps = {
   showSimulcast?: boolean;
@@ -22,6 +23,8 @@ export const LocalPeerMediaPlayerWrapper = ({ showSimulcast, className }: LocalP
   const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector(createLocalTracksRecordSelector());
   const peer: PeerGui | null = useSelector(createLocalPeerGuiSelector());
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(tracks.camera?.trackId || null);
+
+  useLog(tracks, "local Track")
 
   return (
     <MediaPlayerTile

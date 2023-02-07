@@ -201,6 +201,7 @@ export const replaceTrack =
   <PeerMetadataGeneric, TrackMetadataGeneric>(
     trackId: string,
     newTrack: MediaStreamTrack,
+    stream: MediaStream,
     newTrackMetadata: TrackMetadataGeneric | undefined
   ) =>
   (
@@ -218,6 +219,7 @@ export const replaceTrack =
           [trackId]: {
             ...prevTrack,
             track: newTrack,
+            stream: stream,
             trackId: trackId,
             metadata: newTrackMetadata ? { ...newTrackMetadata } : null,
           },

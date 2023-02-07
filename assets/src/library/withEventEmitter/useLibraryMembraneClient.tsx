@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import {
   Callbacks,
   MembraneWebRTC,
@@ -9,11 +9,11 @@ import {
   TrackContext,
   TrackEncoding,
 } from "@jellyfish-dev/membrane-webrtc-js";
-import {Channel, Socket} from "phoenix";
+import { Channel, Socket } from "phoenix";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 // todo delete
-import {SetErrorMessage} from "../../pages/room/RoomPage";
+import { SetErrorMessage } from "../../pages/room/RoomPage";
 import {
   LibraryLocalPeer,
   LibraryPeersState,
@@ -22,8 +22,8 @@ import {
   TrackId,
   UseMembraneClientType,
 } from "../state.types";
-import {StoreApi} from "../storeApi";
-import {createStore} from "../externalState";
+import { StoreApi } from "../storeApi";
+import { createStore } from "../externalState";
 
 // todo extract callbacks
 export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGeneric>(
@@ -327,7 +327,7 @@ export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGener
         return remoteTrackId;
       },
 
-      replaceTrack: (trackId, newTrack, newTrackMetadata) => {
+      replaceTrack: (trackId, newTrack, mediaStream, newTrackMetadata) => {
         const promise = webrtc.replaceTrack(trackId, newTrack, newTrackMetadata);
         store.setStore((prevState: StateShorthand): StateShorthand => {
           const prevTrack: LibraryTrack<TrackMetadataGeneric> | null = prevState?.local?.tracks[trackId] || null;
@@ -342,6 +342,7 @@ export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGener
                 [trackId]: {
                   ...prevTrack,
                   track: newTrack,
+                  stream: mediaStream,
                   trackId: trackId,
                   metadata: newTrackMetadata ? { ...newTrackMetadata } : null,
                 },
@@ -355,8 +356,7 @@ export const useLibraryMembraneClient = <PeerMetadataGeneric, TrackMetadataGener
       removeTrack: (trackId) => {
         webrtc.removeTrack(trackId);
         store.setStore((prevState: StateShorthand): StateShorthand => {
-          const tracksCopy: Record<TrackId, LibraryTrack<TrackMetadataGeneric>> | undefined =
-            prevState?.local?.tracks;
+          const tracksCopy: Record<TrackId, LibraryTrack<TrackMetadataGeneric>> | undefined = prevState?.local?.tracks;
           delete tracksCopy[trackId];
 
           return {

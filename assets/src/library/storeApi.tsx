@@ -14,6 +14,7 @@ export type StoreApi<TrackMetadataGeneric> = {
   replaceTrack: (
     trackId: string,
     newTrack: MediaStreamTrack,
+    stream: MediaStream, // to jest dodane żeby lokalnie dobrze kamerkę pokazywało
     newTrackMetadata?: TrackMetadataGeneric
   ) => Promise<boolean>;
   removeTrack: (trackId: string) => void;
@@ -39,9 +40,9 @@ export const createApiWrapper = <PeerMetadataGeneric, TrackMetadataGeneric>(
     return remoteTrackId;
   },
 
-  replaceTrack: (trackId, newTrack, newTrackMetadata) => {
+  replaceTrack: (trackId, newTrack, stream, newTrackMetadata) => {
     const promise = webrtc.replaceTrack(trackId, newTrack, newTrackMetadata);
-    setStore(replaceTrack(trackId, newTrack, newTrackMetadata));
+    setStore(replaceTrack(trackId, newTrack, stream, newTrackMetadata));
     return promise;
   },
 

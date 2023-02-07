@@ -69,8 +69,8 @@ export const createTrackMetadataSelector: CreateTrackMetadataSelector =
   (snapshot: LibraryPeersState<PeerM, TrackM> | null): object =>
     snapshot?.remote[peerId]?.tracks[trackId]?.metadata || {};
 
-type CreateApiSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, Connectivity<TrackM>>;
+type CreateApiSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, Connectivity<PeerM, TrackM>>;
 export const createConnectivitySelector: CreateApiSelector =
-  <PeerM, TrackM>(): Selector<PeerM, TrackM, Connectivity<TrackM>> =>
-  (snapshot: LibraryPeersState<PeerM, TrackM> | null): Connectivity<TrackM> =>
-    snapshot?.connectivity || { webrtc: null, signaling: null, socket: null, api: null };
+  <PeerM, TrackM>(): Selector<PeerM, TrackM, Connectivity<PeerM, TrackM>> =>
+  (snapshot: LibraryPeersState<PeerM, TrackM> | null): Connectivity<PeerM, TrackM> =>
+    snapshot?.connectivity || { webrtc: null, signaling: null, socket: null, api: null, connect: null };

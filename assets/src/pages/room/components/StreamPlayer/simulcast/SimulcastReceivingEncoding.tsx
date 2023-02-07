@@ -1,5 +1,6 @@
-import React, { FC } from "react";
-import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import type { FC } from "react";
+import React from "react";
+import type { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 type Props = {
   encoding: TrackEncoding | null;

@@ -1,4 +1,4 @@
-import { PeerMetadata, TrackMetadata } from "./types";
+import type { PeerMetadata, TrackMetadata } from "./types";
 import { createMembrane } from "../library/createMembrane";
 import { createMembraneClient } from "../library/externalState/noContextProvider";
 

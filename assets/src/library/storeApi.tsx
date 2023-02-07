@@ -1,5 +1,5 @@
-import { MembraneWebRTC, SimulcastConfig, TrackBandwidthLimit, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { SetStore } from "./externalState/externalState";
+import type { MembraneWebRTC, SimulcastConfig, TrackBandwidthLimit, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import type { SetStore } from "./externalState/externalState";
 import { addTrack, removeTrack, replaceTrack, updateTrackMetadata } from "./stateMappers";
 
 export type StoreApi<TrackMetadataGeneric> = {

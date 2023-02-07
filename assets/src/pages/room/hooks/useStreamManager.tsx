@@ -1,11 +1,13 @@
-import { MembraneStreaming, StreamingMode, useMembraneMediaStreaming } from "./useMembraneMediaStreaming";
+import type { MembraneStreaming, StreamingMode} from "./useMembraneMediaStreaming";
+import { useMembraneMediaStreaming } from "./useMembraneMediaStreaming";
 import { useSetLocalUserTrack } from "./useSetLocalUserTrack";
 import { useSetRemoteTrackId } from "./useSetRemoteTrackId";
 import { useSetLocalTrackMetadata } from "./useSetLocalTrackMetadata";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
-import { DisplayMediaStreamConfig, MediaStreamConfig, useMedia, LocalMedia } from "./useMedia";
-import { PeersApi } from "./usePeerState";
-import { TrackType } from "../../types";
+import type { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import type { DisplayMediaStreamConfig, MediaStreamConfig, LocalMedia } from "./useMedia";
+import { useMedia } from "./useMedia";
+import type { PeersApi } from "./usePeerState";
+import type { TrackType } from "../../types";
 
 export type Streams = {
   remote: MembraneStreaming;

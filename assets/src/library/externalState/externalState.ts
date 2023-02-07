@@ -1,4 +1,4 @@
-import { LibraryPeersState } from "../state.types";
+import type { LibraryPeersState } from "../state.types";
 
 export type SetStore<PeerMetadataGeneric, TrackMetadataGeneric> = (
   setter: (

@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+import type { FC } from "react";
+import React from "react";
 
 import MediaPlayerPeersSection from "./components/StreamPlayer/MediaPlayerPeersSection";
 import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers";
@@ -6,7 +7,7 @@ import clsx from "clsx";
 import { useSelector } from "../../libraryUsage/setup";
 import { createIsScreenSharingActiveSelector } from "../../libraryUsage/customSelectors";
 import { createPeerIdsSelector } from "../../library/selectors";
-import { PeerId } from "../../library/state.types";
+import type { PeerId } from "../../library/state.types";
 
 type Props = {
   showSimulcast: boolean;

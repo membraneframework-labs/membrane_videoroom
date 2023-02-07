@@ -1,6 +1,8 @@
-import { MembraneStreaming, StreamingMode, useMembraneMediaStreaming } from "./useLibraryMembraneMediaStreaming";
-import { DisplayMediaStreamConfig, MediaStreamConfig, useMedia, LocalMedia } from "../pages/room/hooks/useMedia";
-import { TrackType } from "../pages/types";
+import type { MembraneStreaming, StreamingMode} from "./useLibraryMembraneMediaStreaming";
+import { useMembraneMediaStreaming } from "./useLibraryMembraneMediaStreaming";
+import type { DisplayMediaStreamConfig, MediaStreamConfig, LocalMedia } from "../pages/room/hooks/useMedia";
+import { useMedia } from "../pages/room/hooks/useMedia";
+import type { TrackType } from "../pages/types";
 
 export type Streams = {
   remote: MembraneStreaming;

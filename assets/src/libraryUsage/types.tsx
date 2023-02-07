@@ -1,4 +1,4 @@
-import { TrackType } from "../pages/types";
+import type { TrackType } from "../pages/types";
 
 export type PeerMetadata = {
   emoji?: string;

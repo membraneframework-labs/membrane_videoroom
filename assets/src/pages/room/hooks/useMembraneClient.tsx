@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
+import type { Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
+import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { Socket } from "phoenix";
-import { PeerMetadata, PeersApi, TrackMetadata } from "./usePeerState";
+import type { PeerMetadata, PeersApi, TrackMetadata } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";
-import { ErrorMessage } from "../errorMessage";
+import type { ErrorMessage } from "../errorMessage";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;

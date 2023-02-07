@@ -1,5 +1,5 @@
 import { useToggle } from "./useToggle";
-import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import type { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { useSelector } from "../../../libraryUsage/setup";
 import {createConnectivitySelector} from "../../../library/selectors";
 

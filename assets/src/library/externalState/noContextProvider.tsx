@@ -1,6 +1,7 @@
-import { createStore, ExternalState } from "./externalState";
+import type { ExternalState } from "./externalState";
+import { createStore } from "./externalState";
 import { useSelector } from "./useSelector";
-import { Selector } from "../state.types";
+import type { Selector } from "../state.types";
 import { useMemo } from "react";
 import { connect } from "../connect";
 

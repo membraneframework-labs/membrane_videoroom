@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 import Close from "../../room-page/icons/Close";
-import { ToastType } from "../context/ToastContext";
+import type { ToastType } from "../context/ToastContext";
 import Button from "./Button";
 
 type ToastProps = ToastType & { onClose: () => void };

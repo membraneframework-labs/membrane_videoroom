@@ -1,5 +1,5 @@
-import { Peer, SimulcastConfig, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
-import { LibraryLocalPeer, LibraryPeersState, LibraryRemotePeer, LibraryTrack, TrackId } from "./state.types";
+import type { Peer, SimulcastConfig, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
+import type { LibraryLocalPeer, LibraryPeersState, LibraryRemotePeer, LibraryTrack, TrackId } from "./state.types";
 
 export const onPeerJoined =
   <PeerMetadataGeneric, TrackMetadataGeneric>(peer: Peer) =>

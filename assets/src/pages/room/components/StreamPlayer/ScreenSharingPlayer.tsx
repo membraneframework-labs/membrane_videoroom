@@ -1,10 +1,12 @@
-import { LibraryTrackMinimal, PeerId } from "../../../../library/state.types";
-import React, { FC } from "react";
+import type { LibraryTrackMinimal, PeerId } from "../../../../library/state.types";
+import type { FC } from "react";
+import React from "react";
 import { useSelector } from "../../../../libraryUsage/setup";
+import type {
+  PeerGui} from "../../../../libraryUsage/customSelectors";
 import {
   createPeerGuiSelector,
-  createScreenSharingTracksSelector,
-  PeerGui,
+  createScreenSharingTracksSelector
 } from "../../../../libraryUsage/customSelectors";
 import MediaPlayerTile from "./MediaPlayerTile";
 import PeerInfoLayer from "./PeerInfoLayer";

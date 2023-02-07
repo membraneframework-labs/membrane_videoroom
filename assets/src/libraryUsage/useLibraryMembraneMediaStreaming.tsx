@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { TrackMetadata } from "../pages/room/hooks/usePeerState";
-import { TrackType } from "../pages/types";
+import type { TrackMetadata } from "../pages/room/hooks/usePeerState";
+import type { TrackType } from "../pages/types";
 import { selectBandwidthLimit } from "../pages/room/bandwidth";
 import { useSelector } from "./setup";
 import { createConnectivitySelector } from "../library/selectors";

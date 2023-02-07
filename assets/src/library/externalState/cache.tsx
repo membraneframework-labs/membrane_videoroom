@@ -1,4 +1,4 @@
-import { LibraryPeersState } from "../state.types";
+import type { LibraryPeersState } from "../state.types";
 import isEqual from "lodash.isequal";
 
 export const cache = <T, PeerMetadataGeneric, TrackMetadataGeneric>(

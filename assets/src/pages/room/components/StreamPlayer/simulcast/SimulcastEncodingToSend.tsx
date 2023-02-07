@@ -1,5 +1,6 @@
-import React, { FC } from "react";
-import { UseSimulcastLocalEncoding } from "../../../hooks/useSimulcastSend";
+import type { FC } from "react";
+import React from "react";
+import type { UseSimulcastLocalEncoding } from "../../../hooks/useSimulcastSend";
 
 type Props = {
   localEncoding: UseSimulcastLocalEncoding;

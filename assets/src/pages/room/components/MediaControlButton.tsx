@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import React, { FC, SVGAttributes } from "react";
+import type { FC, SVGAttributes } from "react";
+import React from "react";
 import Button from "../../../features/shared/components/Button";
 
 export type MediaControlButtonProps = {

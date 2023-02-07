@@ -1,12 +1,13 @@
-import { LibraryTrackMinimal, PeerId, TrackId } from "../../../../library/state.types";
+import type { LibraryTrackMinimal, PeerId, TrackId } from "../../../../library/state.types";
 import { useSelector } from "../../../../libraryUsage/setup";
+import type {
+  PeerGui} from "../../../../libraryUsage/customSelectors";
 import {
   createAudioTrackStatusSelector,
   createIsActiveTrackSelector,
   createPeerGuiSelector,
   createTrackEncodingSelector,
-  createTracksRecordSelector,
-  PeerGui,
+  createTracksRecordSelector
 } from "../../../../libraryUsage/customSelectors";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
@@ -15,7 +16,7 @@ import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncodi
 import MediaPlayerTile from "./MediaPlayerTile";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
-import { TrackType } from "../../../types";
+import type { TrackType } from "../../../types";
 
 type InitialsImageWrapperProps = {
   initials: string;

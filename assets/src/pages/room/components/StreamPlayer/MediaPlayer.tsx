@@ -1,4 +1,5 @@
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import type { RefObject} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 
 export interface Props {

@@ -1,5 +1,6 @@
-import React, { FC } from "react";
-import { PeerId } from "../../../../library/state.types";
+import type { FC } from "react";
+import React from "react";
+import type { PeerId } from "../../../../library/state.types";
 import { useSelector } from "../../../../libraryUsage/setup";
 import { createUsersIdsWithScreenSharingSelector } from "../../../../libraryUsage/customSelectors";
 import { ScreenSharingPlayer } from "./ScreenSharingPlayer";

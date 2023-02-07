@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from "react";
-import { LibraryPeersState, Selector } from "./state.types";
+import type { LibraryPeersState, Selector } from "./state.types";
 import { DEFAULT_STORE } from "./externalState/externalState";
 import { connect } from "./connect";
 
@@ -51,7 +51,10 @@ export const createMembrane = <PeerMetadataGeneric, TrackMetadataGeneric>() => {
   const useConnect = (): UseConnect => {
     const { setState }: MembraneContextType<PeerMetadataGeneric, TrackMetadataGeneric> = useMembraneContext();
 
-    return useMemo(() => connect(setState), []);
+    return useMemo(() => {
+      console.log("%cMemo!!", "color: red")
+      return connect(setState);
+    }, [setState]);
   };
 
   return {

@@ -1,7 +1,7 @@
-import { Callbacks, MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import TypedEmitter from "typed-emitter";
-import { Channel, Socket } from "phoenix";
-import { StoreApi } from "./storeApi";
+import type { Callbacks, MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import type TypedEmitter from "typed-emitter";
+import type { Channel, Socket } from "phoenix";
+import type { StoreApi } from "./storeApi";
 import { SetStore } from "./externalState/externalState";
 
 export type TrackId = string;

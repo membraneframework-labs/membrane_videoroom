@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { cache } from "./cache";
-import { Selector } from "../state.types";
-import { Listener, ExternalState, Subscribe } from "./externalState";
+import type { Selector } from "../state.types";
+import type { ExternalState, Listener, Subscribe } from "./externalState";
+
+const EMPTY_FUNCTION = () => undefined;
 
 export const useSelector = <Result, PeerMetadataGeneric, TrackMetadataGeneric>(
   store: ExternalState<PeerMetadataGeneric, TrackMetadataGeneric> | null,
@@ -16,24 +18,15 @@ export const useSelector = <Result, PeerMetadataGeneric, TrackMetadataGeneric>(
     (listener: Listener) => {
       const sub: Subscribe | undefined = store?.subscribe;
 
-      // return () => {};
-      // todo refactor add guard statement
-      if (!sub) {
-        return () => {};
-      } else {
-        return sub(listener);
-      }
+      return sub ? sub(listener) : EMPTY_FUNCTION;
     },
     [store]
   );
 
-  const getSnapshotWithSelector = useCallback(() => {
-    return cachedSelector(store?.getSnapshot() || null);
-  }, [store, cachedSelector]);
+  const getSnapshotWithSelector = useCallback(
+    () => cachedSelector(store?.getSnapshot() || null),
+    [store, cachedSelector]
+  );
 
-  const result: Result = useSyncExternalStore(subscribe, getSnapshotWithSelector);
-
-  // useLog(result, "useSelector");
-
-  return result;
+  return useSyncExternalStore(subscribe, getSnapshotWithSelector);
 };

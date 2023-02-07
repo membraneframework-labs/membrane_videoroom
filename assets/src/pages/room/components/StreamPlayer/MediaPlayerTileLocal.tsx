@@ -1,12 +1,14 @@
-import React, { FC } from "react";
+import type { FC } from "react";
+import React from "react";
 import MediaPlayer from "./MediaPlayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
-import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
-import { StreamSource } from "../../../types";
-import { TrackWithId } from "./MediaPlayerPeersSection";
+import type { UseSimulcastLocalEncoding} from "../../hooks/useSimulcastSend";
+import { useSimulcastSend } from "../../hooks/useSimulcastSend";
+import type { StreamSource } from "../../../types";
+import type { TrackWithId } from "./MediaPlayerPeersSection";
 import clsx from "clsx";
 
 export interface Props {
@@ -18,7 +20,6 @@ export interface Props {
   showSimulcast?: boolean;
   streamSource?: StreamSource;
   layers?: JSX.Element;
-  webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
 }
@@ -32,14 +33,13 @@ const MediaPlayerTileLocal: FC<Props> = ({
   showSimulcast,
   streamSource,
   layers,
-  webrtc,
   className,
   blockFillContent,
 }: Props) => {
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
     "m",
     peerId || null,
-    video?.remoteTrackId || null,
+    video?.remoteTrackId || null
   );
 
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null);
@@ -64,7 +64,7 @@ const MediaPlayerTileLocal: FC<Props> = ({
         <SimulcastRemoteLayer
           desiredEncoding={desiredEncoding}
           setDesiredEncoding={setDesiredEncoding}
-          currentEncoding={video?.encodingQuality}
+          currentEncoding={video?.encodingQuality || null}
           disabled={!video?.stream}
         />
       )}

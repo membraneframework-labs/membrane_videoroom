@@ -9,7 +9,8 @@ import {
 import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
 import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
-import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
+import type { CheckboxProps } from "../../shared/components/Checkbox";
+import { Checkbox } from "../../shared/components/Checkbox";
 import Input from "../../shared/components/Input";
 import HomePageLayout from "./HomePageLayout";
 

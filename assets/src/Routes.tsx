@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+import type { FC } from "react";
+import React from "react";
 import RoomPage from "./pages/room/RoomPage";
 import { createBrowserRouter, useParams } from "react-router-dom";
 import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";

@@ -1,6 +1,6 @@
-import { TrackType } from "../pages/types";
-import { PeerMetadata, TrackMetadata } from "../pages/room/hooks/usePeerState";
-import {
+import type { TrackType } from "../pages/types";
+import type { PeerMetadata, TrackMetadata } from "../pages/room/hooks/usePeerState";
+import type {
   LibraryPeersState,
   LibraryRemotePeer,
   LibraryTrack,
@@ -9,7 +9,7 @@ import {
   Selector,
   TrackId,
 } from "../library/state.types";
-import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import type { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 export type PeerGui = { id: PeerId; emoji: string | null; name: string | null };
 export type CreatePeersGuiSelector = () => Selector<PeerMetadata, TrackMetadata, Array<PeerGui>>;

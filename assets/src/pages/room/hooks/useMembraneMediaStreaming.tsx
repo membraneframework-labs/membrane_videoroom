@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
-import { TrackType } from "../../types";
+import type { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import type { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
 
 export type MembraneStreaming = {

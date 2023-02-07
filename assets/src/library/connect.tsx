@@ -1,7 +1,10 @@
-import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
-import { Channel, Socket } from "phoenix";
-import { DEFAULT_STORE, SetStore } from "./externalState/externalState";
-import { LibraryPeersState } from "./state.types";
+import type { Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
+import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import type { Channel} from "phoenix";
+import { Socket } from "phoenix";
+import type { SetStore } from "./externalState/externalState";
+import { DEFAULT_STORE } from "./externalState/externalState";
+import type { LibraryPeersState } from "./state.types";
 import {
   onJoinSuccess,
   onPeerJoined,
@@ -12,7 +15,8 @@ import {
   onTrackRemoved,
   onTrackUpdated,
 } from "./stateMappers";
-import { createApiWrapper, StoreApi } from "./storeApi";
+import type { StoreApi } from "./storeApi";
+import { createApiWrapper } from "./storeApi";
 
 export const connect =
   <PeerMetadataGeneric, TrackMetadataGeneric>(setStore: SetStore<PeerMetadataGeneric, TrackMetadataGeneric>) =>

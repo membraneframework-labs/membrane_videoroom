@@ -1,5 +1,5 @@
 import type { LibraryPeersState, Selector, LibraryTrackMinimal, PeerId, TrackId } from "./state.types";
-import { Connectivity } from "./state.types";
+import type { Connectivity } from "./state.types";
 
 type CreateFullStateSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, LibraryPeersState<PeerM, TrackM> | null>;
 export const createFullStateSelector: CreateFullStateSelector =

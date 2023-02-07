@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import type { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { useSelector } from "../../../libraryUsage/setup";
 import { createConnectivitySelector } from "../../../library/selectors";
 
@@ -12,7 +12,6 @@ export const useSimulcastRemoteEncoding = (
   defaultValue: TrackEncoding,
   peerId: string | null,
   videoTrackId: string | null
-  // webrtc: MembraneWebRTC | null
 ): UseSimulcastRemoteEncodingResult => {
   const api = useSelector(createConnectivitySelector());
 

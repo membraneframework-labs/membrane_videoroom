@@ -1,8 +1,10 @@
-import React, { FC, useState } from "react";
+import type { FC} from "react";
+import React, { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import clsx from "clsx";
 import { useDeveloperInfo } from "../../contexts/DeveloperInfoContext";
-import { Checkbox, Props as CheckboxProps } from "./Checkbox";
+import type { Props as CheckboxProps } from "./Checkbox";
+import { Checkbox } from "./Checkbox";
 import { useToggle } from "../room/hooks/useToggle";
 import { useMediaDeviceManager } from "../room/hooks/useMediaDeviceManager";
 import {

@@ -1,9 +1,12 @@
-import React, { FC } from "react";
+import type { FC } from "react";
+import React from "react";
 
-import { LocalMedia } from "../hooks/useMedia";
-import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
+import type { LocalMedia } from "../hooks/useMedia";
+import type { MediaControlButtonProps } from "./MediaControlButton";
+import MediaControlButton from "./MediaControlButton";
+import type { NavigateFunction} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import type { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
 import { useToggle } from "../hooks/useToggle";
 import Microphone from "../../../features/room-page/icons/Microphone";
 import MicrophoneOff from "../../../features/room-page/icons/MicrophoneOff";
@@ -13,7 +16,7 @@ import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import clsx from "clsx";
 import useToast from "../../../features/shared/hooks/useToast";
-import { ToastType } from "../../../features/shared/context/ToastContext";
+import type { ToastType } from "../../../features/shared/context/ToastContext";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 

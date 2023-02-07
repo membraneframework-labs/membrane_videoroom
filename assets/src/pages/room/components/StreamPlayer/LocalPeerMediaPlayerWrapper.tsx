@@ -1,30 +1,29 @@
-import { TrackType } from "../../../types";
-import { LibraryTrackMinimal } from "../../../../library/state.types";
+import type { TrackType } from "../../../types";
+import type { LibraryTrackMinimal } from "../../../../library/state.types";
 import { useSelector } from "../../../../libraryUsage/setup";
+import type {
+  PeerGui} from "../../../../libraryUsage/customSelectors";
 import {
   createLocalPeerGuiSelector,
-  createLocalTracksRecordSelector,
-  PeerGui,
+  createLocalTracksRecordSelector
 } from "../../../../libraryUsage/customSelectors";
-import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
+import type { UseSimulcastLocalEncoding} from "../../hooks/useSimulcastSend";
+import { useSimulcastSend } from "../../hooks/useSimulcastSend";
 import MediaPlayerTile from "./MediaPlayerTile";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import React from "react";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
-import { useLog } from "../../../../helpers/UseLog";
 
 export type LocalPeerMediaPlayerWrapperProps = {
   showSimulcast?: boolean;
-  className?: string
+  className?: string;
 };
 
 export const LocalPeerMediaPlayerWrapper = ({ showSimulcast, className }: LocalPeerMediaPlayerWrapperProps) => {
   const tracks: Partial<Record<TrackType, LibraryTrackMinimal>> = useSelector(createLocalTracksRecordSelector());
   const peer: PeerGui | null = useSelector(createLocalPeerGuiSelector());
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(tracks.camera?.trackId || null);
-
-  useLog(tracks, "local Track")
 
   return (
     <MediaPlayerTile

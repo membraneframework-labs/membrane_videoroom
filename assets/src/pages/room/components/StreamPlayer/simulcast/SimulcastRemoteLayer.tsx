@@ -1,7 +1,8 @@
-import React, { FC } from "react";
+import type { FC } from "react";
+import React from "react";
 import { SimulcastReceivingEncoding } from "./SimulcastReceivingEncoding";
 import { SimulcastEncodingToReceive } from "./SimulcastEncodingToReceive";
-import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import type { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 type Props = {
   setDesiredEncoding: (encoding: TrackEncoding) => void;

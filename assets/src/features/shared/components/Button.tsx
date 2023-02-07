@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React from "react";
-import PlainLink, { PlainLinkProps } from "./PlainLink";
+import type { PlainLinkProps } from "./PlainLink";
+import PlainLink from "./PlainLink";
 
 type ButtonVariant = "normal" | "light" | "transparent" | "transparent-light";
 

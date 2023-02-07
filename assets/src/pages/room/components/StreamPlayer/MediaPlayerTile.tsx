@@ -1,39 +1,23 @@
 import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
-import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
-import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
-import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
-import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
-import { StreamSource } from "../../../types";
-import { TrackWithId } from "./MediaPlayerPeersSection";
 import clsx from "clsx";
 
 export interface Props {
-  // peerId?: string;
-  // video?: TrackWithId;
+  videoStream?: MediaStream;
+  audioStream?: MediaStream;
   flipHorizontally?: boolean;
-  videoStream: MediaStream | null;
-  audioStream: MediaStream | null;
   playAudio?: boolean;
-  // showSimulcast?: boolean;
-  // streamSource?: StreamSource;
   layers?: JSX.Element;
-  webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
-  // webrtc?: MembraneWebRTC;
 }
 
 const MediaPlayerTile: FC<Props> = ({
-  // peerId,
   playAudio,
-  // video,
   videoStream,
   flipHorizontally,
   audioStream,
   layers,
-  webrtc,
   className,
   blockFillContent,
 }: Props) => {
@@ -47,7 +31,6 @@ const MediaPlayerTile: FC<Props> = ({
     >
       <MediaPlayer
         videoStream={videoStream}
-        // videoStream={video?.stream}
         audioStream={audioStream}
         flipHorizontally={flipHorizontally}
         playAudio={playAudio}

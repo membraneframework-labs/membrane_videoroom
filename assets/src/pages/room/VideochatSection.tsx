@@ -1,19 +1,21 @@
 import React, { FC } from "react";
+
 import MediaPlayerPeersSection from "./components/StreamPlayer/MediaPlayerPeersSection";
 import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers";
 import clsx from "clsx";
 import { useSelector } from "../../libraryUsage/setup";
 import { createIsScreenSharingActiveSelector } from "../../libraryUsage/customSelectors";
+import { createPeerIdsSelector } from "../../library/selectors";
+import { PeerId } from "../../library/state.types";
 
 type Props = {
-  showSimulcast?: boolean;
+  showSimulcast: boolean;
 };
 
 export const VideochatSection: FC<Props> = ({ showSimulcast }: Props) => {
   const isScreenSharingActive = useSelector(createIsScreenSharingActiveSelector());
-  // todo
-  // const noPeers = !peers.length;
-  const noPeers = false;
+  const peersIds: Array<PeerId> = useSelector(createPeerIdsSelector());
+  const noPeers = !peersIds.length;
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
@@ -25,7 +27,7 @@ export const VideochatSection: FC<Props> = ({ showSimulcast }: Props) => {
       >
         {isScreenSharingActive && <ScreenSharingPlayers />}
 
-        <MediaPlayerPeersSection oneColumn={isScreenSharingActive} />
+        <MediaPlayerPeersSection showSimulcast={showSimulcast} oneColumn={isScreenSharingActive} />
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ const localPeerToScreenSharingStream = (localPeer: LocalPeer): MediaPlayerTileCo
 const prepareScreenSharingStreams = (
   peers: RemotePeer[],
   localPeer?: LocalPeer
-): { screenSharingStreams: MediaPlayerTileConfig[]; isScreenSharingActive: boolean } => {
+): MediaPlayerTileConfig[] => {
   const peersScreenSharingTracks: MediaPlayerTileConfig[] = peers
     .flatMap((peer) =>
       peer.tracks.map((track) => ({
@@ -74,8 +74,7 @@ const prepareScreenSharingStreams = (
     ? [localPeerToScreenSharingStream(localPeer), ...peersScreenSharingTracks]
     : peersScreenSharingTracks;
 
-  const isScreenSharingActive: boolean = screenSharingStreams.length > 0;
-  return { screenSharingStreams, isScreenSharingActive };
+  return screenSharingStreams;
 };
 
 const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
@@ -97,8 +96,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     mediaPlayerId: LOCAL_VIDEO_ID,
   };
 
-  const { screenSharingStreams, isScreenSharingActive } = prepareScreenSharingStreams(peers, localPeer);
-  const noPeers = !peers.length;
+  const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
   const pinningApi = usePinning();
 
   return (
@@ -116,7 +114,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           localUser={localUser}
           screenShareConfigs={screenSharingStreams}
           showSimulcast={showSimulcast}
-          oneColumn={isScreenSharingActive}
+          // oneColumn={isScreenSharingActive}
           webrtc={webrtc}
           pinningApi={pinningApi}
         />

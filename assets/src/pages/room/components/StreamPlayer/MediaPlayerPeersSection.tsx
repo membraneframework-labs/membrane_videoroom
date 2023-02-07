@@ -82,7 +82,7 @@ type Props = {
   screenShareConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  oneColumn?: boolean; // screensharing or pinned user
+  // oneColumn?: boolean; // screensharing or pinned user
   webrtc?: MembraneWebRTC;
   pinningApi: PinningApi;
 };
@@ -90,23 +90,23 @@ type Props = {
 const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
 const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
-const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, screenShareConfigs, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
+const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, screenShareConfigs, showSimulcast, webrtc, pinningApi, }: Props) => {
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenShareConfigs);
 
   const getGridStyle = () => {
-    const noPeers = !peers.length;
+    // const noPeers = !peers.length;
 
-    if (oneColumn) {
-      if (noPeers) {
-        // display video positioned absolute in another video
-        return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
-      } else {
-        return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
-      }
-    } else {
+    // if (oneColumn) {
+    //   if (noPeers) {
+    //     // display video positioned absolute in another video
+    //     return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
+    //   } else {
+    //     return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
+    //   }
+    // } else {
       return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
-    }
+    // }
   };
 
   const gridConfig = getGridConfig(allTilesConfig.length);
@@ -130,7 +130,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, screenShareConfi
             peerId={config.peerId}
             video={video}
             audioStream={audio?.stream}
-            className={!oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : undefined}
+            className={clsx(gridConfig.span, gridConfig.tileClass)}
             layers={
               <>
                 {showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}

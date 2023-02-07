@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 
 import { LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
 import MediaPlayerPeersSection, {
@@ -97,17 +97,23 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   };
 
   const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
+
   const pinningApi = usePinning();
+  const isSomeTilePinned = !!pinningApi.pinnedTileId;
+
+  const getWrapperClass = useCallback(() => {
+    const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
+    const layoutWithTileHighlight = peers.length === 0 ? "relative" : "sm:grid-cols-3/1";
+
+    return clsx(base, isSomeTilePinned && layoutWithTileHighlight)
+  }, [isSomeTilePinned]);
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
       <div
-        className={clsx(
-          "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]",
-          // isScreenSharingActive && (noPeers ? "relative" : "sm:grid-cols-3/1")
-        )}
+        className={getWrapperClass()}
       >
-        {/* {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
+        {/* {isSomeTilePinned && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
 
         <MediaPlayerPeersSection
           peers={peers}

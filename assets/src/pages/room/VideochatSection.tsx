@@ -19,7 +19,7 @@ type Props = {
   webrtc?: MembraneWebRTC;
 };
 
-const localPeerToScreenSharingStream = (localPeer: LocalPeer): VideoStreamWithMetadata => {
+const localPeerToScreenSharingStream = (localPeer: LocalPeer): MediaPlayerTileConfig => {
   const videoTrack = remoteTrackToLocalTrack(localPeer?.tracks["screensharing"]);
 
   if (!videoTrack) {
@@ -27,19 +27,22 @@ const localPeerToScreenSharingStream = (localPeer: LocalPeer): VideoStreamWithMe
   }
 
   return {
-    video: videoTrack,
+    video: [videoTrack],
     peerId: localPeer?.id,
-    peerIcon: localPeer?.metadata?.emoji,
-    peerName: LOCAL_PEER_NAME,
+    displayName: LOCAL_PEER_NAME,
+    initials: computeInitials(localPeer.metadata?.displayName || ""),
     mediaPlayerId: LOCAL_SCREEN_SHARING_ID,
+    audio: [],
+    playAudio: false,
+    streamSource: "local",
   };
 };
 
 const prepareScreenSharingStreams = (
   peers: RemotePeer[],
   localPeer?: LocalPeer
-): { screenSharingStreams: VideoStreamWithMetadata[]; isScreenSharingActive: boolean } => {
-  const peersScreenSharingTracks: VideoStreamWithMetadata[] = peers
+): { screenSharingStreams: MediaPlayerTileConfig[]; isScreenSharingActive: boolean } => {
+  const peersScreenSharingTracks: MediaPlayerTileConfig[] = peers
     .flatMap((peer) =>
       peer.tracks.map((track) => ({
         peerId: peer.id,
@@ -50,21 +53,24 @@ const prepareScreenSharingStreams = (
     )
     .filter((element) => element.track?.metadata?.type === "screensharing")
     .map(
-      ({ track, peerId, emoji, peerName }): VideoStreamWithMetadata => ({
-        video: {
+      ({ track, peerId, peerName }): MediaPlayerTileConfig => ({
+        video: [{
           stream: track.mediaStream,
           remoteTrackId: track.trackId,
           encodingQuality: track.encoding,
           metadata: track.metadata,
-        },
+        }],
+        audio: [],
+        playAudio: false,
+        streamSource: "local",
         mediaPlayerId: track.trackId,
         peerId: peerId,
-        peerIcon: emoji,
-        peerName: peerName,
+        displayName: peerName,
+        initials: computeInitials(peerName || ""),
       })
     );
 
-  const screenSharingStreams: VideoStreamWithMetadata[] = localPeer?.tracks["screensharing"]?.stream
+  const screenSharingStreams: MediaPlayerTileConfig[] = localPeer?.tracks["screensharing"]?.stream
     ? [localPeerToScreenSharingStream(localPeer), ...peersScreenSharingTracks]
     : peersScreenSharingTracks;
 
@@ -100,14 +106,15 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
       <div
         className={clsx(
           "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]",
-          isScreenSharingActive && (noPeers ? "relative" : "sm:grid-cols-3/1")
+          // isScreenSharingActive && (noPeers ? "relative" : "sm:grid-cols-3/1")
         )}
       >
-        {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>}
+        {/* {isScreenSharingActive && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
 
         <MediaPlayerPeersSection
           peers={peers}
           localUser={localUser}
+          screenShareConfigs={screenSharingStreams}
           showSimulcast={showSimulcast}
           oneColumn={isScreenSharingActive}
           webrtc={webrtc}

@@ -79,6 +79,7 @@ const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
 type Props = {
   peers: RemotePeer[];
   localUser: MediaPlayerTileConfig;
+  screenShareConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn?: boolean; // screensharing or pinned user
@@ -89,8 +90,9 @@ type Props = {
 const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
 const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
-const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
+const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, screenShareConfigs, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
+  const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenShareConfigs);
 
   const getGridStyle = () => {
     const noPeers = !peers.length;
@@ -107,15 +109,15 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
     }
   };
 
-  const gridConfig = getGridConfig(allPeersConfig.length);
+  const gridConfig = getGridConfig(allTilesConfig.length);
   const videoGridStyle = getGridStyle();
-  const tileSize = allPeersConfig.length >= 7 ? "M" : "L";
+  const tileSize = allTilesConfig.length >= 7 ? "M" : "L";
 
   const {pinnedTileId, pin, unpin} : PinningApi = pinningApi;  
 
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
-      {allPeersConfig.map((config) => {
+      {allTilesConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
         const audio: TrackWithId | undefined = config.audio[0];

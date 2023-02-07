@@ -32,37 +32,6 @@ export type MediaPlayerTileConfig = {
   flipHorizontally?: boolean;
 };
 
-const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
-  tracks
-    .filter((track) => track?.metadata?.type === type)
-    .map(
-      (track): TrackWithId => ({
-        stream: track.mediaStream,
-        remoteTrackId: track.trackId,
-        encodingQuality: track.encoding,
-        metadata: track.metadata,
-        enabled: true,
-      })
-    );
-
-const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): MediaPlayerTileConfig[] => {
-  return peers.map((peer: RemotePeer): MediaPlayerTileConfig => {
-    const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
-    const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
-
-    return {
-      peerId: peer.id,
-      displayName: peer.displayName,
-      initials: computeInitials(peer.displayName || ""),
-      video: videoTracks,
-      audio: audioTracks,
-      flipHorizontally: false,
-      streamSource: "remote",
-      playAudio: true,
-      mediaPlayerId: peer.id,
-    };
-  });
-};
 
 type DisabledMicIconProps = {
   isLoading: boolean;
@@ -77,9 +46,7 @@ const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
 };
 
 type Props = {
-  peers: RemotePeer[];
-  localUser: MediaPlayerTileConfig;
-  screenShareConfigs: MediaPlayerTileConfig[];
+  tileConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn: boolean; // screensharing or pinned user
@@ -90,14 +57,13 @@ type Props = {
 const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
 const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
-const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, screenShareConfigs, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
-  const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
-  const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenShareConfigs);
+const MediaPlayerPeersSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn, webrtc, pinningApi, }: Props) => {
 
-  const gridConfig = getGridConfig(allTilesConfig.length);
+
+  const gridConfig = getGridConfig(tileConfigs.length);
   const getGridStyle = () => {
     if (oneColumn) {
-      const videoInVideo = allTilesConfig.length === 2;
+      const videoInVideo = tileConfigs.length === 1;
       if (videoInVideo) {
         // display video positioned absolute in another video
         return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
@@ -111,13 +77,13 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, screenShareConfi
 
   const videoGridStyle = getGridStyle();
   const tileStyle = !oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : "";
-  const tileSize = allTilesConfig.length >= 7 ? "M" : "L";
+  const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
   const {pinnedTileId, pin, unpin} : PinningApi = pinningApi;  
 
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
-      {allTilesConfig.map((config) => {
+      {tileConfigs.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
         const audio: TrackWithId | undefined = config.audio[0];

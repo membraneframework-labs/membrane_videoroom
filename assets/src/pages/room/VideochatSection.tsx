@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from "react";
 
-import { LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
+import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
 import MediaPlayerPeersSection, {
   MediaPlayerTileConfig,
   TrackWithId,
@@ -11,12 +11,45 @@ import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./cons
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
 import usePinning from "../../features/room-page/utils/usePinning";
+import { TrackType } from "../types";
 
 type Props = {
   peers: RemotePeer[];
   localPeer?: LocalPeer;
   showSimulcast?: boolean;
   webrtc?: MembraneWebRTC;
+};
+
+const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
+  tracks
+    .filter((track) => track?.metadata?.type === type)
+    .map(
+      (track): TrackWithId => ({
+        stream: track.mediaStream,
+        remoteTrackId: track.trackId,
+        encodingQuality: track.encoding,
+        metadata: track.metadata,
+        enabled: true,
+      })
+    );
+
+const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): MediaPlayerTileConfig[] => {
+  return peers.map((peer: RemotePeer): MediaPlayerTileConfig => {
+    const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
+    const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
+
+    return {
+      peerId: peer.id,
+      displayName: peer.displayName,
+      initials: computeInitials(peer.displayName || ""),
+      video: videoTracks,
+      audio: audioTracks,
+      flipHorizontally: false,
+      streamSource: "remote",
+      playAudio: true,
+      mediaPlayerId: peer.id,
+    };
+  });
 };
 
 const localPeerToScreenSharingStream = (localPeer: LocalPeer): MediaPlayerTileConfig => {
@@ -98,6 +131,9 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
 
+  const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
+  const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
+
   const pinningApi = usePinning();
   const isSomeTilePinned = !!pinningApi.pinnedTileId;
 
@@ -114,12 +150,10 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
         className={getWrapperClass()}
       >
         {/* {isSomeTilePinned && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
-        {isSomeTilePinned && <div className="relative h-full w-full bg-black">I'm a block element</div>}
+        {isSomeTilePinned && <div className="active-screensharing-grid h-full grid-cols-1"><div className="bg-black">I'm a block element</div></div>}
 
         <MediaPlayerPeersSection
-          peers={peers}
-          localUser={localUser}
-          screenShareConfigs={screenSharingStreams}
+          tileConfigs={allTilesConfig}
           showSimulcast={showSimulcast}
           oneColumn={isSomeTilePinned}
           webrtc={webrtc}

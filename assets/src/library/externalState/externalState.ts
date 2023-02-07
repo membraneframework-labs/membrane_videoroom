@@ -1,4 +1,4 @@
-import { LibraryPeersState } from "./state.types";
+import { LibraryPeersState } from "../state.types";
 
 export type SetStore<PeerMetadataGeneric, TrackMetadataGeneric> = (
   setter: (
@@ -27,7 +27,7 @@ export const DEFAULT_STORE = {
     webrtc: null,
     signaling: null,
     socket: null,
-    connect: null
+    connect: null,
   },
 };
 

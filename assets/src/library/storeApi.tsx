@@ -1,8 +1,7 @@
 import { MembraneWebRTC, SimulcastConfig, TrackBandwidthLimit, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { SetStore } from "./externalState";
+import { SetStore } from "./externalState/externalState";
 import { addTrack, removeTrack, replaceTrack, updateTrackMetadata } from "./stateMappers";
 
-// Potrzebujemy tej fasady, żeby automatycznie budować sobie wewnętrzny stan dla tracków użytkownika
 export type StoreApi<TrackMetadataGeneric> = {
   addTrack: (
     track: MediaStreamTrack,

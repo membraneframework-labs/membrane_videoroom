@@ -1,7 +1,6 @@
-import { useEffect } from "react";
 import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
 import { Channel, Socket } from "phoenix";
-import { DEFAULT_STORE, SetStore } from "./externalState";
+import { DEFAULT_STORE, SetStore } from "./externalState/externalState";
 import { LibraryPeersState } from "./state.types";
 import {
   onJoinSuccess,
@@ -15,13 +14,11 @@ import {
 } from "./stateMappers";
 import { createApiWrapper, StoreApi } from "./storeApi";
 
-export const useSyncMembraneWebRTCState = <PeerMetadataGeneric, TrackMetadataGeneric>(
-  setStore: SetStore<PeerMetadataGeneric, TrackMetadataGeneric>,
-  roomId: string,
-  peerMetadata: PeerMetadataGeneric,
-  isSimulcastOn: boolean
-) => {
-  useEffect(() => {
+export const connect =
+  <PeerMetadataGeneric, TrackMetadataGeneric>(setStore: SetStore<PeerMetadataGeneric, TrackMetadataGeneric>) =>
+  (roomId: string, peerMetadata: PeerMetadataGeneric, isSimulcastOn: boolean): (() => void) => {
+    type State = LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>;
+
     const socket = new Socket("/socket");
     socket.connect();
     const socketOnCloseRef = socket.onClose(() => cleanUp());
@@ -107,21 +104,19 @@ export const useSyncMembraneWebRTCState = <PeerMetadataGeneric, TrackMetadataGen
       return;
     });
 
-    setStore(
-      (
-        prevState: LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric>
-      ): LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> => {
-        return {
-          ...prevState,
-          connectivity: {
-            socket: socket,
-            api: api,
-            webrtc: webrtc,
-            signaling: signaling,
-          },
-        };
-      }
-    );
+    setStore((prevState: State): State => {
+      return {
+        ...prevState,
+        status: "connecting",
+        connectivity: {
+          ...prevState.connectivity,
+          socket: socket,
+          api: api,
+          webrtc: webrtc,
+          signaling: signaling,
+        },
+      };
+    });
 
     signaling
       .join()
@@ -145,5 +140,4 @@ export const useSyncMembraneWebRTCState = <PeerMetadataGeneric, TrackMetadataGen
     return () => {
       cleanUp();
     };
-  }, [isSimulcastOn, peerMetadata, roomId, setStore]);
-};
+  };

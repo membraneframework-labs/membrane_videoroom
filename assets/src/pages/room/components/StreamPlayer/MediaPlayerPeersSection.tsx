@@ -1,12 +1,18 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
-import { PeerId } from "../../../../library/state.types";
-import { createLocalPeerIdsSelector, createPeerIdsSelector } from "../../../../library/selectors";
+import { LibraryPeersState, PeerId } from "../../../../library/state.types";
+import {
+  createLocalPeerIdsSelector,
+  createPeerIdsSelector,
+  useCreateLocalPeerIdsSelector
+} from "../../../../library/selectors";
 import { useSelector } from "../../../../libraryUsage/setup";
 import { RemoteMediaPlayerTileWrapper } from "./RemoteMediaPlayerTileWrapper";
 import { LocalPeerMediaPlayerWrapper } from "./LocalPeerMediaPlayerWrapper";
 import { getGridConfig, GridConfigType } from "../../../../features/room-page/utils/getVideoGridConfig";
+import { PeerMetadata } from "../../hooks/usePeerState";
+import { TrackMetadata } from "../../../../libraryUsage/types";
 
 export type TrackWithId = {
   stream?: MediaStream;
@@ -29,7 +35,14 @@ const getGridStyle = (noPeers: boolean, manyColumn: boolean, gridConfig: GridCon
 };
 
 const MediaPlayerPeersSection: FC<Props> = ({ oneColumn, showSimulcast }: Props) => {
-  const localPeerId: PeerId | null = useSelector(createLocalPeerIdsSelector());
+  // const memo: (snapshot: LibraryPeersState<PeerMetadata, TrackMetadata> | null) => string | null = useMemo(() => {
+  //   console.log("%c memo!", "color: blue")
+  //   return createLocalPeerIdsSelector();
+  // }, []);
+
+  const memo = useCreateLocalPeerIdsSelector<PeerMetadata, TrackMetadata>()
+
+  const localPeerId: PeerId | null = useSelector(memo);
   const remotePeersIds: Array<PeerId> = useSelector(createPeerIdsSelector());
 
   const gridConfig: GridConfigType = getGridConfig(remotePeersIds.length + 1);

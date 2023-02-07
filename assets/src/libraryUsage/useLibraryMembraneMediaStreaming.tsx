@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PeerMetadata, TrackMetadata } from "../pages/room/hooks/usePeerState";
+import { TrackMetadata } from "../pages/room/hooks/usePeerState";
 import { TrackType } from "../pages/types";
 import { selectBandwidthLimit } from "../pages/room/bandwidth";
-import { UseMembraneClientType } from "../library/state.types";
 import { useSelector } from "./setup";
 import { createConnectivitySelector } from "../library/selectors";
-import { useLog } from "../helpers/UseLog";
 
 export type MembraneStreaming = {
   trackId: string | null;
@@ -31,8 +29,6 @@ export const useMembraneMediaStreaming = (
   stream: MediaStream | null
 ): MembraneStreaming => {
   const api = useSelector(createConnectivitySelector());
-
-  // useLog(api, "API!!")
 
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
   const [trackMetadata, setTrackMetadata] = useState<TrackMetadata | null>(null);

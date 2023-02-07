@@ -1,11 +1,6 @@
 import { MembraneStreaming, StreamingMode, useMembraneMediaStreaming } from "./useLibraryMembraneMediaStreaming";
 import { DisplayMediaStreamConfig, MediaStreamConfig, useMedia, LocalMedia } from "../pages/room/hooks/useMedia";
 import { TrackType } from "../pages/types";
-// import { useSetLocalUserTrack } from "./useLibrarySetLocalUserTrack";
-// import { useSetRemoteTrackId } from "./useLibrarySetRemoteTrackId";
-// import { useSetLocalTrackMetadata } from "./useLibrarySetLocalTrackMetadata";
-import { UseMembraneClientType } from "../library/state.types";
-import { PeerMetadata, TrackMetadata } from "./types";
 
 export type Streams = {
   remote: MembraneStreaming;
@@ -28,9 +23,6 @@ export const useLibraryStreamManager = (
     simulcast,
     localMedia.stream || null,
   );
-  // useSetLocalUserTrack(type, , localMedia.stream, localMedia.isEnabled);
-  // useSetRemoteTrackId(type, peersApi.setLocalTrackId, remote.trackId);
-  // useSetLocalTrackMetadata(type, peersApi.setLocalTrackMetadata, remote.trackMetadata);
 
   return { local: localMedia, remote: membraneStreaming };
 };

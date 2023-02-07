@@ -2,7 +2,7 @@ import { Callbacks, MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membran
 import TypedEmitter from "typed-emitter";
 import { Channel, Socket } from "phoenix";
 import { StoreApi } from "./storeApi";
-import { SetStore } from "./externalState";
+import { SetStore } from "./externalState/externalState";
 
 export type TrackId = string;
 export type PeerId = string;
@@ -52,6 +52,7 @@ export type LibraryPeersState<PeerMetadataGeneric, TrackMetadataGeneric> = {
 // --- selectors
 export type Selector<PeerM, TrackM, Result> = (snapshot: LibraryPeersState<PeerM, TrackM> | null) => Result;
 
+// todo remove
 export type LibraryTrackMinimal = {
   stream: MediaStream | null;
   trackId: TrackId;

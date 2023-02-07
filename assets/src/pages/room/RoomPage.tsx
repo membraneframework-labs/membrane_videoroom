@@ -14,7 +14,7 @@ import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutom
 import { useLog } from "../../helpers/UseLog";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
 import { useConnect, useSelector } from "../../libraryUsage/setup";
-import { createFullStateSelector, createLocalPeerIdsSelector } from "../../library/selectors";
+import { createLocalPeerIdsSelector } from "../../library/selectors";
 
 type Props = {
   displayName: string;
@@ -45,9 +45,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   const localPeerId = useSelector(createLocalPeerIdsSelector());
   useLog(localPeerId, "localPeerId");
   const isConnected = !!localPeerId;
-
-  // const state = useSelector(createFullStateSelector());
-  // useLog(state, "Full state");
 
   const camera = useLibraryStreamManager(
     "camera",
@@ -94,15 +91,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   return (
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
-        {/*<button*/}
-        {/*  onClick={() => {*/}
-        {/*    if (!membrane?.connectivity?.connect) return;*/}
-        {/*    membrane?.connectivity?.connect(roomId, peerMetadata, isSimulcastOn);*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  Connect!*/}
-        {/*</button>*/}
-        {/* main grid - videos + future chat */}
         <section className="flex h-full w-full flex-col">
           <VideochatSection showSimulcast={showSimulcastMenu} />
         </section>

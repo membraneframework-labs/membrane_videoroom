@@ -1,8 +1,6 @@
 import type { LibraryPeersState, Selector, LibraryTrackMinimal, PeerId, TrackId } from "./state.types";
 import { Connectivity } from "./state.types";
 
-type S<PeerM, TrackM> = LibraryPeersState<PeerM, TrackM>;
-
 type CreateFullStateSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, LibraryPeersState<PeerM, TrackM> | null>;
 export const createFullStateSelector: CreateFullStateSelector =
   <PeerM, TrackM>(): Selector<PeerM, TrackM, LibraryPeersState<PeerM, TrackM> | null> =>
@@ -11,10 +9,9 @@ export const createFullStateSelector: CreateFullStateSelector =
 
 type CreateIsConnectedSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, boolean>;
 export const createIsConnectedSelector: CreateIsConnectedSelector =
-    <PeerM, TrackM>(): Selector<PeerM, TrackM, boolean> =>
-        (snapshot: LibraryPeersState<PeerM, TrackM> | null): boolean =>
-            !!snapshot?.local?.id || false;
-
+  <PeerM, TrackM>(): Selector<PeerM, TrackM, boolean> =>
+  (snapshot: LibraryPeersState<PeerM, TrackM> | null): boolean =>
+    !!snapshot?.local?.id || false;
 
 type CreateLocalPeerIdsSelector = <PeerM, TrackM>() => Selector<PeerM, TrackM, PeerId | null>;
 export const createLocalPeerIdsSelector: CreateLocalPeerIdsSelector =
@@ -75,3 +72,12 @@ export const createConnectivitySelector: CreateApiSelector =
   <PeerM, TrackM>(): Selector<PeerM, TrackM, Connectivity<PeerM, TrackM>> =>
   (snapshot: LibraryPeersState<PeerM, TrackM> | null): Connectivity<PeerM, TrackM> =>
     snapshot?.connectivity || { webrtc: null, signaling: null, socket: null, api: null, connect: null };
+
+// with memo
+// export const useCreateLocalPeerIdsSelector = <P, T>(): (snapshot: (LibraryPeersState<P, T> | null)) => (string | null) => {
+//   const useMemo1: (snapshot: (LibraryPeersState<P, T> | null)) => (string | null) = useMemo(() => {
+//     console.log("%c memo!", "color: blue")
+//     return createLocalPeerIdsSelector();
+//   }, []);
+//   return useMemo1
+// }

@@ -19,18 +19,15 @@ export type TrackWithId = {
 };
 
 export type MediaPlayerTileConfig = {
+  mediaPlayerId: string;
   peerId?: string;
-  flipHorizontally?: boolean;
   displayName?: string;
   initials: string;
   video: TrackWithId[];
   audio: TrackWithId[];
   playAudio: boolean;
-  screenSharing: TrackWithId[];
-  showSimulcast?: boolean;
-  remoteSimulcast?: boolean;
   streamSource: StreamSource;
-  mediaPlayerId: string;
+  flipHorizontally?: boolean;
 };
 
 const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
@@ -46,11 +43,10 @@ const getTracks = (tracks: ApiTrack[], type: TrackType): TrackWithId[] =>
       })
     );
 
-const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: boolean): MediaPlayerTileConfig[] => {
+const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): MediaPlayerTileConfig[] => {
   return peers.map((peer: RemotePeer): MediaPlayerTileConfig => {
     const videoTracks: TrackWithId[] = getTracks(peer.tracks, "camera");
     const audioTracks: TrackWithId[] = getTracks(peer.tracks, "audio");
-    const screenSharingTracks: TrackWithId[] = getTracks(peer.tracks, "screensharing");
 
     return {
       peerId: peer.id,
@@ -58,10 +54,7 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[], showSimulcast?: 
       initials: computeInitials(peer.displayName || ""),
       video: videoTracks,
       audio: audioTracks,
-      screenSharing: screenSharingTracks,
-      showSimulcast: showSimulcast,
       flipHorizontally: false,
-      remoteSimulcast: true,
       streamSource: "remote",
       playAudio: true,
       mediaPlayerId: peer.id,
@@ -85,7 +78,6 @@ type Props = {
   peers: RemotePeer[];
   localUser: MediaPlayerTileConfig;
   showSimulcast?: boolean;
-  showDeveloperInfo?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn?: boolean; // screensharing or pinned user
   webrtc?: MembraneWebRTC;
@@ -94,18 +86,8 @@ type Props = {
 const isLoading = (track: TrackWithId) => track?.stream === undefined && track?.metadata?.active === true;
 const showDisabledIcon = (track: TrackWithId) => track?.stream === undefined || track?.metadata?.active === false;
 
-const MediaPlayerPeersSection: FC<Props> = ({
-  peers,
-  localUser,
-  showSimulcast,
-  oneColumn,
-  webrtc,
-  showDeveloperInfo,
-}: Props) => {
-  const allPeersConfig: MediaPlayerTileConfig[] = [
-    localUser,
-    ...mapRemotePeersToMediaPlayerConfig(peers, showSimulcast),
-  ];
+const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, oneColumn, webrtc }: Props) => {
+  const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
 
   const getGridStyle = () => {
     const noPeers = !peers.length;
@@ -131,27 +113,7 @@ const MediaPlayerPeersSection: FC<Props> = ({
       {allPeersConfig.map((config) => {
         // todo for now only first audio, video and screen sharing stream are handled
         const video: TrackWithId | undefined = config.video[0];
-        const screenSharing: TrackWithId | undefined = config.screenSharing[0];
         const audio: TrackWithId | undefined = config.audio[0];
-
-        const localAudio = config.playAudio ? { emoji: "🔊", title: "Playing" } : { emoji: "🔇", title: "Muted" };
-
-        // todo refactor to separate component / layer
-        const cameraDevice = video?.stream ? "📹🟢" : "📹🔴";
-        const screenSharingDevice = screenSharing?.stream ? "🖥🟢" : "🖥🔴";
-        const microphoneDevice = audio?.stream ? "🔊🟢" : "🔊🔴";
-
-        const cameraStreamStatus = video?.enabled ? "📹🟢" : "📹🔴";
-        const screenSharingStreamStatus = screenSharing?.enabled ? "🖥🟢" : "🖥🔴";
-        const microphoneStreamStatus = audio?.enabled ? "🔊🟢" : "🔊🔴";
-
-        const cameraTrack = video?.remoteTrackId ? "📹🟢" : "📹🔴";
-        const screenSharingTrack = screenSharing?.remoteTrackId ? "🖥🟢" : "🖥🔴";
-        const microphoneTrack = audio?.remoteTrackId ? "🔊🟢" : "🔊🔴";
-
-        const cameraMetadataStatus = video?.metadata?.active ? "📹🟢" : "📹🔴";
-        const screenSharingMetadataStatus = screenSharing?.metadata?.active ? "🖥🟢" : "🖥🔴";
-        const microphoneMetadataStatus = audio?.metadata?.active ? "🔊🟢" : "🔊🔴";
 
         return (
           <MediaPlayerTile
@@ -163,78 +125,6 @@ const MediaPlayerPeersSection: FC<Props> = ({
             layers={
               <>
                 {showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}
-                {showDeveloperInfo && (
-                  <PeerInfoLayer
-                    topRight={
-                      <div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Device:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingDevice}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraDevice}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneDevice}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Stream status:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingStreamStatus}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraStreamStatus}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneStreamStatus}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Active tracks:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingTrack}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraTrack}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneTrack}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span title="Streaming" className="ml-2">
-                            Metadata:
-                          </span>
-                          <span title="Screen Sharing" className="ml-2">
-                            {screenSharingMetadataStatus}
-                          </span>
-                          <span title="Camera" className="ml-2">
-                            {cameraMetadataStatus}
-                          </span>
-                          <span title="Audio" className="ml-2">
-                            {microphoneMetadataStatus}
-                          </span>
-                        </div>
-                      </div>
-                    }
-                    bottomRight={
-                      <div className="text-right">
-                        <span className="ml-2">Allow audio playing:</span>
-                        <span title={localAudio.title} className="ml-2">
-                          {localAudio.emoji}
-                        </span>
-                      </div>
-                    }
-                  />
-                )}
                 <PeerInfoLayer
                   bottomLeft={<NameTag name={config.displayName || "Unknown"} />}
                   topLeft={

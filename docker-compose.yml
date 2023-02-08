@@ -4,6 +4,7 @@ services:
   videoroom:
     image: membraneframework/membrane_videoroom:${TAG:-latest}
     network_mode: "host"
+    restart: on-failure
     environment:
       VIRTUAL_HOST: "${VIRTUAL_HOST:-localhost}"
       USE_INTEGRATED_TURN: "true"
@@ -22,6 +23,7 @@ services:
   timescale:
     image: timescale/timescaledb:2.5.1-pg14
     network_mode: "host"    
+    restart: on-failure
     environment:
       POSTGRES_DB: "membrane"
       POSTGRES_USER: "${DB_USERNAME}"
@@ -29,6 +31,7 @@ services:
   grafana:
     image: grafana/grafana:9.1.5
     network_mode: "host"
+    restart: on-failure
     volumes:
       - type: volume
         source: grafana-provisioning

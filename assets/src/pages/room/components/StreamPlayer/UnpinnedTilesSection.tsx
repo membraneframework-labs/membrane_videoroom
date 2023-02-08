@@ -1,10 +1,10 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
-import { getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
+import { GridConfigType, getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileButton } from "../../../../features/room-page/components/PinComponents";
@@ -14,6 +14,13 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
+
+const getGridStyle = (gridConfig: GridConfigType, videoInVideo: boolean, oneColumn: boolean): string => {
+  if (!oneColumn) return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
+  if (videoInVideo) return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
+
+  return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
+};
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -34,20 +41,11 @@ const UnpinnedTilesSection: FC<Props> = ({
   blockPinning,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
-  const getGridStyle = () => {
-    if (oneColumn) {
-      const videoInVideo = tileConfigs.length === 1;
-      if (videoInVideo) {
-        return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
-      } else {
-        return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
-      }
-    } else {
-      return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
-    }
-  };
 
-  const videoGridStyle = getGridStyle();
+  const videoGridStyle = useMemo(
+    () => getGridStyle(gridConfig, tileConfigs.length === 1, oneColumn),
+    [gridConfig, tileConfigs.length, oneColumn]
+  );
   const tileStyle = !oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : "";
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 

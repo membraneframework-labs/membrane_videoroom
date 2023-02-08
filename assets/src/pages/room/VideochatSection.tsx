@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
@@ -112,10 +112,10 @@ const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | nu
 const takeOutPinnedTile = (
   tiles: MediaPlayerTileConfig[],
   pinnedTileId: string
-): { pinnedTile: MediaPlayerTileConfig | null; restTiles: MediaPlayerTileConfig[] } => {
+): { pinnedTile: MediaPlayerTileConfig | null; unpinnedTiles: MediaPlayerTileConfig[] } => {
   const pinnedTile = tiles.find((tile) => tile.mediaPlayerId === pinnedTileId) ?? null;
-  const restTiles = tiles.filter((tile) => tile.mediaPlayerId !== pinnedTileId);
-  return { pinnedTile, restTiles };
+  const unpinnedTiles = tiles.filter((tile) => tile.mediaPlayerId !== pinnedTileId);
+  return { pinnedTile, unpinnedTiles };
 };
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
@@ -139,10 +139,10 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
   const pinningApi = usePinning();
-  const { pinnedTile, restTiles } = takeOutPinnedTile(allTilesConfig, pinningApi.pinnedTileId);
+  const { pinnedTile, unpinnedTiles: restTiles } = takeOutPinnedTile(allTilesConfig, pinningApi.pinnedTileId);
   const isSomeTilePinned = !!pinnedTile;
 
-  const getWrapperClass = useCallback(() => {
+  const wrapperClass = useMemo(() => {
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
     const layoutWithTileHighlight = allTilesConfig.length === 2 ? "relative" : "sm:grid-cols-3/1";
 
@@ -151,7 +151,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
-      <div className={getWrapperClass()}>
+      <div className={wrapperClass}>
         {pinnedTile && (
           <PinnedTilesSection
             pinnedTile={pinnedTile}

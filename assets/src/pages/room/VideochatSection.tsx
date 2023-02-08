@@ -1,7 +1,6 @@
 import React, { FC, useCallback } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
-import MediaPlayerPeersSection from "./components/StreamPlayer/MediaPlayerPeersSection";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
@@ -12,6 +11,8 @@ import MediaPlayerTile from "./components/StreamPlayer/MediaPlayerTile";
 import { PinIndicator, PinTileButton } from "../../features/room-page/components/PinComponents";
 import NameTag from "../../features/room-page/components/NameTag";
 import PeerInfoLayer from "./components/StreamPlayer/PeerInfoLayer";
+import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
+import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 
 type Props = {
   peers: RemotePeer[];
@@ -150,29 +151,13 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
       <div
         className={getWrapperClass()}
       >
-        {/* {isSomeTilePinned && <ScreenSharingPlayers streams={screenSharingStreams || []} pinningApi={pinningApi}/>} */}
-        {/* TODO seperate this expression to a different component */}
-        {pinnedTile && <div className="active-screensharing-grid h-full grid-cols-1">
-          <MediaPlayerTile
-            key={pinnedTile.mediaPlayerId}
-            peerId={pinnedTile.peerId}
-            video={pinnedTile.video}
-            audio={pinnedTile.typeName === "remote" ? pinnedTile.audio : null}
-            streamSource={pinnedTile.streamSource}
-            blockFillContent={pinnedTile.typeName === "screenShare"}
-            flipHorizontally={pinnedTile.typeName === "local"}
-            layers={<>
-              <PeerInfoLayer 
-                topRight={<PinIndicator/>}
-                bottomLeft={<NameTag name={pinnedTile.displayName} />}/>
-              <PinTileButton pinned={true} onClick={pinningApi.unpin}/>
-              </>}
-            showSimulcast={showSimulcast}
-            webrtc={webrtc}
-            />
-          </div>}
+        {pinnedTile && <PinnedTilesSection 
+          pinnedTile={pinnedTile} 
+          unpin={pinningApi.unpin} 
+          showSimulcast={showSimulcast} 
+          webrtc={webrtc}/>}
 
-        <MediaPlayerPeersSection
+        <UnpinnedTilesSection
           tileConfigs={restTiles}
           showSimulcast={showSimulcast}
           oneColumn={isSomeTilePinned}

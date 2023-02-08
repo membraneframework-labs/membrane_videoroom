@@ -10,21 +10,8 @@ import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileButton } from "../../../../features/room-page/components/PinComponents";
 import { PinningApi } from "../../../../features/room-page/utils/usePinning";
+import { DisabledMicIcon, isLoading, showDisabledIcon } from "../../../../features/room-page/components/disabledTrackIcon";
 
-type DisabledMicIconProps = {
-  isLoading: boolean;
-};
-
-const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
-  return (
-    <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
-      <MicrophoneOff className={isLoading ? "animate-spin" : ""} fill="#001A72" />
-    </div>
-  );
-};
-
-const isLoading = (track: TrackWithId | null) => track !== null && track?.stream === undefined && track?.metadata?.active === true;
-const showDisabledIcon = (track: TrackWithId | null) => track !== null && track?.stream === undefined || track?.metadata?.active === false;
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -37,7 +24,7 @@ type Props = {
 };
 
 
-const MediaPlayerPeersSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn, webrtc, pinningApi, blockPinning}: Props) => {
+const UnpinnedTilesSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn, webrtc, pinningApi, blockPinning}: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
   const getGridStyle = () => {
     if (oneColumn) {
@@ -93,4 +80,4 @@ const MediaPlayerPeersSection: FC<Props> = ({tileConfigs, showSimulcast, oneColu
   );
 };
 
-export default MediaPlayerPeersSection;
+export default UnpinnedTilesSection;

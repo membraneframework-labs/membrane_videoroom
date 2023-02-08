@@ -17,8 +17,8 @@ const RoomPageWrapper: FC = () => {
       roomId={roomId}
       isSimulcastOn={simulcast.status}
       manualMode={manualMode.status}
-      autostartStreaming={cameraAutostart.status}
-      audioAutoStreaming={audioAutostart.status}
+      cameraAutostartStreaming={cameraAutostart.status}
+      audioAutostartStreaming={audioAutostart.status}
     />
   ) : (
     <VideoroomHomePage />

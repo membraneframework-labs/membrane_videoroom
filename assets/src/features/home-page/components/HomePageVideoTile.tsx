@@ -29,7 +29,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
 
   const videoTrack: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audioTrack: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
-  const screenSharingTrack: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["screensharing"]);
 
   const localUser: MediaPlayerTileConfig = {
     peerId: localPeer?.id,
@@ -37,8 +36,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
     initials: computeInitials(displayName),
     video: videoTrack ? [videoTrack] : [],
     audio: audioTrack ? [audioTrack] : [],
-    screenSharing: screenSharingTrack ? [screenSharingTrack] : [],
-    showSimulcast: false,
     flipHorizontally: true,
     streamSource: "local",
     playAudio: false,

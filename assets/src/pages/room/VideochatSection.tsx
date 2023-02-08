@@ -14,10 +14,6 @@ import {
   TrackType,
   TrackWithId,
 } from "../types";
-import MediaPlayerTile from "./components/StreamPlayer/MediaPlayerTile";
-import { PinIndicator, PinTileButton } from "../../features/room-page/components/PinComponents";
-import NameTag from "../../features/room-page/components/NameTag";
-import PeerInfoLayer from "./components/StreamPlayer/PeerInfoLayer";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 
@@ -148,10 +144,10 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const getWrapperClass = useCallback(() => {
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
-    const layoutWithTileHighlight = peers.length === 0 ? "relative" : "sm:grid-cols-3/1";
+    const layoutWithTileHighlight = allTilesConfig.length === 2 ? "relative" : "sm:grid-cols-3/1";
 
     return clsx(base, isSomeTilePinned && layoutWithTileHighlight);
-  }, [isSomeTilePinned]);
+  }, [isSomeTilePinned, allTilesConfig.length]);
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">

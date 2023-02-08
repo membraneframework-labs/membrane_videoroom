@@ -4,7 +4,6 @@ import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
-import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
 import { getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
@@ -14,7 +13,7 @@ import {
   DisabledMicIcon,
   isLoading,
   showDisabledIcon,
-} from "../../../../features/room-page/components/disabledTrackIcon";
+} from "../../../../features/room-page/components/DisabledTrackIcon";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];

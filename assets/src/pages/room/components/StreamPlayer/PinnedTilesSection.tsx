@@ -9,7 +9,7 @@ import {
   DisabledMicIcon,
   isLoading,
   showDisabledIcon,
-} from "../../../../features/room-page/components/disabledTrackIcon";
+} from "../../../../features/room-page/components/DisabledTrackIcon";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 
 type Props = {

@@ -70,7 +70,7 @@ const VideoroomHomePage: React.FC = () => {
                 onClick={() => {
                   localStorage.setItem("displayName", displayNameInput);
                   setUsername(displayNameInput);
-                  simulcast.setSimulcast(true); //always join the room with simulcast turn on
+                  simulcast.setSimulcast(true); //always join the room with simulcast turned on
                 }}
                 href={`/room/${roomIdInput}`}
                 name="join"

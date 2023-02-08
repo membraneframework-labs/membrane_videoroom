@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -8,10 +8,11 @@ import { VideochatSection } from "./VideochatSection";
 import { getRandomAnimalEmoji } from "./utils";
 import { useStreamManager } from "./hooks/useStreamManager";
 import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
-import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import PageLayout from "../../features/room-page/components/PageLayout";
-import Button from "../../features/shared/components/Button";
 import useToast from "../../features/shared/hooks/useToast";
+import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
+import { ErrorMessage, messageComparator } from "./errorMessage";
+import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 
 type Props = {
   displayName: string;
@@ -22,29 +23,16 @@ type Props = {
 };
 
 const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
-  const wakeLock = useAcquireWakeLockAutomatically();
-  const { addToast } = useToast();
+  useAcquireWakeLockAutomatically();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
 
-  const showErrorMessage = useCallback(
-    (errorMessage: string) => {
-      addToast({
-        id: crypto.randomUUID(),
-        message: errorMessage,
-        timeout: "INFINITY",
-        type: "error",
-      });
-    },
-    [addToast]
-  );
-
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | undefined>();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
-  const [showDeveloperInfo, toggleDeveloperInfo] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
   const { state: peerState, api: peerApi } = usePeersState();
-  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, showErrorMessage);
+  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
   const isConnected = !!peerState?.local?.id;
 
@@ -79,22 +67,32 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     false
   );
 
+  const { addToast } = useToast();
+
+  useEffectOnChange(
+    errorMessage,
+    () => {
+      if (errorMessage) {
+        addToast({
+          id: errorMessage.id || crypto.randomUUID(),
+          message: errorMessage.message,
+          timeout: "INFINITY",
+          type: "error",
+        });
+      }
+    },
+    messageComparator
+  );
+
   return (
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section className="flex h-full w-full flex-col">
-          {showDeveloperInfo && (
-            <div className="text-shadow-lg absolute right-0 top-0 flex flex-col p-2 text-right">
-              <span className="ml-2">Is WakeLock supported: {wakeLock.isSupported ? "🟢" : "🔴"}</span>
-            </div>
-          )}
-
           <VideochatSection
             peers={peerState.remote}
             localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
-            showDeveloperInfo={showDeveloperInfo}
             webrtc={webrtc}
           />
         </section>
@@ -110,22 +108,16 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
         />
 
         {/* dev helpers */}
-        <div className="invisible absolute bottom-4 right-3 flex flex-col items-stretch md:visible">
+        <div className="invisible absolute bottom-3 right-3 flex flex-col items-stretch md:visible">
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}
-              className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-gray-700 py-2 px-4 text-white hover:bg-gray-900"
+              className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-brand-grey-80 py-2 px-4 text-white hover:bg-brand-grey-100"
               type="submit"
             >
               Show simulcast controls
             </button>
           )}
-          <Button
-            onClick={toggleDeveloperInfo}
-            className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-gray-700 py-2 px-4 text-white hover:bg-gray-900"
-          >
-            {showDeveloperInfo ? "Hide developer info" : "Show developer info"}
-          </Button>
         </div>
       </div>
     </PageLayout>

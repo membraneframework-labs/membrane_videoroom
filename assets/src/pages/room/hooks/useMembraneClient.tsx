@@ -3,6 +3,7 @@ import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jelly
 import { Socket } from "phoenix";
 import { PeerMetadata, PeersApi, TrackMetadata } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";
+import { ErrorMessage } from "../errorMessage";
 
 const parseMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
@@ -20,14 +21,14 @@ export const useMembraneClient = (
   peerMetadata: PeerMetadata,
   isSimulcastOn: boolean,
   api: PeersApi,
-  setErrorMessage: (value: string) => void
+  setErrorMessage: (errorMessage: ErrorMessage) => void
 ): UseSetupResult => {
   const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
 
   const handleError = useCallback(
-    (text: string) => {
+    (text: string, id?: string) => {
       console.error(text);
-      setErrorMessage(text);
+      setErrorMessage({ message: text, id: id });
     },
     [setErrorMessage]
   );
@@ -37,7 +38,7 @@ export const useMembraneClient = (
     socket.connect();
     const socketOnCloseRef = socket.onClose(() => cleanUp());
     const socketOnErrorRef = socket.onError(() => {
-      handleError(`Socket error occurred.`);
+      handleError(`Socket error occurred.`, "socket-error");
       cleanUp();
     });
 
@@ -46,7 +47,7 @@ export const useMembraneClient = (
     });
 
     webrtcChannel.onError((reason) => {
-      handleError(`Webrtc channel error occurred. ${reason}`);
+      handleError(`Webrtc channel error occurred. ${reason ?? ""}`);
     });
     webrtcChannel.onClose(() => {
       return;
@@ -58,7 +59,7 @@ export const useMembraneClient = (
           webrtcChannel.push("mediaEvent", { data: mediaEvent });
         },
         onConnectionError: (message) => {
-          handleError(`Connection error occurred. ${message}`);
+          handleError(`Connection error occurred. ${message ?? ""}`);
         },
         // todo [Peer] -> Peer[] ???
         onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
@@ -109,7 +110,7 @@ export const useMembraneClient = (
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
-        onJoinError: (metadata) => {
+        onJoinError: (_metadata) => {
           handleError(`Failed to join the room'`);
         },
       },
@@ -124,7 +125,7 @@ export const useMembraneClient = (
     });
 
     webrtcChannel.on("error", (error) => {
-      handleError(`Received error report from the server: ${error.message}`);
+      handleError(`Received error report from the server: ${error.message ?? ""}`);
       cleanUp();
     });
 
@@ -134,7 +135,7 @@ export const useMembraneClient = (
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
       })
-      .receive("error", (response) => {
+      .receive("error", (_response) => {
         handleError(`Couldn't establish signaling connection`);
       });
 

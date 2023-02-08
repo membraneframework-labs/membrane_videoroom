@@ -17,6 +17,4 @@ export const useAcquireWakeLockAutomatically = () => {
       };
     }
   }, [isSupported, isVisible]);
-
-  return { isSupported };
 };

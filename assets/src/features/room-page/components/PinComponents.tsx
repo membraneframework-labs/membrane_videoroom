@@ -2,7 +2,6 @@ import React, { FC } from "react";
 import clsx from "clsx";
 import Pin from "../icons/Pin";
 
-
 type PinUserButtonProps = {
   pinned: boolean;
   onClick: () => void;
@@ -32,7 +31,9 @@ export const PinTileButton: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUs
 };
 
 export const PinIndicator: FC = () => {
-  return     <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
-  <Pin stroke="#001A72" />
-</div>
-}
+  return (
+    <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
+      <Pin stroke="#001A72" />
+    </div>
+  );
+};

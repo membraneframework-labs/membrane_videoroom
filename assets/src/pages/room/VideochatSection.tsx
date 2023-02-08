@@ -6,7 +6,14 @@ import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./cons
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
 import usePinning from "../../features/room-page/utils/usePinning";
-import { LocalTileConfig, MediaPlayerTileConfig, RemoteTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
+import {
+  LocalTileConfig,
+  MediaPlayerTileConfig,
+  RemoteTileConfig,
+  ScreenShareTileConfig,
+  TrackType,
+  TrackWithId,
+} from "../types";
 import MediaPlayerTile from "./components/StreamPlayer/MediaPlayerTile";
 import { PinIndicator, PinTileButton } from "../../features/room-page/components/PinComponents";
 import NameTag from "../../features/room-page/components/NameTag";
@@ -69,10 +76,7 @@ const localPeerToScreenSharingStream = (localPeer: LocalPeer): ScreenShareTileCo
   };
 };
 
-const prepareScreenSharingStreams = (
-  peers: RemotePeer[],
-  localPeer?: LocalPeer
-): ScreenShareTileConfig[] => {
+const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer): ScreenShareTileConfig[] => {
   const peersScreenSharingTracks: ScreenShareTileConfig[] = peers
     .flatMap((peer) =>
       peer.tracks.map((track) => ({
@@ -109,16 +113,19 @@ const prepareScreenSharingStreams = (
 const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
   localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
-const takeOutPinnedTile = (tiles: MediaPlayerTileConfig[], pinnedTileId: string): {pinnedTile: MediaPlayerTileConfig | null, restTiles: MediaPlayerTileConfig[]} => {
-  const pinnedTile = tiles.find( (tile) => tile.mediaPlayerId === pinnedTileId) ?? null;
-  const restTiles = tiles.filter( (tile) => tile.mediaPlayerId !== pinnedTileId);
-  return {pinnedTile, restTiles};
-}
+const takeOutPinnedTile = (
+  tiles: MediaPlayerTileConfig[],
+  pinnedTileId: string
+): { pinnedTile: MediaPlayerTileConfig | null; restTiles: MediaPlayerTileConfig[] } => {
+  const pinnedTile = tiles.find((tile) => tile.mediaPlayerId === pinnedTileId) ?? null;
+  const restTiles = tiles.filter((tile) => tile.mediaPlayerId !== pinnedTileId);
+  return { pinnedTile, restTiles };
+};
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
-  
+
   const localUser: LocalTileConfig = {
     typeName: "local",
     peerId: localPeer?.id ?? "Unknown",
@@ -134,28 +141,29 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
-  
+
   const pinningApi = usePinning();
-  const {pinnedTile, restTiles} = takeOutPinnedTile(allTilesConfig, pinningApi.pinnedTileId);
+  const { pinnedTile, restTiles } = takeOutPinnedTile(allTilesConfig, pinningApi.pinnedTileId);
   const isSomeTilePinned = !!pinnedTile;
 
   const getWrapperClass = useCallback(() => {
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
     const layoutWithTileHighlight = peers.length === 0 ? "relative" : "sm:grid-cols-3/1";
 
-    return clsx(base, isSomeTilePinned && layoutWithTileHighlight)
+    return clsx(base, isSomeTilePinned && layoutWithTileHighlight);
   }, [isSomeTilePinned]);
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
-      <div
-        className={getWrapperClass()}
-      >
-        {pinnedTile && <PinnedTilesSection 
-          pinnedTile={pinnedTile} 
-          unpin={pinningApi.unpin} 
-          showSimulcast={showSimulcast} 
-          webrtc={webrtc}/>}
+      <div className={getWrapperClass()}>
+        {pinnedTile && (
+          <PinnedTilesSection
+            pinnedTile={pinnedTile}
+            unpin={pinningApi.unpin}
+            showSimulcast={showSimulcast}
+            webrtc={webrtc}
+          />
+        )}
 
         <UnpinnedTilesSection
           tileConfigs={restTiles}

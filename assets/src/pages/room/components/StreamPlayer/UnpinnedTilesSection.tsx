@@ -10,8 +10,11 @@ import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileButton } from "../../../../features/room-page/components/PinComponents";
 import { PinningApi } from "../../../../features/room-page/utils/usePinning";
-import { DisabledMicIcon, isLoading, showDisabledIcon } from "../../../../features/room-page/components/disabledTrackIcon";
-
+import {
+  DisabledMicIcon,
+  isLoading,
+  showDisabledIcon,
+} from "../../../../features/room-page/components/disabledTrackIcon";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -23,8 +26,14 @@ type Props = {
   blockPinning: boolean;
 };
 
-
-const UnpinnedTilesSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn, webrtc, pinningApi, blockPinning}: Props) => {
+const UnpinnedTilesSection: FC<Props> = ({
+  tileConfigs,
+  showSimulcast,
+  oneColumn,
+  webrtc,
+  pinningApi,
+  blockPinning,
+}: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
   const getGridStyle = () => {
     if (oneColumn) {
@@ -52,20 +61,30 @@ const UnpinnedTilesSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn,
 
         return (
           <MediaPlayerTile
-          key={config.mediaPlayerId}
-          peerId={config.peerId}
-          video={video}
-          audio={config.typeName === "remote" ? config.audio : null}
-          className={tileStyle}
-          layers={
-            <>
-                { (hasInitials && showDisabledIcon(video)) ? <InitialsImage initials={config.initials} /> : null}
+            key={config.mediaPlayerId}
+            peerId={config.peerId}
+            video={video}
+            audio={config.typeName === "remote" ? config.audio : null}
+            className={tileStyle}
+            layers={
+              <>
+                {hasInitials && showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}
                 <PeerInfoLayer
                   bottomLeft={<NameTag name={config.displayName} />}
-                  topLeft={(hasInitials && showDisabledIcon(config.audio) )? <DisabledMicIcon isLoading={isLoading(audio)}/> : <></>}
+                  topLeft={
+                    hasInitials && showDisabledIcon(config.audio) ? (
+                      <DisabledMicIcon isLoading={isLoading(audio)} />
+                    ) : (
+                      <></>
+                    )
+                  }
                   tileSize={tileSize}
-                  />
-                {!blockPinning ? <PinTileButton pinned={false} onClick={() => pinningApi.pin(config.mediaPlayerId)}/> : <></>}
+                />
+                {!blockPinning ? (
+                  <PinTileButton pinned={false} onClick={() => pinningApi.pin(config.mediaPlayerId)} />
+                ) : (
+                  <></>
+                )}
               </>
             }
             showSimulcast={showSimulcast}
@@ -73,7 +92,7 @@ const UnpinnedTilesSection: FC<Props> = ({tileConfigs, showSimulcast, oneColumn,
             flipHorizontally={config.typeName === "local"}
             webrtc={webrtc}
             blockFillContent={config.typeName === "screenShare"}
-            />
+          />
         );
       })}
     </div>

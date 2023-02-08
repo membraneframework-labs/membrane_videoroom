@@ -8,12 +8,7 @@ export interface Props {
   blockFillContent?: boolean;
 }
 
-const MediaPlayer: React.FC<Props> = ({
-  videoStream,
-  audioStream,
-  flipHorizontally,
-  blockFillContent,
-}: Props) => {
+const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontally, blockFillContent }: Props) => {
   const videoRef: RefObject<HTMLVideoElement> = useRef<HTMLVideoElement>(null);
   const audioRef: RefObject<HTMLAudioElement> = useRef<HTMLAudioElement>(null);
 

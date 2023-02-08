@@ -1,5 +1,4 @@
 import React from "react";
-import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import { activeButtonStyle, neutralButtonStyle } from "../../../pages/room/components/MediaControlButtons";
 import { TrackWithId } from "../../../pages/room/components/StreamPlayer/MediaPlayerPeersSection";
@@ -14,13 +13,14 @@ import Camera from "../../room-page/icons/Camera";
 import CameraOff from "../../room-page/icons/CameraOff";
 import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
+import { usePreviewSettings } from "../hooks/usePreviewSettings";
 
 type HomePageVideoTileProps = {
   displayName: string;
 };
 
 const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) => {
-  const { cameraAutostart, audioAutostart } = useDeveloperInfo();
+  const { cameraAutostart, audioAutostart } = usePreviewSettings();
   const { state: peerState, api: peerApi } = usePeersState();
 
   const localPeer = peerState.local;

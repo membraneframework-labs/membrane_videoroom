@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from "react";
+import React, { FC, useMemo } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
@@ -16,6 +16,7 @@ import {
 } from "../types";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
+import { groupBy } from "./utils";
 
 type Props = {
   peers: RemotePeer[];
@@ -109,13 +110,13 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
 const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
   localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
-const takeOutPinnedTile = (
+const takeOutPinnedTiles = (
   tiles: MediaPlayerTileConfig[],
-  pinnedTileId: string
-): { pinnedTile: MediaPlayerTileConfig | null; unpinnedTiles: MediaPlayerTileConfig[] } => {
-  const pinnedTile = tiles.find((tile) => tile.mediaPlayerId === pinnedTileId) ?? null;
-  const unpinnedTiles = tiles.filter((tile) => tile.mediaPlayerId !== pinnedTileId);
-  return { pinnedTile, unpinnedTiles };
+  pinnedTileIds: string[]
+): { pinnedTiles: MediaPlayerTileConfig[], unpinnedTiles: MediaPlayerTileConfig[] } => {
+  const {pinnedTiles, unpinnedTiles} =  groupBy(tiles, 
+    ({mediaPlayerId}) => pinnedTileIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles");
+  return {pinnedTiles : pinnedTiles ?? [] , unpinnedTiles: unpinnedTiles ?? []};
 };
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
@@ -139,8 +140,8 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
   const pinningApi = usePinning();
-  const { pinnedTile, unpinnedTiles: restTiles } = takeOutPinnedTile(allTilesConfig, pinningApi.pinnedTileId);
-  const isSomeTilePinned = !!pinnedTile;
+  const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles(allTilesConfig, pinningApi.pinnedTileIds);
+  const isSomeTilePinned = pinnedTiles.length > 0;
 
   const wrapperClass = useMemo(() => {
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
@@ -152,9 +153,9 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
       <div className={wrapperClass}>
-        {pinnedTile && (
+        {isSomeTilePinned && (
           <PinnedTilesSection
-            pinnedTile={pinnedTile}
+            pinnedTiles={pinnedTiles}
             unpin={pinningApi.unpin}
             showSimulcast={showSimulcast}
             webrtc={webrtc}
@@ -162,7 +163,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
         )}
 
         <UnpinnedTilesSection
-          tileConfigs={restTiles}
+          tileConfigs={unpinnedTiles}
           showSimulcast={showSimulcast}
           oneColumn={isSomeTilePinned}
           webrtc={webrtc}

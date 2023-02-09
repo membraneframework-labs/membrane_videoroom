@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import { MediaPlayerTileConfig } from "../../../types";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import PeerInfoLayer from "./PeerInfoLayer";
-import { PinIndicator, PinTileButton } from "../../../../features/room-page/components/PinComponents";
+import { PinIndicator, PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import MediaPlayerTile from "./MediaPlayerTile";
 import {
@@ -42,9 +42,9 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
               flipHorizontally={tileType === "local"}
               layers={
                 <>
-                  {hasInitials && showDisabledIcon(pinnedTile.video) ? (
+                  {hasInitials && showDisabledIcon(pinnedTile.video) && (
                     <InitialsImage initials={pinnedTile.initials} />
-                  ) : null}
+                  )}
                   <PeerInfoLayer
                     topRight={<PinIndicator />}
                     topLeft={
@@ -54,7 +54,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
                     }
                     bottomLeft={<NameTag name={pinnedTile.displayName} />}
                   />
-                  <PinTileButton pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
+                  <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
                 </>
               }
               showSimulcast={showSimulcast}

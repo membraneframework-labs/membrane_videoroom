@@ -10,14 +10,11 @@ const usePinning = (): PinningApi => {
   const [pinnedTileIds, setPinnedTileIds] = useState<string[]>([]);
 
   const pin = (newTileId: string) => {
-    console.log(pinnedTileIds);
     if (!pinnedTileIds.includes(newTileId)) setPinnedTileIds((oldPinnedTileIds) => [newTileId, ...oldPinnedTileIds]);
-    console.log(pinnedTileIds);
   };
 
   const unpin = (tileIdToRemove: string) => {
-    const idsWithoutGivenTile = pinnedTileIds.filter((tileId) => tileId !== tileIdToRemove);
-    setPinnedTileIds(idsWithoutGivenTile);
+    setPinnedTileIds((prevPinnedTiles) => prevPinnedTiles.filter((tileId) => tileId !== tileIdToRemove));
   };
 
   return { pinnedTileIds, pin, unpin };

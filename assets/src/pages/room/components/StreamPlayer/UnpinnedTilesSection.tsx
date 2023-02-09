@@ -7,7 +7,7 @@ import PeerInfoLayer from "./PeerInfoLayer";
 import { GridConfigType, getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
-import { PinTileButton } from "../../../../features/room-page/components/PinComponents";
+import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import {
   DisabledMicIcon,
   isLoading,
@@ -71,7 +71,7 @@ const UnpinnedTilesSection: FC<Props> = ({
             className={tileStyle}
             layers={
               <>
-                {hasInitials && showDisabledIcon(video) ? <InitialsImage initials={config.initials} /> : null}
+                {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
                 <PeerInfoLayer
                   bottomLeft={<NameTag name={config.displayName} />}
                   topLeft={
@@ -83,7 +83,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                   }
                   tileSize={tileSize}
                 />
-                {!blockPinning ? <PinTileButton pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : <></>}
+                {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : <></>}
               </>
             }
             showSimulcast={showSimulcast}

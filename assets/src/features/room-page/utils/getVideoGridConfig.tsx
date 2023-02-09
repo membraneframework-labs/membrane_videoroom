@@ -1,4 +1,4 @@
-type GridConfigType = {
+export type GridConfigType = {
   grid: string;
   gap: string;
   padding: string;

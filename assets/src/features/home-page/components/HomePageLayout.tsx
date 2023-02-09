@@ -15,7 +15,7 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
     >
       <Navbar />
 
-      <div className="flex h-full w-full justify-center py-8">{children}</div>
+      <div className="flex h-full w-full justify-center sm:py-8">{children}</div>
     </div>
   );
 };

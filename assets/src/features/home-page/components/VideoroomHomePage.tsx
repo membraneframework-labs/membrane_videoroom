@@ -6,6 +6,7 @@ import { useUser } from "../../../contexts/UserContext";
 import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
 import Button from "../../shared/components/Button";
 import Input from "../../shared/components/Input";
+import useMobile from "../../shared/hooks/useMobile";
 import HomePageLayout from "./HomePageLayout";
 
 import HomePageVideoTile from "./HomePageVideoTile";
@@ -23,25 +24,42 @@ const VideoroomHomePage: React.FC = () => {
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
   const { simulcast } = useDeveloperInfo();
 
+  const isMobile = useMobile();
+
   return (
     <HomePageLayout>
-      <section className="flex flex-col items-center gap-y-12 sm:justify-around sm:gap-y-0">
+      <section className="flex w-full flex-col items-center justify-center gap-y-12 sm:w-auto sm:justify-around sm:gap-y-0">
         {deviceManager.errorMessage && (
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
-        <div className="flex flex-col items-center gap-y-6 text-center">
-          <h2 className="text-3xl sm:text-5xl">Videoconferencing for everyone</h2>
-          <p className="font-aktivGrotesk text-xl">Join the existing room or create a new one to start the meeting</p>
+        <div className="flex flex-col items-center gap-y-2 text-center sm:gap-y-6">
+          <h2 className="text-xl font-medium sm:text-5xl">Videoconferencing for everyone</h2>
+          <p className="hidden font-aktivGrotesk sm:inline-block sm:text-xl">
+            Join the existing room or create a new one to start the meeting
+          </p>
+          <p className="font-aktivGrotesk text-sm sm:hidden">
+            {roomId ? "Join the existing room" : "Create a new room to start the meeting"}
+          </p>
         </div>
-        <div className="flex max-h-[400px] w-full flex-col justify-between gap-x-24 gap-y-8 sm:flex-row 2xl:max-h-[500px]">
-          <div className="h-full w-full sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
+        <div className="flex w-full flex-col justify-between gap-x-24 gap-y-8 sm:max-h-[400px] sm:flex-row 2xl:max-h-[500px]">
+          {isMobile && roomId && (
+            <div className="h-[300px] w-[210px] self-center">
+              <HomePageVideoTile displayName={displayNameInput} />
+            </div>
+          )}
+          <div className="hidden h-full w-full sm:inline-block sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
             <HomePageVideoTile displayName={displayNameInput} />
           </div>
-          <div className={clsx("flex flex-col items-center justify-center", roomId ? "gap-y-12" : "gap-y-6")}>
+          <div
+            className={clsx(
+              "flex w-full flex-col items-center justify-center gap-y-6 sm:w-auto",
+              roomId ? "sm:gap-y-12" : "sm:gap-y-6"
+            )}
+          >
             {roomId ? (
-              <div className="flex w-full flex-col items-center justify-center text-center">
+              <div className="flex w-full items-center justify-center gap-x-2 text-center text-lg font-medium sm:flex-col sm:text-base sm:font-normal">
                 <span>You are joining:</span>
-                <span className="text-2xl font-medium">{roomId}</span>
+                <span className="sm:text-2xl sm:font-medium">{roomId}</span>
               </div>
             ) : (
               <Input
@@ -53,7 +71,7 @@ const VideoroomHomePage: React.FC = () => {
                 placeholder="Room name"
                 label="Room name"
                 disabled={!!roomId}
-                className="w-80 sm:w-96"
+                className="w-full sm:w-96"
               />
             )}
             <Input
@@ -63,9 +81,9 @@ const VideoroomHomePage: React.FC = () => {
               type="text"
               placeholder="Display name"
               label="Your name"
-              className="w-80 sm:w-96"
+              className="w-full sm:w-96"
             />
-            <div className="flex w-full items-center justify-center">
+            <div className="mt-4 flex w-full items-center justify-center">
               <Button
                 onClick={() => {
                   localStorage.setItem("displayName", displayNameInput);
@@ -76,8 +94,10 @@ const VideoroomHomePage: React.FC = () => {
                 name="join"
                 variant="normal"
                 disabled={buttonDisabled}
+                className="w-full sm:w-auto"
               >
-                Join the room
+                <span className="hidden sm:inline-block">Join the room</span>
+                <span className="sm:hidden">{roomId ? "Join the room" : "Create a room"}</span>
               </Button>
             </div>
           </div>

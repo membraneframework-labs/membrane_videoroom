@@ -1,10 +1,13 @@
 import clsx from "clsx";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
+import { DEFAULT_MANUAL_MODE_CHECKBOX_VALUE } from "../../../pages/room/consts";
 import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
+import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
+import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
 import Input from "../../shared/components/Input";
 import useMobile from "../../shared/hooks/useMobile";
 import HomePageLayout from "./HomePageLayout";
@@ -22,7 +25,29 @@ const VideoroomHomePage: React.FC = () => {
   const buttonDisabled = !displayNameInput || !roomIdInput;
 
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
-  const { simulcast } = useDeveloperInfo();
+  const { simulcast, manualMode } = useDeveloperInfo();
+
+  const [searchParams] = useSearchParams();
+  const simulcastParam: string = searchParams?.get("simulcast") || "true";
+  const simulcastDefaultValue: boolean = simulcastParam === "true";
+  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
+
+  const [manualModeInput, toggleManualModeCheckbox] = useToggle(DEFAULT_MANUAL_MODE_CHECKBOX_VALUE);
+
+  const checkboxes: CheckboxProps[] = [
+    {
+      label: "Simulcast",
+      id: "simulcast",
+      onChange: toggleSimulcastCheckbox,
+      status: simulcastInput,
+    },
+    {
+      label: "Manual mode",
+      id: "manual-mode",
+      onChange: toggleManualModeCheckbox,
+      status: manualModeInput,
+    },
+  ];
 
   const isMobile = useMobile();
 
@@ -53,7 +78,7 @@ const VideoroomHomePage: React.FC = () => {
           <div
             className={clsx(
               "flex w-full flex-col items-center justify-center gap-y-6 sm:w-auto",
-              roomId ? "sm:gap-y-12" : "sm:gap-y-6"
+              roomId ? "sm:gap-y-6" : "sm:gap-y-6"
             )}
           >
             {roomId ? (
@@ -83,12 +108,18 @@ const VideoroomHomePage: React.FC = () => {
               label="Your name"
               className="w-full sm:w-96"
             />
+            <div className="hidden space-y-1 sm:block">
+              {checkboxes.map(({ label, id, status, onChange }) => (
+                <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} />
+              ))}
+            </div>
             <div className="mt-4 flex w-full items-center justify-center">
               <Button
                 onClick={() => {
                   localStorage.setItem("displayName", displayNameInput);
                   setUsername(displayNameInput);
-                  simulcast.setSimulcast(true); //always join the room with simulcast turned on
+                  simulcast.setSimulcast(simulcastInput);
+                  manualMode.setManualMode(manualModeInput);
                 }}
                 href={`/room/${roomIdInput}`}
                 name="join"

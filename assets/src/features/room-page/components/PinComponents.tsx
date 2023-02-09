@@ -7,8 +7,8 @@ type PinUserButtonProps = {
   onClick: () => void;
 };
 
-export const PinTileButton: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUserButtonProps) => {
-  const pinText = pinned ? "Unpin user" : "Pin user";
+export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUserButtonProps) => {
+  const pinText = pinned ? "Unpin" : "Pin";
 
   return (
     <button

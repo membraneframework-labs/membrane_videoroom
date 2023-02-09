@@ -79,9 +79,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                 />
                 {!blockPinning ? (
                   <PinTileButton pinned={false} onClick={() => pinningApi.pin(config.mediaPlayerId)} />
-                ) : (
-                  <></>
-                )}
+                ) : null}
               </>
             }
             showSimulcast={showSimulcast}

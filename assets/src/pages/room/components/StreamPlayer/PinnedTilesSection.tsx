@@ -43,9 +43,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTile, unpin, webrtc, showSimulcas
               topLeft={
                 hasInitials && showDisabledIcon(pinnedTile.audio) ? (
                   <DisabledMicIcon isLoading={isLoading(pinnedTile.audio)} />
-                ) : (
-                  <></>
-                )
+                ) : null
               }
               bottomLeft={<NameTag name={pinnedTile.displayName} />}
             />

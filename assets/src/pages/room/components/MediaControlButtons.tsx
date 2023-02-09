@@ -83,15 +83,6 @@ const getAutomaticControls = (
           audioStreaming.setActive(true);
         },
       },
-  {
-    id: "leave-room",
-    icon: HangUp,
-    hover: "Leave the room",
-    className: redButtonStyle,
-    onClick: () => {
-      navigate("/");
-    },
-  },
   displayMedia.stream
     ? {
         id: "stream-stop",
@@ -114,6 +105,15 @@ const getAutomaticControls = (
           addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 5000 });
         },
       },
+  {
+    id: "leave-room",
+    icon: HangUp,
+    hover: "Leave the room",
+    className: redButtonStyle,
+    onClick: () => {
+      navigate("/");
+    },
+  },
   //TODO enable when chat is implemented
   // {
   //   id: "chat",

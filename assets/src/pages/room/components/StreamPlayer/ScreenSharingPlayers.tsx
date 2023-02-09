@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import React from "react";
-import type { PeerId } from "../../../../library/state.types";
+import type { PeerId } from "membrane-react-webrtc-client";
 import { useSelector } from "../../../../libraryUsage/setup";
 import { createUsersIdsWithScreenSharingSelector } from "../../../../libraryUsage/customSelectors";
 import { ScreenSharingPlayer } from "./ScreenSharingPlayer";

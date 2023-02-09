@@ -1569,6 +1569,14 @@
   dependencies:
     "yallist" "^4.0.0"
 
+"membrane-react-webrtc-client@github:jellyfish-dev/membrane-react-webrtc-client#feature/library-poc":
+  "resolved" "git+ssh://git@github.com/jellyfish-dev/membrane-react-webrtc-client.git#3a7a1e7663f7f7b6d44107b83f8899738657ec0d"
+  "version" "0.0.1-aplha"
+  dependencies:
+    "@jellyfish-dev/membrane-webrtc-js" "^0.4.5"
+    "@types/lodash.isequal" "^4.5.6"
+    "lodash.isequal" "^4.5.0"
+
 "merge2@^1.3.0", "merge2@^1.4.1":
   "integrity" "sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg=="
   "resolved" "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"

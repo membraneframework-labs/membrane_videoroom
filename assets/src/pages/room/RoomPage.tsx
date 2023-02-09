@@ -2,7 +2,6 @@ import type { FC} from "react";
 import React, { useEffect, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import MediaControlButtons from "./components/MediaControlButtons";
-import type { PeerMetadata } from "./hooks/usePeerState";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
 import { getRandomAnimalEmoji } from "./utils";
@@ -16,7 +15,8 @@ import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutom
 import { useLog } from "../../helpers/UseLog";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
 import { useConnect, useSelector } from "../../libraryUsage/setup";
-import { createLocalPeerIdsSelector } from "../../library/selectors";
+import { createLocalPeerIdsSelector } from "membrane-react-webrtc-client";
+import type { PeerMetadata } from "../../libraryUsage/types";
 
 type Props = {
   displayName: string;

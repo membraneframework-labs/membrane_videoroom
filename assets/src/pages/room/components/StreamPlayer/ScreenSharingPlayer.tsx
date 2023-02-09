@@ -1,4 +1,4 @@
-import type { LibraryTrackMinimal, PeerId } from "../../../../library/state.types";
+import type { LibraryTrackMinimal, PeerId } from "membrane-react-webrtc-client";
 import type { FC } from "react";
 import React from "react";
 import { useSelector } from "../../../../libraryUsage/setup";

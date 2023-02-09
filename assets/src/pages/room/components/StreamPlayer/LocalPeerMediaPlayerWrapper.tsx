@@ -1,5 +1,5 @@
 import type { TrackType } from "../../../types";
-import type { LibraryTrackMinimal } from "../../../../library/state.types";
+import type { LibraryTrackMinimal } from "membrane-react-webrtc-client";
 import { useSelector } from "../../../../libraryUsage/setup";
 import type {
   PeerGui} from "../../../../libraryUsage/customSelectors";

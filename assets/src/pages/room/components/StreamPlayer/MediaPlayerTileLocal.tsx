@@ -4,7 +4,6 @@ import MediaPlayer from "./MediaPlayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import type { UseSimulcastLocalEncoding} from "../../hooks/useSimulcastSend";
 import { useSimulcastSend } from "../../hooks/useSimulcastSend";
 import type { StreamSource } from "../../../types";

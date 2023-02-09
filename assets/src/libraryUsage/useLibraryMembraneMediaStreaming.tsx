@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { TrackMetadata } from "../pages/room/hooks/usePeerState";
 import type { TrackType } from "../pages/types";
 import { selectBandwidthLimit } from "../pages/room/bandwidth";
 import { useSelector } from "./setup";
-import { createConnectivitySelector } from "../library/selectors";
+import { createConnectivitySelector } from "membrane-react-webrtc-client";
+import type { TrackMetadata } from "./types";
 
 export type MembraneStreaming = {
   trackId: string | null;

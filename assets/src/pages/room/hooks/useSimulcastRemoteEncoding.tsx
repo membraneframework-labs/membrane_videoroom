@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import type { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { useSelector } from "../../../libraryUsage/setup";
-import { createConnectivitySelector } from "../../../library/selectors";
+import { createConnectivitySelector } from "membrane-react-webrtc-client";
 
 export type UseSimulcastRemoteEncodingResult = {
   desiredEncoding: TrackEncoding;

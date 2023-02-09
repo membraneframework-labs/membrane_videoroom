@@ -6,8 +6,8 @@ import ScreenSharingPlayers from "./components/StreamPlayer/ScreenSharingPlayers
 import clsx from "clsx";
 import { useSelector } from "../../libraryUsage/setup";
 import { createIsScreenSharingActiveSelector } from "../../libraryUsage/customSelectors";
-import { createPeerIdsSelector } from "../../library/selectors";
-import type { PeerId } from "../../library/state.types";
+import { createPeerIdsSelector } from "membrane-react-webrtc-client";
+import type { PeerId } from "membrane-react-webrtc-client";
 
 type Props = {
   showSimulcast: boolean;

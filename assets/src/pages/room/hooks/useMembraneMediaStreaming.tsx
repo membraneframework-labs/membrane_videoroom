@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
+import { createStream } from "../../../features/room-page/components/MockStream";
 
 export type MembraneStreaming = {
   trackId: string | null;
@@ -35,7 +36,8 @@ export const useMembraneMediaStreaming = (
   const addTracks = useCallback(
     (stream: MediaStream) => {
       if (!webrtc) return;
-      const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+      const {stop: _stop, stream: mockStream} = createStream("🍆", "#FFFFFF", 24);
+      const tracks = type === "audio" ? stream.getAudioTracks() : mockStream.getVideoTracks();
       const simulcast = simulcastEnabled && type === "camera";
 
       const track: MediaStreamTrack | undefined = tracks[0];
@@ -58,7 +60,8 @@ export const useMembraneMediaStreaming = (
   const replaceTrack = useCallback(
     (stream: MediaStream) => {
       if (!webrtc || !trackIds) return;
-      const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+      const {stop: _stop, stream: mockStream} = createStream("🍆", "#FFFFFF", 24);
+      const tracks = type === "audio" ? stream.getAudioTracks() : mockStream.getVideoTracks();
 
       const track: MediaStreamTrack | undefined = tracks[0];
       if (!track) throw "Stream has no tracks!";

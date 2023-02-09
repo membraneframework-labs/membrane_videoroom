@@ -8,16 +8,20 @@ import { GridConfigType, getGridConfig } from "../../../../features/room-page/ut
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileButton } from "../../../../features/room-page/components/PinComponents";
-import { PinningApi } from "../../../../features/room-page/utils/usePinning";
 import {
   DisabledMicIcon,
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
 
-const getGridStyle = (gridConfig: GridConfigType, videoInVideo: boolean, oneColumn: boolean): string => {
+const getGridStyle = (
+  gridConfig: GridConfigType,
+  oneColumn: boolean,
+  videoInVideo: boolean,
+  fixedRatio: boolean
+): string => {
   if (!oneColumn) return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
-  if (videoInVideo) return "absolute bottom-4 right-4 z-10 h-[220px] w-[400px]";
+  if (fixedRatio) return clsx("h-[220px] w-[400px]", videoInVideo && "absolute bottom-4 right-4 z-10");
 
   return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
 };
@@ -28,7 +32,8 @@ type Props = {
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   oneColumn: boolean; // screensharing or pinned user
   webrtc?: MembraneWebRTC;
-  pinningApi: PinningApi;
+  pin: (tileId: string) => void;
+  videoInVideo: boolean;
   blockPinning: boolean;
 };
 
@@ -37,14 +42,15 @@ const UnpinnedTilesSection: FC<Props> = ({
   showSimulcast,
   oneColumn,
   webrtc,
-  pinningApi,
+  pin,
+  videoInVideo,
   blockPinning,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
 
   const videoGridStyle = useMemo(
-    () => getGridStyle(gridConfig, tileConfigs.length === 1, oneColumn),
-    [gridConfig, tileConfigs.length, oneColumn]
+    () => getGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
+    [gridConfig, oneColumn, videoInVideo, tileConfigs.length]
   );
   const tileStyle = !oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : "";
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
@@ -77,9 +83,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                   }
                   tileSize={tileSize}
                 />
-                {!blockPinning ? (
-                  <PinTileButton pinned={false} onClick={() => pinningApi.pin(config.mediaPlayerId)} />
-                ) : null}
+                {!blockPinning ? <PinTileButton pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : <></>}
               </>
             }
             showSimulcast={showSimulcast}

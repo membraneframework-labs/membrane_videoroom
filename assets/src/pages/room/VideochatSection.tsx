@@ -113,10 +113,11 @@ const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | nu
 const takeOutPinnedTiles = (
   tiles: MediaPlayerTileConfig[],
   pinnedTileIds: string[]
-): { pinnedTiles: MediaPlayerTileConfig[], unpinnedTiles: MediaPlayerTileConfig[] } => {
-  const {pinnedTiles, unpinnedTiles} =  groupBy(tiles, 
-    ({mediaPlayerId}) => pinnedTileIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles");
-  return {pinnedTiles : pinnedTiles ?? [] , unpinnedTiles: unpinnedTiles ?? []};
+): { pinnedTiles: MediaPlayerTileConfig[]; unpinnedTiles: MediaPlayerTileConfig[] } => {
+  const { pinnedTiles, unpinnedTiles } = groupBy(tiles, ({ mediaPlayerId }) =>
+    pinnedTileIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
+  );
+  return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
 };
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
@@ -150,6 +151,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     return clsx(base, isSomeTilePinned && layoutWithTileHighlight);
   }, [isSomeTilePinned, allTilesConfig.length]);
 
+  const shouldBlockPinning = unpinnedTiles.length === 1;
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
       <div className={wrapperClass}>
@@ -167,8 +169,9 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           showSimulcast={showSimulcast}
           oneColumn={isSomeTilePinned}
           webrtc={webrtc}
-          pinningApi={pinningApi}
-          blockPinning={allTilesConfig.length === 1}
+          pin={pinningApi.pin}
+          videoInVideo={pinningApi.pinnedTileIds.length === 1}
+          blockPinning={shouldBlockPinning}
         />
       </div>
     </div>

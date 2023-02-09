@@ -11,17 +11,16 @@ const usePinning = (): PinningApi => {
 
   const pin = (newTileId: string) => {
     console.log(pinnedTileIds);
-    if (!(pinnedTileIds.includes(newTileId)))
-      setPinnedTileIds(oldPinnedTileIds => [newTileId, ...oldPinnedTileIds]);
+    if (!pinnedTileIds.includes(newTileId)) setPinnedTileIds((oldPinnedTileIds) => [newTileId, ...oldPinnedTileIds]);
     console.log(pinnedTileIds);
-  }
+  };
 
   const unpin = (tileIdToRemove: string) => {
     const idsWithoutGivenTile = pinnedTileIds.filter((tileId) => tileId !== tileIdToRemove);
     setPinnedTileIds(idsWithoutGivenTile);
-  }
+  };
 
-  return { pinnedTileIds, pin, unpin};
+  return { pinnedTileIds, pin, unpin };
 };
 
 export default usePinning;

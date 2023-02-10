@@ -1,13 +1,11 @@
-import type { LibraryTrackMinimal, PeerId, TrackId } from "membrane-react-webrtc-client";
+import type { TrackId } from "membrane-react-webrtc-client";
 import { useSelector } from "../../../../libraryUsage/setup";
-import type {
-  PeerGui} from "../../../../libraryUsage/customSelectors";
+import type { LibraryTrackMinimal, PeerGui } from "../../../../libraryUsage/customSelectors";
 import {
-  createAudioTrackStatusSelector,
   createIsActiveTrackSelector,
   createPeerGuiSelector,
   createTrackEncodingSelector,
-  createTracksRecordSelector
+  createTracksRecordSelector,
 } from "../../../../libraryUsage/customSelectors";
 import PeerInfoLayer from "./PeerInfoLayer";
 import MicrophoneOff from "../../../../features/room-page/icons/MicrophoneOff";
@@ -20,12 +18,11 @@ import type { TrackType } from "../../../types";
 
 type InitialsImageWrapperProps = {
   initials: string;
-  peerId: PeerId;
   videoTrackId: TrackId | null;
 };
 
-const InitialsImageWrapper = ({ peerId, videoTrackId, initials }: InitialsImageWrapperProps) => {
-  const enable = useSelector(createIsActiveTrackSelector(peerId, videoTrackId));
+const InitialsImageWrapper = ({ videoTrackId, initials }: InitialsImageWrapperProps) => {
+  const enable = useSelector(createIsActiveTrackSelector(videoTrackId));
 
   return !enable ? <InitialsImage initials={initials} /> : <></>;
 };
@@ -43,12 +40,11 @@ const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
 };
 
 export type MicIconWrapperProps = {
-  peerId: PeerId;
   audioTrackId: TrackId | null;
 };
 
-const MicIconWrapper = ({ peerId, audioTrackId }: MicIconWrapperProps) => {
-  const enable = useSelector(createIsActiveTrackSelector(peerId, audioTrackId));
+const MicIconWrapper = ({ audioTrackId }: MicIconWrapperProps) => {
+  const enable = useSelector(createIsActiveTrackSelector(audioTrackId));
 
   return (
     <div className="flex flex-row items-center gap-x-2 text-xl">{!enable && <DisabledMicIcon isLoading={false} />}</div>
@@ -71,7 +67,7 @@ const PeerInfoWrapper = ({ peerId, tileSize, audioTrackId }: PeerInfoWrapperProp
           {peer?.emoji} {peer?.name}
         </div>
       }
-      topLeft={<MicIconWrapper audioTrackId={audioTrackId} peerId={peerId} />}
+      topLeft={<MicIconWrapper audioTrackId={audioTrackId} />}
       tileSize={tileSize}
     />
   );
@@ -106,7 +102,7 @@ export const RemoteMediaPlayerTileWrapper = ({
       className={className}
       layers={
         <>
-          <InitialsImageWrapper peerId={peerId} videoTrackId={tracks.camera?.trackId || null} initials={"WW"} />
+          <InitialsImageWrapper videoTrackId={tracks.camera?.trackId || null} initials={"WW"} />
           <PeerInfoWrapper tileSize={tileSize} peerId={peerId} audioTrackId={tracks.audio?.trackId || null} />
           {showSimulcast && (
             <SimulcastRemoteLayer
@@ -117,26 +113,6 @@ export const RemoteMediaPlayerTileWrapper = ({
             />
           )}
         </>
-      }
-    />
-  );
-};
-
-type RemoteLayerProps = {
-  peerId: PeerId;
-};
-
-const RemoteLayer = ({ peerId }: RemoteLayerProps) => {
-  const audioStatus = useSelector(createAudioTrackStatusSelector(peerId));
-
-  return (
-    <PeerInfoLayer
-      topLeft={
-        <div className="flex flex-row items-center gap-x-2 text-xl">
-          {audioStatus === "muted" && <MicrophoneOff />}
-          {audioStatus === "active" && "Active"}
-          {audioStatus === null && "None"}
-        </div>
       }
     />
   );

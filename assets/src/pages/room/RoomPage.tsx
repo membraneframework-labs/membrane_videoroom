@@ -1,4 +1,4 @@
-import type { FC} from "react";
+import type { FC } from "react";
 import React, { useEffect, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -9,13 +9,13 @@ import type { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
-import type { ErrorMessage} from "./errorMessage";
+import type { ErrorMessage } from "./errorMessage";
 import { messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import { useLog } from "../../helpers/UseLog";
 import { useLibraryStreamManager } from "../../libraryUsage/useLibraryStreamManager";
 import { useConnect, useSelector } from "../../libraryUsage/setup";
-import { createLocalPeerIdsSelector } from "membrane-react-webrtc-client";
+import { createLocalPeerIdsSelector, fullState } from "membrane-react-webrtc-client";
 import type { PeerMetadata } from "../../libraryUsage/types";
 
 type Props = {
@@ -41,12 +41,15 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
   const connect = useConnect();
   useEffect(() => {
     console.log({ connect, isSimulcastOn, peerMetadata, roomId });
-    return connect(roomId, peerMetadata, isSimulcastOn);
+    return connect(`room:${roomId}`, peerMetadata, isSimulcastOn);
   }, [connect, isSimulcastOn, peerMetadata, roomId]);
 
   const localPeerId = useSelector(createLocalPeerIdsSelector());
   useLog(localPeerId, "localPeerId");
   const isConnected = !!localPeerId;
+
+  // const fullStateS = useSelector(fullState);
+  // useLog(fullStateS, "fullstate222");
 
   const camera = useLibraryStreamManager(
     "camera",

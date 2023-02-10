@@ -1570,7 +1570,7 @@
     "yallist" "^4.0.0"
 
 "membrane-react-webrtc-client@github:jellyfish-dev/membrane-react-webrtc-client#feature/library-poc":
-  "resolved" "git+ssh://git@github.com/jellyfish-dev/membrane-react-webrtc-client.git#3a7a1e7663f7f7b6d44107b83f8899738657ec0d"
+  "resolved" "git+ssh://git@github.com/jellyfish-dev/membrane-react-webrtc-client.git#2e57a959532fdeb1a4b0b454474b263ed59d4cd1"
   "version" "0.0.1-aplha"
   dependencies:
     "@jellyfish-dev/membrane-webrtc-js" "^0.4.5"

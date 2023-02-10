@@ -1,5 +1,4 @@
-import clsx from "clsx";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
@@ -9,13 +8,10 @@ import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
 import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
 import Input from "../../shared/components/Input";
+import { MobileLoginStep, MobileLoginStepType } from "../types";
 import HomePageLayout from "./HomePageLayout";
 
 import HomePageVideoTile from "./HomePageVideoTile";
-
-type StepType = "create-room" | "preview-settings";
-
-type Step = { content: JSX.Element; button: JSX.Element };
 
 const VideoroomHomePage: React.FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
@@ -53,6 +49,13 @@ const VideoroomHomePage: React.FC = () => {
     },
   ];
 
+  const onJoin = useCallback(() => {
+    localStorage.setItem("displayName", displayNameInput);
+    setUsername(displayNameInput);
+    simulcast.setSimulcast(simulcastInput);
+    manualMode.setManualMode(manualModeInput);
+  }, [displayNameInput, manualMode, manualModeInput, setUsername, simulcast, simulcastInput]);
+
   const inputs = useMemo(() => {
     return (
       <>
@@ -87,23 +90,21 @@ const VideoroomHomePage: React.FC = () => {
     );
   }, [displayNameInput, joiningExistingRoom, roomId, roomIdInput]);
 
-  const [mobileCurrentLoginStep, setMobileCurrentLoginStep] = useState<StepType>(
+  const [mobileCurrentLoginStep, setMobileCurrentLoginStep] = useState<MobileLoginStepType>(
     joiningExistingRoom ? "preview-settings" : "create-room"
   );
-  const mobileLoginSteps: Record<StepType, Step> = {
+  const mobileLoginSteps: Record<MobileLoginStepType, MobileLoginStep> = {
     "create-room": {
       content: inputs,
       button: (
         <Button
-          onClick={() => {
-            setMobileCurrentLoginStep("preview-settings");
-          }}
+          onClick={() => setMobileCurrentLoginStep("preview-settings")}
           name="create-room"
           variant="normal"
           disabled={buttonDisabled}
           className="mt-9 w-full"
         >
-          <span className="">Create a room</span>
+          Create a room
         </Button>
       ),
     },
@@ -123,25 +124,18 @@ const VideoroomHomePage: React.FC = () => {
             name="join-a-room"
             variant="normal"
             className="mt-2 w-full"
-            onClick={() => {
-              localStorage.setItem("displayName", displayNameInput);
-              setUsername(displayNameInput);
-              simulcast.setSimulcast(simulcastInput);
-              manualMode.setManualMode(manualModeInput);
-            }}
+            onClick={onJoin}
           >
-            <span className="">Join the room</span>
+            Join the room
           </Button>
           {!joiningExistingRoom && (
             <Button
-              onClick={() => {
-                setMobileCurrentLoginStep("create-room");
-              }}
+              onClick={() => setMobileCurrentLoginStep("create-room")}
               name="back-to-previous-step"
               variant="light"
               className="w-full"
             >
-              <span className="">Back</span>
+              Back
             </Button>
           )}
         </>
@@ -184,7 +178,7 @@ const VideoroomHomePage: React.FC = () => {
               <HomePageVideoTile displayName={displayNameInput} />
             </div>
 
-            <div className={clsx("hidden w-auto flex-col items-center justify-center gap-y-6 sm:flex")}>
+            <div className="hidden w-auto flex-col items-center justify-center gap-y-6 sm:flex">
               {inputs}
               <div className="space-y-1">
                 {checkboxes.map(({ label, id, status, onChange }) => (
@@ -192,12 +186,7 @@ const VideoroomHomePage: React.FC = () => {
                 ))}
               </div>
               <Button
-                onClick={() => {
-                  localStorage.setItem("displayName", displayNameInput);
-                  setUsername(displayNameInput);
-                  simulcast.setSimulcast(simulcastInput);
-                  manualMode.setManualMode(manualModeInput);
-                }}
+                onClick={onJoin}
                 href={`/room/${roomIdInput}`}
                 name="join"
                 variant="normal"

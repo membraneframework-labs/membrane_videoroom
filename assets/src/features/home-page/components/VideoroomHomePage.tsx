@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
@@ -9,10 +9,13 @@ import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
 import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
 import Input from "../../shared/components/Input";
-import useMobile from "../../shared/hooks/useMobile";
 import HomePageLayout from "./HomePageLayout";
 
 import HomePageVideoTile from "./HomePageVideoTile";
+
+type StepType = "create-room" | "preview-settings";
+
+type Step = { content: JSX.Element; button: JSX.Element };
 
 const VideoroomHomePage: React.FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
@@ -21,6 +24,7 @@ const VideoroomHomePage: React.FC = () => {
   const { setUsername } = useUser();
 
   const roomId: string = match?.roomId || "";
+  const joiningExistingRoom = !!roomId;
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
   const buttonDisabled = !displayNameInput || !roomIdInput;
 
@@ -49,11 +53,105 @@ const VideoroomHomePage: React.FC = () => {
     },
   ];
 
-  const isMobile = useMobile();
+  const inputs = useMemo(() => {
+    return (
+      <>
+        {joiningExistingRoom ? (
+          <div className="mt-2 flex w-full items-center justify-center gap-x-2 text-center text-lg font-medium sm:mt-0 sm:flex-col sm:text-base sm:font-normal">
+            <span>You are joining:</span>
+            <span className="sm:text-2xl sm:font-medium">{roomId}</span>
+          </div>
+        ) : (
+          <Input
+            value={roomIdInput}
+            onChange={(event) => setRoomIdInput(event.target.value)}
+            type="text"
+            required
+            name="room_name"
+            placeholder="Room name"
+            label="Room name"
+            disabled={!!roomId}
+            className="w-full sm:w-96"
+          />
+        )}
+        <Input
+          value={displayNameInput}
+          onChange={(event) => setDisplayNameInput(event.target.value)}
+          name="display_name"
+          type="text"
+          placeholder="Display name"
+          label="Your name"
+          className="w-full sm:w-96"
+        />
+      </>
+    );
+  }, [displayNameInput, joiningExistingRoom, roomId, roomIdInput]);
+
+  const [mobileCurrentLoginStep, setMobileCurrentLoginStep] = useState<StepType>(
+    joiningExistingRoom ? "preview-settings" : "create-room"
+  );
+  const mobileLoginSteps: Record<StepType, Step> = {
+    "create-room": {
+      content: inputs,
+      button: (
+        <Button
+          onClick={() => {
+            setMobileCurrentLoginStep("preview-settings");
+          }}
+          name="create-room"
+          variant="normal"
+          disabled={buttonDisabled}
+          className="mt-9 w-full"
+        >
+          <span className="">Create a room</span>
+        </Button>
+      ),
+    },
+    "preview-settings": {
+      content: (
+        <>
+          <div className="h-[300px] w-[210px] self-center">
+            <HomePageVideoTile displayName={displayNameInput} />
+          </div>
+          {joiningExistingRoom && inputs}
+        </>
+      ),
+      button: (
+        <>
+          <Button
+            href={`/room/${roomIdInput}`}
+            name="join-a-room"
+            variant="normal"
+            className="mt-2 w-full"
+            onClick={() => {
+              localStorage.setItem("displayName", displayNameInput);
+              setUsername(displayNameInput);
+              simulcast.setSimulcast(simulcastInput);
+              manualMode.setManualMode(manualModeInput);
+            }}
+          >
+            <span className="">Join the room</span>
+          </Button>
+          {!joiningExistingRoom && (
+            <Button
+              onClick={() => {
+                setMobileCurrentLoginStep("create-room");
+              }}
+              name="back-to-previous-step"
+              variant="light"
+              className="w-full"
+            >
+              <span className="">Back</span>
+            </Button>
+          )}
+        </>
+      ),
+    },
+  };
 
   return (
     <HomePageLayout>
-      <section className="flex w-full flex-col items-center justify-center gap-y-12 sm:w-auto sm:justify-around sm:gap-y-0">
+      <section className="flex w-full flex-col items-center justify-center gap-y-8 sm:w-auto sm:justify-around sm:gap-y-0">
         {deviceManager.errorMessage && (
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
@@ -63,57 +161,36 @@ const VideoroomHomePage: React.FC = () => {
             Join the existing room or create a new one to start the meeting
           </p>
           <p className="font-aktivGrotesk text-sm sm:hidden">
-            {roomId ? "Join the existing room" : "Create a new room to start the meeting"}
+            {joiningExistingRoom ? "Join the existing room" : "Create a new room to start the meeting"}
           </p>
         </div>
-        <div className="flex w-full flex-col justify-between gap-x-24 gap-y-8 sm:max-h-[400px] sm:flex-row 2xl:max-h-[500px]">
-          {isMobile && roomId && (
-            <div className="h-[300px] w-[210px] self-center">
+
+        <div className="flex w-full flex-col items-center justify-between gap-x-12 sm:max-h-[400px] sm:flex-row lg:gap-x-24 2xl:max-h-[500px]">
+          {/* mobile view */}
+          <div className="flex w-full flex-col items-center gap-y-6 sm:hidden">
+            {mobileLoginSteps[mobileCurrentLoginStep].content}
+            {mobileLoginSteps[mobileCurrentLoginStep].button}
+            {!joiningExistingRoom && (
+              <div className="font-aktivGrotesk text-xs">
+                Step {Object.values(mobileLoginSteps).indexOf(mobileLoginSteps[mobileCurrentLoginStep]) + 1} /{" "}
+                {Object.values(mobileLoginSteps).length}
+              </div>
+            )}
+          </div>
+
+          {/* desktop view */}
+          <>
+            <div className="hidden h-full w-full sm:inline-block sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
               <HomePageVideoTile displayName={displayNameInput} />
             </div>
-          )}
-          <div className="hidden h-full w-full sm:inline-block sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
-            <HomePageVideoTile displayName={displayNameInput} />
-          </div>
-          <div
-            className={clsx(
-              "flex w-full flex-col items-center justify-center gap-y-6 sm:w-auto",
-              roomId ? "sm:gap-y-6" : "sm:gap-y-6"
-            )}
-          >
-            {roomId ? (
-              <div className="flex w-full items-center justify-center gap-x-2 text-center text-lg font-medium sm:flex-col sm:text-base sm:font-normal">
-                <span>You are joining:</span>
-                <span className="sm:text-2xl sm:font-medium">{roomId}</span>
+
+            <div className={clsx("hidden w-auto flex-col items-center justify-center gap-y-6 sm:flex")}>
+              {inputs}
+              <div className="space-y-1">
+                {checkboxes.map(({ label, id, status, onChange }) => (
+                  <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} />
+                ))}
               </div>
-            ) : (
-              <Input
-                value={roomIdInput}
-                onChange={(event) => setRoomIdInput(event.target.value)}
-                type="text"
-                required
-                name="room_name"
-                placeholder="Room name"
-                label="Room name"
-                disabled={!!roomId}
-                className="w-full sm:w-96"
-              />
-            )}
-            <Input
-              value={displayNameInput}
-              onChange={(event) => setDisplayNameInput(event.target.value)}
-              name="display_name"
-              type="text"
-              placeholder="Display name"
-              label="Your name"
-              className="w-full sm:w-96"
-            />
-            <div className="hidden space-y-1 sm:block">
-              {checkboxes.map(({ label, id, status, onChange }) => (
-                <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} />
-              ))}
-            </div>
-            <div className="mt-4 flex w-full items-center justify-center">
               <Button
                 onClick={() => {
                   localStorage.setItem("displayName", displayNameInput);
@@ -127,11 +204,10 @@ const VideoroomHomePage: React.FC = () => {
                 disabled={buttonDisabled}
                 className="w-full sm:w-auto"
               >
-                <span className="hidden sm:inline-block">Join the room</span>
-                <span className="sm:hidden">{roomId ? "Join the room" : "Create a room"}</span>
+                Join the room
               </Button>
             </div>
-          </div>
+          </>
         </div>
       </section>
     </HomePageLayout>

@@ -125,3 +125,46 @@ Don't display screensharing control on mobile browsers
     background-position: left -90px top 200px, right -170px top 120px;
   }
 }
+
+.fromTop {
+  animation-name: from-top, fade-in;
+  animation-delay: 0.1s;
+  animation-duration: 0.25s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear, ease-in-out;
+  animation-fill-mode: both;
+}
+
+.fadeOut {
+  animation-name: fade-out;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+
+@keyframes from-top {
+  from {
+    transform: translateY(-99%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

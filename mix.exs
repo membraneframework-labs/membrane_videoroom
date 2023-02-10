@@ -28,6 +28,8 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
+      {:membrane_core,
+       github: "membraneframework/membrane_core", branch: "poc-fake-push-0.11", override: true},
       {:membrane_rtc_engine,
        github: "jellyfish-dev/membrane_rtc_engine", branch: "update-rtp-rtx", override: true},
       {:membrane_webrtc_plugin,

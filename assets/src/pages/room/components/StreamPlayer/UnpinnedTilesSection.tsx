@@ -47,7 +47,7 @@ const UnpinnedTilesSection: FC<Props> = ({
   blockPinning,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
-
+  console.log(videoInVideo);
   const videoGridStyle = useMemo(
     () => getGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
     [gridConfig, oneColumn, videoInVideo, tileConfigs.length]

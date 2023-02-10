@@ -170,7 +170,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           oneColumn={isSomeTilePinned}
           webrtc={webrtc}
           pin={pinningApi.pin}
-          videoInVideo={pinningApi.pinnedTileIds.length === 1}
+          videoInVideo={pinnedTiles.length === 1}
           blockPinning={shouldBlockPinning}
         />
       </div>

@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import { DEFAULT_AUTOSTART_CAMERA_VALUE, DEFAULT_AUTOSTART_MICROPHONE_VALUE } from "../../../pages/room/consts";
 
 export type PreviewSettings = {
   cameraAutostart: { status: boolean; setCameraAutostart: (status: boolean) => void };
@@ -15,8 +16,8 @@ type Props = {
 };
 
 export const PreviewSettingsProvider = ({ children }: Props) => {
-  const [cameraAutostart, setCameraAutostart] = useState<boolean>(false);
-  const [audioAutostart, setAudioAutostart] = useState<boolean>(false);
+  const [cameraAutostart, setCameraAutostart] = useState<boolean>(DEFAULT_AUTOSTART_CAMERA_VALUE);
+  const [audioAutostart, setAudioAutostart] = useState<boolean>(DEFAULT_AUTOSTART_MICROPHONE_VALUE);
 
   return (
     <PreviewSettingsContext.Provider

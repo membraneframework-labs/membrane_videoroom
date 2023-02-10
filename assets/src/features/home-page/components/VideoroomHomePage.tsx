@@ -62,7 +62,7 @@ const VideoroomHomePage: React.FC = () => {
           <div className="h-full w-full sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
             <HomePageVideoTile displayName={displayNameInput} />
           </div>
-          <div className={clsx("flex flex-col items-center justify-center", roomId ? "gap-y-12" : "gap-y-6")}>
+          <div className={clsx("flex flex-col items-center justify-center gap-y-6")}>
             {roomId ? (
               <div className="flex w-full flex-col items-center justify-center text-center">
                 <span>You are joining:</span>

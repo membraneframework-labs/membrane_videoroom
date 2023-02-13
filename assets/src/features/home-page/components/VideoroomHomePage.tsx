@@ -50,7 +50,7 @@ const VideoroomHomePage: React.FC = () => {
 
   return (
     <HomePageLayout>
-      <section className="flex flex-col items-center gap-y-12 sm:justify-center 2xl:gap-y-28">
+      <section className="flex flex-col items-center gap-y-6 sm:gap-y-18 2xl:gap-y-28">
         {deviceManager.errorMessage && (
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
@@ -58,8 +58,8 @@ const VideoroomHomePage: React.FC = () => {
           <h2 className="text-3xl sm:text-5xl">Videoconferencing for everyone</h2>
           <p className="font-aktivGrotesk text-xl">Join the existing room or create a new one to start the meeting</p>
         </div>
-        <div className="flex max-h-[400px] w-full flex-col justify-between gap-x-24 gap-y-8 sm:flex-row 2xl:max-h-[500px]">
-          <div className="h-full w-full sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
+        <div className="flex max-h-[400px] w-full flex-col justify-between gap-x-24 gap-y-8 sm:flex-row">
+          <div className="h-full w-full sm:h-[400px] sm:max-w-[600px]">
             <HomePageVideoTile displayName={displayNameInput} />
           </div>
           <div className={clsx("flex flex-col items-center justify-center gap-y-6")}>

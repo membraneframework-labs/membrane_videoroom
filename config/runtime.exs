@@ -145,15 +145,16 @@ exporter =
       {}
   end
 
-if otel_state != :purge,
-  do:
-    config(:opentelemetry,
-      processors: [
-        otel_batch_processor: %{
-          exporter: exporter
-        }
-      ]
-    )
+if otel_state != :purge do
+  config :opentelemetry,
+    processors: [
+      otel_batch_processor: %{
+        exporter: exporter
+      }
+    ]
+else
+  config :opentelemetry, traces_exporter: :none
+end
 
 config :membrane_videoroom_demo, VideoRoom.Repo,
   database: System.get_env("DATABASE"),

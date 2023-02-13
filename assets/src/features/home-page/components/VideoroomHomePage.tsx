@@ -5,6 +5,7 @@ import { useUser } from "../../../contexts/UserContext";
 import {
   DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE,
   DEFAULT_MANUAL_MODE_CHECKBOX_VALUE,
+  DEFAULT_SMART_LAYER_SWITCHING_VALUE,
 } from "../../../pages/room/consts";
 import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
 import { useToggle } from "../../../pages/room/hooks/useToggle";
@@ -26,16 +27,17 @@ const VideoroomHomePage: React.FC = () => {
   // dev helpers
   const [searchParams] = useSearchParams();
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
-  const { manualMode, simulcast, cameraAutostart } = useDeveloperInfo();
+  const { manualMode, simulcast, cameraAutostart, smartLayerSwitching } = useDeveloperInfo();
   const [autostartCameraAndMicInput, setAutostartCameraAndMicCheckbox] = useToggle(
     DEFAULT_AUTOSTART_CAMERA_AND_MICROPHONE_CHECKBOX_VALUE
   );
 
   const simulcastParam: string = searchParams?.get("simulcast") || "true";
   const simulcastDefaultValue: boolean = simulcastParam === "true";
-  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
 
+  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
   const [manualModeInput, toggleManualModeCheckbox] = useToggle(DEFAULT_MANUAL_MODE_CHECKBOX_VALUE);
+  const [smartLayerSwitchingInput, toggleSmartLayerSwitchingInput] = useToggle(DEFAULT_SMART_LAYER_SWITCHING_VALUE);
 
   const checkboxes: CheckboxProps[] = [
     {
@@ -49,6 +51,12 @@ const VideoroomHomePage: React.FC = () => {
       id: "simulcast",
       onChange: toggleSimulcastCheckbox,
       status: simulcastInput,
+    },
+    {
+      label: "Smart layer switching",
+      id: "smart-layer-mode",
+      onChange: toggleSmartLayerSwitchingInput,
+      status: smartLayerSwitchingInput,
     },
     {
       label: "Manual mode",
@@ -100,6 +108,7 @@ const VideoroomHomePage: React.FC = () => {
                 localStorage.setItem("displayName", displayNameInput);
                 setUsername(displayNameInput);
                 simulcast.setSimulcast(simulcastInput);
+                smartLayerSwitching.setSmartLayerSwitching(smartLayerSwitchingInput);
                 manualMode.setManualMode(manualModeInput);
                 cameraAutostart.setCameraAutostart(autostartCameraAndMicInput);
               }}

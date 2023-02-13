@@ -8,6 +8,7 @@ import { StreamSource } from "../../../types";
 import { TrackWithId } from "./MediaPlayerPeersSection";
 import clsx from "clsx";
 import { useAutomaticEncodingSwitching } from "../../hooks/useAutomaticEncodingSwitching";
+import { useDeveloperInfo } from "../../../../contexts/DeveloperInfoContext";
 
 export interface Props {
   peerId?: string;
@@ -38,6 +39,8 @@ const MediaPlayerTile: FC<Props> = ({
   blockFillContent,
   disableQualityReduction,
 }: Props) => {
+  const { smartLayerSwitching } = useDeveloperInfo();
+
   const isRemote = streamSource === "remote";
   const isLocal = streamSource === "local";
 
@@ -45,7 +48,7 @@ const MediaPlayerTile: FC<Props> = ({
     video?.encodingQuality || null,
     peerId || null,
     video?.remoteTrackId || null,
-    isLocal,
+    !smartLayerSwitching.enable || isLocal,
     disableQualityReduction || false,
     webrtc || null
   );

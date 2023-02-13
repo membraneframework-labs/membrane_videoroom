@@ -30,7 +30,7 @@ defmodule VideoRoom.MixProject do
     [
       {:membrane_core,
        github: "membraneframework/membrane_core", branch: "poc-fake-push", override: true},
-      {:membrane_rtc_engine, github: "jellyfish-dev/membrane_rtc_engine", override: true},
+      {:membrane_rtc_engine, "~> 0.10.1", override: true},
       {:membrane_rtp_plugin,
        github: "membraneframework/membrane_rtp_plugin",
        branch: "feature/outbound-retransmissions",

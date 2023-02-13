@@ -17,8 +17,8 @@ import { ToastType } from "../../../features/shared/context/ToastContext";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
-const neutralButtonStyle = "border-brand-dark-blue-400 text-brand-dark-blue-500 bg-white";
-const activeButtonStyle = "text-brand-white bg-brand-dark-blue-400 border-brand-dark-blue-400";
+export const neutralButtonStyle = "border-brand-dark-blue-400 text-brand-dark-blue-500 bg-white";
+export const activeButtonStyle = "text-brand-white bg-brand-dark-blue-400 border-brand-dark-blue-400";
 const redButtonStyle = "text-brand-white bg-brand-red border-brand-red";
 
 const getAutomaticControls = (

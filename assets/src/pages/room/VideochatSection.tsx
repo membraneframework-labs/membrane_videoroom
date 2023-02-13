@@ -71,7 +71,7 @@ const prepareScreenSharingStreams = (
   return { screenSharingStreams, isScreenSharingActive };
 };
 
-const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
+export const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
   localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {

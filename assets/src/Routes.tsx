@@ -1,10 +1,10 @@
 import React, { FC } from "react";
 import RoomPage from "./pages/room/RoomPage";
-import { createBrowserRouter, useParams } from "react-router-dom";
+import { createBrowserRouter, useLocation, useParams } from "react-router-dom";
 import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";
 import { useUser } from "./contexts/UserContext";
 import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
-import LeavingRoomPage from "./features/home-page/components/LeavingRoomPage";
+import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
 
 const RoomPageWrapper: FC = () => {
   const match = useParams();
@@ -26,9 +26,11 @@ const RoomPageWrapper: FC = () => {
 };
 
 const HomePageWrapper = () => {
-  const isLeaving = false; //TODO
+  const { state } = useLocation();
+  const isLeavingRoom = !!state?.isLeavingRoom;
+  const roomId = state?.roomId;
 
-  return isLeaving ? <LeavingRoomPage /> : <VideoroomHomePage />;
+  return isLeavingRoom ? <LeavingRoomScreen roomId={roomId} /> : <VideoroomHomePage />;
 };
 
 export const router = createBrowserRouter([

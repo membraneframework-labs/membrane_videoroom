@@ -10,6 +10,7 @@ const LeavingRoomScreen: React.FC<{ roomId: string }> = ({ roomId }) => {
           <h2 className="text-2xl font-medium sm:text-5xl">You&apos;ve left the meeting.</h2>
           <p className="font-aktivGrotesk text-base sm:text-xl">What would you like to do next?</p>
         </div>
+
         <div className="flex w-full flex-col justify-center gap-6 text-center sm:flex-row">
           <Button href={`/room/${roomId}`} name="rejoin-meeting" variant="light">
             Rejoin the meeting

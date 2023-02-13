@@ -145,7 +145,7 @@ const VideoroomHomePage: React.FC = () => {
 
   return (
     <HomePageLayout>
-      <section className="flex w-full flex-col items-center justify-center gap-y-8 sm:w-auto sm:justify-around sm:gap-y-0">
+      <section className="flex w-full flex-col items-center justify-center gap-y-6 sm:w-auto sm:justify-start sm:gap-y-18 2xl:gap-y-28">
         {deviceManager.errorMessage && (
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
@@ -159,7 +159,7 @@ const VideoroomHomePage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex w-full flex-col items-center justify-between gap-x-12 sm:max-h-[400px] sm:flex-row lg:gap-x-24 2xl:max-h-[500px]">
+        <div className="flex w-full flex-col items-center justify-between gap-x-12 sm:max-h-[400px] sm:flex-row lg:gap-x-24">
           {/* mobile view */}
           <div className="flex w-full flex-col items-center gap-y-6 sm:hidden">
             {mobileLoginSteps[mobileCurrentLoginStep].content}
@@ -174,7 +174,7 @@ const VideoroomHomePage: React.FC = () => {
 
           {/* desktop view */}
           <>
-            <div className="hidden h-full w-full sm:inline-block sm:h-[400px] sm:max-w-[600px] 2xl:h-[500px] 2xl:w-[750px] 2xl:max-w-none">
+            <div className="hidden h-full w-full sm:inline-block sm:h-[400px] sm:max-w-[600px]">
               <HomePageVideoTile displayName={displayNameInput} />
             </div>
 

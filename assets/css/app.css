@@ -122,7 +122,7 @@ Don't display screensharing control on mobile browsers
     background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
     background-repeat: no-repeat;
     background-size: contain;
-    background-position: left -90px top 200px, right -170px top 120px;
+    background-position: left -90px top 200px, right -180px top 120px;
   }
 }
 

@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
-import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
@@ -8,6 +7,7 @@ import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimu
 import { StreamSource } from "../../../types";
 import { TrackWithId } from "./MediaPlayerPeersSection";
 import clsx from "clsx";
+import { useAutomaticEncodingSwitching } from "../../hooks/useAutomaticEncodingSwitching";
 
 export interface Props {
   peerId?: string;
@@ -21,6 +21,7 @@ export interface Props {
   webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
+  disableQualityReduction?: boolean;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -35,11 +36,17 @@ const MediaPlayerTile: FC<Props> = ({
   webrtc,
   className,
   blockFillContent,
+  disableQualityReduction,
 }: Props) => {
-  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
-    "m",
+  const isRemote = streamSource === "remote";
+  const isLocal = streamSource === "local";
+
+  const { ref, targetEncoding, setTargetEncoding, userSelectedEncoding } = useAutomaticEncodingSwitching(
+    video?.encodingQuality || null,
     peerId || null,
     video?.remoteTrackId || null,
+    isLocal,
+    disableQualityReduction || false,
     webrtc || null
   );
 
@@ -47,6 +54,7 @@ const MediaPlayerTile: FC<Props> = ({
 
   return (
     <div
+      ref={ref}
       data-name="video-feed"
       className={clsx(
         className,
@@ -61,17 +69,16 @@ const MediaPlayerTile: FC<Props> = ({
         blockFillContent={blockFillContent}
       />
       {layers}
-      {showSimulcast && streamSource === "remote" && (
+      {showSimulcast && isRemote && (
         <SimulcastRemoteLayer
-          desiredEncoding={desiredEncoding}
-          setDesiredEncoding={setDesiredEncoding}
+          userSelectedEncoding={userSelectedEncoding}
+          targetEncoding={targetEncoding || null}
+          setTargetEncoding={setTargetEncoding}
           currentEncoding={video?.encodingQuality}
           disabled={!video?.stream}
         />
       )}
-      {showSimulcast && streamSource === "local" && (
-        <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />
-      )}
+      {showSimulcast && isLocal && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />}
     </div>
   );
 };

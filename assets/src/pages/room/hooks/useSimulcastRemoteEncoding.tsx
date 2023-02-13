@@ -2,19 +2,18 @@ import { useCallback, useState } from "react";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 export type UseSimulcastRemoteEncodingResult = {
-  desiredEncoding: TrackEncoding;
-  setDesiredEncoding: (quality: TrackEncoding) => void;
+  targetEncoding: TrackEncoding | null;
+  setTargetEncoding: (quality: TrackEncoding) => void;
 };
 
 export const useSimulcastRemoteEncoding = (
-  defaultValue: TrackEncoding,
   peerId: string | null,
   videoTrackId: string | null,
   webrtc: MembraneWebRTC | null
 ): UseSimulcastRemoteEncodingResult => {
-  const [desiredEncoding, setDesiredEncodingState] = useState<TrackEncoding>(defaultValue);
+  const [targetEncoding, setTargetEncodingState] = useState<TrackEncoding | null>(null);
 
-  const selectRemoteEncoding = useCallback(
+  const setTargetEncodingOnServer = useCallback(
     (quality: TrackEncoding) => {
       if (!videoTrackId || !peerId || !webrtc) return;
       webrtc.setTargetTrackEncoding(videoTrackId, quality);
@@ -22,13 +21,13 @@ export const useSimulcastRemoteEncoding = (
     [videoTrackId, peerId, webrtc]
   );
 
-  const setDesiredEncoding = useCallback(
+  const setTargetEncoding = useCallback(
     (quality: TrackEncoding) => {
-      setDesiredEncodingState(() => quality);
-      selectRemoteEncoding(quality);
+      setTargetEncodingState(() => quality);
+      setTargetEncodingOnServer(quality);
     },
-    [selectRemoteEncoding]
+    [setTargetEncodingOnServer]
   );
 
-  return { setDesiredEncoding, desiredEncoding };
+  return { setTargetEncoding, targetEncoding };
 };

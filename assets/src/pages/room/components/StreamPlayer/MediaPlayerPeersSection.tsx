@@ -107,6 +107,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
   const gridConfig = getGridConfig(allPeersConfig.length);
   const videoGridStyle = getGridStyle();
   const tileSize = allPeersConfig.length >= 7 ? "M" : "L";
+  const disableQualityReduction = oneColumn ? false : allPeersConfig.length <= 2;
 
   return (
     <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
@@ -141,6 +142,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
             flipHorizontally={config.flipHorizontally}
             webrtc={webrtc}
             playAudio={config.playAudio}
+            disableQualityReduction={disableQualityReduction}
           />
         );
       })}

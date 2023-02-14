@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 
-import { LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
+import { LocalPeer, RemotePeer } from "./hooks/usePeerState";
 import MediaPlayerPeersSection, {
   MediaPlayerTileConfig,
   TrackWithId,
@@ -10,6 +10,7 @@ import ScreenSharingPlayers, { VideoStreamWithMetadata } from "./components/Stre
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
+import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
 
 type Props = {
   peers: RemotePeer[];
@@ -70,9 +71,6 @@ const prepareScreenSharingStreams = (
   const isScreenSharingActive: boolean = screenSharingStreams.length > 0;
   return { screenSharingStreams, isScreenSharingActive };
 };
-
-export const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
-  localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);

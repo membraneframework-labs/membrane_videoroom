@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
@@ -120,6 +120,12 @@ const takeOutPinnedTiles = (
   return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
 };
 
+const pinNewScreenShares = (screenSharingStreams: ScreenShareTileConfig[], pinIfNotAlreadyPinned: (tileId: string) => void) => {
+  screenSharingStreams
+    .map((tile) => tile.mediaPlayerId)
+    .forEach(pinIfNotAlreadyPinned);
+}
+
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
@@ -135,12 +141,14 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     mediaPlayerId: LOCAL_VIDEO_ID,
   };
 
+  const pinningApi = usePinning();
   const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
+  useEffect(() => pinNewScreenShares(screenSharingStreams, pinningApi.pinIfNotAlreadyPinned));
+
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
-  const pinningApi = usePinning();
   const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles(allTilesConfig, pinningApi.pinnedTileIds);
   const isSomeTilePinned = pinnedTiles.length > 0;
 

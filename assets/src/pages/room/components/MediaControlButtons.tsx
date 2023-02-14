@@ -11,11 +11,10 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
-import clsx from "clsx";
 import useToast from "../../../features/shared/hooks/useToast";
 import { ToastType } from "../../../features/shared/context/ToastContext";
 
-type ControlButton = MediaControlButtonProps & { id: string };
+type ControlButton = MediaControlButtonProps;
 
 const neutralButtonStyle = "border-brand-dark-blue-400 text-brand-dark-blue-500 bg-white";
 const activeButtonStyle = "text-brand-white bg-brand-dark-blue-400 border-brand-dark-blue-400";
@@ -85,20 +84,20 @@ const getAutomaticControls = (
       },
   displayMedia.stream
     ? {
-        id: "stream-stop",
+        id: "screenshare-stop",
         icon: Screenshare,
         hover: "Stop sharing your screen",
-        className: clsx(neutralButtonStyle, "screensharing-control"),
+        className: neutralButtonStyle,
         onClick: () => {
           displayMedia.stop();
           screenSharingStreaming.setActive(false);
         },
       }
     : {
-        id: "stream-start",
+        id: "screenshare-start",
         icon: Screenshare,
         hover: "Share your screen",
-        className: clsx(neutralButtonStyle, "screensharing-control"),
+        className: neutralButtonStyle,
         onClick: () => {
           displayMedia.start();
           screenSharingStreaming.setActive(true);
@@ -366,7 +365,14 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
           {controls.map((group, index) => (
             <div key={index} className="flex justify-center gap-x-4">
               {group.map(({ hover, onClick, className, id, icon }) => (
-                <MediaControlButton key={id} onClick={onClick} hover={hover} className={className} icon={icon} />
+                <MediaControlButton
+                  key={id}
+                  id={id}
+                  onClick={onClick}
+                  hover={hover}
+                  className={className}
+                  icon={icon}
+                />
               ))}
             </div>
           ))}

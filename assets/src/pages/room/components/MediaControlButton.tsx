@@ -3,6 +3,7 @@ import React, { FC, SVGAttributes } from "react";
 import Button from "../../../features/shared/components/Button";
 
 export type MediaControlButtonProps = {
+  id: string;
   onClick: () => void;
   hover: string;
   className?: string;
@@ -10,13 +11,15 @@ export type MediaControlButtonProps = {
 };
 
 const MediaControlButton: FC<MediaControlButtonProps> = ({
+  id,
   hover,
   icon: Icon,
   onClick,
   className,
 }: MediaControlButtonProps) => {
+  const isScreenshareButton = id == "screenshare-start" || id == "screenshare-stop";
   return (
-    <div className="group relative">
+    <div className={clsx("group relative", isScreenshareButton && "screensharing-control")}>
       <Button
         onClick={onClick}
         className={clsx(

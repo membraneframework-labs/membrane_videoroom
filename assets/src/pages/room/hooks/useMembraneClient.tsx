@@ -47,7 +47,8 @@ export const useMembraneClient = (
     });
 
     webrtcChannel.onError((reason) => {
-      handleError(`Webrtc channel error occurred. ${reason ?? ""}`);
+      console.error(reason);
+      handleError(`Webrtc channel error occurred. Check browser logs for more details.`);
     });
     webrtcChannel.onClose(() => {
       return;

@@ -11,7 +11,7 @@ import clsx from "clsx";
 
 export interface Props {
   peerId?: string;
-  video?: TrackWithId;
+  video?: TrackWithId | null;
   flipHorizontally?: boolean;
   audioStream?: MediaStream;
   playAudio?: boolean;

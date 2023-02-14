@@ -1,6 +1,7 @@
 import clsx from "clsx";
-import React from "react";
+import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
+import noop from "../utils/noop";
 
 export type PlainLinkProps = {
   children?: React.ReactNode;
@@ -12,10 +13,17 @@ export type PlainLinkProps = {
   button?: boolean;
 };
 const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, onClick, disabled }) => {
+  const onClickInner = useCallback(
+    (e: React.SyntheticEvent) => (disabled ? noop() : onClick?.(e)),
+    [disabled, onClick]
+  );
+
+  const hrefInner = disabled || !href ? "" : href;
+
   // only onClick
   if (onClick && !href) {
     return (
-      <button onClick={disabled ? () => null : onClick} className={clsx(className)} aria-label={name}>
+      <button onClick={onClickInner} className={clsx(className)} aria-label={name}>
         {children}
       </button>
     );
@@ -24,7 +32,14 @@ const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, 
   // external links
   if (href?.startsWith("http://") || href?.startsWith("https://")) {
     return (
-      <a target="_blank" rel="noreferrer" href={href} className={clsx(className)} aria-label={name} onClick={onClick}>
+      <a
+        target="_blank"
+        rel="noreferrer"
+        href={hrefInner}
+        className={clsx(className)}
+        aria-label={name}
+        onClick={onClickInner}
+      >
         {children}
       </a>
     );
@@ -32,7 +47,7 @@ const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, 
 
   // internal links
   return (
-    <Link onClick={onClick} to={href || ""} id={name} className={className}>
+    <Link onClick={onClickInner} to={hrefInner} id={name} className={className}>
       {children}
     </Link>
   );

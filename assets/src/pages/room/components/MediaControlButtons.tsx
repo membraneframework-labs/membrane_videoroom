@@ -14,12 +14,9 @@ import HangUp from "../../../features/room-page/icons/HangUp";
 import clsx from "clsx";
 import useToast from "../../../features/shared/hooks/useToast";
 import { ToastType } from "../../../features/shared/context/ToastContext";
+import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 
 type ControlButton = MediaControlButtonProps & { id: string };
-
-export const neutralButtonStyle = "border-brand-dark-blue-400 text-brand-dark-blue-500 bg-white";
-export const activeButtonStyle = "text-brand-white bg-brand-dark-blue-400 border-brand-dark-blue-400";
-const redButtonStyle = "text-brand-white bg-brand-red border-brand-red";
 
 const getAutomaticControls = (
   {

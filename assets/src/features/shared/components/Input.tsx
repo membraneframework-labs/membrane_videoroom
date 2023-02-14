@@ -33,9 +33,9 @@ const Input: React.FC<InputProps> = ({
   className,
 }) => {
   return (
-    <div className="w-full space-y-2">
+    <div className="w-full space-y-2 font-aktivGrotesk">
       {label && (
-        <label htmlFor={name} className="block font-aktivGrotesk text-base text-brand-dark-blue-500">
+        <label htmlFor={name} className="block text-base text-brand-dark-blue-500">
           {label}
         </label>
       )}
@@ -63,7 +63,7 @@ const Input: React.FC<InputProps> = ({
       {additionalText && (
         <span
           className={clsx(
-            "block font-aktivGrotesk text-sm",
+            "block text-sm",
             disabled ? "text-brand-grey-80" : error ? "text-brand-red" : "text-brand-dark-blue-500"
           )}
         >

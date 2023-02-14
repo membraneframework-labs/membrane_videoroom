@@ -73,7 +73,7 @@ const VideoroomHomePage: React.FC = () => {
             name="room_name"
             placeholder="Room name"
             label="Room name"
-            disabled={!!roomId}
+            disabled={joiningExistingRoom}
             className="w-full sm:w-96"
           />
         )}
@@ -145,13 +145,13 @@ const VideoroomHomePage: React.FC = () => {
 
   return (
     <HomePageLayout>
-      <section className="flex w-full flex-col items-center justify-center gap-y-6 sm:w-auto sm:justify-start sm:gap-y-18 2xl:gap-y-28">
+      <section className="flex h-full w-full flex-col items-center justify-center gap-y-8 sm:w-auto sm:gap-y-14 2xl:gap-y-28">
         {deviceManager.errorMessage && (
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
         <div className="flex flex-col items-center gap-y-2 text-center sm:gap-y-6">
           <h2 className="text-xl font-medium sm:text-5xl">Videoconferencing for everyone</h2>
-          <p className="hidden font-aktivGrotesk sm:inline-block sm:text-xl">
+          <p className="hidden font-aktivGrotesk text-xl sm:inline-block">
             Join the existing room or create a new one to start the meeting
           </p>
           <p className="font-aktivGrotesk text-sm sm:hidden">
@@ -159,7 +159,7 @@ const VideoroomHomePage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex w-full flex-col items-center justify-between gap-x-12 sm:max-h-[400px] sm:flex-row lg:gap-x-24">
+        <div className="flex w-full flex-col items-center justify-center gap-x-12 sm:max-h-[400px] sm:flex-row lg:gap-x-24">
           {/* mobile view */}
           <div className="flex w-full flex-col items-center gap-y-6 sm:hidden">
             {mobileLoginSteps[mobileCurrentLoginStep].content}

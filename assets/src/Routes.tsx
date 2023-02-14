@@ -10,9 +10,15 @@ import { usePreviewSettings } from "./features/home-page/hooks/usePreviewSetting
 const RoomPageWrapper: React.FC = () => {
   const match = useParams();
   const roomId: string | undefined = match?.roomId;
+  const { state } = useLocation();
+  const isLeavingRoom = !!state?.isLeavingRoom;
   const { username } = useUser();
   const { simulcast, manualMode } = useDeveloperInfo();
   const { cameraAutostart, audioAutostart } = usePreviewSettings();
+
+  if (isLeavingRoom && roomId) {
+    return <LeavingRoomScreen roomId={roomId} />;
+  }
 
   return username && roomId ? (
     <RoomPage
@@ -28,18 +34,10 @@ const RoomPageWrapper: React.FC = () => {
   );
 };
 
-const HomePageWrapper = () => {
-  const { state } = useLocation();
-  const isLeavingRoom = !!state?.isLeavingRoom;
-  const roomId = state?.roomId;
-
-  return isLeavingRoom ? <LeavingRoomScreen roomId={roomId} /> : <VideoroomHomePage />;
-};
-
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePageWrapper />,
+    element: <VideoroomHomePage />,
   },
   {
     path: "/room/:roomId",

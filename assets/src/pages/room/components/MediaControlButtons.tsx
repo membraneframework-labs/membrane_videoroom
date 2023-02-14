@@ -90,7 +90,7 @@ const getAutomaticControls = (
     hover: "Leave the room",
     className: redButtonStyle,
     onClick: () => {
-      navigate("/", { state: { isLeavingRoom: true, roomId: roomId } });
+      navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
     },
   },
   displayMedia.stream
@@ -331,7 +331,7 @@ const getManualControls = (
       hover: "Leave the room",
       className: redButtonStyle,
       onClick: () => {
-        navigate("/", { state: { isLeavingRoom: true, roomId } });
+        navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
       },
     },
   ],

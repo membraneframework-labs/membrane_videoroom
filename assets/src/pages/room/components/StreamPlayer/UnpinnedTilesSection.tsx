@@ -20,8 +20,22 @@ const getGridStyle = (
   videoInVideo: boolean,
   fixedRatio: boolean
 ): string => {
-  if (!oneColumn) return clsx("h-full w-full", gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
-  if (fixedRatio) return clsx( "w-[400px]", videoInVideo ? "h-[220px] absolute bottom-4 right-4 z-10" : "h-full flex flex-wrap flex-col content-center justify-center");
+  if (!oneColumn)
+    return clsx(
+      "h-full w-full",
+      gridConfig.columns,
+      gridConfig.grid,
+      gridConfig.gap,
+      gridConfig.padding,
+      gridConfig.rows
+    );
+  if (fixedRatio)
+    return clsx(
+      "w-[400px]",
+      videoInVideo
+        ? "h-[220px] absolute bottom-4 right-4 z-10"
+        : "h-full flex flex-wrap flex-col content-center justify-center"
+    );
 
   return "h-full w-full grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
 };
@@ -52,7 +66,11 @@ const UnpinnedTilesSection: FC<Props> = ({
     () => getGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
     [gridConfig, oneColumn, videoInVideo, tileConfigs.length]
   );
-  const tileStyle = !oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : (tileConfigs.length === 1 ? "w-[400px] h-[220px]" : "");
+  const tileStyle = !oneColumn
+    ? clsx(gridConfig.span, gridConfig.tileClass)
+    : tileConfigs.length === 1
+    ? "w-[400px] h-[220px]"
+    : "";
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
   return (

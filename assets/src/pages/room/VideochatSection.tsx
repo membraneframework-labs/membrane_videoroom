@@ -120,11 +120,12 @@ const takeOutPinnedTiles = (
   return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
 };
 
-const pinNewScreenShares = (screenSharingStreams: ScreenShareTileConfig[], pinIfNotAlreadyPinned: (tileId: string) => void) => {
-  screenSharingStreams
-    .map((tile) => tile.mediaPlayerId)
-    .forEach(pinIfNotAlreadyPinned);
-}
+const pinNewScreenShares = (
+  screenSharingStreams: ScreenShareTileConfig[],
+  pinIfNotAlreadyPinned: (tileId: string) => void
+) => {
+  screenSharingStreams.map((tile) => tile.mediaPlayerId).forEach(pinIfNotAlreadyPinned);
+};
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
@@ -144,7 +145,6 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const pinningApi = usePinning();
   const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
   useEffect(() => pinNewScreenShares(screenSharingStreams, pinningApi.pinIfNotAlreadyPinned));
-
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);

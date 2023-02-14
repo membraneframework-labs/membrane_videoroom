@@ -15,11 +15,10 @@ const usePinning = (): PinningApi => {
   const pin = (newTileId: string) => {
     const updateHistory = (tileId: string) => {
       setPinnedTileIdHistory((oldHistory) => {
-        if (oldHistory.length > historyLimit)
-          oldHistory.pop();
+        if (oldHistory.length > historyLimit) oldHistory.pop();
         return oldHistory.includes(tileId) ? oldHistory : [tileId, ...oldHistory];
-      });      
-    }
+      });
+    };
 
     if (!pinnedTileIds.includes(newTileId)) {
       setPinnedTileIds((oldPinnedTileIds) => [newTileId, ...oldPinnedTileIds]);
@@ -33,13 +32,13 @@ const usePinning = (): PinningApi => {
 
   const wasPinned = (tileId: string) => {
     return pinnedTileIdHistory.includes(tileId);
-  }
+  };
 
   const pinIfNotAlreadyPinned = (tileId: string) => {
-    if (!wasPinned(tileId)){
+    if (!wasPinned(tileId)) {
       pin(tileId);
     }
-  }
+  };
 
   return { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned };
 };

@@ -20,10 +20,10 @@ const getGridStyle = (
   videoInVideo: boolean,
   fixedRatio: boolean
 ): string => {
-  if (!oneColumn) return clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
-  if (fixedRatio) return clsx("h-[220px] w-[400px]", videoInVideo && "absolute bottom-4 right-4 z-10");
+  if (!oneColumn) return clsx("h-full w-full", gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
+  if (fixedRatio) return clsx( "w-[400px]", videoInVideo ? "h-[220px] absolute bottom-4 right-4 z-10" : "h-full flex flex-wrap flex-col content-center justify-center");
 
-  return "grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
+  return "h-full w-full grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
 };
 
 type Props = {
@@ -47,16 +47,16 @@ const UnpinnedTilesSection: FC<Props> = ({
   blockPinning,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
-  console.log(videoInVideo);
+
   const videoGridStyle = useMemo(
     () => getGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
     [gridConfig, oneColumn, videoInVideo, tileConfigs.length]
   );
-  const tileStyle = !oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : "";
+  const tileStyle = !oneColumn ? clsx(gridConfig.span, gridConfig.tileClass) : (tileConfigs.length === 1 ? "w-[400px] h-[220px]" : "");
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
   return (
-    <div id="videos-grid" className={clsx("h-full w-full", videoGridStyle)}>
+    <div id="videos-grid" className={videoGridStyle}>
       {tileConfigs.map((config) => {
         const video: TrackWithId | null = config.video;
         const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;

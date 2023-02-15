@@ -150,20 +150,23 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
   const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles(allTilesConfig, pinningApi.pinnedTileIds);
-  const isSomeTilePinned = pinnedTiles.length > 0;
+  const isAnyTilePinned = pinnedTiles.length > 0;
+  const isAnyTileUnpinned = unpinnedTiles.length > 0;
 
   const wrapperClass = useMemo(() => {
+    const areAllTilesPinned = unpinnedTiles.length === 0;
+
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
-    const layoutWithTileHighlight = allTilesConfig.length === 2 ? "relative" : "sm:grid-cols-3/1";
+    const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : "sm:grid-cols-3/1";
 
-    return clsx(base, isSomeTilePinned && layoutWithTileHighlight);
-  }, [isSomeTilePinned, allTilesConfig.length]);
+    return clsx(base, isAnyTilePinned && layoutWithTileHighlight);
+  }, [isAnyTilePinned, allTilesConfig.length, unpinnedTiles.length]);
 
-  const shouldBlockPinning = unpinnedTiles.length === 1;
+  const shouldBlockPinning = allTilesConfig.length === 1;
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
       <div className={wrapperClass}>
-        {isSomeTilePinned && (
+        {isAnyTilePinned && (
           <PinnedTilesSection
             pinnedTiles={pinnedTiles}
             unpin={pinningApi.unpin}
@@ -172,15 +175,17 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           />
         )}
 
-        <UnpinnedTilesSection
-          tileConfigs={unpinnedTiles}
-          showSimulcast={showSimulcast}
-          oneColumn={isSomeTilePinned}
-          webrtc={webrtc}
-          pin={pinningApi.pin}
-          videoInVideo={pinnedTiles.length === 1}
-          blockPinning={shouldBlockPinning}
-        />
+        {isAnyTileUnpinned && (
+          <UnpinnedTilesSection
+            tileConfigs={unpinnedTiles}
+            showSimulcast={showSimulcast}
+            oneColumn={isAnyTilePinned}
+            webrtc={webrtc}
+            pin={pinningApi.pin}
+            videoInVideo={pinnedTiles.length === 1}
+            blockPinning={shouldBlockPinning}
+          />
+        )}
       </div>
     </div>
   );

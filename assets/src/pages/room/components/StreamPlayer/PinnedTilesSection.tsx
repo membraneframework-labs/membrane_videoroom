@@ -41,7 +41,6 @@ type Props = {
 
 const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast }: Props) => {
   const gridConfig = getGridConfig(pinnedTiles.length);
-  // const style = clsx(gridConfig.columns, gridConfig.grid, gridConfig.gap, gridConfig.padding, gridConfig.rows);
 
   const mappedScreenShareTiles = pinnedTiles.map((pinnedTile: MediaPlayerTileConfig) => {
     const tileType = pinnedTile.typeName;

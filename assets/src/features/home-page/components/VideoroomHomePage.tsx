@@ -55,7 +55,7 @@ const VideoroomHomePage: React.FC = () => {
           <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
         )}
         <div className="flex flex-col items-center gap-y-6 text-center">
-          <h2 className="text-3xl font-medium sm:text-5xl">Videoconferencing for everyone</h2>
+          <h2 className="text-3xl font-medium tracking-wide sm:text-5xl">Videoconferencing for everyone</h2>
           <p className="font-aktivGrotesk text-xl">Join the existing room or create a new one to start the meeting</p>
         </div>
         <div className="flex max-h-[400px] w-full flex-col justify-between gap-x-24 gap-y-8 sm:flex-row">

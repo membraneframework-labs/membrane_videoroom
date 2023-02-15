@@ -13,20 +13,16 @@ export const useSimulcastRemoteEncoding = (
 ): UseSimulcastRemoteEncodingResult => {
   const [targetEncoding, setTargetEncodingState] = useState<TrackEncoding | null>(null);
 
-  const setTargetEncodingOnServer = useCallback(
+  const setTargetEncoding = useCallback(
     (quality: TrackEncoding) => {
+      if (targetEncoding === quality) return;
+
+      setTargetEncodingState(() => quality);
+
       if (!videoTrackId || !peerId || !webrtc) return;
       webrtc.setTargetTrackEncoding(videoTrackId, quality);
     },
-    [videoTrackId, peerId, webrtc]
-  );
-
-  const setTargetEncoding = useCallback(
-    (quality: TrackEncoding) => {
-      setTargetEncodingState(() => quality);
-      setTargetEncodingOnServer(quality);
-    },
-    [setTargetEncodingOnServer]
+    [peerId, targetEncoding, videoTrackId, webrtc]
   );
 
   return { setTargetEncoding, targetEncoding };

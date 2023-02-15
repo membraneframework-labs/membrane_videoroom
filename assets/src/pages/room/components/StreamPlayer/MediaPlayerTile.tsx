@@ -44,11 +44,11 @@ const MediaPlayerTile: FC<Props> = ({
   const isRemote = streamSource === "remote";
   const isLocal = streamSource === "local";
 
-  const { ref, targetEncoding, setTargetEncoding, userSelectedEncoding } = useAutomaticEncodingSwitching(
+  const { ref, targetEncoding, setTargetEncoding, setUserSelectedEncoding, userSelectedEncoding } = useAutomaticEncodingSwitching(
     video?.encodingQuality || null,
     peerId || null,
     video?.remoteTrackId || null,
-    !smartLayerSwitching.enable || isLocal,
+    !smartLayerSwitching.status || isLocal,
     disableQualityReduction || false,
     webrtc || null
   );
@@ -74,9 +74,10 @@ const MediaPlayerTile: FC<Props> = ({
       {layers}
       {showSimulcast && isRemote && (
         <SimulcastRemoteLayer
+          setUserSelectedEncoding={setUserSelectedEncoding}
+          setTargetEncoding={setTargetEncoding}
           userSelectedEncoding={userSelectedEncoding}
           targetEncoding={targetEncoding || null}
-          setTargetEncoding={setTargetEncoding}
           currentEncoding={video?.encodingQuality}
           disabled={!video?.stream}
         />

@@ -4,7 +4,7 @@ export type DeveloperInfo = {
   simulcast: { status: boolean; setSimulcast: (status: boolean) => void };
   manualMode: { status: boolean; setManualMode: (status: boolean) => void };
   cameraAutostart: { status: boolean; setCameraAutostart: (status: boolean) => void };
-  smartLayerSwitching: { enable: boolean; setSmartLayerSwitching: (status: boolean) => void };
+  smartLayerSwitching: { status: boolean; setSmartLayerSwitching: (status: boolean) => void };
 };
 
 export const DeveloperInfoContext = React.createContext<DeveloperInfo | undefined>(undefined);
@@ -25,7 +25,7 @@ export const DeveloperInfoProvider = ({ children }: Props) => {
         simulcast: { status: simulcast, setSimulcast: setSimulcast },
         manualMode: { status: manualMode, setManualMode },
         cameraAutostart: { status: cameraAutostart, setCameraAutostart },
-        smartLayerSwitching: { enable: smartLayerSwitching, setSmartLayerSwitching },
+        smartLayerSwitching: { status: smartLayerSwitching, setSmartLayerSwitching },
       }}
     >
       {children}

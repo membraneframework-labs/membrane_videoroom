@@ -1,13 +1,18 @@
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { useSimulcastRemoteEncoding } from "./useSimulcastRemoteEncoding";
 import { useStoreFirstNonNullValue } from "./useStoreFirstNonNullValue";
+import {
+  MAX_TILE_HEIGHT_FOR_LOW_ENCODING,
+  MAX_TILE_HEIGHT_FOR_MEDIUM_ENCODING,
+  VIDEO_TILE_RESIZE_DETECTOR_DEBOUNCE_VALUE
+} from "../consts";
 
 const getHighestAllowedEncoding = (height: number | null): TrackEncoding | null => {
   if (height === null) return null;
-  if (height < 250) return "l";
-  if (height < 500) return "m";
+  if (height < MAX_TILE_HEIGHT_FOR_LOW_ENCODING) return "l";
+  if (height < MAX_TILE_HEIGHT_FOR_MEDIUM_ENCODING) return "m";
   return "h";
 };
 
@@ -34,52 +39,45 @@ export const useAutomaticEncodingSwitching = (
   webrtc: MembraneWebRTC | null
 ) => {
   const onInitEncodingQuality = useStoreFirstNonNullValue(currentTrackEncoding || null);
-  const [userSelectedEncoding, setUserSelectedEncoding] = useState<TrackEncoding | null>(null);
+  const [userSelectedEncoding, setUserSelectedEncoding] = useState<TrackEncoding | "auto">("auto");
 
-  const { height, ref } = useResizeDetector({ refreshMode: "debounce", refreshRate: 1000, handleWidth: false });
+  const { height, ref } = useResizeDetector({ refreshMode: "debounce", refreshRate: VIDEO_TILE_RESIZE_DETECTOR_DEBOUNCE_VALUE, handleWidth: false });
   const maxAutoEncoding = getHighestAllowedEncoding(height || null);
 
   const { targetEncoding, setTargetEncoding } = useSimulcastRemoteEncoding(peerId, trackId, webrtc);
 
-  useEffect(() => {
-    if (disableAutomaticLayerSwitching) return;
-    if (!onInitEncodingQuality) return;
-    if (!maxAutoEncoding) return;
+  useEffect(
+    () => {
+      if (disableAutomaticLayerSwitching) return;
+      if (!onInitEncodingQuality) return;
+      if (!maxAutoEncoding) return;
 
-    const automaticUpperBound: EncodingValue = disableQualityReduction
-      ? ENCODING_VALUE.h
-      : ENCODING_VALUE[maxAutoEncoding];
-    const userUpperBound: EncodingValue = ENCODING_VALUE[userSelectedEncoding || "h"];
-    const highestEncoding: EncodingValue = Math.min(automaticUpperBound, userUpperBound) as EncodingValue;
-    const result: TrackEncoding = ENCODING_NAME[highestEncoding];
+      const automaticUpperBound: EncodingValue = disableQualityReduction
+        ? ENCODING_VALUE.h
+        : ENCODING_VALUE[maxAutoEncoding];
+      const userUpperBound: EncodingValue =
+        ENCODING_VALUE[userSelectedEncoding === "auto" ? "h" : userSelectedEncoding];
+      const highestEncoding: EncodingValue = Math.min(automaticUpperBound, userUpperBound) as EncodingValue;
+      const result: TrackEncoding = ENCODING_NAME[highestEncoding];
 
-    if (targetEncoding === result) return;
-
-    setTargetEncoding(result);
-  }, [
-    disableAutomaticLayerSwitching,
-    disableQualityReduction,
-    maxAutoEncoding,
-    onInitEncodingQuality,
-    setTargetEncoding,
-    targetEncoding,
-    userSelectedEncoding,
-  ]);
-
-  const setEncoding = useCallback(
-    (encoding: TrackEncoding | null) => {
-      if (encoding !== null) {
-        setTargetEncoding(encoding);
-      }
-      setUserSelectedEncoding(encoding);
+      setTargetEncoding(result);
     },
-    [setTargetEncoding, setUserSelectedEncoding]
+    // Exhaustive-deps is disabled because this hook should not react to setTargetEncoding change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      disableAutomaticLayerSwitching,
+      disableQualityReduction,
+      maxAutoEncoding,
+      onInitEncodingQuality,
+      userSelectedEncoding,
+    ]
   );
 
   return {
     ref,
     targetEncoding,
-    setTargetEncoding: setEncoding,
+    setTargetEncoding,
     userSelectedEncoding,
+    setUserSelectedEncoding,
   };
 };

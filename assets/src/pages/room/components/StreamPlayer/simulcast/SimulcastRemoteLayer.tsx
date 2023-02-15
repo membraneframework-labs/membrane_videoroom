@@ -4,10 +4,11 @@ import { SimulcastEncodingToReceive } from "./SimulcastEncodingToReceive";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 type Props = {
-  setTargetEncoding: (encoding: TrackEncoding | null) => void;
+  setTargetEncoding: (encoding: TrackEncoding) => void;
+  setUserSelectedEncoding: (encoding: TrackEncoding) => void;
   currentEncoding?: TrackEncoding;
   targetEncoding: TrackEncoding | null;
-  userSelectedEncoding: TrackEncoding | null;
+  userSelectedEncoding: TrackEncoding | "auto";
   disabled?: boolean;
 };
 
@@ -16,6 +17,7 @@ export const SimulcastRemoteLayer: FC<Props> = ({
   targetEncoding,
   userSelectedEncoding,
   setTargetEncoding,
+  setUserSelectedEncoding,
   disabled,
 }: Props) => {
   return (
@@ -24,8 +26,9 @@ export const SimulcastRemoteLayer: FC<Props> = ({
       <SimulcastEncodingToReceive
         targetEncoding={targetEncoding}
         userSelectedEncoding={userSelectedEncoding}
-        setTargetEncoding={setTargetEncoding}
+        setUserSelectedEncoding={setUserSelectedEncoding}
         disabled={disabled}
+        setTargetEncoding={setTargetEncoding}
       />
     </>
   );

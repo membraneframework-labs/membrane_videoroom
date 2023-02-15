@@ -11,7 +11,7 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Endpoint.WebRTC
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.RTC.Engine.Message
-  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
+  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC, VAD}
 
   @mix_env Mix.env()
 
@@ -133,9 +133,9 @@ defmodule Videoroom.Room do
 
     webrtc_extensions =
       if state.simulcast? do
-        [Mid, Rid, TWCC]
+        [Mid, Rid, TWCC, VAD]
       else
-        [TWCC]
+        [TWCC, VAD]
       end
 
     endpoint = %WebRTC{

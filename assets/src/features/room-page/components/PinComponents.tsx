@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import clsx from "clsx";
 import Pin from "../icons/Pin";
+import Button from "../../shared/components/Button";
 
 type PinUserButtonProps = {
   pinned: boolean;
@@ -11,7 +12,7 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
   const pinText = pinned ? "Unpin" : "Pin";
 
   return (
-    <button
+    <Button
       className={clsx(
         "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
         "hidden group-hover:flex",
@@ -22,18 +23,18 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
       )}
       onClick={onClick}
     >
-      <Pin stroke="white" />
+      <Pin className="text-brand-white" />
       <span className={"font-lg font-aktivGrotesk font-semibold leading-6 tracking-wide text-brand-white"}>
         {pinText}
       </span>
-    </button>
+    </Button>
   );
 };
 
 export const PinIndicator: FC = () => {
   return (
     <div className="flex h-8 w-8 flex-wrap content-center justify-center rounded-full bg-white">
-      <Pin stroke="#001A72" />
+      <Pin className="text-brand-dark-blue-500" />
     </div>
   );
 };

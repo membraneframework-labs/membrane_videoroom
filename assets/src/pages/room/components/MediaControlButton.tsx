@@ -7,19 +7,19 @@ export type MediaControlButtonProps = {
   onClick: () => void;
   hover: string;
   className?: string;
+  hideOnMobile?: boolean;
   icon: React.FC<SVGAttributes<SVGElement>>;
 };
 
 const MediaControlButton: FC<MediaControlButtonProps> = ({
-  id,
   hover,
   icon: Icon,
   onClick,
+  hideOnMobile,
   className,
 }: MediaControlButtonProps) => {
-  const isScreenshareButton = id == "screenshare-start" || id == "screenshare-stop";
   return (
-    <div className={clsx("group relative", isScreenshareButton && "screensharing-control")}>
+    <div className={clsx("group relative", hideOnMobile && "hidden md:inline-block")}>
       <Button
         onClick={onClick}
         className={clsx(

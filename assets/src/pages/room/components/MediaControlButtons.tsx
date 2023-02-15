@@ -88,6 +88,7 @@ const getAutomaticControls = (
         icon: Screenshare,
         hover: "Stop sharing your screen",
         className: neutralButtonStyle,
+        hideOnMobile: true,
         onClick: () => {
           displayMedia.stop();
           screenSharingStreaming.setActive(false);
@@ -98,6 +99,7 @@ const getAutomaticControls = (
         icon: Screenshare,
         hover: "Share your screen",
         className: neutralButtonStyle,
+        hideOnMobile: true,
         onClick: () => {
           displayMedia.start();
           screenSharingStreaming.setActive(true);
@@ -266,6 +268,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Stop the screensharing",
+          hideOnMobile: true,
           onClick: () => displayMedia.stop(),
         }
       : {
@@ -273,6 +276,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Start the screensharing",
+          hideOnMobile: true,
           onClick: () => displayMedia.start(),
         },
     displayMedia.isEnabled
@@ -281,6 +285,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Disable screensharing stream",
+          hideOnMobile: true,
           onClick: () => displayMedia.disable(),
         }
       : {
@@ -288,6 +293,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Enable screensharing stream",
+          hideOnMobile: true,
           onClick: () => displayMedia.enable(),
         },
     screenSharingStreaming.trackId
@@ -296,6 +302,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Remove screensharing track",
+          hideOnMobile: true,
           onClick: () => screenSharingStreaming.removeTracks(),
         }
       : {
@@ -303,6 +310,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Add screensharing track",
+          hideOnMobile: true,
           onClick: () => displayMedia?.stream && screenSharingStreaming.addTracks(displayMedia?.stream),
         },
     screenSharingStreaming.trackMetadata?.active
@@ -311,6 +319,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'false'",
+          hideOnMobile: true,
           onClick: () => screenSharingStreaming.setActive(false),
         }
       : {
@@ -318,6 +327,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'true'",
+          hideOnMobile: true,
           onClick: () => screenSharingStreaming.setActive(true),
         },
   ],
@@ -364,7 +374,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
         <div className="inset-x-0 z-10 flex flex-wrap justify-center gap-x-4 rounded-t-md">
           {controls.map((group, index) => (
             <div key={index} className="flex justify-center gap-x-4">
-              {group.map(({ hover, onClick, className, id, icon }) => (
+              {group.map(({ hover, onClick, className, id, icon, hideOnMobile }) => (
                 <MediaControlButton
                   key={id}
                   id={id}
@@ -372,6 +382,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
                   hover={hover}
                   className={className}
                   icon={icon}
+                  hideOnMobile={hideOnMobile}
                 />
               ))}
             </div>

@@ -35,16 +35,16 @@ const UnpinnedTilesSection: FC<Props> = ({
   blockPinning,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
-
   const videoGridStyle = useMemo(
     () => getUnpinnedTilesGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
     [gridConfig, oneColumn, videoInVideo, tileConfigs.length]
   );
-  const getTileStyle = () => {
-    if (!oneColumn) return clsx(gridConfig.span, gridConfig.tileClass);
-    if (tileConfigs.length === 1) "w-[400px] h-[220px]";
-    return "";
-  };
+
+  const tileStyle = !oneColumn
+    ? clsx(gridConfig.span, gridConfig.tileClass)
+    : tileConfigs.length === 1
+    ? "w-[400px] h-[220px]"
+    : "";
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
@@ -61,7 +61,7 @@ const UnpinnedTilesSection: FC<Props> = ({
             peerId={config.peerId}
             video={video}
             audio={config.typeName === "remote" ? config.audio : null}
-            className={getTileStyle()}
+            className={tileStyle}
             layers={
               <>
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}

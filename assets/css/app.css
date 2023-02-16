@@ -39,15 +39,6 @@
   min-height: 70px;
 }
 
-/**
-Don't display screensharing control on mobile browsers
-**/
-@media (max-width: 768px) {
-  .screensharing-control {
-    display: none;
-  }
-}
-
 .grid-wrapper {
   --navbar: 48px;
   --menuTooltip: 42px;

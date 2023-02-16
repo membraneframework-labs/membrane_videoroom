@@ -11,7 +11,6 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
-import clsx from "clsx";
 import useToast from "../../../features/shared/hooks/useToast";
 import { ToastType } from "../../../features/shared/context/ToastContext";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
@@ -81,6 +80,30 @@ const getAutomaticControls = (
           audioStreaming.setActive(true);
         },
       },
+  displayMedia.stream
+    ? {
+        id: "screenshare-stop",
+        icon: Screenshare,
+        hover: "Stop sharing your screen",
+        className: neutralButtonStyle,
+        hideOnMobile: true,
+        onClick: () => {
+          displayMedia.stop();
+          screenSharingStreaming.setActive(false);
+        },
+      }
+    : {
+        id: "screenshare-start",
+        icon: Screenshare,
+        hover: "Share your screen",
+        className: neutralButtonStyle,
+        hideOnMobile: true,
+        onClick: () => {
+          displayMedia.start();
+          screenSharingStreaming.setActive(true);
+          addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 5000 });
+        },
+      },
   {
     id: "leave-room",
     icon: HangUp,
@@ -90,28 +113,6 @@ const getAutomaticControls = (
       navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
     },
   },
-  displayMedia.stream
-    ? {
-        id: "stream-stop",
-        icon: Screenshare,
-        hover: "Stop sharing your screen",
-        className: clsx(neutralButtonStyle, "screensharing-control"),
-        onClick: () => {
-          displayMedia.stop();
-          screenSharingStreaming.setActive(false);
-        },
-      }
-    : {
-        id: "stream-start",
-        icon: Screenshare,
-        hover: "Share your screen",
-        className: clsx(neutralButtonStyle, "screensharing-control"),
-        onClick: () => {
-          displayMedia.start();
-          screenSharingStreaming.setActive(true);
-          addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 5000 });
-        },
-      },
   //TODO enable when chat is implemented
   // {
   //   id: "chat",
@@ -266,6 +267,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Stop the screensharing",
+          hideOnMobile: true,
           onClick: () => displayMedia.stop(),
         }
       : {
@@ -273,6 +275,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Start the screensharing",
+          hideOnMobile: true,
           onClick: () => displayMedia.start(),
         },
     displayMedia.isEnabled
@@ -281,6 +284,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Disable screensharing stream",
+          hideOnMobile: true,
           onClick: () => displayMedia.disable(),
         }
       : {
@@ -288,6 +292,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Enable screensharing stream",
+          hideOnMobile: true,
           onClick: () => displayMedia.enable(),
         },
     screenSharingStreaming.trackId
@@ -296,6 +301,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Remove screensharing track",
+          hideOnMobile: true,
           onClick: () => screenSharingStreaming.removeTracks(),
         }
       : {
@@ -303,6 +309,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Add screensharing track",
+          hideOnMobile: true,
           onClick: () => displayMedia?.stream && screenSharingStreaming.addTracks(displayMedia?.stream),
         },
     screenSharingStreaming.trackMetadata?.active
@@ -311,6 +318,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'false'",
+          hideOnMobile: true,
           onClick: () => screenSharingStreaming.setActive(false),
         }
       : {
@@ -318,6 +326,7 @@ const getManualControls = (
           icon: Screenshare,
           className: neutralButtonStyle,
           hover: "Set 'active' metadata to 'true'",
+          hideOnMobile: true,
           onClick: () => screenSharingStreaming.setActive(true),
         },
   ],
@@ -367,8 +376,15 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
         <div className="inset-x-0 z-10 flex flex-wrap justify-center gap-x-4 rounded-t-md">
           {controls.map((group, index) => (
             <div key={index} className="flex justify-center gap-x-4">
-              {group.map(({ hover, onClick, className, id, icon }) => (
-                <MediaControlButton key={id} onClick={onClick} hover={hover} className={className} icon={icon} />
+              {group.map(({ hover, onClick, className, id, icon, hideOnMobile }) => (
+                <MediaControlButton
+                  key={id}
+                  onClick={onClick}
+                  hover={hover}
+                  className={className}
+                  icon={icon}
+                  hideOnMobile={hideOnMobile}
+                />
               ))}
             </div>
           ))}

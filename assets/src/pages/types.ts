@@ -32,14 +32,8 @@ type CommonTile = {
   streamSource: StreamSource;
 };
 
-export type LocalTileConfig = {
-  typeName: "local";
-  audio: TrackWithId | null;
-  initials: string;
-} & CommonTile;
-
-export type RemoteTileConfig = {
-  typeName: "remote";
+export type PeerTileConfig = {
+  typeName: StreamSource;
   audio: TrackWithId | null;
   initials: string;
 } & CommonTile;
@@ -48,4 +42,4 @@ export type ScreenShareTileConfig = {
   typeName: "screenShare";
 } & CommonTile;
 
-export type MediaPlayerTileConfig = LocalTileConfig | RemoteTileConfig | ScreenShareTileConfig;
+export type MediaPlayerTileConfig = PeerTileConfig | ScreenShareTileConfig;

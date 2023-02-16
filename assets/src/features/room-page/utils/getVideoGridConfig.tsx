@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 export type GridConfigType = {
   grid: string;
   gap: string;
@@ -55,3 +57,29 @@ export function getGridConfig(peers: number): GridConfigType {
 
   return { grid, gap, padding, columns, rows, span, tileClass };
 }
+
+export const getUnpinnedTilesGridStyle = (
+  gridConfig: GridConfigType,
+  oneColumn: boolean,
+  videoInVideo: boolean,
+  fixedRatio: boolean
+): string => {
+  if (!oneColumn)
+    return clsx(
+      "h-full w-full",
+      gridConfig.columns,
+      gridConfig.grid,
+      gridConfig.gap,
+      gridConfig.padding,
+      gridConfig.rows
+    );
+  if (fixedRatio)
+    return clsx(
+      "w-[400px]",
+      videoInVideo
+        ? "h-[220px] absolute bottom-4 right-4 z-10"
+        : "h-full flex flex-wrap flex-col content-center justify-center"
+    );
+
+  return "h-full w-full grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
+};

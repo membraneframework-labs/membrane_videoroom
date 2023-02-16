@@ -5,15 +5,9 @@ import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
-import usePinning from "../../features/room-page/utils/usePinning";
-import {
-  LocalTileConfig,
-  MediaPlayerTileConfig,
-  RemoteTileConfig,
-  ScreenShareTileConfig,
-  TrackType,
-  TrackWithId,
-} from "../types";
+import usePinning from "./hooks/usePinning";
+
+import { PeerTileConfig, MediaPlayerTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 import { groupBy } from "./utils";
@@ -38,8 +32,8 @@ const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId =>
       })
     )[0];
 
-const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): RemoteTileConfig[] => {
-  return peers.map((peer: RemotePeer): RemoteTileConfig => {
+const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): PeerTileConfig[] => {
+  return peers.map((peer: RemotePeer): PeerTileConfig => {
     const videoTrack: TrackWithId = getTrack(peer.tracks, "camera");
     const audioTrack: TrackWithId = getTrack(peer.tracks, "audio");
 
@@ -131,7 +125,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
 
-  const localUser: LocalTileConfig = {
+  const localUser: PeerTileConfig = {
     typeName: "local",
     peerId: localPeer?.id ?? "Unknown",
     displayName: LOCAL_PEER_NAME,

@@ -9,20 +9,16 @@ export type PinningApi = {
 
 const usePinning = (): PinningApi => {
   const [pinnedTileIds, setPinnedTileIds] = useState<string[]>([]);
-  const [pinnedTileIdHistory, setPinnedTileIdHistory] = useState<string[]>([]);
-  const historyLimit = 20;
+  const [pinnedTileIdHistory, setPinnedTileIdHistory] = useState<Set<string>>(new Set());
 
   const pin = (newTileId: string) => {
-    const updateHistory = (tileId: string) => {
-      setPinnedTileIdHistory((oldHistory) => {
-        if (oldHistory.length > historyLimit) oldHistory.pop();
-        return oldHistory.includes(tileId) ? oldHistory : [tileId, ...oldHistory];
-      });
+    const addToHistory = (tileId: string) => {
+      setPinnedTileIdHistory((oldHistory) => oldHistory.add(tileId));
     };
 
     if (!pinnedTileIds.includes(newTileId)) {
       setPinnedTileIds((oldPinnedTileIds) => [newTileId, ...oldPinnedTileIds]);
-      updateHistory(newTileId);
+      addToHistory(newTileId);
     }
   };
 
@@ -31,7 +27,7 @@ const usePinning = (): PinningApi => {
   };
 
   const wasPinned = (tileId: string) => {
-    return pinnedTileIdHistory.includes(tileId);
+    return pinnedTileIdHistory.has(tileId);
   };
 
   const pinIfNotAlreadyPinned = (tileId: string) => {

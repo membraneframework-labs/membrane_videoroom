@@ -42,43 +42,41 @@ type Props = {
 const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast }: Props) => {
   const gridConfig = getGridConfig(pinnedTiles.length);
 
-  const mappedScreenShareTiles = pinnedTiles.map((pinnedTile: MediaPlayerTileConfig) => {
-    const tileType = pinnedTile.typeName;
-    const hasInitials = tileType === "local" || tileType === "remote";
-    return (
-      <MediaPlayerTile
-        key={pinnedTile.mediaPlayerId}
-        className={clsx(gridConfig.span, gridConfig.tileClass)}
-        peerId={pinnedTile.peerId}
-        video={pinnedTile.video}
-        audio={tileType === "remote" ? pinnedTile.audio : null}
-        streamSource={pinnedTile.streamSource}
-        blockFillContent={tileType === "screenShare"}
-        flipHorizontally={tileType === "local"}
-        layers={
-          <>
-            {hasInitials && showDisabledIcon(pinnedTile.video) && <InitialsImage initials={pinnedTile.initials} />}
-            <PeerInfoLayer
-              topRight={<PinIndicator />}
-              topLeft={
-                hasInitials && showDisabledIcon(pinnedTile.audio) ? (
-                  <DisabledMicIcon isLoading={isLoading(pinnedTile.audio)} />
-                ) : null
-              }
-              bottomLeft={<NameTag name={pinnedTile.displayName} />}
-            />
-            <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
-          </>
-        }
-        showSimulcast={showSimulcast}
-        webrtc={webrtc}
-      />
-    );
-  });
-
   return (
     <PinnedTilesWrapper twoPinnedTiles={pinnedTiles.length === 2} gridConfig={gridConfig}>
-      {mappedScreenShareTiles}
+      {pinnedTiles.map((pinnedTile: MediaPlayerTileConfig) => {
+        const tileType = pinnedTile.typeName;
+        const hasInitials = tileType === "local" || tileType === "remote";
+        return (
+          <MediaPlayerTile
+            key={pinnedTile.mediaPlayerId}
+            className={clsx(gridConfig.span, gridConfig.tileClass)}
+            peerId={pinnedTile.peerId}
+            video={pinnedTile.video}
+            audio={tileType === "remote" ? pinnedTile.audio : null}
+            streamSource={pinnedTile.streamSource}
+            blockFillContent={tileType === "screenShare"}
+            flipHorizontally={tileType === "local"}
+            layers={
+              <>
+                {hasInitials && showDisabledIcon(pinnedTile.video) && <InitialsImage initials={pinnedTile.initials} />}
+                <PeerInfoLayer
+                  topRight={<PinIndicator />}
+                  topLeft={
+                    hasInitials && showDisabledIcon(pinnedTile.audio) ? (
+                      <DisabledMicIcon isLoading={isLoading(pinnedTile.audio)} />
+                    ) : undefined
+                  }
+                  bottomLeft={<NameTag name={pinnedTile.displayName} />}
+                />
+                <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
+              </>
+            }
+            showSimulcast={showSimulcast}
+            webrtc={webrtc}
+          />
+        );
+      })}
     </PinnedTilesWrapper>
   );
 };

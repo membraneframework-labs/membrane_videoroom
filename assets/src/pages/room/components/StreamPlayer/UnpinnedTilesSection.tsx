@@ -4,7 +4,7 @@ import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
-import { GridConfigType, getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
+import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
@@ -13,32 +13,6 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
-
-const getGridStyle = (
-  gridConfig: GridConfigType,
-  oneColumn: boolean,
-  videoInVideo: boolean,
-  fixedRatio: boolean
-): string => {
-  if (!oneColumn)
-    return clsx(
-      "h-full w-full",
-      gridConfig.columns,
-      gridConfig.grid,
-      gridConfig.gap,
-      gridConfig.padding,
-      gridConfig.rows
-    );
-  if (fixedRatio)
-    return clsx(
-      "w-[400px]",
-      videoInVideo
-        ? "h-[220px] absolute bottom-4 right-4 z-10"
-        : "h-full flex flex-wrap flex-col content-center justify-center"
-    );
-
-  return "h-full w-full grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
-};
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -63,14 +37,15 @@ const UnpinnedTilesSection: FC<Props> = ({
   const gridConfig = getGridConfig(tileConfigs.length);
 
   const videoGridStyle = useMemo(
-    () => getGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
+    () => getUnpinnedTilesGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
     [gridConfig, oneColumn, videoInVideo, tileConfigs.length]
   );
-  const tileStyle = !oneColumn
-    ? clsx(gridConfig.span, gridConfig.tileClass)
-    : tileConfigs.length === 1
-    ? "w-[400px] h-[220px]"
-    : "";
+  const getTileStyle = () => {
+    if (!oneColumn) return clsx(gridConfig.span, gridConfig.tileClass);
+    if (tileConfigs.length === 1) "w-[400px] h-[220px]";
+    return "";
+  };
+
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
   return (
@@ -86,7 +61,7 @@ const UnpinnedTilesSection: FC<Props> = ({
             peerId={config.peerId}
             video={video}
             audio={config.typeName === "remote" ? config.audio : null}
-            className={tileStyle}
+            className={getTileStyle()}
             layers={
               <>
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
@@ -95,13 +70,11 @@ const UnpinnedTilesSection: FC<Props> = ({
                   topLeft={
                     hasInitials && showDisabledIcon(config.audio) ? (
                       <DisabledMicIcon isLoading={isLoading(audio)} />
-                    ) : (
-                      <></>
-                    )
+                    ) : undefined
                   }
                   tileSize={tileSize}
                 />
-                {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : <></>}
+                {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
               </>
             }
             showSimulcast={showSimulcast}

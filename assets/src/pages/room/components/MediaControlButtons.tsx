@@ -14,7 +14,7 @@ import HangUp from "../../../features/room-page/icons/HangUp";
 import useToast from "../../../features/shared/hooks/useToast";
 import { ToastType } from "../../../features/shared/context/ToastContext";
 
-type ControlButton = MediaControlButtonProps;
+type ControlButton = MediaControlButtonProps & { id: string };
 
 const neutralButtonStyle = "border-brand-dark-blue-400 text-brand-dark-blue-500 bg-white";
 const activeButtonStyle = "text-brand-white bg-brand-dark-blue-400 border-brand-dark-blue-400";
@@ -377,7 +377,6 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
               {group.map(({ hover, onClick, className, id, icon, hideOnMobile }) => (
                 <MediaControlButton
                   key={id}
-                  id={id}
                   onClick={onClick}
                   hover={hover}
                   className={className}

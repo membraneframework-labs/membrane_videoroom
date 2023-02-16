@@ -3,7 +3,6 @@ import React, { FC, SVGAttributes } from "react";
 import Button from "../../../features/shared/components/Button";
 
 export type MediaControlButtonProps = {
-  id: string;
   onClick: () => void;
   hover: string;
   className?: string;

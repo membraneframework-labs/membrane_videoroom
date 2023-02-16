@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import { UseMediaResult } from "../hooks/useMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
 import { useToggle } from "../hooks/useToggle";
 import Microphone from "../../../features/room-page/icons/Microphone";
@@ -28,7 +28,8 @@ const getAutomaticControls = (
     screenSharingStreaming,
   }: LocalUserMediaControls,
   navigate: NavigateFunction,
-  addToast: (t: ToastType) => void
+  addToast: (t: ToastType) => void,
+  roomId?: string
 ): ControlButton[] => [
   userMediaVideo.isEnabled
     ? {
@@ -86,7 +87,7 @@ const getAutomaticControls = (
     hover: "Leave the room",
     className: redButtonStyle,
     onClick: () => {
-      navigate("/");
+      navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
     },
   },
   displayMedia.stream
@@ -131,7 +132,8 @@ const getManualControls = (
     displayMedia,
     screenSharingStreaming,
   }: LocalUserMediaControls,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  roomId?: string
 ): ControlButton[][] => [
   [
     userMediaAudio.stream
@@ -326,7 +328,7 @@ const getManualControls = (
       hover: "Leave the room",
       className: redButtonStyle,
       onClick: () => {
-        navigate("/");
+        navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
       },
     },
   ],
@@ -348,10 +350,13 @@ type LocalUserMediaControls = {
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
   const { addToast } = useToast();
-
+  const { roomId } = useParams();
   const navigate = useNavigate();
+
   const controls: ControlButton[][] =
-    props.mode === "manual" ? getManualControls(props, navigate) : [getAutomaticControls(props, navigate, addToast)];
+    props.mode === "manual"
+      ? getManualControls(props, navigate, roomId)
+      : [getAutomaticControls(props, navigate, addToast, roomId)];
   return (
     <div>
       <div

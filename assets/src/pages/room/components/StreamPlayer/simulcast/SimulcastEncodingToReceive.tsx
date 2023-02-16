@@ -1,8 +1,7 @@
 import React, { FC } from "react";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import Button from "../../../../../features/shared/components/Button";
 import { Tooltip } from "./Tooltip";
-import { LayerButtonProps } from "./LayerButton";
+import { LayerButton } from "./LayerButton";
 
 type Props = {
   setTargetEncoding: (encoding: TrackEncoding) => void;
@@ -11,18 +10,6 @@ type Props = {
   tileSizeEncoding: TrackEncoding | null;
   enableSmartEncoding: boolean;
 };
-
-export const LayerButton = ({ onClick, text, tooltipText, disabled }: LayerButtonProps) => (
-  <Tooltip text={tooltipText} textCss="right-16">
-    <Button
-      disabled={disabled}
-      onClick={onClick}
-      className="mx-0.5 flex w-[26px] items-center justify-center rounded-full rounded-full border disabled:pointer-events-none"
-    >
-      {text}
-    </Button>
-  </Tooltip>
-);
 
 export const SimulcastEncodingToReceive: FC<Props> = ({
   targetEncoding,

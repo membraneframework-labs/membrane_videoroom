@@ -33,7 +33,7 @@ const Input: React.FC<InputProps> = ({
   className,
 }) => {
   return (
-    <div className="space-y-2 font-aktivGrotesk">
+    <div className="w-full space-y-2 font-aktivGrotesk">
       {label && (
         <label htmlFor={name} className="block text-base text-brand-dark-blue-500">
           {label}

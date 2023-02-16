@@ -1,63 +1,75 @@
 import React, { FC } from "react";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { isTrackEncoding } from "../../../../types";
 import Button from "../../../../../features/shared/components/Button";
+import { Tooltip } from "./Tooltip";
+import { LayerButtonProps } from "./LayerButton";
 
 type Props = {
-  setUserSelectedEncoding: (encoding: TrackEncoding) => void;
   setTargetEncoding: (encoding: TrackEncoding) => void;
   targetEncoding: TrackEncoding | null;
-  userSelectedEncoding: TrackEncoding | "auto";
   disabled?: boolean;
+  tileSizeEncoding: TrackEncoding | null;
+  enableSmartEncoding: boolean;
 };
 
-type LayerButtonProps = {
-  text: string;
-  onClick: () => void;
-};
-
-const LayerButton = ({ onClick, text }: LayerButtonProps) => (
-  <Button
-    onClick={onClick}
-    className="mx-0.5 flex w-[26px] items-center justify-center rounded-full rounded-full border disabled:pointer-events-none"
-  >
-    {text}
-  </Button>
+export const LayerButton = ({ onClick, text, tooltipText, disabled }: LayerButtonProps) => (
+  <Tooltip text={tooltipText} textCss="right-16">
+    <Button
+      disabled={disabled}
+      onClick={onClick}
+      className="mx-0.5 flex w-[26px] items-center justify-center rounded-full rounded-full border disabled:pointer-events-none"
+    >
+      {text}
+    </Button>
+  </Tooltip>
 );
 
 export const SimulcastEncodingToReceive: FC<Props> = ({
-  userSelectedEncoding,
   targetEncoding,
-  setUserSelectedEncoding,
   setTargetEncoding,
   disabled,
+  tileSizeEncoding,
+  enableSmartEncoding,
 }: Props) => {
   return (
-    <div className="absolute bottom-0 right-0 z-50 bg-white p-2 text-sm text-gray-700 opacity-80 md:text-base">
+    <div className="absolute bottom-0 right-0 z-50 w-full bg-white p-2 text-sm text-gray-700 opacity-80 md:text-base">
       <div className="flex flex-row justify-between">
-        <div>Target: {targetEncoding}</div>
-        <div className="flex flex-row">
-          <LayerButton text="L" onClick={() => setTargetEncoding("l")} />
-          <LayerButton text="M" onClick={() => setTargetEncoding("m")} />
-          <LayerButton text="H" onClick={() => setTargetEncoding("h")} />
-        </div>
-      </div>
-      <div>
-        <label>Target limit: </label>
-        <select
-          disabled={disabled}
-          value={userSelectedEncoding || undefined}
-          onChange={(event) => {
-            const value = event.target.value;
-            if (isTrackEncoding(value)) {
-              setUserSelectedEncoding(value);
-            }
-          }}
-        >
-          <option value="h">High</option>
-          <option value="m">Medium</option>
-          <option value="l">Low</option>
-        </select>
+        {enableSmartEncoding ? (
+          <>
+            <Tooltip text="Requested smart encoding target" textCss="left-24">
+              <div>Smart: {targetEncoding}</div>
+            </Tooltip>
+            <Tooltip text="Encoding based on tile size" textCss="right-12">
+              <div>Tile encoding: {tileSizeEncoding}</div>
+            </Tooltip>
+          </>
+        ) : (
+          <>
+            <Tooltip text="User requested encoding target" textCss="left-20">
+              <div>Encoding: {targetEncoding}</div>
+            </Tooltip>
+            <div className="flex flex-row justify-end">
+              <LayerButton
+                disabled={disabled}
+                text="L"
+                onClick={() => setTargetEncoding("l")}
+                tooltipText="Switch encoding to Low"
+              />
+              <LayerButton
+                disabled={disabled}
+                text="M"
+                onClick={() => setTargetEncoding("m")}
+                tooltipText="Switch encoding to Medium"
+              />
+              <LayerButton
+                disabled={disabled}
+                text="H"
+                onClick={() => setTargetEncoding("h")}
+                tooltipText="Switch encoding to High"
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

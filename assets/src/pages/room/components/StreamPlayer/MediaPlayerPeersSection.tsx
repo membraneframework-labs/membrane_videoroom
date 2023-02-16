@@ -142,7 +142,7 @@ const MediaPlayerPeersSection: FC<Props> = ({ peers, localUser, showSimulcast, o
             flipHorizontally={config.flipHorizontally}
             webrtc={webrtc}
             playAudio={config.playAudio}
-            disableQualityReduction={disableQualityReduction}
+            forceEncoding={disableQualityReduction ? "h" : undefined}
           />
         );
       })}

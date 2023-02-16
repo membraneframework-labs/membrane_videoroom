@@ -18,7 +18,7 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
   className,
 }: MediaControlButtonProps) => {
   return (
-    <div className={clsx("group relative", hideOnMobile && "hidden md:inline-block")}>
+    <div className={clsx("group relative", hideOnMobile && "screensharing-control")}>
       <Button
         onClick={onClick}
         className={clsx(

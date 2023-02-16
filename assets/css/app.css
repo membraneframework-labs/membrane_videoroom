@@ -20,6 +20,17 @@
   }
 }
 
+/**
+Don't display screensharing control on mobile devices' browsers
+Use media feature to select devices with at least one input mechanism including a pointing device of limited accuracy.
+**/
+
+@media (max-width: 1028px) and (any-pointer: coarse) {
+  .screensharing-control {
+    display: none;
+  }
+}
+
 @layer base {
   html {
     @apply font-aktivGrotesk;

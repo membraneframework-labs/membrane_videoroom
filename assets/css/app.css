@@ -52,7 +52,7 @@
 
 /* allows for centering leftover elements in the last row of the grid */
 @media (min-width: 769px) {
-  /* two colums -> one element left*/
+  /* two columns -> one element left*/
   .video-tile-grid-2:last-child:nth-child(2n - 1) {
     grid-column-end: 4;
   }

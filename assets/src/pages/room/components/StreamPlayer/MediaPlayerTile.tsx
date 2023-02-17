@@ -19,6 +19,7 @@ export interface Props {
   webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
+  disableGroupHover?: boolean;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -32,6 +33,7 @@ const MediaPlayerTile: FC<Props> = ({
   webrtc,
   className,
   blockFillContent,
+  disableGroupHover,
 }: Props) => {
   const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
     "m",
@@ -51,7 +53,7 @@ const MediaPlayerTile: FC<Props> = ({
         className,
         "relative flex h-full w-full justify-center overflow-hidden",
         "rounded-xl border border-brand-dark-blue-300 bg-gray-900",
-        "group"
+        !disableGroupHover && "group"
       )}
     >
       <MediaPlayer

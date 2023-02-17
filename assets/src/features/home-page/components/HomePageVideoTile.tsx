@@ -1,11 +1,11 @@
 import React from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
-import { TrackWithId } from "../../../pages/room/components/StreamPlayer/MediaPlayerPeersSection";
 import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
 import { AUDIO_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "../../../pages/room/consts";
 import { useMedia } from "../../../pages/room/hooks/useMedia";
 import { usePeersState } from "../../../pages/room/hooks/usePeerState";
 import { useSetLocalUserTrack } from "../../../pages/room/hooks/useSetLocalUserTrack";
+import { TrackWithId } from "../../../pages/types";
 import InitialsImage, { computeInitials } from "../../room-page/components/InitialsImage";
 import { activeButtonStyle, neutralButtonStyle } from "../../room-page/consts";
 import Camera from "../../room-page/icons/Camera";
@@ -40,10 +40,10 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
       key="room-preview"
       peerId={localPeer?.id}
       video={videoTrack}
-      audioStream={audioTrack?.stream}
-      playAudio={false}
+      audio={audioTrack}
       streamSource="local"
       flipHorizontally
+      disableGroupHover
       layers={
         <>
           {!cameraAutostart.status ? <InitialsImage initials={initials} /> : null}

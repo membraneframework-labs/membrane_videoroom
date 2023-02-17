@@ -26,5 +26,5 @@ export const useSimulcastRemoteEncoding = (
     [peerId, targetEncoding, videoTrackId, webrtc]
   );
 
-  return { setTargetEncoding, targetEncoding };
+  return { targetEncoding, setTargetEncoding};
 };

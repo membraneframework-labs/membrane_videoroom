@@ -14,6 +14,7 @@ import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import Sidebar from "../../features/room-page/components/Sidebar";
+import Button from "../../features/shared/components/Button";
 
 type Props = {
   displayName: string;
@@ -99,7 +100,18 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
             webrtc={webrtc}
           />
 
-          {isSidebarOpen && <Sidebar peers={peerState.remote} localPeer={peerState.local} />}
+          {isSidebarOpen && (
+            <>
+              <div className="absolute inset-0 bg-transparent/40 md:hidden">
+                <Button className="absolute inset-0" onClick={() => setIsSidebarOpen(false)}></Button>
+                <Sidebar peers={peerState.remote} localPeer={peerState.local} />{" "}
+              </div>
+
+              <div className="hidden md:inline-block">
+                <Sidebar peers={peerState.remote} localPeer={peerState.local} />
+              </div>
+            </>
+          )}
         </section>
 
         <MediaControlButtons

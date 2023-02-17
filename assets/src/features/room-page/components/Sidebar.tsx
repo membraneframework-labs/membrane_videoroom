@@ -16,9 +16,9 @@ const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer }) => {
   return (
     <div
       className={clsx(
-        "border border-brand-dark-blue-300 bg-brand-white",
-        "rounded-xl",
-        "hidden w-[300px] min-w-[300px] flex-col md:flex",
+        "border-brand-dark-blue-300 bg-brand-white md:border",
+        "rounded-t-2xl md:rounded-xl",
+        "absolute bottom-0 left-0 z-40 h-[480px] w-full flex-col md:relative md:z-auto md:flex md:h-full md:w-[300px] md:min-w-[300px]",
         "font-aktivGrotesk"
       )}
     >

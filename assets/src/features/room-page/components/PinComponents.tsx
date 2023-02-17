@@ -12,7 +12,7 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
   const pinText = pinned ? "Unpin" : "Pin";
 
   return (
-    <div className="absolute w-full h-full group">
+    <div className="group absolute h-full w-full">
       <Button
         className={clsx(
           "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",

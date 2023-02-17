@@ -13,6 +13,7 @@ import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import useToast from "../../../features/shared/hooks/useToast";
 import { ToastType } from "../../../features/shared/context/ToastContext";
+import Chat from "../../../features/room-page/icons/Chat";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
@@ -28,6 +29,8 @@ const getAutomaticControls = (
     cameraStreaming,
     displayMedia,
     screenSharingStreaming,
+    isSidebarOpen,
+    openSidebar,
   }: LocalUserMediaControls,
   navigate: NavigateFunction,
   addToast: (t: ToastType) => void
@@ -107,6 +110,14 @@ const getAutomaticControls = (
         },
       },
   {
+    id: "chat",
+    icon: Chat,
+    hover: isSidebarOpen ? "Close the chat" : "Open the chat",
+    className: isSidebarOpen ? activeButtonStyle : neutralButtonStyle,
+    hideOnMobile: true,
+    onClick: openSidebar,
+  },
+  {
     id: "leave-room",
     icon: HangUp,
     hover: "Leave the room",
@@ -115,14 +126,6 @@ const getAutomaticControls = (
       navigate("/");
     },
   },
-  //TODO enable when chat is implemented
-  // {
-  //   id: "chat",
-  //   icon: Chat,
-  //   hover: "Open the chat",
-  //   className: neutralButtonStyle,
-  //   onClick: () => undefined,
-  // },
 ];
 
 //dev helpers
@@ -355,6 +358,8 @@ type LocalUserMediaControls = {
   audioStreaming: MembraneStreaming;
   displayMedia: UseMediaResult;
   screenSharingStreaming: MembraneStreaming;
+  isSidebarOpen?: boolean;
+  openSidebar: () => void;
 };
 
 const MediaControlButtons: FC<Props> = (props: Props) => {

@@ -13,6 +13,7 @@ import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
+import Sidebar from "../../features/room-page/components/Sidebar";
 
 type Props = {
   displayName: string;
@@ -84,17 +85,21 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     messageComparator
   );
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
-        <section className="flex h-full w-full flex-col">
+        <section className="flex h-full w-full gap-x-4">
           <VideochatSection
             peers={peerState.remote}
             localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
             webrtc={webrtc}
           />
+
+          {isSidebarOpen && <Sidebar peers={peerState.remote} localPeer={peerState.local} />}
         </section>
 
         <MediaControlButtons
@@ -105,6 +110,8 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
           audioStreaming={audio.remote}
           displayMedia={screenSharing.local}
           screenSharingStreaming={screenSharing.remote}
+          isSidebarOpen={isSidebarOpen}
+          openSidebar={() => setIsSidebarOpen((prev) => !prev)}
         />
 
         {/* dev helpers */}

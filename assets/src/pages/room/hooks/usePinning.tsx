@@ -13,7 +13,7 @@ const usePinning = (): PinningApi => {
 
   const pin = (newTileId: string) => {
     const addToHistory = (tileId: string) => {
-      setPinnedTileIdHistory((oldHistory) => oldHistory.add(tileId));
+      setPinnedTileIdHistory((oldHistory) => new Set(oldHistory).add(tileId));
     };
 
     if (!pinnedTileIds.includes(newTileId)) {

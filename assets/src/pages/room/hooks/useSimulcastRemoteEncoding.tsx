@@ -18,6 +18,7 @@ export const useSimulcastRemoteEncoding = (
       if (targetEncoding === quality) return;
 
       setTargetEncodingState(() => quality);
+      console.log("Changing encoding to: " + quality)
 
       if (!videoTrackId || !peerId || !webrtc) return;
       webrtc.setTargetTrackEncoding(videoTrackId, quality);

@@ -55,6 +55,7 @@ export const useAutomaticEncodingSwitching = (
       if (!onInitEncodingQuality) return;
       if (!tileSizeEncoding) return;
 
+      console.log(`${forceEncoding} - changed`)
       const automaticUpperBound: TrackEncoding = forceEncoding ?? tileSizeEncoding;
 
       setTargetEncoding(automaticUpperBound);

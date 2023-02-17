@@ -14,3 +14,32 @@ export const isTrackType = (value: string): value is TrackType => TrackTypeValue
 
 const StreamSourceValues = ["local", "remote"] as const;
 export type StreamSource = (typeof StreamSourceValues)[number];
+
+export type TrackWithId = {
+  stream?: MediaStream;
+  remoteTrackId: string | null;
+  encodingQuality?: TrackEncoding;
+  metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  enabled?: boolean;
+};
+
+// Media Tile Types
+type CommonTile = {
+  mediaPlayerId: string;
+  peerId: string;
+  video: TrackWithId | null;
+  displayName: string;
+  streamSource: StreamSource;
+};
+
+export type PeerTileConfig = {
+  typeName: StreamSource;
+  audio: TrackWithId | null;
+  initials: string;
+} & CommonTile;
+
+export type ScreenShareTileConfig = {
+  typeName: "screenShare";
+} & CommonTile;
+
+export type MediaPlayerTileConfig = PeerTileConfig | ScreenShareTileConfig;

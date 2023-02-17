@@ -13,6 +13,8 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
+import SoundBig from "../../../../features/room-page/icons/SoundBig";
+import SoundIcon from "../../../../features/room-page/components/SoundIcon";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -72,7 +74,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                   topLeft={
                     hasInitials && showDisabledIcon(config.audio) ? (
                       <DisabledMicIcon isLoading={isLoading(audio)} />
-                    ) : undefined
+                    ) : <SoundIcon/>
                   }
                   tileSize={tileSize}
                 />

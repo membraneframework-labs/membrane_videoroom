@@ -11,8 +11,6 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
-import useToast from "../../../features/shared/hooks/useToast";
-import { ToastType } from "../../../features/shared/context/ToastContext";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 
 type ControlButton = MediaControlButtonProps & { id: string };
@@ -27,7 +25,6 @@ const getAutomaticControls = (
     screenSharingStreaming,
   }: LocalUserMediaControls,
   navigate: NavigateFunction,
-  addToast: (t: ToastType) => void,
   roomId?: string
 ): ControlButton[] => [
   userMediaVideo.isEnabled
@@ -101,9 +98,16 @@ const getAutomaticControls = (
         onClick: () => {
           displayMedia.start();
           screenSharingStreaming.setActive(true);
-          addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 5000 });
         },
       },
+  //TODO enable when chat is implemented
+  // {
+  //   id: "chat",
+  //   icon: Chat,
+  //   hover: "Open the chat",
+  //   className: neutralButtonStyle,
+  //   onClick: () => undefined,
+  // },
   {
     id: "leave-room",
     icon: HangUp,
@@ -113,14 +117,6 @@ const getAutomaticControls = (
       navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
     },
   },
-  //TODO enable when chat is implemented
-  // {
-  //   id: "chat",
-  //   icon: Chat,
-  //   hover: "Open the chat",
-  //   className: neutralButtonStyle,
-  //   onClick: () => undefined,
-  // },
 ];
 
 //dev helpers
@@ -358,14 +354,14 @@ type LocalUserMediaControls = {
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
-  const { addToast } = useToast();
   const { roomId } = useParams();
+
   const navigate = useNavigate();
 
   const controls: ControlButton[][] =
     props.mode === "manual"
       ? getManualControls(props, navigate, roomId)
-      : [getAutomaticControls(props, navigate, addToast, roomId)];
+      : [getAutomaticControls(props, navigate, roomId)];
   return (
     <div>
       <div

@@ -99,6 +99,7 @@
   }
 }
 
+/* mobile screens */
 @media (max-width: 768px) {
   .home-page {
     background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
@@ -108,12 +109,33 @@
   }
 }
 
-@media (min-width: 769px) {
+/* desktop screens */
+@media (min-width: 769px) and (orientation: landscape) {
   .home-page {
     background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left -90px top 200px, right -180px top 120px;
+  }
+}
+
+/* horizontal large screens */
+@media (min-width: 1550px) and (orientation: landscape) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -150px top 200px, right -300px top 120px;
+  }
+}
+
+/* vertical large screens */
+@media (min-width: 769px) and (orientation: portrait) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: left -30% top 200px, right -30% bottom -15%;
   }
 }
 

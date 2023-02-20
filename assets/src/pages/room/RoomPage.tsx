@@ -14,6 +14,7 @@ import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import Sidebar from "../../features/room-page/components/Sidebar";
+import clsx from "clsx";
 
 type Props = {
   displayName: string;
@@ -91,7 +92,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
-        <section className="flex h-full w-full gap-x-4 self-center justify-self-center 3xl:max-w-[1728px]">
+        <section
+          className={clsx(
+            "flex h-full w-full self-center justify-self-center 3xl:max-w-[1728px]",
+            isSidebarOpen && "gap-x-4"
+          )}
+        >
           <VideochatSection
             peers={peerState.remote}
             localPeer={peerState.local}
@@ -99,7 +105,15 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
             webrtc={webrtc}
           />
 
-          {isSidebarOpen && <Sidebar peers={peerState.remote} localPeer={peerState.local} />}
+          <div
+            className={clsx(
+              isSidebarOpen ? "max-w-[300px]" : "max-w-0",
+              "overflow-hidden transition-all duration-300",
+              "flex w-full"
+            )}
+          >
+            <Sidebar peers={peerState.remote} localPeer={peerState.local} />
+          </div>
         </section>
 
         <MediaControlButtons

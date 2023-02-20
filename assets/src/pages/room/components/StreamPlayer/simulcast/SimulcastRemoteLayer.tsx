@@ -7,11 +7,12 @@ type Props = {
   targetEncoding: TrackEncoding | null;
   setTargetEncoding: (encoding: TrackEncoding) => void;
   smartEncoding: TrackEncoding | null;
-  smartEncodingStatus: boolean;
-  setSmartEncodingStatus: (value: boolean) => void;
+  localSmartEncodingStatus: boolean;
+  setLocalSmartEncodingStatus: (value: boolean) => void;
+  globalSmartEncodingStatus: boolean;
   tileSizeEncoding: TrackEncoding | null;
   currentEncoding?: TrackEncoding;
-  disabled?: boolean;
+  disabled: boolean;
 };
 
 export const SimulcastRemoteLayer: FC<Props> = ({
@@ -20,8 +21,9 @@ export const SimulcastRemoteLayer: FC<Props> = ({
   setTargetEncoding,
   disabled,
   tileSizeEncoding,
-  setSmartEncodingStatus,
-  smartEncodingStatus,
+  setLocalSmartEncodingStatus,
+  localSmartEncodingStatus,
+  globalSmartEncodingStatus,
   smartEncoding,
 }: Props) => {
   return (
@@ -30,10 +32,11 @@ export const SimulcastRemoteLayer: FC<Props> = ({
       <SimulcastEncodingToReceive
         disabled={disabled}
         targetEncoding={targetEncoding}
-        setSmartEncodingStatus={setSmartEncodingStatus}
         tileSizeEncoding={tileSizeEncoding}
         smartEncoding={smartEncoding}
-        smartEncodingStatus={smartEncodingStatus}
+        localSmartEncodingStatus={localSmartEncodingStatus}
+        setLocalSmartEncodingStatus={setLocalSmartEncodingStatus}
+        globalSmartEncodingStatus={globalSmartEncodingStatus}
         setTargetEncoding={setTargetEncoding}
       />
     </>

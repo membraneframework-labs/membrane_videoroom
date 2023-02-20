@@ -8,9 +8,10 @@ type Props = {
   setTargetEncoding: (encoding: TrackEncoding) => void;
   tileSizeEncoding: TrackEncoding | null;
   smartEncoding: TrackEncoding | null;
-  smartEncodingStatus: boolean;
-  setSmartEncodingStatus: (value: boolean) => void;
-  disabled?: boolean;
+  localSmartEncodingStatus: boolean;
+  setLocalSmartEncodingStatus: (value: boolean) => void;
+  globalSmartEncodingStatus: boolean;
+  disabled: boolean;
 };
 
 export const SimulcastEncodingToReceive: FC<Props> = ({
@@ -18,8 +19,9 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
   setTargetEncoding,
   tileSizeEncoding,
   smartEncoding,
-  smartEncodingStatus,
-  setSmartEncodingStatus,
+  localSmartEncodingStatus,
+  setLocalSmartEncodingStatus,
+  globalSmartEncodingStatus,
   disabled,
 }: Props) => {
   return (
@@ -29,10 +31,11 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
           <div className="form-check flex items-center gap-x-1">
             <label className="form-check-label text-brand-dark-blue-500">Smart</label>
             <input
-              onChange={() => setSmartEncodingStatus(!smartEncodingStatus)}
+              disabled={!globalSmartEncodingStatus}
+              onChange={() => setLocalSmartEncodingStatus(!localSmartEncodingStatus)}
               className="form-check-input"
               type="checkbox"
-              checked={smartEncodingStatus}
+              checked={globalSmartEncodingStatus && localSmartEncodingStatus}
             />
           </div>
         </Tooltip>

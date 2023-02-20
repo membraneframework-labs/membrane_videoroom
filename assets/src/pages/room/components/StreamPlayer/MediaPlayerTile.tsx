@@ -85,8 +85,9 @@ const MediaPlayerTile: FC<Props> = ({
           setTargetEncoding={setTargetEncoding}
           tileSizeEncoding={tileSizeEncoding}
           smartEncoding={smartEncoding}
-          smartEncodingStatus={smartEncodingStatus}
-          setSmartEncodingStatus={setSmartEncodingStatus}
+          localSmartEncodingStatus={smartEncodingStatus}
+          setLocalSmartEncodingStatus={setSmartEncodingStatus}
+          globalSmartEncodingStatus={smartLayerSwitching.status}
           currentEncoding={video?.encodingQuality}
           disabled={!video?.stream}
         />

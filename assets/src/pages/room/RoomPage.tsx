@@ -91,7 +91,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
-        <section className="flex h-full w-full gap-x-4">
+        <section className="flex h-full w-full gap-x-4 self-center justify-self-center 3xl:max-w-[1728px]">
           <VideochatSection
             peers={peerState.remote}
             localPeer={peerState.local}

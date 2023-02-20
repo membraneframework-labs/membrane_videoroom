@@ -7,7 +7,7 @@ const useHorizontalMobile = () => {
     if (!window.visualViewport) return;
 
     setIsHorizontalOrientation(
-      window.visualViewport.width > window.visualViewport.height && window.visualViewport.height < 400
+      window.visualViewport.width > window.visualViewport.height && window.visualViewport.height < 650
     );
   };
 

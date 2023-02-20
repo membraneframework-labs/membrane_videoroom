@@ -16,7 +16,8 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
           "home-page h-[100dvh] w-full",
           "bg-brand-sea-blue-200 font-rocGrotesk text-brand-dark-blue-500",
           "flex flex-col items-center gap-y-4 p-4",
-          "relative overflow-y-auto"
+          "relative overflow-y-auto",
+          isHorizontalMobile && "invisible"
         )}
       >
         <Navbar />

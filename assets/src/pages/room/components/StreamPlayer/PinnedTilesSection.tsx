@@ -13,7 +13,6 @@ import {
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { GridConfigType, getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import clsx from "clsx";
-import { Track } from "../../hooks/usePeerState";
 
 type WrapperProps = {
   children: ReactNode;
@@ -38,7 +37,7 @@ type Props = {
   unpin: (tileIdToUnpin: string) => void;
   webrtc?: MembraneWebRTC;
   showSimulcast?: boolean;
-  forceEncoding?: TrackEncoding;
+  forceEncoding?: TrackEncoding | null;
 };
 
 const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast, forceEncoding }: Props) => {

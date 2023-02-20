@@ -20,7 +20,7 @@ export interface Props {
   webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
-  forceEncoding?: TrackEncoding; // todo add ?
+  forceEncoding?: TrackEncoding | null;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -41,7 +41,15 @@ const MediaPlayerTile: FC<Props> = ({
   const isRemote = streamSource === "remote";
   const isLocal = streamSource === "local";
 
-  const { ref, targetEncoding, setTargetEncoding, tileSizeEncoding } = useAutomaticEncodingSwitching(
+  const {
+    ref,
+    tileSizeEncoding,
+    setTargetEncoding,
+    targetEncoding,
+    smartEncoding,
+    smartEncodingStatus,
+    setSmartEncodingStatus,
+  } = useAutomaticEncodingSwitching(
     video?.encodingQuality || null,
     peerId || null,
     video?.remoteTrackId || null,
@@ -61,8 +69,7 @@ const MediaPlayerTile: FC<Props> = ({
       className={clsx(
         className,
         "relative flex h-full w-full justify-center overflow-hidden",
-        "rounded-xl border border-brand-dark-blue-300 bg-gray-900",
-        "" // todo I removed group
+        "rounded-xl border border-brand-dark-blue-300 bg-gray-900"
       )}
     >
       <MediaPlayer
@@ -74,12 +81,14 @@ const MediaPlayerTile: FC<Props> = ({
       {layers}
       {showSimulcast && isRemote && (
         <SimulcastRemoteLayer
-          enableSmartEncoding={smartLayerSwitching.status}
-          setTargetEncoding={setTargetEncoding}
           targetEncoding={targetEncoding || null}
+          setTargetEncoding={setTargetEncoding}
+          tileSizeEncoding={tileSizeEncoding}
+          smartEncoding={smartEncoding}
+          smartEncodingStatus={smartEncodingStatus}
+          setSmartEncodingStatus={setSmartEncodingStatus}
           currentEncoding={video?.encodingQuality}
           disabled={!video?.stream}
-          tileSizeEncoding={tileSizeEncoding}
         />
       )}
       {showSimulcast && isLocal && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />}

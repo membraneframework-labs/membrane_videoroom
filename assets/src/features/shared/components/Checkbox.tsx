@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 export type CheckboxProps = {
   label: string;
-  id: string;
+  id?: string;
   status: boolean;
   onChange: () => void;
 };

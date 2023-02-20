@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 export type UseSimulcastRemoteEncodingResult = {
@@ -8,23 +8,23 @@ export type UseSimulcastRemoteEncodingResult = {
 
 export const useSimulcastRemoteEncoding = (
   peerId: string | null,
-  videoTrackId: string | null,
+  trackId: string | null,
   webrtc: MembraneWebRTC | null
 ): UseSimulcastRemoteEncodingResult => {
   const [targetEncoding, setTargetEncodingState] = useState<TrackEncoding | null>(null);
 
+  const lastSelectedEncoding = useRef<TrackEncoding | null>(null);
   const setTargetEncoding = useCallback(
-    (quality: TrackEncoding) => {
-      if (targetEncoding === quality) return;
+    (encoding: TrackEncoding) => {
+      if (lastSelectedEncoding.current === encoding) return;
+      lastSelectedEncoding.current = encoding;
+      setTargetEncodingState(encoding);
 
-      setTargetEncodingState(() => quality);
-      console.log("Changing encoding to: " + quality);
-
-      if (!videoTrackId || !peerId || !webrtc) return;
-      webrtc.setTargetTrackEncoding(videoTrackId, quality);
+      if (!trackId || !peerId || !webrtc) return;
+      webrtc.setTargetTrackEncoding(trackId, encoding);
     },
-    [peerId, targetEncoding, videoTrackId, webrtc]
+    [peerId, trackId, webrtc]
   );
 
-  return { setTargetEncoding, targetEncoding };
+  return { setTargetEncoding, targetEncoding: targetEncoding };
 };

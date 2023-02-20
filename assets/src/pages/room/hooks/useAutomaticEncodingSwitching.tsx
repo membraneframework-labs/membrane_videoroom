@@ -1,13 +1,13 @@
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { useSimulcastRemoteEncoding } from "./useSimulcastRemoteEncoding";
 import { useStoreFirstNonNullValue } from "./useStoreFirstNonNullValue";
 import {
   MAX_TILE_HEIGHT_FOR_LOW_ENCODING,
   MAX_TILE_HEIGHT_FOR_MEDIUM_ENCODING,
   VIDEO_TILE_RESIZE_DETECTOR_DEBOUNCE_VALUE,
 } from "../consts";
+import { useSimulcastRemoteEncoding } from "./useSimulcastRemoteEncoding";
 
 const getHighestAllowedEncoding = (height: number | null): TrackEncoding | null => {
   if (height === null) return null;
@@ -16,18 +16,16 @@ const getHighestAllowedEncoding = (height: number | null): TrackEncoding | null 
   return "h";
 };
 
-type EncodingValue = 0 | 1 | 2;
+const useCalculateSmartEncoding = (forceEncoding: TrackEncoding | null) => {
+  const { height, ref } = useResizeDetector({
+    refreshMode: "debounce",
+    refreshRate: VIDEO_TILE_RESIZE_DETECTOR_DEBOUNCE_VALUE,
+    handleWidth: false,
+  });
+  const tileSizeEncoding = getHighestAllowedEncoding(height || null);
+  const smartEncoding: TrackEncoding | null = forceEncoding ?? tileSizeEncoding;
 
-const ENCODING_VALUE: Record<TrackEncoding, EncodingValue> = {
-  l: 0,
-  m: 1,
-  h: 2,
-};
-
-const ENCODING_NAME: Record<EncodingValue, TrackEncoding> = {
-  0: "l",
-  1: "m",
-  2: "h",
+  return { ref, tileSizeEncoding, smartEncoding };
 };
 
 export const useAutomaticEncodingSwitching = (
@@ -38,37 +36,44 @@ export const useAutomaticEncodingSwitching = (
   forceEncoding: TrackEncoding | null,
   webrtc: MembraneWebRTC | null
 ) => {
+  const [smartEncodingStatus, setSmartEncodingStatus] = useState(true);
   const onInitEncodingQuality = useStoreFirstNonNullValue(currentTrackEncoding || null);
 
-  const { height, ref } = useResizeDetector({
-    refreshMode: "debounce",
-    refreshRate: VIDEO_TILE_RESIZE_DETECTOR_DEBOUNCE_VALUE,
-    handleWidth: false,
-  });
-  const tileSizeEncoding = useMemo(() => getHighestAllowedEncoding(height || null), [height]);
+  const { ref, tileSizeEncoding, smartEncoding } = useCalculateSmartEncoding(forceEncoding);
 
-  const { targetEncoding, setTargetEncoding } = useSimulcastRemoteEncoding(peerId, trackId, webrtc);
+  const { setTargetEncoding, targetEncoding } = useSimulcastRemoteEncoding(peerId, trackId, webrtc);
 
-  useEffect(
-    () => {
-      if (disableAutomaticLayerSwitching) return;
-      if (!onInitEncodingQuality) return;
-      if (!tileSizeEncoding) return;
+  useEffect(() => {
+    if (disableAutomaticLayerSwitching) return;
+    if (!smartEncodingStatus) return;
+    if (!onInitEncodingQuality) return;
+    if (!smartEncoding) return;
 
-      console.log(`${forceEncoding} - changed`);
-      const automaticUpperBound: TrackEncoding = forceEncoding ?? tileSizeEncoding;
+    setTargetEncoding(smartEncoding);
+  }, [
+    disableAutomaticLayerSwitching,
+    forceEncoding,
+    onInitEncodingQuality,
+    smartEncodingStatus,
+    setTargetEncoding,
+    smartEncoding,
+  ]);
 
-      setTargetEncoding(automaticUpperBound);
+  const disableSmartAndSetTargetEncoding = useCallback(
+    (encoding: TrackEncoding) => {
+      setSmartEncodingStatus(false);
+      setTargetEncoding(encoding);
     },
-    // Exhaustive-deps is disabled because this hook should not react to setTargetEncoding change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [disableAutomaticLayerSwitching, forceEncoding, tileSizeEncoding, onInitEncodingQuality]
+    [setTargetEncoding]
   );
 
   return {
     ref,
+    setTargetEncoding: disableSmartAndSetTargetEncoding,
     targetEncoding,
-    setTargetEncoding,
     tileSizeEncoding,
+    setSmartEncodingStatus,
+    smartEncodingStatus,
+    smartEncoding,
   };
 };

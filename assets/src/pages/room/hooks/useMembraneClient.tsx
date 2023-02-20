@@ -111,6 +111,7 @@ export const useMembraneClient = (
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onJoinError: (_metadata) => {
           handleError(`Failed to join the room`);
         },
@@ -136,6 +137,7 @@ export const useMembraneClient = (
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
       })
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .receive("error", (_response) => {
         handleError(`Couldn't establish signaling connection`);
       });

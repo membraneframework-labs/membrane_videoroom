@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
@@ -121,11 +121,6 @@ const pinNewScreenShares = (
   screenSharingStreams.map((tile) => tile.mediaPlayerId).forEach(pinIfNotAlreadyPinned);
 };
 
-const calculate = (peerLength: number): TrackEncoding | undefined => {
-  if (peerLength === 2) return "h";
-  return undefined;
-};
-
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
@@ -163,8 +158,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const shouldBlockPinning = allTilesConfig.length === 1;
 
-  // const disableQualityReduction = oneColumn ? false : allPeersConfig.length <= 2;
-  const disableQualityReduction = allTilesConfig.length <= 2 ? "h" : undefined;
+  const forceEncoding = allTilesConfig.length <= 2 ? "h" : null;
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
@@ -175,7 +169,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
             unpin={pinningApi.unpin}
             showSimulcast={showSimulcast}
             webrtc={webrtc}
-            forceEncoding={disableQualityReduction}
+            forceEncoding={forceEncoding}
           />
         )}
 
@@ -188,7 +182,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
             pin={pinningApi.pin}
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={shouldBlockPinning}
-            forceEncoding={disableQualityReduction}
+            forceEncoding={forceEncoding}
           />
         )}
       </div>

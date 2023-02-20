@@ -57,7 +57,7 @@ defmodule VideoRoom.MixProject do
       # Otel
       {:opentelemetry, "~> 1.0"},
       {:opentelemetry_api, "~> 1.0"},
-      {:opentelemetry_exporter, "~> 1.0"},
+      {:opentelemetry_exporter, "~> 1.0.4"},
       {:opentelemetry_zipkin, "~> 1.0"},
 
       # Benchmarks

@@ -73,7 +73,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
                 <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
               </>
             }
-            showSimulcast={showSimulcast}
+            showSimulcast={showSimulcast && tileType !== "screenShare"}
             webrtc={webrtc}
             forceEncoding={forceEncoding}
           />

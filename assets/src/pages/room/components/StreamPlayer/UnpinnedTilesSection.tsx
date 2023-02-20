@@ -79,7 +79,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                 {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
               </>
             }
-            showSimulcast={showSimulcast}
+            showSimulcast={showSimulcast && config.typeName !== "screenShare"}
             streamSource={config.streamSource}
             flipHorizontally={config.typeName === "local"}
             webrtc={webrtc}

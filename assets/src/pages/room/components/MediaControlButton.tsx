@@ -6,6 +6,7 @@ export type MediaControlButtonProps = {
   onClick: () => void;
   hover: string;
   className?: string;
+  hideOnMobile?: boolean;
   icon: React.FC<SVGAttributes<SVGElement>>;
 };
 
@@ -13,10 +14,11 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
   hover,
   icon: Icon,
   onClick,
+  hideOnMobile,
   className,
 }: MediaControlButtonProps) => {
   return (
-    <div className="group relative">
+    <div className={clsx("group relative", hideOnMobile && "hidden md:inline-block")}>
       <Button
         onClick={onClick}
         className={clsx(

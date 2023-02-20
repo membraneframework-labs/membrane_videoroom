@@ -69,6 +69,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
 
   const { addToast } = useToast();
 
+  useEffectOnChange(screenSharing.local.isEnabled, () => {
+    if (screenSharing.local.isEnabled) {
+      addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
+    }
+  });
+
   useEffectOnChange(
     errorMessage,
     () => {

@@ -20,7 +20,7 @@ type Props = {
   webrtc?: MembraneWebRTC;
 };
 
-const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId =>
+const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId | null =>
   tracks
     .filter((track) => track?.metadata?.type === type)
     .map(
@@ -29,14 +29,15 @@ const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId =>
         remoteTrackId: track.trackId,
         encodingQuality: track.encoding,
         metadata: track.metadata,
+        isSpeaking: track.isSpeaking,
         enabled: true,
       })
-    )[0];
+    )[0] ?? null;
 
 const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): PeerTileConfig[] => {
   return peers.map((peer: RemotePeer): PeerTileConfig => {
-    const videoTrack: TrackWithId = getTrack(peer.tracks, "camera");
-    const audioTrack: TrackWithId = getTrack(peer.tracks, "audio");
+    const videoTrack: TrackWithId | null = getTrack(peer.tracks, "camera");
+    const audioTrack: TrackWithId | null = getTrack(peer.tracks, "audio");
 
     return {
       mediaPlayerId: peer.id,
@@ -47,6 +48,7 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): PeerTileConfig[
       video: videoTrack,
       audio: audioTrack,
       streamSource: "remote",
+      isSpeaking: (audioTrack && audioTrack.isSpeaking) ?? false,
     };
   });
 };
@@ -132,6 +134,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     audio: audio,
     streamSource: "local",
     mediaPlayerId: LOCAL_VIDEO_ID,
+    isSpeaking: false,
   };
 
   const pinningApi = usePinning();

@@ -13,7 +13,6 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
-import SoundBig from "../../../../features/room-page/icons/SoundBig";
 import SoundIcon from "../../../../features/room-page/components/SoundIcon";
 
 type Props = {
@@ -52,12 +51,19 @@ const UnpinnedTilesSection: FC<Props> = ({
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
+  const getUpperLeftIcon = (config: MediaPlayerTileConfig) => {
+    if (config.typeName === "local" || config.typeName === "remote") {
+      if (showDisabledIcon(config.audio)) return <DisabledMicIcon isLoading={isLoading(config.audio)} />;
+      if (config.isSpeaking) return <SoundIcon />;
+    }
+  };
+
   return (
     <div id="videos-grid" className={videoGridStyle}>
-      {tileConfigs.map((config) => {
+      {tileConfigs.map((config: MediaPlayerTileConfig) => {
         const video: TrackWithId | null = config.video;
-        const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
+        const upperLeftIcon: JSX.Element | undefined = getUpperLeftIcon(config);
 
         return (
           <MediaPlayerTile
@@ -71,11 +77,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
                 <PeerInfoLayer
                   bottomLeft={<NameTag name={config.displayName} />}
-                  topLeft={
-                    hasInitials && showDisabledIcon(config.audio) ? (
-                      <DisabledMicIcon isLoading={isLoading(audio)} />
-                    ) : <SoundIcon/>
-                  }
+                  topLeft={upperLeftIcon}
                   tileSize={tileSize}
                 />
                 {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}

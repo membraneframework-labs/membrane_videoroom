@@ -1,13 +1,14 @@
 import { useCallback, useMemo, useState } from "react";
-import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { TrackEncoding, VadStatus } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 
 export type ApiTrack = {
   trackId: string;
+  isSpeaking: boolean;
   mediaStreamTrack?: MediaStreamTrack;
   mediaStream?: MediaStream;
-  metadata?: TrackMetadata;
   encoding?: TrackEncoding;
+  metadata?: TrackMetadata;
 };
 
 export type RemotePeer = {
@@ -58,13 +59,15 @@ export type PeersApi = {
   addTrack: (
     peerId: string,
     trackId: string,
+    metadata?: TrackMetadata,
     mediaStreamTrack?: MediaStreamTrack,
     mediaStream?: MediaStream,
-    metadata?: TrackMetadata
+    vadStatus?: VadStatus
   ) => void;
   removeTrack: (peerId: string, trackId: string) => void;
   setMetadata: (peerId: string, trackId: string, metadata: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
+  setIsSpeaking: (peerId: string, trackId: string, vadStatus: VadStatus) => void;
   setLocalPeer: (id: string, metadata?: PeerMetadata) => void;
   setLocalStream: (type: TrackType, enabled: boolean, stream: MediaStream | undefined) => void;
   setLocalTrackId: (type: TrackType, trackId: string | null) => void;
@@ -155,19 +158,21 @@ export const usePeersState = (): UsePeersStateResult => {
     (
       peerId: string,
       trackId: string,
+      metadata?: TrackMetadata,
       mediaStreamTrack?: MediaStreamTrack,
       mediaStream?: MediaStream,
-      metadata?: TrackMetadata
+      vadStatus?: VadStatus
     ) => {
       setRemotePeers((prev: PeersMap) => {
         const peerCopy: RemotePeer = { ...prev[peerId] };
         const oldTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
 
         const newTrack = {
+          trackId: trackId,
           mediaStreamTrack: mediaStreamTrack,
           mediaStream: mediaStream,
+          isSpeaking: vadStatus === "speech",
           metadata: metadata,
-          trackId: trackId,
         };
 
         const newTracks: ApiTrack[] = [...oldTracks, newTrack];
@@ -206,6 +211,20 @@ export const usePeersState = (): UsePeersStateResult => {
     });
   }, []);
 
+  const setIsSpeaking = useCallback((peerId: string, trackId: string, vadStatus: VadStatus) => {
+    setRemotePeers((prev: PeersMap) => {
+      const peerCopy: RemotePeer = { ...prev[peerId] };
+      const trackCopy: ApiTrack | undefined = copyTrack(peerCopy, trackId);
+      if (!trackCopy) return prev;
+
+      trackCopy.isSpeaking = vadStatus === "speech";
+
+      const otherTracks: ApiTrack[] = copyOtherTracks(peerCopy, trackId);
+
+      return { ...prev, [peerId]: { ...peerCopy, tracks: [...otherTracks, trackCopy] } };
+    });
+  }, []);
+
   const removeTrack = useCallback((peerId: string, trackId: string) => {
     setRemotePeers((prev) => {
       const newState: PeersMap = { ...prev };
@@ -226,11 +245,12 @@ export const usePeersState = (): UsePeersStateResult => {
       addTrack,
       removeTrack,
       setEncoding,
+      setIsSpeaking,
       setLocalPeer,
       setLocalStream,
       setLocalTrackId,
-      setMetadata,
       setLocalTrackMetadata,
+      setMetadata,
     }),
     [
       addPeers,
@@ -238,6 +258,7 @@ export const usePeersState = (): UsePeersStateResult => {
       addTrack,
       removeTrack,
       setEncoding,
+      setIsSpeaking,
       setLocalPeer,
       setLocalStream,
       setLocalTrackId,

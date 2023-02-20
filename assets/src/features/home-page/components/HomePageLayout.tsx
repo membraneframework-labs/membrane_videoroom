@@ -13,7 +13,9 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
         "relative overflow-y-auto"
       )}
     >
-      <Navbar />
+      <div className="absolute inset-x-4 top-4">
+        <Navbar />
+      </div>
 
       <div className="flex h-full w-full justify-center">{children}</div>
     </div>

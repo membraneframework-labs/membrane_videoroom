@@ -18,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer }) => {
       className={clsx(
         "border-brand-dark-blue-300 bg-brand-white md:border",
         "rounded-t-2xl md:rounded-xl",
-        "absolute bottom-0 left-0 z-40 h-[480px] w-full flex-col md:relative md:z-auto md:flex md:h-full md:w-[300px] md:min-w-[300px]",
+        "md:grid-wrapper absolute bottom-0 left-0 z-40 h-[480px] w-full flex-col md:relative md:z-auto md:flex md:h-full md:w-[300px] md:min-w-[300px]",
         "font-aktivGrotesk"
       )}
     >
@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer }) => {
 
       <div className="w-full border-[0.5px] border-brand-dark-blue-300"></div>
 
-      <div className={clsx("w-full p-3 pt-6")}>
+      <div className={clsx("w-full overflow-y-auto p-3 pt-6")}>
         {tab == "chat" ? <Chat /> : <PeopleComponent peers={peers} localPeer={localPeer} />}
       </div>
     </div>

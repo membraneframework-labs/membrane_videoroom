@@ -34,7 +34,7 @@ const PeopleComponent: React.FC<PeopleComponentProps> = ({ peers, localPeer }) =
     <div className={clsx("flex flex-col gap-y-4")}>
       {allPeers.map((peer) => (
         <div key={peer.peerId} className="flex items-center gap-x-3">
-          <div className="rounded-full border border-brand-dark-blue-200 p-1.5 text-sm text-brand-dark-blue-400">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-dark-blue-200 text-sm text-brand-dark-blue-400">
             {peer.initials}
           </div>
           <div className="max-w-6 truncate">{peer.displayName}</div>

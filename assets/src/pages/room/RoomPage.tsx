@@ -15,6 +15,7 @@ import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import Sidebar from "../../features/room-page/components/Sidebar";
 import Button from "../../features/shared/components/Button";
+import clsx from "clsx";
 
 type Props = {
   displayName: string;
@@ -92,7 +93,12 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
-        <section className="flex h-full w-full gap-x-4">
+        <section
+          className={clsx(
+            "flex h-full w-full self-center justify-self-center 3xl:max-w-[1728px]",
+            isSidebarOpen && "md:gap-x-4"
+          )}
+        >
           <VideochatSection
             peers={peerState.remote}
             localPeer={peerState.local}
@@ -100,18 +106,24 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
             webrtc={webrtc}
           />
 
-          {isSidebarOpen && (
-            <>
+          <>
+            {isSidebarOpen && (
               <div className="absolute inset-0 bg-transparent/40 md:hidden">
                 <Button className="absolute inset-0" onClick={() => setIsSidebarOpen(false)}></Button>
                 <Sidebar peers={peerState.remote} localPeer={peerState.local} />{" "}
               </div>
+            )}
 
-              <div className="hidden md:inline-block">
-                <Sidebar peers={peerState.remote} localPeer={peerState.local} />
-              </div>
-            </>
-          )}
+            <div
+              className={clsx(
+                "hidden w-full md:inline-block",
+                isSidebarOpen ? "max-w-[300px]" : "max-w-0",
+                "overflow-hidden transition-all duration-300"
+              )}
+            >
+              <Sidebar peers={peerState.remote} localPeer={peerState.local} />
+            </div>
+          </>
         </section>
 
         <MediaControlButtons

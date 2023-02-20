@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
-import { VIDEO_TRACKS_CONFIG } from "../../../pages/room/consts";
+import { AUDIO_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "../../../pages/room/consts";
 import { useMedia } from "../../../pages/room/hooks/useMedia";
 import { usePeersState } from "../../../pages/room/hooks/usePeerState";
 import { useSetLocalUserTrack } from "../../../pages/room/hooks/useSetLocalUserTrack";
@@ -30,8 +30,8 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
 
   const localCamera = useMedia(VIDEO_TRACKS_CONFIG, cameraAutostart.status);
   useSetLocalUserTrack("camera", peerApi, localCamera.stream, localCamera.isEnabled);
-
-  const [isAudioStart, setIsAudioStart] = useState(audioAutostart.status);
+  const localAudio = useMedia(AUDIO_TRACKS_CONFIG, audioAutostart.status);
+  useSetLocalUserTrack("audio", peerApi, localAudio.stream, localAudio.isEnabled);
 
   return (
     <MediaPlayerTile
@@ -73,14 +73,14 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                 }}
               />
             )}
-            {isAudioStart ? (
+            {localAudio.isEnabled ? (
               <MediaControlButton
                 key={"mic-mute"}
                 icon={Microphone}
                 hover="Turn off the microphone"
                 className={neutralButtonStyle}
                 onClick={() => {
-                  setIsAudioStart(false);
+                  localAudio.disable();
                   audioAutostart.setAudioAutostart(false);
                 }}
               />
@@ -91,7 +91,11 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                 hover="Turn on the microphone"
                 className={activeButtonStyle}
                 onClick={() => {
-                  setIsAudioStart(true);
+                  if (localAudio.stream) {
+                    localAudio.enable();
+                  } else {
+                    localAudio.start();
+                  }
                   audioAutostart.setAudioAutostart(true);
                 }}
               />

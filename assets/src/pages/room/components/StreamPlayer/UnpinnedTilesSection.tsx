@@ -48,47 +48,54 @@ const UnpinnedTilesSection: FC<Props> = ({
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
+  const mapMediaTileConfigToElement = (config: MediaPlayerTileConfig): JSX.Element => {
+    const video: TrackWithId | null = config.video;
+    const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
+    const hasInitials = config.typeName === "local" || config.typeName === "remote";
 
-const mapMediaTileConfigToElement = (config: MediaPlayerTileConfig) : JSX.Element => {
-  const video: TrackWithId | null = config.video;
-          const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
-          const hasInitials = config.typeName === "local" || config.typeName === "remote";
-  
-          return (
-            <MediaPlayerTile
-              key={config.mediaPlayerId}
-              peerId={config.peerId}
-              video={video}
-              audio={config.typeName === "remote" ? config.audio : null}
-              className={tileStyle}
-              layers={
-                <>
-                  {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
-                  <PeerInfoLayer
-                    bottomLeft={<NameTag name={config.displayName} />}
-                    topLeft={
-                      hasInitials && showDisabledIcon(config.audio) ? (
-                        <DisabledMicIcon isLoading={isLoading(audio)} />
-                      ) : undefined
-                    }
-                    tileSize={tileSize}
-                  />
-                  {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
-                </>
+    return (
+      <MediaPlayerTile
+        key={config.mediaPlayerId}
+        peerId={config.peerId}
+        video={video}
+        audio={config.typeName === "remote" ? config.audio : null}
+        className={tileStyle}
+        layers={
+          <>
+            {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
+            <PeerInfoLayer
+              bottomLeft={<NameTag name={config.displayName} />}
+              topLeft={
+                hasInitials && showDisabledIcon(config.audio) ? (
+                  <DisabledMicIcon isLoading={isLoading(audio)} />
+                ) : undefined
               }
-              showSimulcast={showSimulcast && config.typeName !== "screenShare"}
-              streamSource={config.streamSource}
-              flipHorizontally={config.typeName === "local"}
-              webrtc={webrtc}
-              blockFillContent={config.typeName === "screenShare"}
+              tileSize={tileSize}
             />
-          );
-  }
-  
-  const mapOtherToElement = ({initial1, initial2, noLeftUsers}: OthersTileConfig): JSX.Element => <OthersTile numberOfLeftTiles={noLeftUsers}/>;
+            {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
+          </>
+        }
+        showSimulcast={showSimulcast && config.typeName !== "screenShare"}
+        streamSource={config.streamSource}
+        flipHorizontally={config.typeName === "local"}
+        webrtc={webrtc}
+        blockFillContent={config.typeName === "screenShare"}
+      />
+    );
+  };
 
-  const mapTile = (config: TileConfig) : JSX.Element => config.typeName === "others" ? mapOtherToElement(config) : mapMediaTileConfigToElement(config);
-    
+  const mapOtherToElement = ({ initialsFront, initialsBack, noLeftUsers }: OthersTileConfig): JSX.Element => (
+    <OthersTile
+      key="others"
+      initialsFront={initialsFront}
+      initialsBack={initialsBack}
+      numberOfLeftTiles={noLeftUsers}
+    />
+  );
+
+  const mapTile = (config: TileConfig): JSX.Element =>
+    config.typeName === "others" ? mapOtherToElement(config) : mapMediaTileConfigToElement(config);
+
   return (
     <div id="videos-grid" className={videoGridStyle}>
       {tileConfigs.map(mapTile)}

@@ -42,14 +42,13 @@ export type ScreenShareTileConfig = {
   typeName: "screenShare";
 } & CommonTile;
 
-
 export type MediaPlayerTileConfig = PeerTileConfig | ScreenShareTileConfig;
 
 export type OthersTileConfig = {
   typeName: "others";
-  initial1: string;
-  initial2: string;
+  initialsBack: string;
+  initialsFront: string;
   noLeftUsers: number;
-}
+};
 
 export type TileConfig = MediaPlayerTileConfig | OthersTileConfig;

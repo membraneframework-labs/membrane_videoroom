@@ -7,7 +7,15 @@ import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
 import usePinning from "./hooks/usePinning";
 
-import { PeerTileConfig, MediaPlayerTileConfig, ScreenShareTileConfig, TrackType, TrackWithId, TileConfig, OthersTileConfig } from "../types";
+import {
+  PeerTileConfig,
+  MediaPlayerTileConfig,
+  ScreenShareTileConfig,
+  TrackType,
+  TrackWithId,
+  TileConfig,
+  OthersTileConfig,
+} from "../types";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 import { groupBy } from "./utils";
@@ -121,21 +129,21 @@ const pinNewScreenShares = (
   screenSharingStreams.map((tile) => tile.mediaPlayerId).forEach(pinIfNotAlreadyPinned);
 };
 
-const addOthersTileIfNeeded = (unpinnedTiles: MediaPlayerTileConfig[], isAnyTilePinned: boolean) : TileConfig[]  => {
+const addOthersTileIfNeeded = (unpinnedTiles: MediaPlayerTileConfig[], isAnyTilePinned: boolean): TileConfig[] => {
   const tilesLimit = isAnyTilePinned ? 3 : 15;
   if (unpinnedTiles.length <= tilesLimit + 1) return unpinnedTiles;
-  
+
   const trimmedUnpinnedTiles = unpinnedTiles.slice(0, tilesLimit);
   const leftTiles = unpinnedTiles.slice(tilesLimit);
 
   const othersTileConfig: OthersTileConfig = {
     typeName: "others",
-    initial1: computeInitials(leftTiles[0].displayName),
-    initial2: computeInitials(leftTiles[1].displayName),
+    initialsBack: computeInitials(leftTiles[0].displayName),
+    initialsFront: computeInitials(leftTiles[1].displayName),
     noLeftUsers: leftTiles.length,
-  }
+  };
   return [...trimmedUnpinnedTiles, othersTileConfig];
-}
+};
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);

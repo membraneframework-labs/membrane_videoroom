@@ -2,20 +2,13 @@ import React, { RefObject, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 
 export interface Props {
+  videoStream: MediaStream | null;
+  audioStream: MediaStream | null;
   flipHorizontally?: boolean;
-  videoStream?: MediaStream;
-  audioStream?: MediaStream;
-  playAudio?: boolean;
   blockFillContent?: boolean;
 }
 
-const MediaPlayer: React.FC<Props> = ({
-  videoStream,
-  audioStream,
-  flipHorizontally,
-  playAudio,
-  blockFillContent,
-}: Props) => {
+const MediaPlayer: React.FC<Props> = ({ videoStream, audioStream, flipHorizontally, blockFillContent }: Props) => {
   const videoRef: RefObject<HTMLVideoElement> = useRef<HTMLVideoElement>(null);
   const audioRef: RefObject<HTMLAudioElement> = useRef<HTMLAudioElement>(null);
 
@@ -59,7 +52,7 @@ const MediaPlayer: React.FC<Props> = ({
 
   return (
     <>
-      <audio muted={!playAudio} autoPlay ref={audioRef} />
+      <audio autoPlay ref={audioRef} />
       <video
         className={clsx(
           "h-full w-full",

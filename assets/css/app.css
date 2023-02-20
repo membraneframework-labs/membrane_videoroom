@@ -39,15 +39,6 @@
   min-height: 70px;
 }
 
-/**
-Don't display screensharing control on mobile browsers
-**/
-@media (max-width: 768px) {
-  .screensharing-control {
-    display: none;
-  }
-}
-
 .grid-wrapper {
   --navbar: 48px;
   --menuTooltip: 42px;
@@ -61,7 +52,7 @@ Don't display screensharing control on mobile browsers
 
 /* allows for centering leftover elements in the last row of the grid */
 @media (min-width: 769px) {
-  /* two colums -> one element left*/
+  /* two columns -> one element left*/
   .video-tile-grid-2:last-child:nth-child(2n - 1) {
     grid-column-end: 4;
   }
@@ -108,21 +99,43 @@ Don't display screensharing control on mobile browsers
   }
 }
 
+/* mobile screens */
 @media (max-width: 768px) {
   .home-page {
-    background-image: url("/images/backgroundLeft.png");
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
     background-repeat: no-repeat;
-    background-size: contain;
-    background-position: left -90px top 200px;
+    background-size: 30%, 40%;
+    background-position: left -50px top 80px, right -70px bottom 15px;
   }
 }
 
-@media (min-width: 769px) {
+/* desktop screens */
+@media (min-width: 769px) and (orientation: landscape) {
   .home-page {
     background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
     background-repeat: no-repeat;
     background-size: contain;
-    background-position: left -90px top 200px, right -170px top 120px;
+    background-position: left -90px top 200px, right -180px top 120px;
+  }
+}
+
+/* horizontal large screens */
+@media (min-width: 1550px) and (orientation: landscape) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -150px top 200px, right -300px top 120px;
+  }
+}
+
+/* vertical large screens */
+@media (min-width: 769px) and (orientation: portrait) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: left -30% top 200px, right -30% bottom -15%;
   }
 
   .room-page {

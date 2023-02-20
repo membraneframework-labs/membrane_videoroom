@@ -12,7 +12,7 @@ type Props = {
 type Corner = {
   x: "left-0" | "right-0";
   y: "top-0" | "bottom-0";
-  content?: JSX.Element;
+  content?: JSX.Element | null;
 };
 
 const PeerInfoLayer: FC<Props> = ({ topLeft, topRight, bottomLeft, bottomRight, tileSize = "L" }: Props) => {

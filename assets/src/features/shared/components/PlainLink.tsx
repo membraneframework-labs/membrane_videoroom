@@ -11,8 +11,9 @@ export type PlainLinkProps = {
   className?: string;
   name?: string;
   button?: boolean;
+  reload?: boolean;
 };
-const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, onClick, disabled }) => {
+const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, onClick, disabled, reload }) => {
   const onClickInner = useCallback(
     (e: React.SyntheticEvent) => (disabled ? noop() : onClick?.(e)),
     [disabled, onClick]
@@ -47,7 +48,7 @@ const PlainLink: React.FC<PlainLinkProps> = ({ href, className, name, children, 
 
   // internal links
   return (
-    <Link onClick={onClickInner} to={hrefInner} id={name} className={className}>
+    <Link onClick={onClickInner} reloadDocument={reload} to={hrefInner} id={name} className={className}>
       {children}
     </Link>
   );

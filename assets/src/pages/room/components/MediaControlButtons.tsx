@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import { UseMediaResult } from "../hooks/useMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
 import { useToggle } from "../hooks/useToggle";
 import Microphone from "../../../features/room-page/icons/Microphone";
@@ -11,15 +11,10 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
-import useToast from "../../../features/shared/hooks/useToast";
-import { ToastType } from "../../../features/shared/context/ToastContext";
 import Chat from "../../../features/room-page/icons/Chat";
+import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 
 type ControlButton = MediaControlButtonProps & { id: string };
-
-const neutralButtonStyle = "border-brand-dark-blue-400 text-brand-dark-blue-500 bg-white";
-const activeButtonStyle = "text-brand-white bg-brand-dark-blue-400 border-brand-dark-blue-400";
-const redButtonStyle = "text-brand-white bg-brand-red border-brand-red";
 
 const getAutomaticControls = (
   {
@@ -33,7 +28,7 @@ const getAutomaticControls = (
     openSidebar,
   }: LocalUserMediaControls,
   navigate: NavigateFunction,
-  addToast: (t: ToastType) => void
+  roomId?: string
 ): ControlButton[] => [
   userMediaVideo.isEnabled
     ? {
@@ -106,7 +101,6 @@ const getAutomaticControls = (
         onClick: () => {
           displayMedia.start();
           screenSharingStreaming.setActive(true);
-          addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 5000 });
         },
       },
   {
@@ -123,7 +117,7 @@ const getAutomaticControls = (
     hover: "Leave the room",
     className: redButtonStyle,
     onClick: () => {
-      navigate("/");
+      navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
     },
   },
 ];
@@ -138,7 +132,8 @@ const getManualControls = (
     displayMedia,
     screenSharingStreaming,
   }: LocalUserMediaControls,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  roomId?: string
 ): ControlButton[][] => [
   [
     userMediaAudio.stream
@@ -341,7 +336,7 @@ const getManualControls = (
       hover: "Leave the room",
       className: redButtonStyle,
       onClick: () => {
-        navigate("/");
+        navigate(`/room/${roomId}`, { state: { isLeavingRoom: true } });
       },
     },
   ],
@@ -364,11 +359,14 @@ type LocalUserMediaControls = {
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
-  const { addToast } = useToast();
+  const { roomId } = useParams();
 
   const navigate = useNavigate();
+
   const controls: ControlButton[][] =
-    props.mode === "manual" ? getManualControls(props, navigate) : [getAutomaticControls(props, navigate, addToast)];
+    props.mode === "manual"
+      ? getManualControls(props, navigate, roomId)
+      : [getAutomaticControls(props, navigate, roomId)];
   return (
     <div>
       <div

@@ -24,9 +24,9 @@ const Button: React.FC<ButtonProps> = (props) => {
 export default Button;
 
 const buttonDefaultClassName = clsx(
-  "inline-block whitespace-nowrap",
-  "font-medium text-lg leading-[2.15rem] tracking-[0.05em]",
-  "md:px-8 md:py-4 px-8 py-3",
+  "inline-block whitespace-nowrap text-center",
+  "font-medium text-lg font-aktivGrotesk",
+  "px-8 py-3",
   "rounded-full"
 );
 

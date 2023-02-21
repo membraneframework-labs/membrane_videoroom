@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo } from "react";
 
-import { ApiTrack, LocalPeer, RemotePeer, Track } from "./hooks/usePeerState";
+import { ApiTrack, LocalPeer, RemotePeer } from "./hooks/usePeerState";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
@@ -11,6 +11,7 @@ import { PeerTileConfig, MediaPlayerTileConfig, ScreenShareTileConfig, TrackType
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 import { groupBy } from "./utils";
+import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
 
 type Props = {
   peers: RemotePeer[];
@@ -100,9 +101,6 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
 
   return screenSharingStreams;
 };
-
-const remoteTrackToLocalTrack = (localPeer: Track | undefined): TrackWithId | null =>
-  localPeer ? { ...localPeer, remoteTrackId: localPeer.trackId } : null;
 
 const takeOutPinnedTiles = (
   tiles: MediaPlayerTileConfig[],

@@ -4,7 +4,7 @@ import PlainLink from "../../shared/components/PlainLink";
 
 const Navbar: React.FC = () => {
   return (
-    <PlainLink href="/" name="home-page" className="self-start">
+    <PlainLink href="/" name="home-page" reload className="self-start">
       <MembraneLogo className="text-5xl" />
     </PlainLink>
   );

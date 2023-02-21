@@ -9,7 +9,7 @@ export type CheckboxProps = {
 
 export const Checkbox: FC<CheckboxProps> = ({ label, id, status, onChange }: CheckboxProps) => {
   return (
-    <div className="form-check flex items-center gap-x-1">
+    <div className="form-check flex items-center justify-center gap-x-1">
       <label className="form-check-label font-aktivGrotesk text-sm text-brand-dark-blue-500" htmlFor={id}>
         {label}
       </label>

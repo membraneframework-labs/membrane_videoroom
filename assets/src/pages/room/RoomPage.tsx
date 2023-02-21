@@ -19,10 +19,18 @@ type Props = {
   roomId: string;
   isSimulcastOn: boolean;
   manualMode: boolean;
-  autostartStreaming?: boolean;
+  cameraAutostartStreaming?: boolean;
+  audioAutostartStreaming?: boolean;
 };
 
-const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, autostartStreaming }: Props) => {
+const RoomPage: FC<Props> = ({
+  roomId,
+  displayName,
+  isSimulcastOn,
+  manualMode,
+  cameraAutostartStreaming,
+  audioAutostartStreaming,
+}: Props) => {
   useAcquireWakeLockAutomatically();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
@@ -44,7 +52,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     webrtc,
     VIDEO_TRACKS_CONFIG,
     peerApi,
-    autostartStreaming
+    cameraAutostartStreaming
   );
   const audio = useStreamManager(
     "audio",
@@ -54,7 +62,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode, a
     webrtc,
     AUDIO_TRACKS_CONFIG,
     peerApi,
-    autostartStreaming
+    audioAutostartStreaming
   );
   const screenSharing = useStreamManager(
     "screensharing",

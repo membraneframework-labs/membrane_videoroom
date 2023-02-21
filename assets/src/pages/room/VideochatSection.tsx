@@ -129,8 +129,8 @@ const pinNewScreenShares = (
   screenSharingStreams.map((tile) => tile.mediaPlayerId).forEach(pinIfNotAlreadyPinned);
 };
 
-const addOthersTileIfNeeded = (unpinnedTiles: MediaPlayerTileConfig[], isAnyTilePinned: boolean): TileConfig[] => {
-  const tilesLimit = isAnyTilePinned ? 3 : 15;
+const addOthersTileIfNeeded = (unpinnedTiles: MediaPlayerTileConfig[], smallerLimit: boolean): TileConfig[] => {
+  const tilesLimit = smallerLimit ? 3 : 15;
   if (unpinnedTiles.length <= tilesLimit + 1) return unpinnedTiles;
 
   const trimmedUnpinnedTiles = unpinnedTiles.slice(0, tilesLimit);
@@ -171,6 +171,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const isAnyTilePinned = pinnedTiles.length > 0;
   const isAnyTileUnpinned = unpinnedTiles.length > 0;
 
+  const pinnedTilesTrimmed = addOthersTileIfNeeded(pinnedTiles, false);
   const unpinnedTilesTrimmed = addOthersTileIfNeeded(unpinnedTiles, isAnyTilePinned);
 
   const wrapperClass = useMemo(() => {
@@ -183,12 +184,13 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   }, [isAnyTilePinned, allTilesConfig.length, unpinnedTiles.length]);
 
   const shouldBlockPinning = allTilesConfig.length === 1;
+
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
       <div className={wrapperClass}>
         {isAnyTilePinned && (
           <PinnedTilesSection
-            pinnedTiles={pinnedTiles}
+            pinnedTiles={pinnedTilesTrimmed}
             unpin={pinningApi.unpin}
             showSimulcast={showSimulcast}
             webrtc={webrtc}

@@ -2,7 +2,7 @@ import React, { FC, useMemo } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
-import { MediaPlayerTileConfig, OthersTileConfig, TileConfig, TrackWithId } from "../../../types";
+import { MediaPlayerTileConfig, TileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
@@ -13,7 +13,7 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
-import OthersTile from "./OthersTile";
+import { mapOtherToElement } from "./OthersTile";
 
 type Props = {
   tileConfigs: TileConfig[];
@@ -83,15 +83,6 @@ const UnpinnedTilesSection: FC<Props> = ({
       />
     );
   };
-
-  const mapOtherToElement = ({ initialsFront, initialsBack, noLeftUsers }: OthersTileConfig): JSX.Element => (
-    <OthersTile
-      key="others"
-      initialsFront={initialsFront}
-      initialsBack={initialsBack}
-      numberOfLeftTiles={noLeftUsers}
-    />
-  );
 
   const mapTile = (config: TileConfig): JSX.Element =>
     config.typeName === "others" ? mapOtherToElement(config) : mapMediaTileConfigToElement(config);

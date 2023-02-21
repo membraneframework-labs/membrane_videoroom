@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const MIN_USABLE_VIEWPORT_HEIGHT = 650;
+
 const useHorizontalMobile = () => {
   const [isHorizontalOrientation, setIsHorizontalOrientation] = useState<boolean | undefined>();
 
@@ -7,7 +9,8 @@ const useHorizontalMobile = () => {
     if (!window.visualViewport) return;
 
     setIsHorizontalOrientation(
-      window.visualViewport.width > window.visualViewport.height && window.visualViewport.height < 650
+      window.visualViewport.width > window.visualViewport.height &&
+        window.visualViewport.height < MIN_USABLE_VIEWPORT_HEIGHT
     );
   };
 

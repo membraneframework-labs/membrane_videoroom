@@ -20,7 +20,7 @@ export interface Props {
   webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
-  forceEncoding?: TrackEncoding | null;
+  forceEncoding?: TrackEncoding;
 }
 
 const MediaPlayerTile: FC<Props> = ({

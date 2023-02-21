@@ -156,7 +156,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const shouldBlockPinning = allTilesConfig.length === 1;
 
-  const forceEncoding = allTilesConfig.length <= 2 ? "h" : null;
+  const forceEncoding = allTilesConfig.length <= 2 ? "h" : undefined;
 
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">

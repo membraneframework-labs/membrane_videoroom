@@ -23,7 +23,7 @@ type Props = {
   pin: (tileId: string) => void;
   videoInVideo: boolean;
   blockPinning: boolean;
-  forceEncoding?: TrackEncoding | null;
+  forceEncoding?: TrackEncoding;
 };
 
 const UnpinnedTilesSection: FC<Props> = ({

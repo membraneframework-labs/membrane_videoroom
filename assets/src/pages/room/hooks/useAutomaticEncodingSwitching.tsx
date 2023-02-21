@@ -44,10 +44,7 @@ export const useAutomaticEncodingSwitching = (
   const { setTargetEncoding, targetEncoding } = useSimulcastRemoteEncoding(peerId, trackId, webrtc);
 
   useEffect(() => {
-    if (disableAutomaticLayerSwitching) return;
-    if (!smartEncodingStatus) return;
-    if (!onInitEncodingQuality) return;
-    if (!smartEncoding) return;
+    if (disableAutomaticLayerSwitching || !smartEncodingStatus || !onInitEncodingQuality || !smartEncoding) return;
 
     setTargetEncoding(smartEncoding);
   }, [

@@ -27,7 +27,11 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
   return (
     <div className="absolute bottom-0 right-0 z-50 w-full bg-white p-2 text-sm text-gray-700 opacity-80 md:text-base">
       <div className="flex flex-row justify-between">
-        <Tooltip text="Toggle automatic layer switching" textCss="left-24">
+        <Tooltip text="Encoding based on all rules" textCss="left-20">
+          <div>Smart: {smartEncoding}</div>
+        </Tooltip>
+
+        <Tooltip text="Toggle automatic layer switching">
           <div className="form-check flex items-center gap-x-1">
             <label className="form-check-label text-brand-dark-blue-500">Smart</label>
             <input
@@ -38,10 +42,6 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
               checked={globalSmartEncodingStatus && localSmartEncodingStatus}
             />
           </div>
-        </Tooltip>
-
-        <Tooltip text="Encoding based on all rules">
-          <div>Smart: {smartEncoding}</div>
         </Tooltip>
 
         <Tooltip text="Encoding based on tile size" textCss="right-20">

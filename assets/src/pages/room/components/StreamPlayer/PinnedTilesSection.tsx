@@ -37,7 +37,7 @@ type Props = {
   unpin: (tileIdToUnpin: string) => void;
   webrtc?: MembraneWebRTC;
   showSimulcast?: boolean;
-  forceEncoding?: TrackEncoding | null;
+  forceEncoding?: TrackEncoding;
 };
 
 const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast, forceEncoding }: Props) => {

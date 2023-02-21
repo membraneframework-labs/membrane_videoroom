@@ -3,11 +3,14 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
 import { DEFAULT_MANUAL_MODE_CHECKBOX_VALUE } from "../../../pages/room/consts";
+import { messageComparator } from "../../../pages/room/errorMessage";
 import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
 import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
 import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
 import Input from "../../shared/components/Input";
+import useEffectOnChange from "../../shared/hooks/useEffectOnChange";
+import useToast from "../../shared/hooks/useToast";
 import { MobileLoginStep, MobileLoginStepType } from "../types";
 import HomePageLayout from "./HomePageLayout";
 
@@ -55,6 +58,22 @@ const VideoroomHomePage: React.FC = () => {
     simulcast.setSimulcast(simulcastInput);
     manualMode.setManualMode(manualModeInput);
   }, [displayNameInput, manualMode, manualModeInput, setUsername, simulcast, simulcastInput]);
+
+  const { addToast } = useToast();
+  useEffectOnChange(
+    deviceManager.errorMessage,
+    () => {
+      if (deviceManager.errorMessage) {
+        addToast({
+          id: deviceManager.errorMessage.id || crypto.randomUUID(),
+          message: deviceManager.errorMessage.message,
+          timeout: "INFINITY",
+          type: "error",
+        });
+      }
+    },
+    messageComparator
+  );
 
   const inputs = useMemo(() => {
     return (
@@ -146,9 +165,6 @@ const VideoroomHomePage: React.FC = () => {
   return (
     <HomePageLayout>
       <section className="flex h-full w-full flex-col items-center justify-center gap-y-8 sm:w-auto sm:gap-y-14 2xl:gap-y-28">
-        {deviceManager.errorMessage && (
-          <div className="w-full bg-red-700 p-1 text-white">{deviceManager.errorMessage}</div>
-        )}
         <div className="flex flex-col items-center gap-y-2 text-center sm:gap-y-6">
           <h2 className="text-xl font-medium tracking-wide sm:text-5xl">Videoconferencing for everyone</h2>
           <p className="hidden font-aktivGrotesk text-xl sm:inline-block">

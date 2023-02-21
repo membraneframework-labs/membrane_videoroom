@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { ErrorMessage } from "../errorMessage";
 
 type MediaDeviceManagerConfig = {
   askOnMount?: boolean;
@@ -23,10 +24,18 @@ export const useMediaDeviceManager = ({ askOnMount }: MediaDeviceManagerConfig =
   const [asked, setAsked] = useState(!askOnMount);
   const [audioPermissionGranted, setAudioPermissionGranted] = useState<boolean | null>(null);
   const [videoPermissionGranted, setVideoPermissionGranted] = useState<boolean | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | undefined>();
+
+  const handleError = useCallback(
+    (text: string, id?: string) => {
+      console.error(text);
+      setErrorMessage({ message: text, id: id });
+    },
+    [setErrorMessage]
+  );
 
   useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then((mediaDevices) => {
+    navigator.mediaDevices?.enumerateDevices().then((mediaDevices) => {
       setDevices(mediaDevices);
     });
   }, []);
@@ -53,7 +62,7 @@ export const useMediaDeviceManager = ({ askOnMount }: MediaDeviceManagerConfig =
           setAudioPermissionGranted(true);
           setVideoPermissionGranted(true);
         },
-        () => setErrorMessage("You didn't allow this site to use Camera and Microphone")
+        () => handleError("You didn't allow this site to use Camera and Microphone", "audio-and-video-permission-error")
       );
     } else if (!audioPermissionGranted) {
       showMediaDevicesPrompt(
@@ -61,7 +70,7 @@ export const useMediaDeviceManager = ({ askOnMount }: MediaDeviceManagerConfig =
         () => {
           setAudioPermissionGranted(true);
         },
-        () => setErrorMessage("You didn't allow this site to use Microphone")
+        () => handleError("You didn't allow this site to use Microphone", "audio-permission-error")
       );
     } else if (!videoPermissionGranted) {
       showMediaDevicesPrompt(
@@ -69,10 +78,10 @@ export const useMediaDeviceManager = ({ askOnMount }: MediaDeviceManagerConfig =
         () => {
           setVideoPermissionGranted(true);
         },
-        () => setErrorMessage("You didn't allow this site to use Camera")
+        () => handleError("You didn't allow this site to use Camera", "video-permission-error")
       );
     }
-  }, [audioPermissionGranted, videoPermissionGranted]);
+  }, [audioPermissionGranted, handleError, videoPermissionGranted]);
 
   useEffect(() => {
     if (asked) return;

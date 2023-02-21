@@ -26,9 +26,6 @@ config :membrane_videoroom_demo, VideoRoomWeb.Endpoint,
     ]
   ]
 
-config :membrane_core, use_push_flow_control: true
-
-
 config :logger, level: :info
 
 # Set a higher stacktrace during development. Avoid configuring such

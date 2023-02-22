@@ -112,7 +112,7 @@ export const useMembraneClient = (
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
         onJoinError: (_metadata) => {
-          handleError(`Failed to join the room'`);
+          handleError(`Failed to join the room`);
         },
       },
     });

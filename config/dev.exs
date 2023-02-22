@@ -1,14 +1,11 @@
 import Config
 
 config :membrane_videoroom_demo, VideoRoomWeb.Endpoint,
+  check_origin: false,
   code_reloader: true,
+  debug_errors: true,
   watchers: [
-    esbuild:
-      {Esbuild, :install_and_run,
-       [
-         :default,
-         ~w(--sourcemap=inline --bundle --watch)
-       ]},
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
     npx: [
       "tailwindcss",
       "--input=css/app.css",
@@ -30,3 +27,9 @@ config :membrane_videoroom_demo, VideoRoomWeb.Endpoint,
   ]
 
 config :logger, level: :info
+
+# Set a higher stacktrace during development. Avoid configuring such
+# in production as building large stacktraces may be expensive.
+config :phoenix, :stacktrace_depth, 20
+# Initialize plugs at runtime for faster development compilation
+config :phoenix, :plug_init_mode, :runtime

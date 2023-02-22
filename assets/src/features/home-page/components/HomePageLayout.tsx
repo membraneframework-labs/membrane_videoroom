@@ -10,12 +10,14 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
         "home-page h-screen w-full bg-brand-sea-blue-200 text-brand-dark-blue-500",
         "font-rocGrotesk",
         "flex flex-col items-center gap-y-4 p-4",
-        "relative"
+        "relative overflow-y-auto"
       )}
     >
-      <Navbar />
+      <div className="top-4 mb-4 self-start sm:absolute sm:inset-x-4 sm:mb-0">
+        <Navbar />
+      </div>
 
-      <div className="flex h-full w-full items-center justify-center">{children}</div>
+      <div className="flex h-full w-full justify-center">{children}</div>
     </div>
   );
 };

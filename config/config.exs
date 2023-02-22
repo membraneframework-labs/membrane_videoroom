@@ -3,10 +3,10 @@ import Config
 config :phoenix, :json_library, Jason
 
 config :esbuild,
-  version: "0.12.15",
+  version: "0.14.29",
   default: [
     args:
-      ~w(src/index.tsx --bundle --target=es2016 --outfile=../priv/static/assets/js/app.js --external:/images/*),
+      ~w(src/index.tsx --bundle --target=es2017 --outfile=../priv/static/assets/js/app.js --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]

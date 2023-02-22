@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import React, { useState } from "react";
 import { LocalPeer, RemotePeer } from "../../../pages/room/hooks/usePeerState";
+import Button from "../../shared/components/Button";
+import ChevronDown from "../icons/ChevronDown";
 import Chat from "./Chat";
 import PeopleComponent from "./PeopleComponent";
 import SidebarTab, { Tab } from "./SidebarTab";
@@ -8,9 +10,10 @@ import SidebarTab, { Tab } from "./SidebarTab";
 type SidebarProps = {
   peers: RemotePeer[];
   localPeer?: LocalPeer;
+  onClose?: () => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer }) => {
+const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer, onClose }) => {
   const [tab, setTab] = useState<Tab>("people");
 
   return (
@@ -22,6 +25,10 @@ const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer }) => {
         "font-aktivGrotesk"
       )}
     >
+      {/* close button should be replaced with swipe down feature in the future */}
+      <Button className="w-full pt-2 md:hidden" onClick={onClose}>
+        <ChevronDown />
+      </Button>
       <div className="flex w-full gap-x-3 p-3">
         <SidebarTab activeTab={tab} tab="chat" onClick={setTab}>
           Chat

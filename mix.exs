@@ -29,7 +29,7 @@ defmodule VideoRoom.MixProject do
   defp deps do
     [
       {:membrane_core,
-       github: "membraneframework/membrane_core", branch: "poc-fake-push", override: true},
+       github: "membraneframework/membrane_core", branch: "use-push-flow", override: true},
       {:membrane_rtc_engine, "~> 0.10.2", override: true},
       {:membrane_rtp_plugin,
        github: "membraneframework/membrane_rtp_plugin",

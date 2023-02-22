@@ -2,10 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
+import { createStream } from "../components/StreamPlayer/streamUtils";
 
 export type MembraneStreaming = {
   trackId: string | null;
   removeTracks: () => void;
+  replaceTrackTrack: (track: MediaStreamTrack | null | "MOCK") => void;
+  track: MediaStreamTrack | null;
   addTracks: (stream: MediaStream) => void;
   setActive: (status: boolean) => void;
   updateTrackMetadata: (metadata: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -19,6 +22,9 @@ type TrackIds = {
   remoteId: string;
 };
 
+const stream = createStream("  ", "black", 24);
+const trackMock = stream.stream.getVideoTracks()[0];
+
 export const useMembraneMediaStreaming = (
   mode: StreamingMode,
   type: TrackType,
@@ -28,6 +34,7 @@ export const useMembraneMediaStreaming = (
   stream?: MediaStream
 ): MembraneStreaming => {
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
+  const [lastTrack, setLastTrack] = useState<MediaStreamTrack | null>(null);
   const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc || null);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   const defaultTrackMetadata = useMemo(() => ({ active: true, type }), [type]);
@@ -49,6 +56,7 @@ export const useMembraneMediaStreaming = (
         selectBandwidthLimit(type, simulcast)
       );
 
+      setLastTrack(track);
       setTrackIds({ localId: track.id, remoteId: remoteTrackId });
       setTrackMetadata(defaultTrackMetadata);
     },
@@ -64,12 +72,14 @@ export const useMembraneMediaStreaming = (
       if (!track) throw "Stream has no tracks!";
 
       webrtc.replaceTrack(trackIds?.remoteId, track);
+      setLastTrack(null);
     },
     [trackIds, type, webrtc]
   );
 
   const removeTracks = useCallback(() => {
     setTrackIds(null);
+    setLastTrack(null);
     setTrackMetadata(undefined);
 
     if (!webrtc || !trackIds) return;
@@ -108,12 +118,32 @@ export const useMembraneMediaStreaming = (
     [webrtcState, trackIds]
   );
 
+  const replaceTrackTrack = useCallback(
+    (track: MediaStreamTrack | null | "MOCK") => {
+      if (!trackIds) return;
+      console.log("%cNullify track!", "color: blue");
+      if (track === "MOCK") {
+        webrtcState?.replaceTrack(trackIds.remoteId, trackMock);
+        setLastTrack(null);
+        return;
+      }
+
+      if (track) {
+        webrtcState?.replaceTrack(trackIds.remoteId, track);
+      }
+      setLastTrack(track);
+    },
+    [trackIds, webrtcState]
+  );
+
   const setActive = useCallback(
     (status: boolean) => updateTrackMetadata({ ...trackMetadata, active: status }),
     [trackMetadata, updateTrackMetadata]
   );
 
   return {
+    track: lastTrack,
+    replaceTrackTrack,
     trackId: trackIds?.remoteId || null,
     removeTracks,
     addTracks,

@@ -178,6 +178,27 @@ const getManualControls = (
           hover: "Add microphone track",
           onClick: () => userMediaAudio?.stream && audioStreaming.addTracks(userMediaAudio?.stream),
         },
+    audioStreaming.track
+      ? {
+        id: "mic-nullify-mock",
+        icon: Microphone,
+        className: neutralButtonStyle,
+        hover: "Nullify mic track",
+        onClick: () => audioStreaming.replaceTrackTrack("MOCK"),
+      }
+      : {
+        id: "mic-nullify-revert",
+        icon: MicrophoneOff,
+        className: activeButtonStyle,
+        hover: "Revert track mic track",
+        onClick: () => {
+          const track = userMediaAudio?.stream?.getVideoTracks()[0] || null;
+          if (!track) {
+            console.log("skipped");
+          }
+          audioStreaming.replaceTrackTrack(track);
+        },
+      },
     audioStreaming.trackMetadata?.active
       ? {
           id: "mic-metadata-false",
@@ -240,6 +261,27 @@ const getManualControls = (
           hover: "Add camera track",
           onClick: () => userMediaVideo?.stream && cameraStreaming.addTracks(userMediaVideo?.stream),
         },
+    cameraStreaming.track
+      ? {
+        id: "cam-nullify-mock",
+        icon: Camera,
+        className: neutralButtonStyle,
+        hover: "Nullify cam track",
+        onClick: () => cameraStreaming.replaceTrackTrack("MOCK"),
+      }
+      : {
+        id: "cam-nullify-revert",
+        icon: CameraOff,
+        className: activeButtonStyle,
+        hover: "Revert cam track",
+        onClick: () => {
+          const track = userMediaVideo?.stream?.getVideoTracks()[0] || null;
+          if (!track) {
+            console.log("skipped");
+          }
+          cameraStreaming.replaceTrackTrack(track);
+        },
+      },
     cameraStreaming.trackMetadata?.active
       ? {
           id: "cam-metadata-false",

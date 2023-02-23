@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
-import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource, TrackWithId } from "../../../types";
 import clsx from "clsx";
 import { useAutomaticEncodingSwitching } from "../../hooks/useAutomaticEncodingSwitching";
 import { useDeveloperInfo } from "../../../../contexts/DeveloperInfoContext";
+import { SimulcastEncodingToReceive } from "./simulcast/SimulcastEncodingToReceive";
 
 export interface Props {
   peerId?: string;
@@ -81,16 +81,16 @@ const MediaPlayerTile: FC<Props> = ({
       />
       {layers}
       {showSimulcast && isRemote && (
-        <SimulcastRemoteLayer
+        <SimulcastEncodingToReceive
+          currentEncoding={video?.encodingQuality || null}
+          disabled={!video?.stream}
           targetEncoding={targetEncoding || null}
-          setTargetEncoding={setTargetEncoding}
           tileSizeEncoding={tileSizeEncoding}
           smartEncoding={smartEncoding}
           localSmartEncodingStatus={smartEncodingStatus}
           setLocalSmartEncodingStatus={setSmartEncodingStatus}
           globalSmartEncodingStatus={smartLayerSwitching.status}
-          currentEncoding={video?.encodingQuality}
-          disabled={!video?.stream}
+          setTargetEncoding={setTargetEncoding}
         />
       )}
       {showSimulcast && isLocal && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />}

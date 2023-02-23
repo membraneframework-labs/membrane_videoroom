@@ -4,6 +4,7 @@ import { Tooltip } from "./Tooltip";
 import { LayerButton } from "./LayerButton";
 
 type Props = {
+  currentEncoding: TrackEncoding | null;
   targetEncoding: TrackEncoding | null;
   setTargetEncoding: (encoding: TrackEncoding) => void;
   tileSizeEncoding: TrackEncoding | null;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export const SimulcastEncodingToReceive: FC<Props> = ({
+  currentEncoding,
   targetEncoding,
   setTargetEncoding,
   tileSizeEncoding,
@@ -50,8 +52,12 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
       </div>
 
       <div className="flex flex-row justify-between">
-        <Tooltip text="Selected encoding target" textCss="left-20">
-          <div>Encoding: {targetEncoding}</div>
+        <Tooltip text="Current encoding" textCss="left-10">
+          <div>Encoding: {currentEncoding}</div>
+        </Tooltip>
+
+        <Tooltip text="Selected encoding target">
+          <div>Target: {targetEncoding}</div>
         </Tooltip>
 
         <div className="flex flex-row justify-end">

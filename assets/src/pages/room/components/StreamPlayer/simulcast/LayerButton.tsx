@@ -13,7 +13,7 @@ export type LayerButtonProps = {
 };
 
 export const LayerButton = ({ onClick, text, tooltipText, disabled, selected, tooltipCss = "" }: LayerButtonProps) => (
-  <Tooltip text={tooltipText} textCss={tooltipText}>
+  <Tooltip text={tooltipText} textCss={tooltipCss}>
     <Button
       disabled={disabled}
       onClick={onClick}

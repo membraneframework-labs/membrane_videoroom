@@ -10,18 +10,16 @@ type Props = {
   smartEncoding: TrackEncoding | null;
   localSmartEncodingStatus: boolean;
   setLocalSmartEncodingStatus: (value: boolean) => void;
-  globalSmartEncodingStatus: boolean;
   disabled: boolean;
 };
 
-export const SimulcastEncoding: FC<Props> = ({
+export const SimulcastEncodingToReceive: FC<Props> = ({
   currentEncoding,
   targetEncoding,
   setTargetEncoding,
   smartEncoding,
   localSmartEncodingStatus,
   setLocalSmartEncodingStatus,
-  globalSmartEncodingStatus,
   disabled,
 }: Props) => {
   return (

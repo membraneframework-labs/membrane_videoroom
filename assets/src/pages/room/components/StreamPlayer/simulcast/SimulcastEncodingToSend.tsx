@@ -19,21 +19,24 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
         disabled={disabled}
         text="H"
         onClick={() => toggleHighQuality()}
-        tooltipText="High"
+        tooltipText={highQuality ? "Disable High" : "Enable High"}
+        tooltipCss="right-10"
       />
       <LayerButton
         selected={mediumQuality}
         disabled={disabled}
         text="M"
         onClick={() => toggleMediumQuality()}
-        tooltipText="Medium"
+        tooltipText={mediumQuality ? "Disable Medium" : "Enable Medium"}
+        tooltipCss="right-10"
       />
       <LayerButton
         selected={lowQuality}
         disabled={disabled}
         text="L"
         onClick={() => toggleLowQuality()}
-        tooltipText="Low"
+        tooltipText={lowQuality ? "Disable Low" : "Enable Low"}
+        tooltipCss="right-10"
       />
     </div>
   );

@@ -47,7 +47,7 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
         </Tooltip>
 
         <Tooltip text="Encoding based on tile size" textCss="right-20">
-          <div>Tile: {tileSizeEncoding}</div>
+          <div>Size: {tileSizeEncoding}</div>
         </Tooltip>
       </div>
 

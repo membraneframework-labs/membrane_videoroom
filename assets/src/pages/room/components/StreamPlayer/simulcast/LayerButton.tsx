@@ -14,7 +14,7 @@ export const LayerButton = ({ onClick, text, tooltipText, disabled }: LayerButto
     <Button
       disabled={disabled}
       onClick={onClick}
-      className="mx-0.5 flex w-[26px] items-center justify-center rounded-full rounded-full border disabled:pointer-events-none"
+      className="mx-0.5 flex min-w-[26px] items-center justify-center rounded-full border disabled:pointer-events-none"
     >
       {text}
     </Button>

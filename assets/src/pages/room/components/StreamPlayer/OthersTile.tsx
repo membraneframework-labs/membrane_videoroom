@@ -1,10 +1,5 @@
 import React from "react";
 import { InitialsCircle } from "../../../../features/room-page/components/InitialsImage";
-import { OthersTileConfig } from "../../../types";
-
-export const mapOtherToElement = ({ initialsFront, initialsBack, noLeftUsers }: OthersTileConfig): JSX.Element => (
-  <OthersTile key="others" initialsFront={initialsFront} initialsBack={initialsBack} numberOfLeftTiles={noLeftUsers} />
-);
 
 type Props = {
   initialsFront: string;

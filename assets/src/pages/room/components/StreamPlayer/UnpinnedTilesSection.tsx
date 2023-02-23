@@ -2,7 +2,7 @@ import React, { FC, useMemo } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
-import { MediaPlayerTileConfig, TileConfig, TrackWithId } from "../../../types";
+import { MediaPlayerTileConfig, OthersTileConfig, TileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
@@ -13,7 +13,61 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
-import { mapOtherToElement } from "./OthersTile";
+import OthersTile from "./OthersTile";
+
+type UnpinnedMediaTileProps = {
+  config: MediaPlayerTileConfig;
+  tileStyle: string;
+  tileSize: "M" | "L";
+  pin: (tileId: string) => void;
+  blockPinning: boolean;
+  webrtc?: MembraneWebRTC;
+  showSimulcast?: boolean;
+};
+
+const UnpinnedMediaTile = ({
+  config,
+  tileStyle,
+  tileSize,
+  pin,
+  blockPinning,
+  showSimulcast,
+  webrtc,
+}: UnpinnedMediaTileProps): JSX.Element => {
+  const video: TrackWithId | null = config.video;
+  const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
+  const hasInitials = config.typeName === "local" || config.typeName === "remote";
+
+  return (
+    <MediaPlayerTile
+      key={config.mediaPlayerId}
+      peerId={config.peerId}
+      video={video}
+      audio={config.typeName === "remote" ? config.audio : null}
+      className={tileStyle}
+      layers={
+        <>
+          {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
+          <PeerInfoLayer
+            bottomLeft={<NameTag name={config.displayName} />}
+            topLeft={
+              hasInitials && showDisabledIcon(config.audio) ? (
+                <DisabledMicIcon isLoading={isLoading(audio)} />
+              ) : undefined
+            }
+            tileSize={tileSize}
+          />
+          {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
+        </>
+      }
+      showSimulcast={showSimulcast && config.typeName !== "screenShare"}
+      streamSource={config.streamSource}
+      flipHorizontally={config.typeName === "local"}
+      webrtc={webrtc}
+      blockFillContent={config.typeName === "screenShare"}
+    />
+  );
+};
 
 type Props = {
   tileConfigs: TileConfig[];
@@ -48,48 +102,36 @@ const UnpinnedTilesSection: FC<Props> = ({
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
-  const mapMediaTileConfigToElement = (config: MediaPlayerTileConfig): JSX.Element => {
-    const video: TrackWithId | null = config.video;
-    const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
-    const hasInitials = config.typeName === "local" || config.typeName === "remote";
+  const UnpinnedMediaTilePartial = ({ config }: { config: MediaPlayerTileConfig }) => (
+    <UnpinnedMediaTile
+      config={config}
+      tileStyle={tileStyle}
+      tileSize={tileSize}
+      pin={pin}
+      blockPinning={blockPinning}
+      webrtc={webrtc}
+      showSimulcast={showSimulcast}
+    />
+  );
 
-    return (
-      <MediaPlayerTile
-        key={config.mediaPlayerId}
-        peerId={config.peerId}
-        video={video}
-        audio={config.typeName === "remote" ? config.audio : null}
-        className={tileStyle}
-        layers={
-          <>
-            {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
-            <PeerInfoLayer
-              bottomLeft={<NameTag name={config.displayName} />}
-              topLeft={
-                hasInitials && showDisabledIcon(config.audio) ? (
-                  <DisabledMicIcon isLoading={isLoading(audio)} />
-                ) : undefined
-              }
-              tileSize={tileSize}
-            />
-            {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
-          </>
-        }
-        showSimulcast={showSimulcast && config.typeName !== "screenShare"}
-        streamSource={config.streamSource}
-        flipHorizontally={config.typeName === "local"}
-        webrtc={webrtc}
-        blockFillContent={config.typeName === "screenShare"}
-      />
-    );
-  };
-
-  const mapTile = (config: TileConfig): JSX.Element =>
-    config.typeName === "others" ? mapOtherToElement(config) : mapMediaTileConfigToElement(config);
+  const OthersTilePartial = ({ config }: { config: OthersTileConfig }) => (
+    <OthersTile
+      key="others"
+      initialsFront={config.initialsFront}
+      initialsBack={config.initialsBack}
+      numberOfLeftTiles={config.noLeftUsers}
+    />
+  );
 
   return (
     <div id="videos-grid" className={videoGridStyle}>
-      {tileConfigs.map(mapTile)}
+      {tileConfigs.map((config: TileConfig) =>
+        config.typeName !== "others" ? (
+          <UnpinnedMediaTilePartial config={config} />
+        ) : (
+          <OthersTilePartial config={config} />
+        )
+      )}
     </div>
   );
 };

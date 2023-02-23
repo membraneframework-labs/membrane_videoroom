@@ -51,11 +51,13 @@ const UnpinnedTilesSection: FC<Props> = ({
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
-  const getUpperLeftIcon = (config: MediaPlayerTileConfig) => {
-    if (config.typeName === "local" || config.typeName === "remote") {
-      if (showDisabledIcon(config.audio)) return <DisabledMicIcon isLoading={isLoading(config.audio)} />;
-      if (config.isSpeaking) return <SoundIcon />;
-    }
+  const getUpperLeftIcon = (config: MediaPlayerTileConfig): JSX.Element | null => {
+    if (config.typeName !== "local" && config.typeName !== "remote") return null;
+
+    if (showDisabledIcon(config.audio)) return <DisabledMicIcon isLoading={isLoading(config.audio)} />;
+    if (config.isSpeaking) return <SoundIcon />;
+
+    return null;
   };
 
   return (
@@ -63,7 +65,7 @@ const UnpinnedTilesSection: FC<Props> = ({
       {tileConfigs.map((config: MediaPlayerTileConfig) => {
         const video: TrackWithId | null = config.video;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
-        const upperLeftIcon: JSX.Element | undefined = getUpperLeftIcon(config);
+        const upperLeftIcon: JSX.Element | null = getUpperLeftIcon(config);
 
         return (
           <MediaPlayerTile

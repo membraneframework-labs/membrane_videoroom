@@ -48,7 +48,7 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): PeerTileConfig[
       video: videoTrack,
       audio: audioTrack,
       streamSource: "remote",
-      isSpeaking: (audioTrack && audioTrack.isSpeaking) ?? false,
+      isSpeaking: audioTrack?.isSpeaking ?? false,
     };
   });
 };

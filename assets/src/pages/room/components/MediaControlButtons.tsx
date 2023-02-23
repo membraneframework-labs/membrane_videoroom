@@ -11,7 +11,13 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
-import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
+import {
+  activeButtonManualStyle,
+  activeButtonStyle,
+  neutralButtonManualStyle,
+  neutralButtonStyle,
+  redButtonStyle,
+} from "../../../features/room-page/consts";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
@@ -120,6 +126,14 @@ const getAutomaticControls = (
 ];
 
 //dev helpers
+const streamStop = " bg-indigo-100";
+const streamStart = " bg-indigo-100";
+const trackDisable = " bg-yellow-100";
+const trackEnable = " bg-yellow-700";
+const trackRemove = " bg-pink-100";
+const trackAdd = " bg-pink-700";
+const trackNullify = " bg-green-100";
+const trackNullifyRevert = " bg-green-700";
 const getManualControls = (
   {
     userMediaAudio,
@@ -137,14 +151,14 @@ const getManualControls = (
       ? {
           id: "mic-stop",
           icon: Microphone,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + streamStop,
           hover: "Start the microphone",
           onClick: () => userMediaAudio.stop(),
         }
       : {
           id: "mic-start",
           icon: MicrophoneOff,
-          className: activeButtonStyle,
+          className: activeButtonManualStyle + streamStart,
           hover: "Stop the microphone",
           onClick: () => userMediaAudio.start(),
         },
@@ -152,14 +166,14 @@ const getManualControls = (
       ? {
           id: "mic-disable",
           icon: Microphone,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + trackDisable,
           hover: "Disable microphone stream",
           onClick: () => userMediaAudio.disable(),
         }
       : {
           id: "mic-enable",
           icon: MicrophoneOff,
-          className: activeButtonStyle,
+          className: activeButtonManualStyle + trackEnable,
           hover: "Enable microphone stream",
           onClick: () => userMediaAudio.enable(),
         },
@@ -167,38 +181,38 @@ const getManualControls = (
       ? {
           id: "mic-remove",
           icon: Microphone,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + trackRemove,
           hover: "Remove microphone track",
           onClick: () => audioStreaming.removeTracks(),
         }
       : {
           id: "mic-add",
           icon: MicrophoneOff,
-          className: activeButtonStyle,
+          className: activeButtonManualStyle + trackAdd,
           hover: "Add microphone track",
           onClick: () => userMediaAudio?.stream && audioStreaming.addTracks(userMediaAudio?.stream),
         },
     audioStreaming.track
       ? {
-        id: "mic-nullify-mock",
-        icon: Microphone,
-        className: neutralButtonStyle,
-        hover: "Nullify mic track",
-        onClick: () => audioStreaming.replaceTrackTrack("MOCK"),
-      }
+          id: "mic-nullify-mock",
+          icon: Microphone,
+          className: neutralButtonManualStyle + trackNullify,
+          hover: "Nullify mic track",
+          onClick: () => audioStreaming.replaceTrackTrack("MOCK"),
+        }
       : {
-        id: "mic-nullify-revert",
-        icon: MicrophoneOff,
-        className: activeButtonStyle,
-        hover: "Revert track mic track",
-        onClick: () => {
-          const track = userMediaAudio?.stream?.getVideoTracks()[0] || null;
-          if (!track) {
-            console.log("skipped");
-          }
-          audioStreaming.replaceTrackTrack(track);
+          id: "mic-nullify-revert",
+          icon: MicrophoneOff,
+          className: activeButtonManualStyle + "  bg-green-700",
+          hover: "Revert track mic track",
+          onClick: () => {
+            const track = userMediaAudio?.stream?.getVideoTracks()[0] || null;
+            if (!track) {
+              console.log("skipped");
+            }
+            audioStreaming.replaceTrackTrack(track);
+          },
         },
-      },
     audioStreaming.trackMetadata?.active
       ? {
           id: "mic-metadata-false",
@@ -220,7 +234,7 @@ const getManualControls = (
       ? {
           id: "cam-stop",
           icon: Camera,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + streamStop,
           hover: "Turn off the camera",
           onClick: () => userMediaVideo.stop(),
         }
@@ -228,14 +242,14 @@ const getManualControls = (
           id: "cam-start",
           hover: "Turn on the camera",
           icon: CameraOff,
-          className: activeButtonStyle,
+          className: activeButtonStyle + streamStart,
           onClick: () => userMediaVideo.start(),
         },
     userMediaVideo.isEnabled
       ? {
           id: "cam-disable",
           icon: Camera,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + trackDisable,
           hover: "Disable the camera stream",
           onClick: () => userMediaVideo.disable(),
         }
@@ -243,45 +257,45 @@ const getManualControls = (
           id: "cam-enable",
           hover: "Enable the the camera stream",
           icon: CameraOff,
-          className: activeButtonStyle,
+          className: activeButtonStyle + trackEnable,
           onClick: () => userMediaVideo.enable(),
         },
     cameraStreaming.trackId
       ? {
           id: "cam-remove",
           icon: Camera,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + trackRemove,
           hover: "Remove camera track",
           onClick: () => cameraStreaming.removeTracks(),
         }
       : {
           id: "cam-add",
           icon: CameraOff,
-          className: activeButtonStyle,
+          className: activeButtonManualStyle + trackAdd,
           hover: "Add camera track",
           onClick: () => userMediaVideo?.stream && cameraStreaming.addTracks(userMediaVideo?.stream),
         },
     cameraStreaming.track
       ? {
-        id: "cam-nullify-mock",
-        icon: Camera,
-        className: neutralButtonStyle,
-        hover: "Nullify cam track",
-        onClick: () => cameraStreaming.replaceTrackTrack("MOCK"),
-      }
+          id: "cam-nullify-mock",
+          icon: Camera,
+          className: neutralButtonManualStyle + trackNullify,
+          hover: "Nullify cam track",
+          onClick: () => cameraStreaming.replaceTrackTrack(null),
+        }
       : {
-        id: "cam-nullify-revert",
-        icon: CameraOff,
-        className: activeButtonStyle,
-        hover: "Revert cam track",
-        onClick: () => {
-          const track = userMediaVideo?.stream?.getVideoTracks()[0] || null;
-          if (!track) {
-            console.log("skipped");
-          }
-          cameraStreaming.replaceTrackTrack(track);
+          id: "cam-nullify-revert",
+          icon: CameraOff,
+          className: activeButtonManualStyle + trackNullifyRevert,
+          hover: "Revert cam track",
+          onClick: () => {
+            const track = userMediaVideo?.stream?.getVideoTracks()[0] || null;
+            if (!track) {
+              console.log("skipped");
+            }
+            cameraStreaming.replaceTrackTrack(track);
+          },
         },
-      },
     cameraStreaming.trackMetadata?.active
       ? {
           id: "cam-metadata-false",
@@ -303,7 +317,7 @@ const getManualControls = (
       ? {
           id: "screen-stop",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + streamStop,
           hover: "Stop the screensharing",
           hideOnMobile: true,
           onClick: () => displayMedia.stop(),
@@ -311,7 +325,7 @@ const getManualControls = (
       : {
           id: "screen-start",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: activeButtonManualStyle + streamStart,
           hover: "Start the screensharing",
           hideOnMobile: true,
           onClick: () => displayMedia.start(),
@@ -320,7 +334,7 @@ const getManualControls = (
       ? {
           id: "screen-disable",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + trackEnable,
           hover: "Disable screensharing stream",
           hideOnMobile: true,
           onClick: () => displayMedia.disable(),
@@ -328,7 +342,7 @@ const getManualControls = (
       : {
           id: "screen-enable",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: activeButtonManualStyle + trackDisable,
           hover: "Enable screensharing stream",
           hideOnMobile: true,
           onClick: () => displayMedia.enable(),
@@ -337,7 +351,7 @@ const getManualControls = (
       ? {
           id: "screen-remove",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle + trackRemove,
           hover: "Remove screensharing track",
           hideOnMobile: true,
           onClick: () => screenSharingStreaming.removeTracks(),
@@ -345,7 +359,7 @@ const getManualControls = (
       : {
           id: "screen-add",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: activeButtonManualStyle + trackAdd,
           hover: "Add screensharing track",
           hideOnMobile: true,
           onClick: () => displayMedia?.stream && screenSharingStreaming.addTracks(displayMedia?.stream),
@@ -354,7 +368,7 @@ const getManualControls = (
       ? {
           id: "screen-metadata-false",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle,
           hover: "Set 'active' metadata to 'false'",
           hideOnMobile: true,
           onClick: () => screenSharingStreaming.setActive(false),
@@ -362,7 +376,7 @@ const getManualControls = (
       : {
           id: "screen-metadata-true",
           icon: Screenshare,
-          className: neutralButtonStyle,
+          className: neutralButtonManualStyle,
           hover: "Set 'active' metadata to 'true'",
           hideOnMobile: true,
           onClick: () => screenSharingStreaming.setActive(true),

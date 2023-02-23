@@ -123,14 +123,14 @@ export const useMembraneMediaStreaming = (
       if (!trackIds) return;
       console.log("%cNullify track!", "color: blue");
       if (track === "MOCK") {
-        webrtcState?.replaceTrack(trackIds.remoteId, trackMock);
+        webrtcState?.replaceTrack(trackIds.remoteId, null);
         setLastTrack(null);
         return;
       }
 
-      if (track) {
-        webrtcState?.replaceTrack(trackIds.remoteId, track);
-      }
+      // if (track) {
+      webrtcState?.replaceTrack(trackIds.remoteId, track);
+      // }
       setLastTrack(track);
     },
     [trackIds, webrtcState]

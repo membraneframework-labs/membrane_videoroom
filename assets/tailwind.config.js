@@ -14,6 +14,7 @@ module.exports = {
       "active-screensharing-grid",
       "inactive-screensharing-grid",
       "videos-grid-with-screensharing",
+      "bg-amber-700",
     ],
   },
   theme: {

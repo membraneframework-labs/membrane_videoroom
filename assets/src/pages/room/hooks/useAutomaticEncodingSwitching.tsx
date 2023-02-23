@@ -25,7 +25,7 @@ const useCalculateSmartEncoding = (forceEncoding: TrackEncoding | null) => {
   const tileSizeEncoding = getHighestAllowedEncoding(height || null);
   const smartEncoding: TrackEncoding | null = forceEncoding ?? tileSizeEncoding;
 
-  return { ref, tileSizeEncoding, smartEncoding };
+  return { ref, smartEncoding };
 };
 
 export const useAutomaticEncodingSwitching = (
@@ -39,7 +39,7 @@ export const useAutomaticEncodingSwitching = (
   const [smartEncodingStatus, setSmartEncodingStatus] = useState(true);
   const onInitEncodingQuality = useStoreFirstNonNullValue(currentTrackEncoding || null);
 
-  const { ref, tileSizeEncoding, smartEncoding } = useCalculateSmartEncoding(forceEncoding);
+  const { ref, smartEncoding } = useCalculateSmartEncoding(forceEncoding);
 
   const { setTargetEncoding, targetEncoding } = useSimulcastRemoteEncoding(peerId, trackId, webrtc);
 
@@ -68,7 +68,6 @@ export const useAutomaticEncodingSwitching = (
     ref,
     setTargetEncoding: disableSmartAndSetTargetEncoding,
     targetEncoding,
-    tileSizeEncoding,
     setSmartEncodingStatus,
     smartEncodingStatus,
     smartEncoding,

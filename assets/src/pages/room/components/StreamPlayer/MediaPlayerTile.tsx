@@ -7,7 +7,7 @@ import { StreamSource, TrackWithId } from "../../../types";
 import clsx from "clsx";
 import { useAutomaticEncodingSwitching } from "../../hooks/useAutomaticEncodingSwitching";
 import { useDeveloperInfo } from "../../../../contexts/DeveloperInfoContext";
-import { SimulcastEncodingToReceive } from "./simulcast/SimulcastEncodingToReceive";
+import { SimulcastEncoding } from "./simulcast/SimulcastEncoding";
 
 export interface Props {
   peerId?: string;
@@ -36,6 +36,7 @@ const MediaPlayerTile: FC<Props> = ({
   blockFillContent,
   forceEncoding,
 }: Props) => {
+  // todo autostart smart encoding
   const { smartLayerSwitching } = useDeveloperInfo();
 
   const isRemote = streamSource === "remote";
@@ -43,7 +44,6 @@ const MediaPlayerTile: FC<Props> = ({
 
   const {
     ref,
-    tileSizeEncoding,
     setTargetEncoding,
     targetEncoding,
     smartEncoding,
@@ -81,11 +81,10 @@ const MediaPlayerTile: FC<Props> = ({
       />
       {layers}
       {showSimulcast && isRemote && (
-        <SimulcastEncodingToReceive
+        <SimulcastEncoding
           currentEncoding={video?.encodingQuality || null}
           disabled={!video?.stream}
           targetEncoding={targetEncoding || null}
-          tileSizeEncoding={tileSizeEncoding}
           smartEncoding={smartEncoding}
           localSmartEncodingStatus={smartEncodingStatus}
           setLocalSmartEncodingStatus={setSmartEncodingStatus}

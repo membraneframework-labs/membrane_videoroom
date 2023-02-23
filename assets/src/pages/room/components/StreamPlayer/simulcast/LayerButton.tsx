@@ -1,20 +1,27 @@
 import { Tooltip } from "./Tooltip";
 import Button from "../../../../../features/shared/components/Button";
 import React from "react";
+import clsx from "clsx";
 
 export type LayerButtonProps = {
   text: string;
   tooltipText: string;
   onClick: () => void;
   disabled?: boolean;
+  selected?: boolean;
+  tooltipCss?: string;
 };
 
-export const LayerButton = ({ onClick, text, tooltipText, disabled }: LayerButtonProps) => (
-  <Tooltip text={tooltipText} textCss="right-16">
+export const LayerButton = ({ onClick, text, tooltipText, disabled, selected, tooltipCss = "" }: LayerButtonProps) => (
+  <Tooltip text={tooltipText} textCss={tooltipText}>
     <Button
       disabled={disabled}
       onClick={onClick}
-      className="mx-0.5 flex min-w-[26px] items-center justify-center rounded-full border disabled:pointer-events-none"
+      className={clsx({
+        "mx-0.5 flex min-w-[26px] items-center justify-center rounded-full border px-2 disabled:pointer-events-none":
+          true,
+        "bg-red-100": selected,
+      })}
     >
       {text}
     </Button>

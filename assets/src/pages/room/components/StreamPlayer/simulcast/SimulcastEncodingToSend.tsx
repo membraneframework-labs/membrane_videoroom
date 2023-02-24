@@ -11,7 +11,7 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
     localEncoding;
 
   return (
-    <div className="absolute bottom-0 right-0 z-50 bg-white p-2 text-sm text-gray-700 opacity-80 md:text-base">
+    <div className="absolute bottom-0 right-0 z-50 bg-white p-2 text-sm text-brand-dark-gray opacity-80 md:text-base">
       <label>Encodings to send</label>
       <ul>
         <li>

@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  elixir: membraneframework/elixir@1.3.0
+  elixir: membraneframework/elixir@1
 
 jobs:
   lint_frontend:

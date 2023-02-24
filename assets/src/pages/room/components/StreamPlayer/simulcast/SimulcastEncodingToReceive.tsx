@@ -35,7 +35,7 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
           <LayerButton
             selected={localSmartEncodingStatus}
             disabled={disabled}
-            text={`Smart (${smartEncoding})`}
+            text={smartEncoding ? `Smart (${smartEncoding})` : "Smart"}
             onClick={() => setLocalSmartEncodingStatus(true)}
             tooltipText="Turn on smart encoding"
             tooltipCss="right-16"

@@ -17,11 +17,12 @@ export const LayerButton = ({ onClick, text, tooltipText, disabled, selected, to
     <Button
       disabled={disabled}
       onClick={onClick}
-      className={clsx({
-        "mx-0.5 flex min-w-[26px] items-center justify-center rounded-full border px-2 disabled:pointer-events-none":
-          true,
-        "bg-red-100": selected,
-      })}
+      className={clsx(
+        "mx-0.5 flex min-w-[26px] items-center justify-center rounded-full border px-2 disabled:pointer-events-none",
+        {
+          "bg-red-100": selected,
+        }
+      )}
     >
       {text}
     </Button>

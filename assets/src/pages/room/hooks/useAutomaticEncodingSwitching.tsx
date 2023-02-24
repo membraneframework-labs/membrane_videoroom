@@ -33,10 +33,11 @@ export const useAutomaticEncodingSwitching = (
   peerId: string | null,
   trackId: string | null,
   disableAutomaticLayerSwitching: boolean,
+  autostartSmartLayerSwitching: boolean,
   forceEncoding: TrackEncoding | null,
   webrtc: MembraneWebRTC | null
 ) => {
-  const [smartEncodingStatus, setSmartEncodingStatus] = useState(true);
+  const [smartEncodingStatus, setSmartEncodingStatus] = useState(autostartSmartLayerSwitching);
   const onInitEncodingQuality = useStoreFirstNonNullValue(currentTrackEncoding || null);
 
   const { ref, smartEncoding } = useCalculateSmartEncoding(forceEncoding);

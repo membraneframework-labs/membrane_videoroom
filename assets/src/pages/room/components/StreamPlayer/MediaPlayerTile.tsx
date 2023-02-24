@@ -36,27 +36,21 @@ const MediaPlayerTile: FC<Props> = ({
   blockFillContent,
   forceEncoding,
 }: Props) => {
-  // todo autostart smart encoding
   const { smartLayerSwitching } = useDeveloperInfo();
 
   const isRemote = streamSource === "remote";
   const isLocal = streamSource === "local";
 
-  const {
-    ref,
-    setTargetEncoding,
-    targetEncoding,
-    smartEncoding,
-    smartEncodingStatus,
-    setSmartEncodingStatus,
-  } = useAutomaticEncodingSwitching(
-    video?.encodingQuality || null,
-    peerId || null,
-    video?.remoteTrackId || null,
-    !smartLayerSwitching.status || isLocal,
-    forceEncoding || null,
-    webrtc || null
-  );
+  const { ref, setTargetEncoding, targetEncoding, smartEncoding, smartEncodingStatus, setSmartEncodingStatus } =
+    useAutomaticEncodingSwitching(
+      video?.encodingQuality || null,
+      peerId || null,
+      video?.remoteTrackId || null,
+      isLocal,
+      smartLayerSwitching.status,
+      forceEncoding || null,
+      webrtc || null
+    );
 
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null, webrtc || null);
   const videoStream = video?.stream || null;
@@ -83,7 +77,7 @@ const MediaPlayerTile: FC<Props> = ({
       {showSimulcast && isRemote && (
         <SimulcastEncodingToReceive
           currentEncoding={video?.encodingQuality || null}
-          disabled={!video?.stream || !smartLayerSwitching.status}
+          disabled={!video?.stream}
           targetEncoding={targetEncoding || null}
           smartEncoding={smartEncoding}
           localSmartEncodingStatus={smartEncodingStatus}

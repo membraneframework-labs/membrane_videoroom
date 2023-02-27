@@ -36,9 +36,12 @@ workflows:
   version: 2
   build:
     jobs:
-      - elixir/build_test
-      - elixir/test
+      - elixir/build_test:
+          cache-version: 2
+      - elixir/test:
+          cache-version: 2
       - elixir/lint:
+          cache-version: 2
           docs: false
           dialyzer: false
       - lint_frontend

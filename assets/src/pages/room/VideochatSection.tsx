@@ -126,9 +126,19 @@ const pinSecondUser = (
   if (mediaPlayerTiles.length === 2) {
     const localUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "local");
     const remoteUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "remote");
+    if (localUserTile)
     localUserTile && remoteUserTile && pinIfNotAlreadyPinned(remoteUserTile.mediaPlayerId);
   }
 };
+
+const switchPinningForTwoUsers = (mediaPlayerTiles: MediaPlayerTileConfig[], pinnedTileIds: string[], removePinnedEarlier: (localTileId: string, remoteTileId: string) => void) => {
+  const shouldSwitchPinnedUsers = mediaPlayerTiles.length === 2 && mediaPlayerTiles.every((tile) => ["remote", "local"].includes(tile.streamSource) && pinnedTileIds.includes(tile.mediaPlayerId));
+  if (shouldSwitchPinnedUsers){
+    const localUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "local");
+    const remoteUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "remote");
+    localUserTile && remoteUserTile && removePinnedEarlier(localUserTile.mediaPlayerId, remoteUserTile.mediaPlayerId);
+  }
+}
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
@@ -154,6 +164,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   useEffect(() => {
     pinNewScreenShares(screenSharingStreams, pinningApi.pinIfNotAlreadyPinned);
     pinSecondUser(allTilesConfig, pinningApi.pinIfNotAlreadyPinned);
+    switchPinningForTwoUsers(allTilesConfig, pinningApi.pinnedTileIds, pinningApi.unpin);
   });
 
   const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles(allTilesConfig, pinningApi.pinnedTileIds);

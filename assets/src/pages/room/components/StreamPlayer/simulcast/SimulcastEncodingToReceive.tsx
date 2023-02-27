@@ -41,11 +41,11 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
             tooltipCss="right-16"
           />
           <LayerButton
-            selected={!localSmartEncodingStatus && targetEncoding === "l"}
+            selected={!localSmartEncodingStatus && targetEncoding === "h"}
             disabled={disabled}
-            text="L"
-            onClick={() => setTargetEncoding("l")}
-            tooltipText="Switch encoding to Low"
+            text="H"
+            onClick={() => setTargetEncoding("h")}
+            tooltipText="Switch encoding to High"
             tooltipCss="right-16"
           />
           <LayerButton
@@ -57,11 +57,11 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
             tooltipCss="right-16"
           />
           <LayerButton
-            selected={!localSmartEncodingStatus && targetEncoding === "h"}
+            selected={!localSmartEncodingStatus && targetEncoding === "l"}
             disabled={disabled}
-            text="H"
-            onClick={() => setTargetEncoding("h")}
-            tooltipText="Switch encoding to High"
+            text="L"
+            onClick={() => setTargetEncoding("l")}
+            tooltipText="Switch encoding to Low"
             tooltipCss="right-16"
           />
         </div>

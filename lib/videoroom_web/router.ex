@@ -13,5 +13,6 @@ defmodule VideoRoomWeb.Router do
     get("/room/:room_id", PageController, :index)
 
     get("/healthcheck", PageController, :healthcheck)
+    get("/webrtc-internals", StatsController, :index)
   end
 end

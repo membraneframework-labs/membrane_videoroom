@@ -11,7 +11,8 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Endpoint.WebRTC
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.RTC.Engine.Message
-  alias Membrane.WebRTC.Extension.{Mid, Rid, TWCC}
+  alias Membrane.WebRTC.Extension.{Mid, RepairedRid, Rid, TWCC}
+  alias Membrane.WebRTC.Track.Encoding
 
   @mix_env Mix.env()
 
@@ -133,7 +134,7 @@ defmodule Videoroom.Room do
 
     webrtc_extensions =
       if state.simulcast? do
-        [Mid, Rid, TWCC]
+        [Mid, Rid, RepairedRid, TWCC]
       else
         [TWCC]
       end
@@ -229,7 +230,7 @@ defmodule Videoroom.Room do
     end
   end
 
-  defp filter_codecs({%{encoding: "H264"}, fmtp}) do
+  defp filter_codecs(%Encoding{name: "H264", format_params: fmtp}) do
     import Bitwise
 
     # Only accept constrained baseline
@@ -242,7 +243,7 @@ defmodule Videoroom.Room do
     end
   end
 
-  defp filter_codecs({%{encoding: "opus"}, _}), do: true
+  defp filter_codecs(%Encoding{name: "opus"}), do: true
   defp filter_codecs(_rtp_mapping), do: false
 
   defp tracing_metadata(),

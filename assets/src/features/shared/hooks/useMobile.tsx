@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MOBILE_BREAKPOINT } from "../consts";
 
 const useMobile = () => {
   const [isMobile, setIsMobile] = useState<boolean | undefined>();
@@ -6,7 +7,7 @@ const useMobile = () => {
   const updateIsMobileState = () => {
     if (!window.visualViewport) return;
 
-    setIsMobile(window.visualViewport.width < 769);
+    setIsMobile(window.visualViewport.width < MOBILE_BREAKPOINT);
   };
 
   useEffect(() => {

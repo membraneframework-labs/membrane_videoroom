@@ -137,13 +137,6 @@
     background-size: 50%;
     background-position: left -30% top 200px, right -30% bottom -15%;
   }
-
-  .room-page {
-    background-image: url("/images/videoroomBackground.png");
-    background-repeat: no-repeat;
-    background-size: auto;
-    background-position: center;
-  }
 }
 
 .fromTop {

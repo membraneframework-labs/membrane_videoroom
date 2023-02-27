@@ -11,7 +11,7 @@ const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
       {isHorizontalMobile && <BlockingScreen message="Turn your screen to resume the call." />}
       <div
         className={clsx(
-          "room-page h-[100dvh] w-full",
+          "h-screen w-full bg-auto bg-center bg-no-repeat sm:bg-videoroom-background",
           "bg-brand-sea-blue-100 font-rocGrotesk text-brand-dark-blue-500",
           "flex flex-col items-center gap-y-4 p-4",
           isHorizontalMobile && "invisible"

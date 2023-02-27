@@ -123,7 +123,7 @@ const RoomPage: FC<Props> = ({
             className={clsx(
               isSidebarOpen ? "max-w-[300px]" : "max-w-0",
               "overflow-hidden transition-all duration-300",
-              "flex w-full"
+              "hidden w-full md:flex"
             )}
           >
             <Sidebar peers={peerState.remote} localPeer={peerState.local} />

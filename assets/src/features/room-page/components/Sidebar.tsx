@@ -18,8 +18,8 @@ const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer }) => {
       className={clsx(
         "border border-brand-dark-blue-300 bg-brand-white",
         "rounded-xl",
-        "grid-wrapper hidden w-[300px] min-w-[300px] flex-col md:flex",
-        "font-aktivGrotesk"
+        "grid-wrapper flex w-[300px] flex-col",
+        "whitespace-nowrap font-aktivGrotesk"
       )}
     >
       <div className="flex w-full gap-x-3 p-3">

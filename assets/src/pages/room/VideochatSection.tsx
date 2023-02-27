@@ -5,7 +5,7 @@ import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
-import usePinning from "./hooks/usePinning";
+import usePinning, { PinningApi } from "./hooks/usePinning";
 
 import { PeerTileConfig, MediaPlayerTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
@@ -119,26 +119,22 @@ const pinNewScreenShares = (
   screenSharingStreams.map((tile) => tile.mediaPlayerId).forEach(pinIfNotAlreadyPinned);
 };
 
-const pinSecondUser = (
+const manageOneOnOnePinning = (
   mediaPlayerTiles: MediaPlayerTileConfig[],
-  pinIfNotAlreadyPinned: (tileId: string) => void
+  {pinnedTileIds, pinIfNotAlreadyPinned, removePinnedEarlier}: PinningApi,
 ): void => {
-  if (mediaPlayerTiles.length === 2) {
-    const localUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "local");
-    const remoteUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "remote");
-    if (localUserTile)
-    localUserTile && remoteUserTile && pinIfNotAlreadyPinned(remoteUserTile.mediaPlayerId);
-  }
-};
+  if (mediaPlayerTiles.length !== 2) return;
 
-const switchPinningForTwoUsers = (mediaPlayerTiles: MediaPlayerTileConfig[], pinnedTileIds: string[], removePinnedEarlier: (localTileId: string, remoteTileId: string) => void) => {
-  const shouldSwitchPinnedUsers = mediaPlayerTiles.length === 2 && mediaPlayerTiles.every((tile) => ["remote", "local"].includes(tile.streamSource) && pinnedTileIds.includes(tile.mediaPlayerId));
-  if (shouldSwitchPinnedUsers){
-    const localUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "local");
-    const remoteUserTile = mediaPlayerTiles.find((tile) => tile.streamSource === "remote");
-    localUserTile && remoteUserTile && removePinnedEarlier(localUserTile.mediaPlayerId, remoteUserTile.mediaPlayerId);
-  }
-}
+  const localUserTileId = mediaPlayerTiles.find((tile) => tile.streamSource === "local")?.mediaPlayerId;
+  const remoteUserTileId = mediaPlayerTiles.find((tile) => tile.streamSource === "remote")?.mediaPlayerId;
+  if (!localUserTileId || !remoteUserTileId) return;
+
+  const isLocalPinned = pinnedTileIds.includes(localUserTileId);
+  const isRemotePinned = pinnedTileIds.includes(remoteUserTileId);
+
+  if (!isLocalPinned && !isRemotePinned) pinIfNotAlreadyPinned(remoteUserTileId); // pinning new peer
+  if (isLocalPinned && isRemotePinned) removePinnedEarlier(localUserTileId, remoteUserTileId); // switching the peer
+};
 
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
@@ -163,8 +159,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   useEffect(() => {
     pinNewScreenShares(screenSharingStreams, pinningApi.pinIfNotAlreadyPinned);
-    pinSecondUser(allTilesConfig, pinningApi.pinIfNotAlreadyPinned);
-    switchPinningForTwoUsers(allTilesConfig, pinningApi.pinnedTileIds, pinningApi.unpin);
+    manageOneOnOnePinning(allTilesConfig, pinningApi);
   });
 
   const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles(allTilesConfig, pinningApi.pinnedTileIds);

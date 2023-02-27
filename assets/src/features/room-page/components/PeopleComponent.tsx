@@ -14,7 +14,7 @@ type PeopleListItem = {
   initials: string;
 };
 
-const mapRemotePeersToPeopleLstItem = (peers: RemotePeer[]): PeopleListItem[] => {
+const mapRemotePeersToPeopleListItem = (peers: RemotePeer[]): PeopleListItem[] => {
   return peers.map((peer) => ({
     peerId: peer.id ?? "Unknown",
     displayName: peer.displayName || "",
@@ -28,7 +28,7 @@ const PeopleComponent: React.FC<PeopleComponentProps> = ({ peers, localPeer }) =
     displayName: `${localPeer?.metadata?.displayName} (You)` || "",
     initials: computeInitials(localPeer?.metadata?.displayName || ""),
   };
-  const allPeers: PeopleListItem[] = [localUser, ...mapRemotePeersToPeopleLstItem(peers)];
+  const allPeers: PeopleListItem[] = [localUser, ...mapRemotePeersToPeopleListItem(peers)];
 
   return (
     <div className={clsx("flex flex-col gap-y-4")}>

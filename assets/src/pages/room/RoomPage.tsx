@@ -122,7 +122,7 @@ const RoomPage: FC<Props> = ({
 
           <>
             {isSidebarOpen && (
-              <div className="absolute inset-0 bg-transparent/40 md:hidden">
+              <div className="absolute inset-0 h-screen bg-transparent/40 md:hidden">
                 <Button className="absolute inset-0" onClick={() => setIsSidebarOpen(false)}></Button>
                 <Sidebar
                   peers={peerState.remote}

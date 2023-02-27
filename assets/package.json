@@ -20,7 +20,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@types/dom-screen-wake-lock": "^1.0.0",
     "@types/phoenix": "^1.5.4",
     "@types/react": "^18.0.21",

@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import React, { FC, SVGAttributes } from "react";
 import Button from "../../../features/shared/components/Button";
-import { isMobileDevice } from "../../../features/shared/utils/isMobileDevice";
 
 export type MediaControlButtonProps = {
   onClick: () => void;
@@ -19,7 +18,7 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
   className,
 }: MediaControlButtonProps) => {
   return (
-    <div className={clsx("group relative", hideOnMobile && isMobileDevice && "hidden")}>
+    <div className={clsx("group relative", hideOnMobile && "hidden-on-mobile-device")}>
       <Button
         onClick={onClick}
         className={clsx(

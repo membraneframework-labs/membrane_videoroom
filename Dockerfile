@@ -1,4 +1,4 @@
-FROM elixir:1.13.4-alpine AS build
+FROM hexpm/elixir:1.13.4-erlang-25.2.3-alpine-3.16.3 AS build
 
 # install build dependencies
 RUN \
@@ -46,7 +46,7 @@ RUN mix assets.deploy
 RUN mix do compile, release
 
 # prepare release image
-FROM alpine:3.16 AS app
+FROM alpine:3.16.3 AS app
 
 # install runtime dependencies
 RUN \

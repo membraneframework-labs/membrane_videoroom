@@ -44,7 +44,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
       disableGroupHover
       layers={
         <>
-          {!cameraAutostart.status ? <InitialsImage initials={initials} /> : null}
+          {!(cameraAutostart.status && localCamera.isEnabled) ? <InitialsImage initials={initials} /> : null}
           <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
             {localCamera.isEnabled ? (
               <MediaControlButton

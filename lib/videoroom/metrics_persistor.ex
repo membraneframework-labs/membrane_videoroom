@@ -62,8 +62,7 @@ defmodule VideoRoom.MetricsPersistor do
   defp maybe_remove_tuple(key) when is_tuple(key) do
     key
     |> Tuple.to_list()
-    |> Enum.map(&to_string/1)
-    |> Enum.join("=")
+    |> Enum.map_join("=", &to_string/1)
   end
 
   defp maybe_remove_tuple(key), do: to_string(key)

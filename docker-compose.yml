@@ -22,7 +22,7 @@ services:
         target: /app/grafana/provisioning
   timescale:
     image: timescale/timescaledb:2.5.1-pg14
-    network_mode: "host"    
+    network_mode: "host"
     restart: on-failure
     environment:
       POSTGRES_DB: "membrane"

@@ -106,7 +106,7 @@ const getAutomaticControls = (
   {
     id: "chat",
     icon: Chat,
-    hover: isSidebarOpen ? "Close the chat" : "Open the chat",
+    hover: isSidebarOpen ? "Close the sidebar" : "Open the sidebar",
     className: isSidebarOpen ? activeButtonStyle : neutralButtonStyle,
     hideOnMobile: true,
     onClick: openSidebar,

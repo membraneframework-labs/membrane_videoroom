@@ -1,12 +1,13 @@
 import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
-import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
-import { SimulcastRemoteLayer } from "./simulcast/SimulcastRemoteLayer";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource, TrackWithId } from "../../../types";
 import clsx from "clsx";
+import { useAutomaticEncodingSwitching } from "../../hooks/useAutomaticEncodingSwitching";
+import { useDeveloperInfo } from "../../../../contexts/DeveloperInfoContext";
+import { SimulcastEncodingToReceive } from "./simulcast/SimulcastEncodingToReceive";
 
 export interface Props {
   peerId?: string;
@@ -19,7 +20,7 @@ export interface Props {
   webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
-  disableGroupHover?: boolean;
+  forceEncoding?: TrackEncoding;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -33,14 +34,23 @@ const MediaPlayerTile: FC<Props> = ({
   webrtc,
   className,
   blockFillContent,
-  disableGroupHover,
+  forceEncoding,
 }: Props) => {
-  const { desiredEncoding, setDesiredEncoding } = useSimulcastRemoteEncoding(
-    "m",
-    peerId || null,
-    video?.remoteTrackId || null,
-    webrtc || null
-  );
+  const { smartLayerSwitching } = useDeveloperInfo();
+
+  const isRemote = streamSource === "remote";
+  const isLocal = streamSource === "local";
+
+  const { ref, setTargetEncoding, targetEncoding, smartEncoding, smartEncodingStatus, setSmartEncodingStatus } =
+    useAutomaticEncodingSwitching(
+      video?.encodingQuality || null,
+      peerId || null,
+      video?.remoteTrackId || null,
+      isLocal,
+      smartLayerSwitching.status,
+      forceEncoding || null,
+      webrtc || null
+    );
 
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null, webrtc || null);
   const videoStream = video?.stream || null;
@@ -48,12 +58,13 @@ const MediaPlayerTile: FC<Props> = ({
 
   return (
     <div
+      ref={ref}
       data-name="video-feed"
+      // todo remove disableGroupHover
       className={clsx(
         className,
         "relative flex h-full w-full justify-center overflow-hidden",
-        "rounded-xl border border-brand-dark-blue-300 bg-gray-900",
-        !disableGroupHover && "group"
+        "rounded-xl border border-brand-dark-blue-300 bg-gray-900"
       )}
     >
       <MediaPlayer
@@ -63,17 +74,18 @@ const MediaPlayerTile: FC<Props> = ({
         blockFillContent={blockFillContent}
       />
       {layers}
-      {showSimulcast && streamSource === "remote" && (
-        <SimulcastRemoteLayer
-          desiredEncoding={desiredEncoding}
-          setDesiredEncoding={setDesiredEncoding}
-          currentEncoding={video?.encodingQuality}
+      {showSimulcast && isRemote && (
+        <SimulcastEncodingToReceive
+          currentEncoding={video?.encodingQuality || null}
           disabled={!video?.stream}
+          targetEncoding={targetEncoding || null}
+          smartEncoding={smartEncoding}
+          localSmartEncodingStatus={smartEncodingStatus}
+          setLocalSmartEncodingStatus={setSmartEncodingStatus}
+          setTargetEncoding={setTargetEncoding}
         />
       )}
-      {showSimulcast && streamSource === "local" && (
-        <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />
-      )}
+      {showSimulcast && isLocal && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />}
     </div>
   );
 };

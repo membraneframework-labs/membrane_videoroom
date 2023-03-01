@@ -41,7 +41,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
       audio={null}
       streamSource="local"
       flipHorizontally
-      disableGroupHover
       layers={
         <>
           {!cameraAutostart.status || !localCamera.isEnabled ? <InitialsImage initials={initials} /> : null}

@@ -37,27 +37,47 @@ defmodule VideoRoom.MetricsPersistor do
 
     Process.send_after(self(), :scrape, scrape_interval_ms)
 
-    {:ok, %{store_metrics: store_metrics, scrape_interval_ms: scrape_interval_ms}}
+    {:ok,
+     %{
+       store_metrics: store_metrics,
+       scrape_interval_ms: scrape_interval_ms,
+       prev_report: nil,
+       prev_report_ts: 0
+     }}
   end
 
   @impl true
   def handle_info(:scrape, state) do
     report = Reporter.scrape(VideoRoomReporter)
-    Phoenix.PubSub.broadcast!(VideoRoom.PubSub, "metrics", {:metrics, prepare_fe_report(report)})
+
+    Phoenix.PubSub.broadcast!(
+      VideoRoom.PubSub,
+      "metrics",
+      {:metrics, prepare_fe_report(report, state)}
+    )
 
     if state.store_metrics, do: TimescaleDB.store_report(report)
 
     Process.send_after(self(), :scrape, state.scrape_interval_ms)
 
-    {:noreply, state}
+    {:noreply,
+     %{state | prev_report_ts: System.monotonic_time(:millisecond), prev_report: report}}
   end
 
-  defp prepare_fe_report(report) when is_map(report) do
+  defp prepare_fe_report(report, state) do
+    time = System.monotonic_time(:millisecond)
+
     report
-    |> Map.new(fn {key, value} -> {maybe_remove_tuple(key), prepare_fe_report(value)} end)
+    |> add_time_derivative_metrics(time, state)
+    |> jsonify()
   end
 
-  defp prepare_fe_report(input), do: input
+  defp jsonify(report) when is_map(report) do
+    report
+    |> Map.new(fn {key, value} -> {maybe_remove_tuple(key), jsonify(value)} end)
+  end
+
+  defp jsonify(input), do: input
 
   defp maybe_remove_tuple(key) when is_tuple(key) do
     key
@@ -66,4 +86,39 @@ defmodule VideoRoom.MetricsPersistor do
   end
 
   defp maybe_remove_tuple(key), do: to_string(key)
+
+  @metrics_to_derive MapSet.new([
+                       :"inbound-rtp.packets",
+                       :"inbound-rtp.bytes_received",
+                       :"ice.bytes_received",
+                       :"ice.bytes_sent",
+                       :"ice.packets_received",
+                       :"ice.packets_sent"
+                     ])
+
+  defp add_time_derivative_metrics(report, time, state, path \\ []) do
+    report =
+      Map.new(report, fn
+        {{type, _id} = key, value} when type in [:room_id, :track_id, :peer_id] ->
+          {key, add_time_derivative_metrics(value, time, state, path ++ [key])}
+
+        {key, value} ->
+          {key, value}
+      end)
+
+    report
+    |> Enum.filter(fn {key, _value} -> MapSet.member?(@metrics_to_derive, key) end)
+    |> Enum.map(fn {key, value} when is_number(value) ->
+      case get_in(state, [:prev_report | path ++ [key]]) do
+        old_value when is_number(old_value) ->
+          derivative = (value - old_value) * 1000 / (time - state.prev_report_ts)
+          {"#{key}-per-second", derivative}
+
+        _otherwise ->
+          nil
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.into(report)
+  end
 end

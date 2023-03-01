@@ -131,6 +131,9 @@ module.exports = {
       gridTemplateColumns: {
         "3/1": "3fr 1fr",
       },
+      backgroundImage: {
+        "videoroom-background": "url('/images/videoroomBackground.png')",
+      },
     },
   },
   variants: {

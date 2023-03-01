@@ -148,7 +148,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const wrapperClass = useMemo(() => {
     const areAllTilesPinned = unpinnedTiles.length === 0;
 
-    const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[1728px]";
+    const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[3200px]";
     const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : "sm:grid-cols-3/1";
 
     return clsx(base, isAnyTilePinned && layoutWithTileHighlight);

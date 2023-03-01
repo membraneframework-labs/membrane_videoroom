@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, MouseEventHandler } from "react";
 import MediaPlayer from "./MediaPlayer";
 import { useSimulcastRemoteEncoding } from "../../hooks/useSimulcastRemoteEncoding";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";

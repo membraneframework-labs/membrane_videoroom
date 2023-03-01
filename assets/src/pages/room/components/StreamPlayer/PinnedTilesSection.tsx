@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC, ReactNode, } from "react";
 import { MediaPlayerTileConfig } from "../../../types";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import PeerInfoLayer from "./PeerInfoLayer";
@@ -41,7 +41,6 @@ type Props = {
 
 const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast }: Props) => {
   const gridConfig = getGridConfig(pinnedTiles.length);
-
   return (
     <PinnedTilesWrapper twoPinnedTiles={pinnedTiles.length === 2} gridConfig={gridConfig}>
       {pinnedTiles.map((pinnedTile: MediaPlayerTileConfig) => {
@@ -69,7 +68,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
                   }
                   bottomLeft={<NameTag name={pinnedTile.displayName} />}
                 />
-                <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
+                  <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
               </>
             }
             showSimulcast={showSimulcast && tileType !== "screenShare"}

@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
-import { DEFAULT_MANUAL_MODE_CHECKBOX_VALUE } from "../../../pages/room/consts";
 import { messageComparator } from "../../../pages/room/errorMessage";
+import { DEFAULT_MANUAL_MODE_CHECKBOX_VALUE, DEFAULT_SMART_LAYER_SWITCHING_VALUE } from "../../../pages/room/consts";
 import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
 import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
@@ -28,14 +28,15 @@ const VideoroomHomePage: React.FC = () => {
   const buttonDisabled = !displayNameInput || !roomIdInput;
 
   const deviceManager = useMediaDeviceManager({ askOnMount: true });
-  const { simulcast, manualMode } = useDeveloperInfo();
+  const { simulcast, manualMode, smartLayerSwitching } = useDeveloperInfo();
 
   const [searchParams] = useSearchParams();
   const simulcastParam: string = searchParams?.get("simulcast") || "true";
   const simulcastDefaultValue: boolean = simulcastParam === "true";
-  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
 
+  const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
   const [manualModeInput, toggleManualModeCheckbox] = useToggle(DEFAULT_MANUAL_MODE_CHECKBOX_VALUE);
+  const [smartLayerSwitchingInput, toggleSmartLayerSwitchingInput] = useToggle(DEFAULT_SMART_LAYER_SWITCHING_VALUE);
 
   const checkboxes: CheckboxProps[] = [
     {
@@ -43,6 +44,12 @@ const VideoroomHomePage: React.FC = () => {
       id: "simulcast",
       onChange: toggleSimulcastCheckbox,
       status: simulcastInput,
+    },
+    {
+      label: "Smart layer switching",
+      id: "smart-layer-mode",
+      onChange: toggleSmartLayerSwitchingInput,
+      status: smartLayerSwitchingInput,
     },
     {
       label: "Manual mode",
@@ -55,9 +62,19 @@ const VideoroomHomePage: React.FC = () => {
   const onJoin = useCallback(() => {
     localStorage.setItem("displayName", displayNameInput);
     setUsername(displayNameInput);
+    smartLayerSwitching.setSmartLayerSwitching(smartLayerSwitchingInput);
     simulcast.setSimulcast(simulcastInput);
     manualMode.setManualMode(manualModeInput);
-  }, [displayNameInput, manualMode, manualModeInput, setUsername, simulcast, simulcastInput]);
+  }, [
+    displayNameInput,
+    manualMode,
+    manualModeInput,
+    setUsername,
+    simulcast,
+    simulcastInput,
+    smartLayerSwitching,
+    smartLayerSwitchingInput,
+  ]);
 
   const { addToast } = useToast();
   useEffectOnChange(

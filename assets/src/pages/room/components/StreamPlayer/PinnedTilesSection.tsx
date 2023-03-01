@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { MediaPlayerTileConfig } from "../../../types";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { PinIndicator, PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import NameTag from "../../../../features/room-page/components/NameTag";
@@ -37,9 +37,10 @@ type Props = {
   unpin: (tileIdToUnpin: string) => void;
   webrtc?: MembraneWebRTC;
   showSimulcast?: boolean;
+  forceEncoding?: TrackEncoding;
 };
 
-const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast }: Props) => {
+const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast, forceEncoding }: Props) => {
   const gridConfig = getGridConfig(pinnedTiles.length);
 
   return (
@@ -74,6 +75,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
             }
             showSimulcast={showSimulcast && tileType !== "screenShare"}
             webrtc={webrtc}
+            forceEncoding={forceEncoding}
           />
         );
       })}

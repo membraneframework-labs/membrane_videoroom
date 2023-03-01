@@ -155,6 +155,9 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   }, [isAnyTilePinned, allTilesConfig.length, unpinnedTiles.length]);
 
   const shouldBlockPinning = allTilesConfig.length === 1;
+
+  const forceEncoding = allTilesConfig.length <= 2 ? "h" : undefined;
+
   return (
     <div id="videochat" className="grid-wrapper align-center flex h-full w-full justify-center">
       <div className={wrapperClass}>
@@ -164,6 +167,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
             unpin={pinningApi.unpin}
             showSimulcast={showSimulcast}
             webrtc={webrtc}
+            forceEncoding={forceEncoding}
           />
         )}
 
@@ -176,6 +180,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
             pin={pinningApi.pin}
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={shouldBlockPinning}
+            forceEncoding={forceEncoding}
           />
         )}
       </div>

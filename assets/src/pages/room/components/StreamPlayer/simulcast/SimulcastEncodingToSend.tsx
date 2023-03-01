@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { UseSimulcastLocalEncoding } from "../../../hooks/useSimulcastSend";
+import { LayerButton } from "./LayerButton";
 
 type Props = {
   localEncoding: UseSimulcastLocalEncoding;
@@ -11,22 +12,32 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
     localEncoding;
 
   return (
-    <div className="absolute bottom-0 right-0 z-50 bg-white p-2 text-sm text-gray-700 opacity-80 md:text-base">
-      <label>Encodings to send</label>
-      <ul>
-        <li>
-          <input disabled={disabled} type="checkbox" name="h" checked={highQuality} onChange={toggleHighQuality} />
-          High
-        </li>
-        <li>
-          <input disabled={disabled} type="checkbox" name="m" checked={mediumQuality} onChange={toggleMediumQuality} />
-          Medium
-        </li>
-        <li>
-          <input disabled={disabled} type="checkbox" name="l" checked={lowQuality} onChange={toggleLowQuality} />
-          Low
-        </li>
-      </ul>
+    <div className="absolute top-0 right-0 z-50 flex flex-row rounded-bl-xl bg-white px-4 py-2 text-sm text-gray-700 opacity-80 md:text-base">
+      <div>Encodings to send</div>
+      <LayerButton
+        selected={highQuality}
+        disabled={disabled}
+        text="H"
+        onClick={() => toggleHighQuality()}
+        tooltipText={highQuality ? "Disable High" : "Enable High"}
+        tooltipCss="right-10"
+      />
+      <LayerButton
+        selected={mediumQuality}
+        disabled={disabled}
+        text="M"
+        onClick={() => toggleMediumQuality()}
+        tooltipText={mediumQuality ? "Disable Medium" : "Enable Medium"}
+        tooltipCss="right-10"
+      />
+      <LayerButton
+        selected={lowQuality}
+        disabled={disabled}
+        text="L"
+        onClick={() => toggleLowQuality()}
+        tooltipText={lowQuality ? "Disable Low" : "Enable Low"}
+        tooltipCss="right-10"
+      />
     </div>
   );
 };

@@ -1,6 +1,5 @@
 module.exports = {
-  mode: "jit",
-  content: ["./js/**/*.js", "../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
+  content: ["../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
   theme: {
     rotate: {
       45: "45deg",

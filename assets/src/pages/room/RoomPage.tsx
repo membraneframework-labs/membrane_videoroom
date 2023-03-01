@@ -109,8 +109,8 @@ const RoomPage: FC<Props> = ({
         {/* main grid - videos + future chat */}
         <section
           className={clsx(
-            "flex h-full w-full self-center justify-self-center 3xl:max-w-[1728px]",
-            isSidebarOpen && "md:gap-x-4"
+            "flex h-full w-full self-center justify-self-center 3xl:max-w-[3200px]",
+            isSidebarOpen && "gap-x-4"
           )}
         >
           <VideochatSection

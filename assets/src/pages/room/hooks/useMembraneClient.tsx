@@ -111,7 +111,8 @@ export const useMembraneClient = (
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
-        onJoinError: (_metadata) => {
+        onJoinError: (metadata) => {
+          console.log("Invalid metadata: ", metadata);
           handleError(`Failed to join the room`);
         },
       },
@@ -136,7 +137,8 @@ export const useMembraneClient = (
         webrtc.join(peerMetadata);
         setWebrtc(webrtc);
       })
-      .receive("error", (_response) => {
+      .receive("error", (response) => {
+        console.log("Error response: ", response);
         handleError(`Couldn't establish signaling connection`);
       });
 

@@ -14,11 +14,11 @@ const Toast: React.FC<ToastProps> = ({ id, message, onClose, type = "information
         "font-aktivGrotesk text-sm text-brand-white",
         type == "error" ? "bg-red-700" : "bg-brand-dark-blue-500",
         "rounded-full px-6 py-4",
-        "flex gap-x-3 whitespace-nowrap",
+        "flex gap-x-3 sm:whitespace-nowrap",
         "fromTop"
       )}
     >
-      {message}
+      <div className="sm:min-w-fit min-w-[15rem] text-center">{message}</div>
       <Button onClick={onClose}>
         <Close className="text-lg font-medium" />
       </Button>

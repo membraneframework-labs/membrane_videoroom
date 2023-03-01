@@ -127,10 +127,13 @@ module.exports = {
         18: "72px",
       },
       screens: {
-        "3xl": "1728px",
+        "3xl": "3200px",
       },
       gridTemplateColumns: {
         "3/1": "3fr 1fr",
+      },
+      backgroundImage: {
+        "videoroom-background": "url('/images/videoroomBackground.png')",
       },
     },
   },

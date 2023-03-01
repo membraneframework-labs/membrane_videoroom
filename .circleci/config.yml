@@ -6,7 +6,7 @@ jobs:
   lint_frontend:
     working_directory: ~/membrane_videoroom/assets
     docker:
-      - image: cimg/node:18.13.0
+      - image: cimg/node:18.14.2
 
     steps:
       - checkout:

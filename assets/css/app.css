@@ -139,6 +139,12 @@
   }
 }
 
+@media (pointer: coarse) and (max-width: 1290px) {
+  .hidden-on-mobile-device {
+    display: none;
+  }
+}
+
 .fromTop {
   animation-name: from-top, fade-in;
   animation-delay: 0.1s;

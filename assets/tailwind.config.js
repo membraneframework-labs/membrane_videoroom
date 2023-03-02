@@ -14,18 +14,19 @@ module.exports = {
       "active-screensharing-grid",
       "inactive-screensharing-grid",
       "videos-grid-with-screensharing",
+      "rotate-180",
     ],
   },
   theme: {
-    rotate: {
-      45: "45deg",
-      135: "135deg",
-    },
     flex: {
       3: "3",
       1: "1",
     },
     extend: {
+      rotate: {
+        45: "45deg",
+        135: "135deg",
+      },
       invert: {
         50: ".50",
       },
@@ -126,10 +127,13 @@ module.exports = {
         18: "72px",
       },
       screens: {
-        "3xl": "1728px",
+        "3xl": "3200px",
       },
       gridTemplateColumns: {
         "3/1": "3fr 1fr",
+      },
+      backgroundImage: {
+        "videoroom-background": "url('/images/videoroomBackground.png')",
       },
     },
   },

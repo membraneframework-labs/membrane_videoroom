@@ -23,6 +23,7 @@ type Props = {
   pin: (tileId: string) => void;
   videoInVideo: boolean;
   blockPinning: boolean;
+  forceEncoding?: TrackEncoding;
 };
 
 const UnpinnedTilesSection: FC<Props> = ({
@@ -33,6 +34,7 @@ const UnpinnedTilesSection: FC<Props> = ({
   pin,
   videoInVideo,
   blockPinning,
+  forceEncoding,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
   const videoGridStyle = useMemo(
@@ -82,6 +84,7 @@ const UnpinnedTilesSection: FC<Props> = ({
             flipHorizontally={config.typeName === "local"}
             webrtc={webrtc}
             blockFillContent={config.typeName === "screenShare"}
+            forceEncoding={forceEncoding}
           />
         );
       })}

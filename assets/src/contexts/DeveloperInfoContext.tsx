@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 export type DeveloperInfo = {
   simulcast: { status: boolean; setSimulcast: (status: boolean) => void };
   manualMode: { status: boolean; setManualMode: (status: boolean) => void };
+  smartLayerSwitching: { status: boolean; setSmartLayerSwitching: (status: boolean) => void };
 };
 
 export const DeveloperInfoContext = React.createContext<DeveloperInfo | undefined>(undefined);
@@ -14,12 +15,14 @@ type Props = {
 export const DeveloperInfoProvider = ({ children }: Props) => {
   const [simulcast, setSimulcast] = useState<boolean>(false);
   const [manualMode, setManualMode] = useState<boolean>(false);
+  const [smartLayerSwitching, setSmartLayerSwitching] = useState<boolean>(false);
 
   return (
     <DeveloperInfoContext.Provider
       value={{
         simulcast: { status: simulcast, setSimulcast: setSimulcast },
         manualMode: { status: manualMode, setManualMode },
+        smartLayerSwitching: { status: smartLayerSwitching, setSmartLayerSwitching },
       }}
     >
       {children}

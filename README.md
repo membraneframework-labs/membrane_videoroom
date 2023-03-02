@@ -73,7 +73,8 @@ To run, type:
 EXTERNAL_IP=<IPv4> mix phx.server
 ```
 
-`EXTERNAL_IP` should be set to the local IP address of the computer this is running on. `EXTERNAL_IP` is optional.
+`EXTERNAL_IP` should be set to the local IP address of the computer this is running on.
+It is required unless you only connect via `localhost`.
 
 Then go to <http://localhost:4000/>.
 

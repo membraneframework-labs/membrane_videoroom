@@ -11,6 +11,8 @@ type PinUserButtonProps = {
 export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUserButtonProps) => {
   const pinText = pinned ? "Unpin" : "Pin";
   const [showLayer, setShowLayer] = useState(true);
+
+  const elementRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef<NodeJS.Timeout | null>(null);
 
   const restartTimer = useCallback(() => {
@@ -23,31 +25,43 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
     setShowLayer(true);
     timeRef.current = setTimeout(() => {
       setShowLayer(false);
-      }, five_seconds);
+    }, five_seconds);
   }, [timeRef]);
 
   useEffect(() => {
-    return () => {if (timeRef.current) clearTimeout(timeRef.current)}}, []);
+    const element = elementRef.current;
+    if (element) {
+      element.onmousemove = restartTimer;
+    }
+    return () => {
+      if (element) {
+        element.onmousemove = null;
+      }
+      if (timeRef.current) clearTimeout(timeRef.current);
+    };
+  }, [restartTimer]);
 
   return (
-    <div className={"absolute w-full h-full"} onMouseOver={restartTimer} >
-    {showLayer && <Button
-      className={clsx(
-        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-        "hidden",
-        "group-hover:flex group-hover:duration-200 hidden",
-        "flex-row content-center",
-        "opacity-50 hover:opacity-75",
-        "gap-2 py-4 px-8",
-        "rounded-full bg-brand-grey-100"
+    <div ref={elementRef} className={"absolute h-full w-full"}>
+      {showLayer && (
+        <Button
+          className={clsx(
+            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+            "hidden",
+            "hidden group-hover:flex group-hover:duration-200",
+            "flex-row content-center",
+            "opacity-50 hover:opacity-75",
+            "gap-2 py-4 px-8",
+            "rounded-full bg-brand-grey-100"
+          )}
+          onClick={onClick}
+        >
+          <Pin className="text-brand-white" />
+          <span className={"font-lg font-aktivGrotesk font-semibold leading-6 tracking-wide text-brand-white"}>
+            {pinText}
+          </span>
+        </Button>
       )}
-      onClick={onClick}
-    >
-      <Pin className="text-brand-white" />
-      <span className={"font-lg font-aktivGrotesk font-semibold leading-6 tracking-wide text-brand-white"}>
-        {pinText}
-      </span>
-    </Button>}
     </div>
   );
 };

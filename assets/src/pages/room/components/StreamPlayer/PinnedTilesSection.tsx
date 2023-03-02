@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, } from "react";
+import React, { FC, ReactNode } from "react";
 import { MediaPlayerTileConfig } from "../../../types";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import PeerInfoLayer from "./PeerInfoLayer";
@@ -68,7 +68,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
                   }
                   bottomLeft={<NameTag name={pinnedTile.displayName} />}
                 />
-                  <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
+                <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
               </>
             }
             showSimulcast={showSimulcast && tileType !== "screenShare"}

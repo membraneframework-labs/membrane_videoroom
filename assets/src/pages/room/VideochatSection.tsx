@@ -121,7 +121,7 @@ const pinNewScreenShares = (
 
 const manageOneOnOnePinning = (
   mediaPlayerTiles: MediaPlayerTileConfig[],
-  {pinnedTileIds, pinIfNotAlreadyPinned, removePinnedEarlier}: PinningApi,
+  { pinnedTileIds, pinIfNotAlreadyPinned, removePinnedEarlier }: PinningApi
 ): void => {
   if (mediaPlayerTiles.length !== 2) return;
 

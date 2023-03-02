@@ -45,9 +45,9 @@ const usePinning = (): PinningApi => {
 
     if (localTileId === lastPinnedTileId) unpin(remoteTileId);
     if (remoteTileId === lastPinnedTileId) unpin(localTileId);
-  }
+  };
 
-  return { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned, removePinnedEarlier};
+  return { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned, removePinnedEarlier };
 };
 
 export default usePinning;

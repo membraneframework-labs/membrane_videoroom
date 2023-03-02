@@ -1,26 +1,27 @@
 import clsx from "clsx";
 import React, { PropsWithChildren } from "react";
+import BlockingScreen from "../../shared/components/BlockingScreen";
+import useHorizontalMobile from "../../shared/hooks/useHorizontalMobile";
 import Navbar from "./Navbar";
 
 const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
+  const isHorizontalMobile = useHorizontalMobile();
   return (
-    <div
-      className={clsx(
-        "h-screen w-full",
-        "bg-brand-sea-blue-100 font-rocGrotesk text-brand-dark-blue-500",
-        "flex flex-col items-center gap-y-4 p-4"
-      )}
-      style={{
-        backgroundImage: "url('/images/videoroomBackground.png')",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "auto",
-        backgroundPosition: "center",
-      }}
-    >
-      <Navbar />
+    <>
+      {isHorizontalMobile && <BlockingScreen message="Turn your screen to resume the call." />}
+      <div
+        className={clsx(
+          "h-screen w-full bg-auto bg-center bg-no-repeat sm:bg-videoroom-background",
+          "bg-brand-sea-blue-100 font-rocGrotesk text-brand-dark-blue-500",
+          "flex flex-col items-center gap-y-4 p-4",
+          isHorizontalMobile && "invisible"
+        )}
+      >
+        <Navbar />
 
-      <div className="h-full w-full">{children}</div>
-    </div>
+        <div className="h-full w-full">{children}</div>
+      </div>
+    </>
   );
 };
 

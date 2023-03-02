@@ -198,13 +198,34 @@ const getManualControls = (
           icon: Microphone,
           className: neutralButtonManualStyle + trackNullify,
           hover: "Nullify mic track",
-          onClick: () => audioStreaming.replaceTrackTrack("MOCK"),
+          onClick: () => audioStreaming.replaceTrackTrack(null),
         }
       : {
           id: "mic-nullify-revert",
           icon: MicrophoneOff,
           className: activeButtonManualStyle + "  bg-green-700",
           hover: "Revert track mic track",
+          onClick: () => {
+            const track = userMediaAudio?.stream?.getVideoTracks()[0] || null;
+            if (!track) {
+              console.log("skipped");
+            }
+            audioStreaming.replaceTrackTrack(track);
+          },
+        },
+    audioStreaming.trackId && (audioStreaming.currentMode === "CAMERA" || audioStreaming.currentMode === "NULL")
+      ? {
+          id: "mic-set-canvas",
+          icon: Microphone,
+          className: neutralButtonManualStyle + streamStop,
+          hover: "Set canvas as mic track",
+          onClick: () => audioStreaming.replaceTrackTrack("MOCK"),
+        }
+      : {
+          id: "mic-set-canvas-revert",
+          icon: MicrophoneOff,
+          className: activeButtonManualStyle + streamStop,
+          hover: "Revert mic track",
           onClick: () => {
             const track = userMediaAudio?.stream?.getVideoTracks()[0] || null;
             if (!track) {
@@ -287,6 +308,27 @@ const getManualControls = (
           id: "cam-nullify-revert",
           icon: CameraOff,
           className: activeButtonManualStyle + trackNullifyRevert,
+          hover: "Revert cam track",
+          onClick: () => {
+            const track = userMediaVideo?.stream?.getVideoTracks()[0] || null;
+            if (!track) {
+              console.log("skipped");
+            }
+            cameraStreaming.replaceTrackTrack(track);
+          },
+        },
+    cameraStreaming.trackId && (cameraStreaming.currentMode === "CAMERA" || cameraStreaming.currentMode === "NULL")
+      ? {
+          id: "cam-set-canvas",
+          icon: Camera,
+          className: neutralButtonManualStyle + streamStop,
+          hover: "Set canvas as cam track",
+          onClick: () => cameraStreaming.replaceTrackTrack("MOCK"),
+        }
+      : {
+          id: "cam-set-canvas-revert",
+          icon: CameraOff,
+          className: activeButtonManualStyle + streamStop,
           hover: "Revert cam track",
           onClick: () => {
             const track = userMediaVideo?.stream?.getVideoTracks()[0] || null;

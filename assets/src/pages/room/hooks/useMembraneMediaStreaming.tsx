@@ -13,6 +13,7 @@ export type MembraneStreaming = {
   setActive: (status: boolean) => void;
   updateTrackMetadata: (metadata: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   trackMetadata: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  currentMode: Mode;
 };
 
 export type StreamingMode = "manual" | "automatic";
@@ -25,6 +26,8 @@ type TrackIds = {
 const stream = createStream("  ", "black", 24);
 const trackMock = stream.stream.getVideoTracks()[0];
 
+export type Mode = "CAMERA" | "MOCK" | "NULL";
+
 export const useMembraneMediaStreaming = (
   mode: StreamingMode,
   type: TrackType,
@@ -35,6 +38,7 @@ export const useMembraneMediaStreaming = (
 ): MembraneStreaming => {
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
   const [lastTrack, setLastTrack] = useState<MediaStreamTrack | null>(null);
+  const [currentMode, setCurrentMode] = useState<Mode>("NULL");
   const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc || null);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   const defaultTrackMetadata = useMemo(() => ({ active: true, type }), [type]);
@@ -121,17 +125,22 @@ export const useMembraneMediaStreaming = (
   const replaceTrackTrack = useCallback(
     (track: MediaStreamTrack | null | "MOCK") => {
       if (!trackIds) return;
-      console.log("%cNullify track!", "color: blue");
       if (track === "MOCK") {
-        webrtcState?.replaceTrack(trackIds.remoteId, null);
-        setLastTrack(null);
-        return;
+        console.log("%cMock track!", "color: blue");
+        webrtcState?.replaceTrack(trackIds.remoteId, trackMock);
+        setLastTrack(trackMock);
+        setCurrentMode("MOCK");
+      } else if (track === null) {
+        console.log("%cNullify track!", "color: orange");
+        webrtcState?.replaceTrack(trackIds.remoteId, track);
+        setLastTrack(track);
+        setCurrentMode("NULL");
+      } else {
+        console.log("%cCamera track!", "color: green");
+        webrtcState?.replaceTrack(trackIds.remoteId, track);
+        setLastTrack(track);
+        setCurrentMode("CAMERA");
       }
-
-      // if (track) {
-      webrtcState?.replaceTrack(trackIds.remoteId, track);
-      // }
-      setLastTrack(track);
     },
     [trackIds, webrtcState]
   );
@@ -150,5 +159,6 @@ export const useMembraneMediaStreaming = (
     setActive,
     updateTrackMetadata,
     trackMetadata,
+    currentMode,
   };
 };

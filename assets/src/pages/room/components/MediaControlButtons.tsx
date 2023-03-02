@@ -12,7 +12,7 @@ import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import Chat from "../../../features/room-page/icons/Chat";
-import useMobile from "../../../features/shared/hooks/useMobile";
+import useMobileViewport from "../../../features/shared/hooks/useMobileViewport";
 import MenuDots from "../../../features/room-page/icons/MenuDots";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 
@@ -30,7 +30,7 @@ const getAutomaticControls = (
     openSidebar,
   }: LocalUserMediaControls,
   navigate: NavigateFunction,
-  isMobile?: boolean,
+  isMobileViewport?: boolean,
   roomId?: string
 ): ControlButton[] => [
   userMediaVideo.isEnabled
@@ -108,8 +108,8 @@ const getAutomaticControls = (
       },
   {
     id: "chat",
-    icon: isMobile ? MenuDots : Chat,
-    hover: isSidebarOpen ? `Close the ${isMobile ? "menu" : "sidebar"}` : `Open the ${isMobile ? "menu" : "sidebar"}`,
+    icon: isMobileViewport ? MenuDots : Chat,
+    hover: isMobileViewport ? undefined : isSidebarOpen ? "Close the sidebar" : "Open the sidebar",
     className: isSidebarOpen ? activeButtonStyle : neutralButtonStyle,
     onClick: openSidebar,
   },
@@ -361,7 +361,7 @@ type LocalUserMediaControls = {
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
-  const isMobile = useMobile();
+  const isMobileViewport = useMobileViewport();
   const { roomId } = useParams();
 
   const navigate = useNavigate();
@@ -369,7 +369,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
   const controls: ControlButton[][] =
     props.mode === "manual"
       ? getManualControls(props, navigate)
-      : [getAutomaticControls(props, navigate, isMobile, roomId)];
+      : [getAutomaticControls(props, navigate, isMobileViewport, roomId)];
   return (
     <div>
       <div

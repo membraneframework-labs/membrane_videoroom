@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MOBILE_BREAKPOINT } from "../consts";
 
-const useMobile = () => {
+const useMobileViewport = () => {
   const [isMobile, setIsMobile] = useState<boolean | undefined>();
 
   const updateIsMobileState = () => {
@@ -21,4 +21,4 @@ const useMobile = () => {
   return isMobile;
 };
 
-export default useMobile;
+export default useMobileViewport;

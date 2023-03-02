@@ -64,7 +64,8 @@ const MediaPlayerTile: FC<Props> = ({
       className={clsx(
         className,
         "relative flex h-full w-full justify-center overflow-hidden",
-        "rounded-xl border border-brand-dark-blue-300 bg-gray-900"
+        "rounded-xl border border-brand-dark-blue-300 bg-gray-900",
+        "group"
       )}
     >
       <MediaPlayer

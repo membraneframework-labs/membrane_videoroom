@@ -10,10 +10,9 @@ type PinUserButtonProps = {
 
 export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUserButtonProps) => {
   const pinText = pinned ? "Unpin" : "Pin";
-  const [showLayer, setShowLayer] = useState(true);
-
-  const elementRef = useRef<HTMLDivElement | null>(null);
+  const [showLayer, setShowLayer] = useState<boolean>(false);
   const timeRef = useRef<NodeJS.Timeout | null>(null);
+
 
   const restartTimer = useCallback(() => {
     const five_seconds = 5_000;
@@ -23,26 +22,21 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
     }
 
     setShowLayer(true);
+    console.log("Set to true");
     timeRef.current = setTimeout(() => {
       setShowLayer(false);
+      console.log("end");
     }, five_seconds);
   }, [timeRef]);
 
   useEffect(() => {
-    const element = elementRef.current;
-    if (element) {
-      element.onmousemove = restartTimer;
-    }
     return () => {
-      if (element) {
-        element.onmousemove = null;
-      }
       if (timeRef.current) clearTimeout(timeRef.current);
     };
-  }, [restartTimer]);
+  }, []);
 
   return (
-    <div ref={elementRef} className={"absolute h-full w-full"}>
+    <div className={"absolute h-full w-full"} onMouseMove={restartTimer}>
       {showLayer && (
         <Button
           className={clsx(

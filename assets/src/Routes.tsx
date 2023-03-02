@@ -6,6 +6,7 @@ import { useUser } from "./contexts/UserContext";
 import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
 import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
 import { usePreviewSettings } from "./features/home-page/hooks/usePreviewSettings";
+import Page404 from "./features/shared/components/Page404";
 
 const RoomPageWrapper: React.FC = () => {
   const match = useParams();
@@ -43,4 +44,8 @@ export const router = createBrowserRouter([
     path: "/room/:roomId",
     element: <RoomPageWrapper />,
   },
+  {
+    path: "*",
+    element: <Page404 />
+  }
 ]);

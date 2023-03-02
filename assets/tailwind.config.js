@@ -1,15 +1,15 @@
 module.exports = {
   content: ["../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
   theme: {
-    rotate: {
-      45: "45deg",
-      135: "135deg",
-    },
     flex: {
       3: "3",
       1: "1",
     },
     extend: {
+      rotate: {
+        45: "45deg",
+        135: "135deg",
+      },
       invert: {
         50: ".50",
       },
@@ -114,6 +114,9 @@ module.exports = {
       },
       gridTemplateColumns: {
         "3/1": "3fr 1fr",
+      },
+      backgroundImage: {
+        "videoroom-background": "url('/images/videoroomBackground.png')",
       },
     },
   },

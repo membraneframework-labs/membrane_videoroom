@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.13.4-erlang-25.2.3-alpine-3.16.3 AS build
+FROM hexpm/elixir:1.14.3-erlang-25.2.3-alpine-3.16.3 AS build
 
 # install build dependencies
 RUN \

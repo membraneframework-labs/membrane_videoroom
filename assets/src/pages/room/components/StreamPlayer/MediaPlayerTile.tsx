@@ -60,12 +60,10 @@ const MediaPlayerTile: FC<Props> = ({
     <div
       ref={ref}
       data-name="video-feed"
-      // todo remove disableGroupHover
       className={clsx(
         className,
         "relative flex h-full w-full justify-center overflow-hidden",
         "rounded-xl border border-brand-dark-blue-300 bg-gray-900",
-        "group"
       )}
     >
       <MediaPlayer

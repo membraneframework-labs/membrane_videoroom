@@ -36,7 +36,7 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
   }, []);
 
   return (
-    <div className={"absolute h-full w-full"} onMouseMove={restartTimer}>
+    <div className={"absolute h-full w-full group"} onMouseMove={restartTimer}>
       {showLayer && (
         <Button
           className={clsx(

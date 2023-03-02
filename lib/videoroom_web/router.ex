@@ -13,6 +13,7 @@ defmodule VideoRoomWeb.Router do
 
     get("/healthcheck", PageController, :healthcheck)
 
-    get("/*path", PageController, :index) # 'Catch all' route allows for client-side handing of unknown routes
+    # use of '/*path' route allows for client-side handing of unknown routes
+    get("/*path", PageController, :index)
   end
 end

@@ -9,8 +9,7 @@ const Page404: React.FC = () => {
         message={"Page not found "}
         actionElement={
           <Button href="/" variant="normal">
-            {" "}
-            Go to home page
+            {"Go to home page"}
           </Button>
         }
       />

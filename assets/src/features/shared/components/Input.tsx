@@ -44,7 +44,7 @@ const Input: React.FC<InputProps> = ({
         onChange={onChange}
         className={clsx(
           "w-full px-3.5 py-3",
-          "rounded-[40px] border-2 text-brand-dark-blue-500 focus:outline-none",
+          "focus:outline-none rounded-[40px] border-2 text-brand-dark-blue-500",
           error
             ? "border-brand-red"
             : disabled

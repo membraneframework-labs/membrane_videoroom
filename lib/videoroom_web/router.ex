@@ -8,10 +8,11 @@ defmodule VideoRoomWeb.Router do
   scope "/", VideoRoomWeb do
     pipe_through(:browser)
 
-    get("/", PageController, :index)
     get("/room", PageController, :index)
     get("/room/:room_id", PageController, :index)
 
     get("/healthcheck", PageController, :healthcheck)
+
+    get("/*path", PageController, :index) # 'Catch all' route allows for client-side handing of unknown routes
   end
 end

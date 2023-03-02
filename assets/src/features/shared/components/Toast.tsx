@@ -18,7 +18,7 @@ const Toast: React.FC<ToastProps> = ({ id, message, onClose, type = "information
         "fromTop"
       )}
     >
-      <div className="min-w-[15rem] text-center sm:min-w-fit">{message}</div>
+      <div className="sm:min-w-fit min-w-[15rem] text-center">{message}</div>
       <Button onClick={onClose}>
         <Close className="text-lg font-medium" />
       </Button>

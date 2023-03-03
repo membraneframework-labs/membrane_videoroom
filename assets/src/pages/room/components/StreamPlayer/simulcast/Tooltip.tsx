@@ -10,7 +10,7 @@ export const Tooltip: FC<TooltipProps> = ({ children, text, textCss }: TooltipPr
     <div className="group relative">
       {children}
 
-      <div className="invisible absolute bottom-0 -bottom-12 flex w-full flex-col items-center font-aktivGrotesk opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-90">
+      <div className="invisible absolute -bottom-12 flex w-full flex-col items-center font-aktivGrotesk opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-90">
         <div
           className={clsx(
             "h-0 w-0 rotate-180 transform",

@@ -12,7 +12,7 @@ export const SimulcastEncodingToSend: FC<Props> = ({ localEncoding, disabled }: 
     localEncoding;
 
   return (
-    <div className="absolute top-0 right-0 z-50 flex flex-row rounded-bl-xl bg-white px-4 py-2 text-sm text-gray-700 opacity-80 md:text-base">
+    <div className="absolute top-0 right-0 z-50 flex flex-row rounded-bl-xl bg-white/80 px-4 py-2 text-sm text-gray-700  md:text-base">
       <div>Encodings to send</div>
       <LayerButton
         selected={highQuality}

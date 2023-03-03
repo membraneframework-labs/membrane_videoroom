@@ -111,7 +111,6 @@ export const useMembraneClient = (
         onTrackUpdated: (ctx: TrackContext) => {
           api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
         },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onJoinError: (_metadata) => {
           console.error(_metadata);
 

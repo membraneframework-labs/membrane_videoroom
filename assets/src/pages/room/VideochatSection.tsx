@@ -121,7 +121,6 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
-  // To refactor
   const { pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags } = useTilePinning(allTilesConfig);
 
   const wrapperClass = useMemo(() => {

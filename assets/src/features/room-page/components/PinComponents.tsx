@@ -13,7 +13,6 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
   const [showLayer, setShowLayer] = useState<boolean>(false);
   const timeRef = useRef<NodeJS.Timeout | null>(null);
 
-
   const restartTimer = useCallback(() => {
     const fiveSeconds = 5_000;
 
@@ -34,7 +33,7 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
   }, []);
 
   return (
-    <div className={"absolute h-full w-full group"} onMouseMove={restartTimer}>
+    <div className={"group absolute h-full w-full"} onMouseMove={restartTimer}>
       {showLayer && (
         <Button
           className={clsx(

@@ -1,85 +1,88 @@
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { MediaPlayerTileConfig, StreamSource } from "../../types";
 import usePinning from "./usePinning";
 import { groupBy } from "../utils";
 
 type PinningFlags = {
-    blockPinning: boolean;
-    isAnyPinned: boolean;
-    isAnyUnpinned: boolean;
-}
+  blockPinning: boolean;
+  isAnyPinned: boolean;
+  isAnyUnpinned: boolean;
+};
 
 type TilePinningApi = {
-    pinnedTiles: MediaPlayerTileConfig[];
-    unpinnedTiles: MediaPlayerTileConfig[];
-    pinTile: (tileId: string) => void;
-    unpinTile: (tileId: string) => void;
-    pinningFlags: PinningFlags;
-}
+  pinnedTiles: MediaPlayerTileConfig[];
+  unpinnedTiles: MediaPlayerTileConfig[];
+  pinTile: (tileId: string) => void;
+  unpinTile: (tileId: string) => void;
+  pinningFlags: PinningFlags;
+};
 
 const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi => {
-    const {pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned} = usePinning();
+  const { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned } = usePinning();
 
-    const pinNewScreenShares = useCallback(() => {
-        tileConfigs
-            .filter((tile) => tile.typeName === "screenShare")
-            .map((tile) => tile.mediaPlayerId)
-            .forEach(pinIfNotAlreadyPinned);
-      }, [tileConfigs, pinIfNotAlreadyPinned]);
-    
-    const pinNewPeer = useCallback(() => {
-        if (tileConfigs.length !== 2) return;
-        
-        const findTileId = (source: StreamSource) => tileConfigs.find((tile) => tile.streamSource === source)?.mediaPlayerId;
-    
-        const localUserTileId = findTileId("local");
-        const remoteUserTileId = findTileId("remote");
-        if (!localUserTileId || !remoteUserTileId) return;
-    
-        const isLocalPinned = pinnedTileIds.includes(localUserTileId);
-        const isRemotePinned = pinnedTileIds.includes(remoteUserTileId);
-    
-        if (!isLocalPinned && !isRemotePinned)
-            pinIfNotAlreadyPinned(remoteUserTileId);
-  },[tileConfigs, pinnedTileIds, pinIfNotAlreadyPinned]);
+  const pinNewScreenShares = useCallback(() => {
+    tileConfigs
+      .filter((tile) => tile.typeName === "screenShare")
+      .map((tile) => tile.mediaPlayerId)
+      .forEach(pinIfNotAlreadyPinned);
+  }, [tileConfigs, pinIfNotAlreadyPinned]);
 
-    useEffect(() => {
-        pinNewScreenShares();
-        pinNewPeer()
-    }, [pinNewScreenShares, pinNewPeer])
+  const pinNewPeer = useCallback(() => {
+    if (tileConfigs.length !== 2) return;
 
+    const findTileId = (source: StreamSource) =>
+      tileConfigs.find((tile) => tile.streamSource === source)?.mediaPlayerId;
 
-    const takeOutPinnedTiles = useCallback((
-        ): { pinnedTiles: MediaPlayerTileConfig[]; unpinnedTiles: MediaPlayerTileConfig[] } => {
-          const { pinnedTiles, unpinnedTiles } = groupBy(tileConfigs, ({ mediaPlayerId }) =>
-            pinnedTileIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
-          );
-          return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
-        },[tileConfigs, pinnedTileIds]);
+    const localUserTileId = findTileId("local");
+    const remoteUserTileId = findTileId("remote");
+    if (!localUserTileId || !remoteUserTileId) return;
 
-    const {pinnedTiles, unpinnedTiles} = takeOutPinnedTiles();
+    const isLocalPinned = pinnedTileIds.includes(localUserTileId);
+    const isRemotePinned = pinnedTileIds.includes(remoteUserTileId);
 
+    if (!isLocalPinned && !isRemotePinned) pinIfNotAlreadyPinned(remoteUserTileId);
+  }, [tileConfigs, pinnedTileIds, pinIfNotAlreadyPinned]);
 
-    const unpinFirstIfNecessary = useCallback(() => {
-        if (tileConfigs.length !== 2 || pinnedTileIds.length !== 1 ) return;
-        const pinnedTileId = pinnedTileIds[0];
-        unpin(pinnedTileId);
-      }, [tileConfigs.length, pinnedTileIds, unpin]);
+  useEffect(() => {
+    pinNewScreenShares();
+    pinNewPeer();
+  }, [pinNewScreenShares, pinNewPeer]);
 
-    const pinTile = useCallback((tileId: string) => {
-        unpinFirstIfNecessary();
-        pin(tileId);
-    }, [unpinFirstIfNecessary, pin]);
+  const takeOutPinnedTiles = useCallback((): {
+    pinnedTiles: MediaPlayerTileConfig[];
+    unpinnedTiles: MediaPlayerTileConfig[];
+  } => {
+    const { pinnedTiles, unpinnedTiles } = groupBy(tileConfigs, ({ mediaPlayerId }) =>
+      pinnedTileIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
+    );
+    return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
+  }, [tileConfigs, pinnedTileIds]);
 
-    const unpinTile = unpin;
+  const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles();
 
-    const pinningFlags: PinningFlags = {
-        blockPinning: tileConfigs.length === 1,
-        isAnyPinned: pinnedTiles.length > 0,
-        isAnyUnpinned: unpinnedTiles.length > 0,
-    }
+  const unpinFirstIfNecessary = useCallback(() => {
+    if (tileConfigs.length !== 2 || pinnedTileIds.length !== 1) return;
+    const pinnedTileId = pinnedTileIds[0];
+    unpin(pinnedTileId);
+  }, [tileConfigs.length, pinnedTileIds, unpin]);
 
-    return {pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags};
-}
+  const pinTile = useCallback(
+    (tileId: string) => {
+      unpinFirstIfNecessary();
+      pin(tileId);
+    },
+    [unpinFirstIfNecessary, pin]
+  );
+
+  const unpinTile = unpin;
+
+  const pinningFlags: PinningFlags = {
+    blockPinning: tileConfigs.length === 1,
+    isAnyPinned: pinnedTiles.length > 0,
+    isAnyUnpinned: unpinnedTiles.length > 0,
+  };
+
+  return { pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags };
+};
 
 export default useTilePinning;

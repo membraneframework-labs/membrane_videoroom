@@ -1,16 +1,14 @@
-import React, { FC, useCallback, useEffect, useMemo } from "react";
+import React, { FC, useMemo } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer } from "./hooks/usePeerState";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
-import usePinning, { PinningApi } from "./hooks/usePinning";
 
 import { PeerTileConfig, MediaPlayerTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
-import { groupBy } from "./utils";
 import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
 import useTilePinning from "./hooks/useTilePinning";
 
@@ -103,7 +101,6 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
   return screenSharingStreams;
 };
 
-
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
@@ -119,14 +116,13 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     mediaPlayerId: LOCAL_VIDEO_ID,
   };
 
-  
   const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
   // To refactor
-  const {pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags} = useTilePinning(allTilesConfig);
+  const { pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags } = useTilePinning(allTilesConfig);
 
   const wrapperClass = useMemo(() => {
     const areAllTilesPinned = !pinningFlags.isAnyUnpinned;
@@ -137,7 +133,6 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     return clsx(base, pinningFlags.isAnyPinned && layoutWithTileHighlight);
   }, [allTilesConfig.length, pinningFlags]);
 
-  // stop refactor
   const forceEncoding = allTilesConfig.length <= 2 ? "h" : undefined;
 
   return (

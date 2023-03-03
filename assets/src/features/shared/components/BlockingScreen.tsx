@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import React, { ReactNode } from "react";
+import React from "react";
 import RotateRight from "../../room-page/icons/RotateRight";
 
-const BlockingScreen: React.FC<{ message?: string; actionElement?: ReactNode }> = ({ message, actionElement }) => {
+const BlockingScreen: React.FC<{ message?: string }> = ({ message }) => {
   return (
     <div
       className={clsx(
@@ -13,7 +13,6 @@ const BlockingScreen: React.FC<{ message?: string; actionElement?: ReactNode }> 
       <RotateRight className="text-2xl text-brand-dark-blue-500" />
       <div className="font-rocGrotesk text-4xl font-medium">Ooops!</div>
       <div className="text-xl">{message}</div>
-      {actionElement}
     </div>
   );
 };

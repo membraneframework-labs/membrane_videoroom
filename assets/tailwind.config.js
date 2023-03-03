@@ -1,3 +1,13 @@
+const generateFractionPercentages = (n) => {
+  const fractionConfig = {};
+
+  for (let i = 1; i < n; i++) {
+    fractionConfig[`${i}/${n}`] = `${(100 * i) / n}%`;
+  }
+
+  return fractionConfig;
+};
+
 module.exports = {
   content: ["../lib/*_web/**/*.*ex", "./src/**/*.tsx"],
   theme: {
@@ -12,6 +22,12 @@ module.exports = {
       },
       invert: {
         50: ".50",
+      },
+      inset: {
+        ...generateFractionPercentages(20),
+      },
+      height: {
+        ...generateFractionPercentages(10),
       },
       fontFamily: {
         aktivGrotesk: [

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from "react";
+import React, { FC, useCallback, useEffect, useMemo } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer } from "./hooks/usePeerState";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
@@ -102,6 +102,7 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
   return screenSharingStreams;
 };
 
+// to refactor
 const takeOutPinnedTiles = (
   tiles: MediaPlayerTileConfig[],
   pinnedTileIds: string[]
@@ -121,7 +122,7 @@ const pinNewScreenShares = (
 
 const manageOneOnOnePinning = (
   mediaPlayerTiles: MediaPlayerTileConfig[],
-  { pinnedTileIds, pinIfNotAlreadyPinned, removePinnedEarlier }: PinningApi
+  { pinnedTileIds, pinIfNotAlreadyPinned }: PinningApi
 ): void => {
   if (mediaPlayerTiles.length !== 2) return;
 
@@ -133,9 +134,9 @@ const manageOneOnOnePinning = (
   const isRemotePinned = pinnedTileIds.includes(remoteUserTileId);
 
   if (!isLocalPinned && !isRemotePinned) pinIfNotAlreadyPinned(remoteUserTileId); // pinning new peer
-  if (isLocalPinned && isRemotePinned) removePinnedEarlier(localUserTileId, remoteUserTileId); // switching the peer
 };
 
+// stop refactor
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
@@ -151,11 +152,14 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     mediaPlayerId: LOCAL_VIDEO_ID,
   };
 
-  const pinningApi = usePinning();
+  
   const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
+
+  // To refactor
+  const pinningApi = usePinning();
 
   useEffect(() => {
     pinNewScreenShares(screenSharingStreams, pinningApi.pinIfNotAlreadyPinned);
@@ -177,6 +181,18 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const shouldBlockPinning = allTilesConfig.length === 1;
 
+  const betterPinning = useCallback((tileId: string) => {
+    const unpinFirstIfNecessary = () => {
+      if (allTilesConfig.length !== 2 || pinningApi.pinnedTileIds.length !== 1 ) return;
+      const pinnedTileId = pinningApi.pinnedTileIds[0];
+      pinningApi.unpin(pinnedTileId);
+    }
+    
+    unpinFirstIfNecessary();
+    pinningApi.pin(tileId);
+  }, [allTilesConfig.length, pinningApi])
+
+  // stop refactor
   const forceEncoding = allTilesConfig.length <= 2 ? "h" : undefined;
 
   return (
@@ -198,7 +214,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
             showSimulcast={showSimulcast}
             oneColumn={isAnyTilePinned}
             webrtc={webrtc}
-            pin={pinningApi.pin}
+            pin={betterPinning}
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={shouldBlockPinning}
             forceEncoding={forceEncoding}

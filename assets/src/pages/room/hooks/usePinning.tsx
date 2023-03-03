@@ -5,7 +5,6 @@ export type PinningApi = {
   pin: (tileId: string) => void;
   unpin: (tileId: string) => void;
   pinIfNotAlreadyPinned: (tileId: string) => void;
-  removePinnedEarlier: (localTileId: string, remoteTileId: string) => void;
 };
 
 const usePinning = (): PinningApi => {
@@ -40,14 +39,7 @@ const usePinning = (): PinningApi => {
     }
   };
 
-  const removePinnedEarlier = (localTileId: string, remoteTileId: string) => {
-    if (!lastPinnedTileId) return;
-
-    if (localTileId === lastPinnedTileId) unpin(remoteTileId);
-    if (remoteTileId === lastPinnedTileId) unpin(localTileId);
-  };
-
-  return { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned, removePinnedEarlier };
+  return { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned };
 };
 
 export default usePinning;

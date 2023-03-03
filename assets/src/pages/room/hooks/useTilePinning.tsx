@@ -3,11 +3,18 @@ import { MediaPlayerTileConfig, StreamSource } from "../../types";
 import usePinning from "./usePinning";
 import { groupBy } from "../utils";
 
+type PinningFlags = {
+    blockPinning: boolean;
+    isAnyPinned: boolean;
+    isAnyUnpinned: boolean;
+}
+
 type TilePinningApi = {
     pinnedTiles: MediaPlayerTileConfig[];
     unpinnedTiles: MediaPlayerTileConfig[];
     pinTile: (tileId: string) => void;
     unpinTile: (tileId: string) => void;
+    pinningFlags: PinningFlags;
 }
 
 const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi => {
@@ -52,7 +59,7 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
 
     const {pinnedTiles, unpinnedTiles} = takeOutPinnedTiles();
 
-    
+
     const unpinFirstIfNecessary = useCallback(() => {
         if (tileConfigs.length !== 2 || pinnedTileIds.length !== 1 ) return;
         const pinnedTileId = pinnedTileIds[0];
@@ -66,7 +73,13 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
 
     const unpinTile = unpin;
 
-    return {pinnedTiles, unpinnedTiles, pinTile, unpinTile}
+    const pinningFlags: PinningFlags = {
+        blockPinning: tileConfigs.length === 1,
+        isAnyPinned: pinnedTiles.length > 0,
+        isAnyUnpinned: unpinnedTiles.length > 0,
+    }
+
+    return {pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags};
 }
 
 export default useTilePinning;

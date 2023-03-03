@@ -22,12 +22,10 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
     }
 
     setShowLayer(true);
-    console.log("Set to true");
     timeRef.current = setTimeout(() => {
       setShowLayer(false);
-      console.log("end");
     }, five_seconds);
-  }, [timeRef]);
+  }, []);
 
   useEffect(() => {
     return () => {

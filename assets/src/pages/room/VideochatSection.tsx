@@ -149,7 +149,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     const areAllTilesPinned = unpinnedTiles.length === 0;
 
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[3200px]";
-    const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : "sm:grid-cols-3/1";
+    const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : "sm:grid-rows-3/1";
 
     return clsx(base, isAnyTilePinned && layoutWithTileHighlight);
   }, [isAnyTilePinned, allTilesConfig.length, unpinnedTiles.length]);
@@ -175,7 +175,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           <UnpinnedTilesSection
             tileConfigs={unpinnedTiles}
             showSimulcast={showSimulcast}
-            oneColumn={isAnyTilePinned}
+            oneRow={isAnyTilePinned}
             webrtc={webrtc}
             pin={pinningApi.pin}
             videoInVideo={pinnedTiles.length === 1}

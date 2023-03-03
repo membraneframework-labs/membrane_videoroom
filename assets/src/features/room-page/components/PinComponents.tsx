@@ -15,7 +15,7 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
 
 
   const restartTimer = useCallback(() => {
-    const five_seconds = 5_000;
+    const fiveSeconds = 5_000;
 
     if (timeRef.current) {
       clearTimeout(timeRef.current);
@@ -24,7 +24,7 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
     setShowLayer(true);
     timeRef.current = setTimeout(() => {
       setShowLayer(false);
-    }, five_seconds);
+    }, fiveSeconds);
   }, []);
 
   useEffect(() => {

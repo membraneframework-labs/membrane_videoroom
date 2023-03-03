@@ -12,6 +12,7 @@ import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 import { groupBy } from "./utils";
 import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
+import useTilePinning from "./hooks/useTilePinning";
 
 type Props = {
   peers: RemotePeer[];
@@ -102,41 +103,7 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
   return screenSharingStreams;
 };
 
-// to refactor
-const takeOutPinnedTiles = (
-  tiles: MediaPlayerTileConfig[],
-  pinnedTileIds: string[]
-): { pinnedTiles: MediaPlayerTileConfig[]; unpinnedTiles: MediaPlayerTileConfig[] } => {
-  const { pinnedTiles, unpinnedTiles } = groupBy(tiles, ({ mediaPlayerId }) =>
-    pinnedTileIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
-  );
-  return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
-};
 
-const pinNewScreenShares = (
-  screenSharingStreams: ScreenShareTileConfig[],
-  pinIfNotAlreadyPinned: (tileId: string) => void
-) => {
-  screenSharingStreams.map((tile) => tile.mediaPlayerId).forEach(pinIfNotAlreadyPinned);
-};
-
-const manageOneOnOnePinning = (
-  mediaPlayerTiles: MediaPlayerTileConfig[],
-  { pinnedTileIds, pinIfNotAlreadyPinned }: PinningApi
-): void => {
-  if (mediaPlayerTiles.length !== 2) return;
-
-  const localUserTileId = mediaPlayerTiles.find((tile) => tile.streamSource === "local")?.mediaPlayerId;
-  const remoteUserTileId = mediaPlayerTiles.find((tile) => tile.streamSource === "remote")?.mediaPlayerId;
-  if (!localUserTileId || !remoteUserTileId) return;
-
-  const isLocalPinned = pinnedTileIds.includes(localUserTileId);
-  const isRemotePinned = pinnedTileIds.includes(remoteUserTileId);
-
-  if (!isLocalPinned && !isRemotePinned) pinIfNotAlreadyPinned(remoteUserTileId); // pinning new peer
-};
-
-// stop refactor
 export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
@@ -159,14 +126,8 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
   // To refactor
-  const pinningApi = usePinning();
+  const {pinnedTiles, unpinnedTiles, pinTile, unpinTile} = useTilePinning(allTilesConfig);
 
-  useEffect(() => {
-    pinNewScreenShares(screenSharingStreams, pinningApi.pinIfNotAlreadyPinned);
-    manageOneOnOnePinning(allTilesConfig, pinningApi);
-  });
-
-  const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles(allTilesConfig, pinningApi.pinnedTileIds);
   const isAnyTilePinned = pinnedTiles.length > 0;
   const isAnyTileUnpinned = unpinnedTiles.length > 0;
 
@@ -181,17 +142,6 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
 
   const shouldBlockPinning = allTilesConfig.length === 1;
 
-  const betterPinning = useCallback((tileId: string) => {
-    const unpinFirstIfNecessary = () => {
-      if (allTilesConfig.length !== 2 || pinningApi.pinnedTileIds.length !== 1 ) return;
-      const pinnedTileId = pinningApi.pinnedTileIds[0];
-      pinningApi.unpin(pinnedTileId);
-    }
-    
-    unpinFirstIfNecessary();
-    pinningApi.pin(tileId);
-  }, [allTilesConfig.length, pinningApi])
-
   // stop refactor
   const forceEncoding = allTilesConfig.length <= 2 ? "h" : undefined;
 
@@ -201,7 +151,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
         {isAnyTilePinned && (
           <PinnedTilesSection
             pinnedTiles={pinnedTiles}
-            unpin={pinningApi.unpin}
+            unpin={unpinTile}
             showSimulcast={showSimulcast}
             webrtc={webrtc}
             forceEncoding={forceEncoding}
@@ -214,7 +164,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
             showSimulcast={showSimulcast}
             oneColumn={isAnyTilePinned}
             webrtc={webrtc}
-            pin={betterPinning}
+            pin={pinTile}
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={shouldBlockPinning}
             forceEncoding={forceEncoding}

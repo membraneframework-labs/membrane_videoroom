@@ -10,7 +10,6 @@ export type PinningApi = {
 const usePinning = (): PinningApi => {
   const [pinnedTileIds, setPinnedTileIds] = useState<string[]>([]);
   const [pinnedTileIdHistory, setPinnedTileIdHistory] = useState<Set<string>>(new Set());
-  const [lastPinnedTileId, setLastPinnedTileId] = useState<string | null>(null);
 
   const pin = (newTileId: string) => {
     const addToHistory = (tileId: string) => {
@@ -20,13 +19,11 @@ const usePinning = (): PinningApi => {
     if (!pinnedTileIds.includes(newTileId)) {
       setPinnedTileIds((oldPinnedTileIds) => [newTileId, ...oldPinnedTileIds]);
       addToHistory(newTileId);
-      setLastPinnedTileId(newTileId);
     }
   };
 
   const unpin = (tileIdToRemove: string) => {
     setPinnedTileIds((prevPinnedTiles) => prevPinnedTiles.filter((tileId) => tileId !== tileIdToRemove));
-    setLastPinnedTileId(null);
   };
 
   const wasPinned = (tileId: string) => {

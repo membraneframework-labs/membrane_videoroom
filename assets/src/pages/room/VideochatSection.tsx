@@ -18,6 +18,7 @@ type Props = {
   localPeer?: LocalPeer;
   showSimulcast?: boolean;
   webrtc?: MembraneWebRTC;
+  unpinnedTilesHorizontal?: boolean;
 };
 
 const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId =>
@@ -119,7 +120,13 @@ const pinNewScreenShares = (
   screenSharingStreams.map((tile) => tile.mediaPlayerId).forEach(pinIfNotAlreadyPinned);
 };
 
-export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
+export const VideochatSection: FC<Props> = ({
+  peers,
+  localPeer,
+  showSimulcast,
+  webrtc,
+  unpinnedTilesHorizontal,
+}: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
 
@@ -149,10 +156,11 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     const areAllTilesPinned = unpinnedTiles.length === 0;
 
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[3200px]";
-    const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : "sm:grid-rows-3/1";
+    const unpinnedTilesLayout = unpinnedTilesHorizontal ? "sm:grid-rows-3/1" : "sm:grid-cols-3/1";
+    const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : unpinnedTilesLayout;
 
     return clsx(base, isAnyTilePinned && layoutWithTileHighlight);
-  }, [isAnyTilePinned, allTilesConfig.length, unpinnedTiles.length]);
+  }, [unpinnedTiles.length, unpinnedTilesHorizontal, allTilesConfig.length, isAnyTilePinned]);
 
   const shouldBlockPinning = allTilesConfig.length === 1;
 
@@ -181,6 +189,7 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={shouldBlockPinning}
             forceEncoding={forceEncoding}
+            horizontal={!!unpinnedTilesHorizontal}
           />
         )}
       </div>

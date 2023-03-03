@@ -117,6 +117,7 @@ const RoomPage: FC<Props> = ({
             localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
             webrtc={webrtc}
+            unpinnedTilesHorizontal={isSidebarOpen}
           />
 
           <div

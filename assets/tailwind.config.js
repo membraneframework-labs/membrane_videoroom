@@ -115,6 +115,9 @@ module.exports = {
       screens: {
         "3xl": "3200px",
       },
+      gridTemplateColumns: {
+        "3/1": "minmax(0, 3fr) minmax(0, 1fr)",
+      },
       gridTemplateRows: {
         "3/1": "minmax(0, 3fr) minmax(0, 1fr)",
       },

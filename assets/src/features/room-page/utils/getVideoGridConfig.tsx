@@ -61,6 +61,7 @@ export function getGridConfig(peers: number): GridConfigType {
 export const getUnpinnedTilesGridStyle = (
   gridConfig: GridConfigType,
   oneRow: boolean,
+  horizontalRow: boolean,
   videoInVideo: boolean,
   fixedRatio: boolean
 ): string => {
@@ -82,5 +83,7 @@ export const getUnpinnedTilesGridStyle = (
         : "h-full flex flex-wrap flex-col content-center justify-center"
     );
 
-  return "h-full w-full flex flex-col gap-y-3 sm:flex-row sm:gap-x-3 sm:justify-center";
+  const horizontal = horizontalRow ? "sm:flex-row" : "sm:flex-col";
+
+  return `h-full w-full flex flex-col gap-y-3 ${horizontal} sm:gap-x-3 sm:justify-center`;
 };

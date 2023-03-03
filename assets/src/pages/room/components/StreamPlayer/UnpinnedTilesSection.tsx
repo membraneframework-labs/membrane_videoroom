@@ -24,6 +24,7 @@ type Props = {
   videoInVideo: boolean;
   blockPinning: boolean;
   forceEncoding?: TrackEncoding;
+  horizontal: boolean;
 };
 
 const UnpinnedTilesSection: FC<Props> = ({
@@ -35,18 +36,21 @@ const UnpinnedTilesSection: FC<Props> = ({
   videoInVideo,
   blockPinning,
   forceEncoding,
+  horizontal,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
   const videoGridStyle = useMemo(
-    () => getUnpinnedTilesGridStyle(gridConfig, oneRow, videoInVideo, tileConfigs.length === 1),
-    [gridConfig, oneRow, videoInVideo, tileConfigs.length]
+    () => getUnpinnedTilesGridStyle(gridConfig, oneRow, horizontal, videoInVideo, tileConfigs.length === 1),
+    [gridConfig, oneRow, horizontal, videoInVideo, tileConfigs.length]
   );
 
   const tileStyle = !oneRow
     ? clsx(gridConfig.span, gridConfig.tileClass)
     : tileConfigs.length === 1
     ? "w-[400px] h-[220px]"
-    : "sm:max-w-1/3";
+    : horizontal
+    ? "sm:max-w-1/3"
+    : "";
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 

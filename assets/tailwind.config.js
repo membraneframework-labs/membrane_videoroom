@@ -23,6 +23,9 @@ module.exports = {
       invert: {
         50: ".50",
       },
+      spacing: {
+        50: "12.5rem",
+      },
       inset: {
         ...generateFractionPercentages(20),
       },

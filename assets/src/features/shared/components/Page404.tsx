@@ -21,11 +21,11 @@ const Page404: React.FC = () => {
           "absolute inset-0 flex h-full w-full flex-col items-center justify-center gap-y-10 font-aktivGrotesk"
         }
       >
-        <BinocularsIcon />
+        <BinocularsIcon className="w-40 sm:w-50" />
 
         <div className="flex flex-col gap-y-4 text-center">
-          <div className="font-rocGrotesk text-5xl font-medium">404 — Page not found</div>
-          <div className="text-xl">Ooops! This page does not exist.</div>
+          <div className="font-rocGrotesk text-[2.625rem] font-medium sm:text-5xl">404 — Page not found</div>
+          <div className="text-lg sm:text-xl">Ooops! This page does not exist.</div>
         </div>
 
         <Button href="/" variant="normal">

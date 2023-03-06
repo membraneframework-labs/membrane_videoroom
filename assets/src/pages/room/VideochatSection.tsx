@@ -183,7 +183,7 @@ export const VideochatSection: FC<Props> = ({
           <UnpinnedTilesSection
             tileConfigs={unpinnedTiles}
             showSimulcast={showSimulcast}
-            oneRow={isAnyTilePinned}
+            isAnyTilePinned={isAnyTilePinned}
             webrtc={webrtc}
             pin={pinningApi.pin}
             videoInVideo={pinnedTiles.length === 1}

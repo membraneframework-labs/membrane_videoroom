@@ -18,7 +18,7 @@ type Props = {
   tileConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  oneRow: boolean; // screensharing or pinned user
+  isAnyTilePinned: boolean;
   webrtc?: MembraneWebRTC;
   pin: (tileId: string) => void;
   videoInVideo: boolean;
@@ -30,7 +30,7 @@ type Props = {
 const UnpinnedTilesSection: FC<Props> = ({
   tileConfigs,
   showSimulcast,
-  oneRow,
+  isAnyTilePinned,
   webrtc,
   pin,
   videoInVideo,
@@ -40,11 +40,11 @@ const UnpinnedTilesSection: FC<Props> = ({
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
   const videoGridStyle = useMemo(
-    () => getUnpinnedTilesGridStyle(gridConfig, oneRow, horizontal, videoInVideo, tileConfigs.length === 1),
-    [gridConfig, oneRow, horizontal, videoInVideo, tileConfigs.length]
+    () => getUnpinnedTilesGridStyle(gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length === 1),
+    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length]
   );
 
-  const tileStyle = !oneRow
+  const tileStyle = !isAnyTilePinned
     ? clsx(gridConfig.span, gridConfig.tileClass)
     : tileConfigs.length === 1
     ? "w-[400px] h-[220px]"

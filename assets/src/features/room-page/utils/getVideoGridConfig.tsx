@@ -60,12 +60,12 @@ export function getGridConfig(peers: number): GridConfigType {
 
 export const getUnpinnedTilesGridStyle = (
   gridConfig: GridConfigType,
-  oneRow: boolean,
+  isAnyTilePinned: boolean,
   horizontalRow: boolean,
   videoInVideo: boolean,
   fixedRatio: boolean
 ): string => {
-  if (!oneRow)
+  if (!isAnyTilePinned)
     return clsx(
       "h-full w-full",
       gridConfig.columns,

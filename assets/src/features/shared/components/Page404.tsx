@@ -1,14 +1,15 @@
 import React from "react";
 import Navbar from "../../home-page/components/Navbar";
 import BinocularsIcon from "../icons/BinocularsIcon";
+import BackgroundRight from "./BackgroundRight";
 import Button from "./Button";
 
 const Page404: React.FC = () => {
   return (
     <div className="h-screen w-full bg-brand-sea-blue-100 text-brand-dark-blue-500">
-      <div className="hidden sm:block">
-        <img src="/images/bg404Left.png" className="absolute top-1/20 left-0 h-9/10" />
-        <img src="/images/bg404Right.png" className="absolute top-1/20 right-0 h-9/10" />
+      <div className="absolute hidden h-full w-full overflow-clip sm:block">
+        <BackgroundRight className="absolute top-1/20 left-0 h-9/10 -translate-x-1/2" opacity={0.3} />
+        <BackgroundRight className="absolute top-1/20 right-0 h-9/10 translate-x-1/2" opacity={0.1} />
       </div>
 
       <div className="absolute inset-x-4 top-4 mb-4 self-start">

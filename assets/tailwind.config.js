@@ -13,6 +13,9 @@ module.exports = {
       invert: {
         50: ".50",
       },
+      spacing: {
+        50: "12.5rem",
+      },
       fontFamily: {
         aktivGrotesk: [
           "aktiv-grotesk",

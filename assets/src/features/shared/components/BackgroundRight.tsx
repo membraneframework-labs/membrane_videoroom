@@ -25,7 +25,7 @@ const BackgroundRight: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
       <path
         d="M205.895 366.442C229.248 326.483 280.672 312.849 320.754 335.991C360.836 359.132 374.398 410.285 351.045 450.244L262.831 601.186C239.478 641.145 188.054 654.779 147.972 631.638C107.89 608.496 94.3281 557.343 117.681 517.384L205.895 366.442Z"
         stroke="white"
-        stroke-width="3"
+        strokeWidth="3"
       />
       <ellipse cx="597.81" cy="522.225" rx="39.4256" ry="38.1806" fill="#A69EFA" />
       <rect

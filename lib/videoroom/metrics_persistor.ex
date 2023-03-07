@@ -73,8 +73,7 @@ defmodule VideoRoom.MetricsPersistor do
   end
 
   defp jsonify(report) when is_map(report) do
-    report
-    |> Map.new(fn {key, value} -> {maybe_remove_tuple(key), jsonify(value)} end)
+    Map.new(report, fn {key, value} -> {maybe_remove_tuple(key), jsonify(value)} end)
   end
 
   defp jsonify(input), do: input
@@ -87,19 +86,19 @@ defmodule VideoRoom.MetricsPersistor do
 
   defp maybe_remove_tuple(key), do: to_string(key)
 
-  @metrics_to_derive MapSet.new([
-                       :"inbound-rtp.packets",
-                       :"inbound-rtp.bytes_received",
-                       :"ice.bytes_received",
-                       :"ice.bytes_sent",
-                       :"ice.packets_received",
-                       :"ice.packets_sent"
-                     ])
+  @metrics_to_derive [
+    :"inbound-rtp.packets",
+    :"inbound-rtp.bytes_received",
+    :"ice.bytes_received",
+    :"ice.bytes_sent",
+    :"ice.packets_received",
+    :"ice.packets_sent"
+  ]
 
   defp add_time_derivative_metrics(report, time, state, path \\ []) do
     report =
       Map.new(report, fn
-        {{type, _id} = key, value} when type in [:room_id, :track_id, :peer_id] ->
+        {key, value} when is_map(value) ->
           {key, add_time_derivative_metrics(value, time, state, path ++ [key])}
 
         {key, value} ->
@@ -107,7 +106,7 @@ defmodule VideoRoom.MetricsPersistor do
       end)
 
     report
-    |> Enum.filter(fn {key, _value} -> MapSet.member?(@metrics_to_derive, key) end)
+    |> Map.take(@metrics_to_derive)
     |> Enum.map(fn {key, value} when is_number(value) ->
       case get_in(state, [:prev_report | path ++ [key]]) do
         old_value when is_number(old_value) ->

@@ -1,12 +1,15 @@
+import clsx from "clsx";
 import React from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
 import { AUDIO_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "../../../pages/room/consts";
+import { useAudioMeterMain } from "../../../pages/room/hooks/AudioMeter/useAudioMeterMain";
 import { useMedia } from "../../../pages/room/hooks/useMedia";
 import { usePeersState } from "../../../pages/room/hooks/usePeerState";
 import { useSetLocalUserTrack } from "../../../pages/room/hooks/useSetLocalUserTrack";
 import { TrackWithId } from "../../../pages/types";
 import InitialsImage, { computeInitials } from "../../room-page/components/InitialsImage";
+import SoundIcon from "../../room-page/components/SoundIcon";
 import { activeButtonStyle, neutralButtonStyle } from "../../room-page/consts";
 import Camera from "../../room-page/icons/Camera";
 import CameraOff from "../../room-page/icons/CameraOff";
@@ -32,6 +35,8 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
   useSetLocalUserTrack("camera", peerApi, localCamera.stream, localCamera.isEnabled);
   const localAudio = useMedia(AUDIO_TRACKS_CONFIG, audioAutostart.status);
   useSetLocalUserTrack("audio", peerApi, localAudio.stream, localAudio.isEnabled);
+
+  const { isSoundDetected } = useAudioMeterMain(localAudio.stream, 500);
 
   return (
     <MediaPlayerTile
@@ -99,6 +104,9 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                 }}
               />
             )}
+          </div>
+          <div className={clsx("absolute top-4 left-4", isSoundDetected ? "" : "hidden")}>
+            <SoundIcon />
           </div>
         </>
       }

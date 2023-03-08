@@ -74,7 +74,7 @@ export const getUnpinnedTilesGridStyle = (
 
   if (fixedRatio)
     return clsx(
-      "w-[400px]",
+      "w-[400px] max-w-[90%]",
       videoInVideo
         ? "h-[220px] absolute bottom-4 right-4 z-10"
         : "sm:h-full flex flex-wrap flex-col content-center justify-center"

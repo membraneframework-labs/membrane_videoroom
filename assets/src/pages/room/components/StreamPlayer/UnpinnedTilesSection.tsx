@@ -63,7 +63,7 @@ const UnpinnedTilesSection: FC<Props> = ({
       tileConfigs.length > 3 && !isLast && (index % 2 === 0 ? "justify-self-end" : "justify-self-start")
     );
 
-    return clsx(base, isLast && "col-[2_/_span_2]", gridConfig.span, gridConfig.tileClass);
+    return clsx(base, isLast ? "col-[2_/_span_2] sm:col-span-2": gridConfig.span, gridConfig.tileClass);
   };
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";

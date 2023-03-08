@@ -17,6 +17,7 @@ type Props = {
   localPeer?: LocalPeer;
   showSimulcast?: boolean;
   webrtc?: MembraneWebRTC;
+  unpinnedTilesHorizontal?: boolean;
 };
 
 const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId =>
@@ -101,7 +102,7 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
   return screenSharingStreams;
 };
 
-export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc }: Props) => {
+export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc, unpinnedTilesHorizontal }: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
 
@@ -127,10 +128,11 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
     const areAllTilesPinned = !pinningFlags.isAnyUnpinned;
 
     const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[3200px]";
-    const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : "sm:grid-cols-3/1";
+    const unpinnedTilesLayout = unpinnedTilesHorizontal ? "sm:grid-rows-3/1" : "sm:grid-cols-3/1";
+    const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : unpinnedTilesLayout;
 
     return clsx(base, pinningFlags.isAnyPinned && layoutWithTileHighlight);
-  }, [allTilesConfig.length, pinningFlags]);
+  }, [unpinnedTiles.length, unpinnedTilesHorizontal, allTilesConfig.length, pinningFlags.isAnyPinned]);
 
   const forceEncoding = allTilesConfig.length <= 2 ? "h" : undefined;
 
@@ -151,12 +153,13 @@ export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, w
           <UnpinnedTilesSection
             tileConfigs={unpinnedTiles}
             showSimulcast={showSimulcast}
-            oneColumn={pinningFlags.isAnyPinned}
+            isAnyTilePinned={pinningFlags.isAnyPinned}
             webrtc={webrtc}
             pin={pinTile}
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={pinningFlags.blockPinning}
             forceEncoding={forceEncoding}
+            horizontal={!!unpinnedTilesHorizontal}
           />
         )}
       </div>

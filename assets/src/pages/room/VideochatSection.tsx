@@ -102,7 +102,13 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
   return screenSharingStreams;
 };
 
-export const VideochatSection: FC<Props> = ({ peers, localPeer, showSimulcast, webrtc, unpinnedTilesHorizontal }: Props) => {
+export const VideochatSection: FC<Props> = ({
+  peers,
+  localPeer,
+  showSimulcast,
+  webrtc,
+  unpinnedTilesHorizontal,
+}: Props) => {
   const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
   const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
 

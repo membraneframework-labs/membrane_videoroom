@@ -34,37 +34,37 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
       const previousLength = tilesLength;
       const newLength = tileConfigs.length;
       return previousLength != newLength;
-    }
-    
+    };
+
     if (weaklyPinnedId && tileLengthHasChanged()) {
-       unpin(weaklyPinnedId);
+      unpin(weaklyPinnedId);
     }
-  }, [weaklyPinnedId, tileConfigs.length, tilesLength]);
+  }, [weaklyPinnedId, tileConfigs.length, tilesLength, unpin]);
 
   useEffect(() => {
     unpinWeaklyPinnedIfTileLengthHasChanged();
     setTilesLength(tileConfigs.length);
-  }, [unpinWeaklyPinnedIfTileLengthHasChanged, tileConfigs.length])
+  }, [unpinWeaklyPinnedIfTileLengthHasChanged, tileConfigs.length]);
 
   const weaklyPinNewPeer = useCallback(() => {
     if (tileConfigs.length !== 2) return;
 
     const findTileId = (source: StreamSource) =>
-    tileConfigs.find((tile) => tile.streamSource === source)?.mediaPlayerId;
-    
+      tileConfigs.find((tile) => tile.streamSource === source)?.mediaPlayerId;
+
     const localUserTileId = findTileId("local");
     const remoteUserTileId = findTileId("remote");
     if (!localUserTileId || !remoteUserTileId) return;
-    
+
     const isLocalPinned = pinnedTileIds.includes(localUserTileId);
     const isRemotePinned = pinnedTileIds.includes(remoteUserTileId);
-    
-    if (!isLocalPinned && !isRemotePinned) { 
+
+    if (!isLocalPinned && !isRemotePinned) {
       pinIfNotAlreadyPinned(remoteUserTileId);
       setWeaklyPinnedId(remoteUserTileId);
     }
   }, [tileConfigs, pinnedTileIds, pinIfNotAlreadyPinned]);
-  
+
   useEffect(() => {
     pinNewScreenShares();
     weaklyPinNewPeer();

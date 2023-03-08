@@ -36,7 +36,7 @@ const usePinning = (): PinningApi => {
     }
   };
 
-  return { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned};
+  return { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned };
 };
 
 export default usePinning;

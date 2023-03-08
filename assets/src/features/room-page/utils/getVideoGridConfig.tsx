@@ -10,7 +10,7 @@ export type GridConfigType = {
   tileClass?: string;
 };
 
-type ColumnsCount = 1 | 2 | 3 | 4 |5 ;
+type ColumnsCount = 1 | 2 | 3 | 4 | 5;
 
 const GRID_COLUMNS_STYLE: Record<ColumnsCount, string> = {
   1: "grid-cols-1",
@@ -36,7 +36,7 @@ function getColumns(peers: number): ColumnsCount {
   return 5;
 }
 
-function getGridGap(peers: number): string{
+function getGridGap(peers: number): string {
   if (peers < 5) return "gap-2 sm:gap-4";
   if (peers < 13) return "gap-2 sm:gap-3";
   return "gap-2";

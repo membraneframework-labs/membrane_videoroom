@@ -371,7 +371,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
     <div>
       <div
         onClick={toggleShow}
-        className="absolute left-1/2 top-[-15px] z-[-10] h-[15px] w-[50px] -translate-x-1/2 rounded-t-lg hover:bg-gray-700 hover:bg-opacity-90"
+        className="absolute left-1/2 top-[-15px] z-[-10] h-[15px] w-[50px] -translate-x-1/2 rounded-t-lg hover:bg-brand-dark-gray/90"
       ></div>
       {show && (
         <div className="inset-x-0 z-10 flex flex-wrap justify-center gap-x-4 rounded-t-md">

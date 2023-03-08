@@ -44,19 +44,35 @@ const UnpinnedTilesSection: FC<Props> = ({
     [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length]
   );
 
-  const tileStyle = !isAnyTilePinned
-    ? clsx(gridConfig.span, gridConfig.tileClass)
-    : tileConfigs.length === 1
-    ? "w-[400px] h-[220px]"
-    : horizontal
-    ? "sm:max-w-1/3"
-    : "";
+  const isLastTileAndCentered = (index: number) => {
+    return tileConfigs.length > 4 && index === tileConfigs.length - 1 && tileConfigs.length % 2 === 1;
+  };
+
+  const tileStyle = (index: number) => {
+    if (isAnyTilePinned) {
+      if (horizontal) return "sm:max-w-1/3";
+      return "sm:h-full";
+    }
+
+    const isLast = isLastTileAndCentered(index);
+
+    const base = clsx(
+      tileConfigs.length > 1 && "aspect-square",
+      "h-[auto] w-[auto] sm:aspect-auto sm:h-full sm:w-full",
+      tileConfigs.length > 3 && !isLast && (index % 2 === 0 ? "justify-self-end" : "justify-self-start")
+    );
+
+    return clsx(base, isLast && "col-[2_/_span_2]", gridConfig.span, gridConfig.tileClass);
+  };
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
+  const containerHeight = tileConfigs.length === 1 ? (isAnyTilePinned ? "" : "h-full") : "h-fit max-h-full sm:h-full";
+  console.log("containerHeight", containerHeight);
+
   return (
-    <div id="videos-grid" className={videoGridStyle}>
-      {tileConfigs.map((config) => {
+    <div id="videos-grid" className={clsx(videoGridStyle, "justify-items-center", containerHeight)}>
+      {tileConfigs.map((config, index) => {
         const video: TrackWithId | null = config.video;
         const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
@@ -67,7 +83,8 @@ const UnpinnedTilesSection: FC<Props> = ({
             peerId={config.peerId}
             video={video}
             audio={config.typeName === "remote" ? config.audio : null}
-            className={tileStyle}
+            className={tileStyle(index)}
+            enableCustomSize={true}
             layers={
               <>
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}

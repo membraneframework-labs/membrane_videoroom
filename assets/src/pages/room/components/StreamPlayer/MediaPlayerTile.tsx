@@ -21,6 +21,7 @@ export interface Props {
   className?: string;
   blockFillContent?: boolean;
   forceEncoding?: TrackEncoding;
+  enableCustomSize?: boolean;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -35,6 +36,7 @@ const MediaPlayerTile: FC<Props> = ({
   className,
   blockFillContent,
   forceEncoding,
+  enableCustomSize = false,
 }: Props) => {
   const { smartLayerSwitching } = useDeveloperInfo();
 
@@ -63,7 +65,8 @@ const MediaPlayerTile: FC<Props> = ({
       // todo remove disableGroupHover
       className={clsx(
         className,
-        "relative flex h-full w-full justify-center overflow-hidden",
+        !enableCustomSize && "h-full w-full",
+        "relative flex justify-center overflow-hidden",
         "rounded-xl border border-brand-dark-blue-300 bg-gray-900"
       )}
     >

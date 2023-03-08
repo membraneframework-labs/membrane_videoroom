@@ -13,6 +13,7 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
+import SoundIcon from "../../../../features/room-page/components/SoundIcon";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -68,14 +69,22 @@ const UnpinnedTilesSection: FC<Props> = ({
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
   const containerHeight = tileConfigs.length === 1 ? (isAnyTilePinned ? "" : "h-full") : "h-fit max-h-full sm:h-full";
-  console.log("containerHeight", containerHeight);
+  
+  const getUpperLeftIcon = (config: MediaPlayerTileConfig): JSX.Element | null => {
+    if (config.typeName !== "local" && config.typeName !== "remote") return null;
+
+    if (showDisabledIcon(config.audio)) return <DisabledMicIcon isLoading={isLoading(config.audio)} />;
+    if (config.isSpeaking) return <SoundIcon />;
+
+    return null;
+  };
 
   return (
     <div id="videos-grid" className={clsx(videoGridStyle, "justify-items-center", containerHeight)}>
       {tileConfigs.map((config, index) => {
         const video: TrackWithId | null = config.video;
-        const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
+        const upperLeftIcon: JSX.Element | null = getUpperLeftIcon(config);
 
         return (
           <MediaPlayerTile
@@ -90,11 +99,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
                 <PeerInfoLayer
                   bottomLeft={<NameTag name={config.displayName} />}
-                  topLeft={
-                    hasInitials && showDisabledIcon(config.audio) ? (
-                      <DisabledMicIcon isLoading={isLoading(audio)} />
-                    ) : undefined
-                  }
+                  topLeft={upperLeftIcon}
                   tileSize={tileSize}
                 />
                 {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}

@@ -51,8 +51,8 @@ const UnpinnedTilesSection: FC<Props> = ({
 
   const tileStyle = (index: number) => {
     if (isAnyTilePinned) {
-      if (horizontal) return "sm:max-w-1/3";
-      return "sm:h-full";
+      if (horizontal && tileConfigs.length > 1) return "sm:max-w-1/3";
+      return "h-[auto] sm:h-full aspect-square sm:aspect-auto w-[auto]";
     }
 
     const isLast = isLastTileAndCentered(index);
@@ -94,6 +94,7 @@ const UnpinnedTilesSection: FC<Props> = ({
             audio={config.typeName === "remote" ? config.audio : null}
             className={tileStyle(index)}
             enableCustomSize={true}
+            mergeBorders={tileConfigs.length > 1}
             layers={
               <>
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}

@@ -74,13 +74,13 @@ export const getUnpinnedTilesGridStyle = (
 
   if (fixedRatio)
     return clsx(
-      "w-[400px] max-w-[90%]",
+      "sm:w-[400px] sm:max-w-[90%] flex justify-center",
       videoInVideo
-        ? "h-[220px] absolute bottom-4 right-4 z-10"
+        ? "h-full sm:h-[220px] sm:absolute sm:bottom-4 sm:right-4 sm:z-10"
         : "sm:h-full flex flex-wrap flex-col content-center justify-center"
     );
 
   const horizontal = horizontalRow ? "sm:flex-row" : "sm:flex-col";
 
-  return `h-full w-full flex flex-col gap-y-3 ${horizontal} sm:gap-x-3 sm:justify-center`;
+  return `h-full w-full flex flex-row sm:gap-3 ${horizontal} justify-center`;
 };

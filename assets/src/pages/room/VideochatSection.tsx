@@ -158,12 +158,19 @@ export const VideochatSection: FC<Props> = ({
   const wrapperClass = useMemo(() => {
     const areAllTilesPinned = unpinnedTiles.length === 0;
 
-    const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[3200px] items-center";
+    const rows =
+      isAnyTilePinned && isAnyTileUnpinned
+        ? `grid-rows-[4fr_minmax(100px,_1fr)] ${
+            (!unpinnedTilesHorizontal || unpinnedTiles.length === 1) && "sm:grid-rows-none"
+          }`
+        : "grid-rows-1";
+
+    const base = `grid h-full w-full ${rows}  sm:auto-rows-fr gap-4 3xl:max-w-[3200px] items-center`;
     const unpinnedTilesLayout = unpinnedTilesHorizontal ? "sm:grid-rows-3/1" : "sm:grid-cols-3/1";
     const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : unpinnedTilesLayout;
 
     return clsx(base, isAnyTilePinned && layoutWithTileHighlight);
-  }, [unpinnedTiles.length, unpinnedTilesHorizontal, allTilesConfig.length, isAnyTilePinned]);
+  }, [unpinnedTiles.length, isAnyTilePinned, isAnyTileUnpinned, unpinnedTilesHorizontal, allTilesConfig.length]);
 
   const shouldBlockPinning = allTilesConfig.length === 1;
 

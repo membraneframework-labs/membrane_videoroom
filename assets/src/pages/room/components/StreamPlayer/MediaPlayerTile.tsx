@@ -22,6 +22,7 @@ export interface Props {
   blockFillContent?: boolean;
   forceEncoding?: TrackEncoding;
   enableCustomSize?: boolean;
+  mergeBorders?: boolean;
 }
 
 const MediaPlayerTile: FC<Props> = ({
@@ -37,6 +38,7 @@ const MediaPlayerTile: FC<Props> = ({
   blockFillContent,
   forceEncoding,
   enableCustomSize = false,
+  mergeBorders = false,
 }: Props) => {
   const { smartLayerSwitching } = useDeveloperInfo();
 
@@ -67,6 +69,7 @@ const MediaPlayerTile: FC<Props> = ({
         className,
         !enableCustomSize && "h-full w-full",
         "relative flex justify-center overflow-hidden",
+        mergeBorders && "first:rounded-r-none first:rounded-xl rounded-none last:rounded-xl last:rounded-l-none sm:first:rounded-xl sm:rounded-xl sm:last:rounded-xl",
         "rounded-xl border border-brand-dark-blue-300 bg-gray-900"
       )}
     >

@@ -51,7 +51,7 @@ const UnpinnedTilesSection: FC<Props> = ({
 
   const tileStyle = (index: number) => {
     if (isAnyTilePinned) {
-      if (horizontal) return "sm:max-w-1/3";
+      if (horizontal && tileConfigs.length > 1) return "sm:max-w-1/3";
       return "sm:h-full";
     }
 

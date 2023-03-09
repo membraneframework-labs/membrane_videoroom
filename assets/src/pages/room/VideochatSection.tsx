@@ -138,7 +138,7 @@ export const VideochatSection: FC<Props> = ({
     const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : unpinnedTilesLayout;
 
     return clsx(base, pinningFlags.isAnyPinned && layoutWithTileHighlight);
-  }, [unpinnedTiles.length, unpinnedTilesHorizontal, allTilesConfig.length, pinningFlags.isAnyPinned]);
+  }, [unpinnedTilesHorizontal, allTilesConfig.length, pinningFlags.isAnyPinned, pinningFlags.isAnyUnpinned]);
 
   const forceEncoding = allTilesConfig.length <= 2 ? "h" : undefined;
 

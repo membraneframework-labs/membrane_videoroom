@@ -19,8 +19,8 @@ type TilePinningApi = {
 
 const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi => {
   const { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned } = usePinning();
-  const [tilesLength, setTilesLength] = useState<number>(tileConfigs.length);
-  const [weaklyPinnedId, setWeaklyPinnedId] = useState<string | null>(null);
+  const [numberOfTiles, setNumberOfTiles] = useState<number>(tileConfigs.length);
+  const [autoPinned, setAutoPinned] = useState<string | null>(null);
 
   const pinNewScreenShares = useCallback(() => {
     tileConfigs
@@ -29,24 +29,23 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
       .forEach(pinIfNotAlreadyPinned);
   }, [tileConfigs, pinIfNotAlreadyPinned]);
 
-  const unpinWeaklyPinnedIfTileLengthHasChanged = useCallback(() => {
-    const tileLengthHasChanged = () => {
-      const previousLength = tilesLength;
-      const newLength = tileConfigs.length;
-      return previousLength != newLength;
-    };
+  const unpinAutoPinnedWhenNumberOfTilesChanged = useCallback(
+    (oldNumber: number, newNumber: number): void => {
+      if (autoPinned && oldNumber !== newNumber) {
+        unpin(autoPinned);
+      }
+    },
+    [autoPinned, unpin]
+  );
 
-    if (weaklyPinnedId && tileLengthHasChanged()) {
-      unpin(weaklyPinnedId);
-    }
-  }, [weaklyPinnedId, tileConfigs.length, tilesLength, unpin]);
+  const removeAutoPin = useCallback(() => setAutoPinned(null), []);
 
   useEffect(() => {
-    unpinWeaklyPinnedIfTileLengthHasChanged();
-    setTilesLength(tileConfigs.length);
-  }, [unpinWeaklyPinnedIfTileLengthHasChanged, tileConfigs.length]);
+    unpinAutoPinnedWhenNumberOfTilesChanged(numberOfTiles, tileConfigs.length);
+    setNumberOfTiles(tileConfigs.length);
+  }, [unpinAutoPinnedWhenNumberOfTilesChanged, numberOfTiles, tileConfigs.length]);
 
-  const weaklyPinNewPeer = useCallback(() => {
+  const autoPinSecondPeer = useCallback(() => {
     if (tileConfigs.length !== 2) return;
 
     const findTileId = (source: StreamSource) =>
@@ -61,14 +60,14 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
 
     if (!isLocalPinned && !isRemotePinned) {
       pinIfNotAlreadyPinned(remoteUserTileId);
-      setWeaklyPinnedId(remoteUserTileId);
+      setAutoPinned(remoteUserTileId);
     }
   }, [tileConfigs, pinnedTileIds, pinIfNotAlreadyPinned]);
 
   useEffect(() => {
     pinNewScreenShares();
-    weaklyPinNewPeer();
-  }, [pinNewScreenShares, weaklyPinNewPeer]);
+    autoPinSecondPeer();
+  }, [pinNewScreenShares, autoPinSecondPeer]);
 
   const takeOutPinnedTiles = useCallback((): {
     pinnedTiles: MediaPlayerTileConfig[];
@@ -96,7 +95,13 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
     [unpinFirstIfNecessary, pin]
   );
 
-  const unpinTile = unpin;
+  const unpinTile = useCallback(
+    (tileId: string) => {
+      tileId === autoPinned && removeAutoPin();
+      unpin(tileId);
+    },
+    [autoPinned, removeAutoPin, unpin]
+  );
 
   const pinningFlags: PinningFlags = {
     blockPinning: tileConfigs.length === 1,

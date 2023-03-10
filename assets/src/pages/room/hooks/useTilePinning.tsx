@@ -97,7 +97,7 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
 
   const unpinTile = useCallback(
     (tileId: string) => {
-      tileId === autoPinned && removeAutoPin();
+      if (tileId === autoPinned) removeAutoPin();
       unpin(tileId);
     },
     [autoPinned, removeAutoPin, unpin]

@@ -68,6 +68,7 @@ const MediaPlayerTile: FC<Props> = ({
       className={clsx(
         className,
         !enableCustomSize && "h-full w-full",
+        "max-h-full max-w-full",
         "relative flex justify-center overflow-hidden",
         mergeBorders && "first:rounded-r-none first:rounded-xl rounded-none last:rounded-xl last:rounded-l-none sm:first:rounded-xl sm:rounded-xl sm:last:rounded-xl",
         "rounded-xl border border-brand-dark-blue-300 bg-gray-900"

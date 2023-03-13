@@ -46,7 +46,7 @@
   --padding: 16px;
 
   max-height: calc(
-    100vh - var(--padding) - var(--navbar) - var(--gap) - var(--gap) - var(--menuTooltip) - var(--padding)
+    100dvh - var(--padding) - var(--navbar) - var(--gap) - var(--gap) - var(--menuTooltip) - var(--padding)
   );
 }
 

@@ -59,7 +59,7 @@ const UnpinnedTilesSection: FC<Props> = ({
 
     const base = clsx(
       tileConfigs.length > 1 && "aspect-square",
-      "h-[auto] w-[auto] sm:aspect-auto sm:h-full sm:w-full",
+      "h-[auto] w-[auto] sm:aspect-auto sm:h-full sm:w-full mx-auto sm:mx-0",
       tileConfigs.length > 3 && !isLast && (index % 2 === 0 ? "justify-self-end" : "justify-self-start")
     );
 
@@ -80,7 +80,7 @@ const UnpinnedTilesSection: FC<Props> = ({
   };
 
   return (
-    <div id="videos-grid" className={clsx(videoGridStyle, "justify-items-center", containerHeight)}>
+    <div id="videos-grid" className={clsx(videoGridStyle, containerHeight)}>
       {tileConfigs.map((config, index) => {
         const video: TrackWithId | null = config.video;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
@@ -93,7 +93,7 @@ const UnpinnedTilesSection: FC<Props> = ({
             video={video}
             audio={config.typeName === "remote" ? config.audio : null}
             className={tileStyle(index)}
-            enableCustomSize={true}
+            enableCustomSize={isAnyTilePinned || tileConfigs.length > 1}
             layers={
               <>
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}

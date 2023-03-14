@@ -21,7 +21,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@tailwindcss/aspect-ratio": "^0.3.0",
     "@types/dom-screen-wake-lock": "^1.0.0",
     "@types/phoenix": "^1.5.4",
     "@types/react": "^18.0.21",
@@ -30,15 +29,15 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
-    "autoprefixer": "^10.2.0",
+    "autoprefixer": "^10.4.13",
     "eslint": "^8.25.0",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
     "playwright": "1.17",
-    "postcss": "^8.3.5",
+    "postcss": "^8.4.21",
     "postcss-import": "^14.0.2",
     "prettier": "^2.8.3",
     "prettier-plugin-tailwindcss": "^0.2.1",
-    "tailwindcss": "^2.2.4"
+    "tailwindcss": "^3.2.7"
   }
 }

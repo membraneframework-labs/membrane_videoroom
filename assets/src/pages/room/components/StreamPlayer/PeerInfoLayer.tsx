@@ -2,10 +2,10 @@ import React, { FC } from "react";
 import clsx from "clsx";
 
 type Props = {
-  topLeft?: JSX.Element;
-  topRight?: JSX.Element;
-  bottomLeft?: JSX.Element;
-  bottomRight?: JSX.Element;
+  topLeft?: JSX.Element | null;
+  topRight?: JSX.Element | null;
+  bottomLeft?: JSX.Element | null;
+  bottomRight?: JSX.Element | null;
   tileSize?: "M" | "L";
 };
 

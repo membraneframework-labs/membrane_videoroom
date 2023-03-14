@@ -95,7 +95,7 @@ const UnpinnedTilesSection: FC<Props> = ({
             audio={config.typeName === "remote" ? config.audio : null}
             className={tileStyle(index)}
             enableCustomSize={true}
-            mergeBorders={isAnyTilePinned ||tileConfigs.length > 1}
+            mergeBorders={isAnyTilePinned && tileConfigs.length > 1}
             layers={
               <>
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}

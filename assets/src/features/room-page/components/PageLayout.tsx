@@ -9,12 +9,13 @@ const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
       {isHorizontalMobile && <BlockingScreen message="Turn your screen to resume the call." />}
+
       <div
         className={clsx(
-          "h-screen w-full bg-auto bg-center bg-no-repeat sm:bg-videoroom-background",
+          "h-[100dvh] w-full bg-auto bg-center bg-no-repeat sm:bg-videoroom-background",
           "bg-brand-sea-blue-100 font-rocGrotesk text-brand-dark-blue-500",
           "flex flex-col items-center gap-y-4 p-4",
-          isHorizontalMobile && "invisible"
+          isHorizontalMobile && "hidden"
         )}
       >
         <Navbar />

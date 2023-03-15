@@ -57,8 +57,8 @@ h3 {
   width: 100%;
 }
 .VideoChat .grid-1 video {
-  max-height: calc(100vh - 150px);
-  max-width: calc(100vw - 100px);
+  max-height: calc(100dvh - 150px);
+  max-width: calc(100dvw - 100px);
   width: auto;
 }
 .VideoChat .grid-2 {

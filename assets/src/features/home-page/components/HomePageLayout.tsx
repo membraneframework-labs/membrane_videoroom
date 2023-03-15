@@ -13,7 +13,7 @@ const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
       {isHorizontalMobile && <BlockingScreen message="Turn your screen to join the call." />}
       <div
         className={clsx(
-          "home-page h-screen w-full",
+          "home-page h-[100dvh] w-full",
           "bg-brand-sea-blue-200 font-rocGrotesk text-brand-dark-blue-500",
           "flex flex-col items-center gap-y-4 p-4",
           "relative overflow-y-auto",

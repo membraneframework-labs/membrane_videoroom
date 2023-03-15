@@ -6,7 +6,7 @@ import Button from "./Button";
 
 const Page404: React.FC = () => {
   return (
-    <div className="h-screen w-full bg-brand-sea-blue-100 text-brand-dark-blue-500">
+    <div className="h-[100dvh] w-full bg-brand-sea-blue-100 text-brand-dark-blue-500">
       <div className="absolute hidden h-full w-full overflow-clip sm:block">
         <BackgroundRight className="absolute top-[5%] left-0 h-[90%] -translate-x-1/2" opacity={0.3} />
         <BackgroundRight className="absolute top-[5%] right-0 h-[90%] translate-x-1/2" opacity={0.1} />

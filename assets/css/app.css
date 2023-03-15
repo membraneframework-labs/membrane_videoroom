@@ -46,12 +46,12 @@
   --padding: 16px;
 
   max-height: calc(
-    100vh - var(--padding) - var(--navbar) - var(--gap) - var(--gap) - var(--menuTooltip) - var(--padding)
+    100dvh - var(--padding) - var(--navbar) - var(--gap) - var(--gap) - var(--menuTooltip) - var(--padding)
   );
 }
 
 /* allows for centering leftover elements in the last row of the grid */
-@media (min-width: 769px) {
+@media (min-width: 640px) {
   /* two columns -> one element left*/
   .video-tile-grid-2:last-child:nth-child(2n - 1) {
     grid-column-end: 4;

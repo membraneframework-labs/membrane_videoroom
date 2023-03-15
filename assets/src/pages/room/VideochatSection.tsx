@@ -136,7 +136,7 @@ export const VideochatSection: FC<Props> = ({
   const wrapperClass = useMemo(() => {
     const areAllTilesPinned = !pinningFlags.isAnyUnpinned;
 
-    const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[3200px]";
+    const base = "grid h-full w-full auto-rows-fr gap-3 3xl:max-w-[3200px] items-center";
     const unpinnedTilesLayout = unpinnedTilesHorizontal ? "sm:grid-rows-3/1" : "sm:grid-cols-3/1";
     const layoutWithTileHighlight = allTilesConfig.length === 2 || areAllTilesPinned ? "relative" : unpinnedTilesLayout;
 

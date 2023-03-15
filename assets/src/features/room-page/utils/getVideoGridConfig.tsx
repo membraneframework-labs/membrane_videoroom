@@ -10,49 +10,46 @@ export type GridConfigType = {
   tileClass?: string;
 };
 
-type ColumnsCount = 1 | 2 | 3 | 4;
+type ColumnsCount = 1 | 2 | 3 | 4 | 5;
 
 const GRID_COLUMNS_STYLE: Record<ColumnsCount, string> = {
   1: "grid-cols-1",
   2: "grid-cols-1 sm:grid-cols-4",
-  3: "grid-cols-1 sm:grid-cols-6",
-  4: "grid-cols-1 sm:grid-cols-8",
+  3: "grid-cols-4 sm:grid-cols-4",
+  4: "grid-cols-4 sm:grid-cols-6",
+  5: "grid-cols-4 sm:grid-cols-8",
 };
 
 const TILE_CLASS: Record<ColumnsCount, string> = {
   1: "",
   2: "video-tile-grid-2",
-  3: "video-tile-grid-3",
-  4: "video-tile-grid-4",
+  3: "video-tile-grid-2",
+  4: "video-tile-grid-3",
+  5: "video-tile-grid-4",
 };
 
 function getColumns(peers: number): ColumnsCount {
-  if (peers === 1) {
-    return 1;
-  }
-  if (peers > 1 && peers < 5) {
-    return 2;
-  }
-  if (peers >= 5 && peers < 13) {
-    return 3;
-  }
+  if (peers === 1) return 1;
+  if (peers < 4) return 2;
+  if (peers < 5) return 3;
+  if (peers < 13) return 4;
+  return 5;
+}
 
-  return 4;
+function getGridGap(peers: number): string {
+  if (peers < 5) return "gap-2 sm:gap-4";
+  if (peers < 13) return "gap-2 sm:gap-3";
+  return "gap-2";
 }
 
 export function getGridConfig(peers: number): GridConfigType {
-  function getGridGap() {
-    if (peers < 5) return "gap-4";
-    if (peers < 13) return "gap-3";
-    return "gap-2";
-  }
   const grid = "grid place-content-center grid-flow-row";
-  const gap = getGridGap();
+  const gap = getGridGap(peers);
   const padding = peers >= 10 && peers < 13 ? "xl:px-[140px]" : "";
+  const span = peers > 1 ? "col-span-2 sm:col-span-2" : "";
+  const rows = peers == 2 ? "auto-rows-fr sm:grid-rows-[490px] 3xl:grid-rows-[520px]" : "auto-rows-fr";
   const columnsCount = getColumns(peers);
   const columns = GRID_COLUMNS_STYLE[columnsCount];
-  const rows = peers == 2 ? "auto-rows-fr sm:grid-rows-[490px] 3xl:grid-rows-[520px]" : "auto-rows-fr";
-  const span = peers > 1 ? "col-span-2" : "";
   const tileClass = TILE_CLASS[columnsCount];
 
   return { grid, gap, padding, columns, rows, span, tileClass };
@@ -67,7 +64,7 @@ export const getUnpinnedTilesGridStyle = (
 ): string => {
   if (!isAnyTilePinned)
     return clsx(
-      "h-full w-full",
+      "sm:h-full w-full",
       gridConfig.columns,
       gridConfig.grid,
       gridConfig.gap,
@@ -77,10 +74,10 @@ export const getUnpinnedTilesGridStyle = (
 
   if (fixedRatio)
     return clsx(
-      "w-[400px]",
+      "w-[400px] max-w-[90%]",
       videoInVideo
         ? "h-[220px] absolute bottom-4 right-4 z-10"
-        : "h-full flex flex-wrap flex-col content-center justify-center"
+        : "sm:h-full flex flex-wrap flex-col content-center justify-center"
     );
 
   const horizontal = horizontalRow ? "sm:flex-row" : "sm:flex-col";

@@ -42,7 +42,6 @@ type Props = {
 
 const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast, forceEncoding }: Props) => {
   const gridConfig = getGridConfig(pinnedTiles.length);
-
   return (
     <PinnedTilesWrapper twoPinnedTiles={pinnedTiles.length === 2} gridConfig={gridConfig}>
       {pinnedTiles.map((pinnedTile: MediaPlayerTileConfig) => {

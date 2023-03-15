@@ -14,7 +14,7 @@ import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
 import { remoteTrackToLocalTrack } from "../../room-page/utils/remoteTrackToLocalTrack";
-import { MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
+import { ChosenMediaSource, MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
 import { usePreviewSettings } from "../hooks/usePreviewSettings";
 
 type HomePageVideoTileProps = {
@@ -41,13 +41,15 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
     setIsSettingsOpen(false);
   };
 
-  const onConfirmSettings = () => {
+  const onConfirmSettings = (settings: ChosenMediaSource) => {
+    console.log("settings", settings);
     setIsSettingsOpen(false);
   };
 
   return (
     <>
       <MediaSettingsModal isOpen={isSettingsOpen} onCancel={onCancelSettings} onConfirm={onConfirmSettings} />
+
       <MediaPlayerTile
         key="room-preview"
         peerId={localPeer?.id}

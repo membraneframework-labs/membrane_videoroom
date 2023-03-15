@@ -2,7 +2,7 @@ import React from "react";
 import Input from "../Input";
 import { Modal } from "./Modal";
 
-type ChosenMediaSource = {
+export type ChosenMediaSource = {
   camera: string | null;
   mic: string | null;
 };
@@ -10,7 +10,7 @@ type ChosenMediaSource = {
 interface Props {
   isOpen: boolean;
   onCancel?: () => void;
-  onConfirm?: (setting: ChosenMediaSource) => void;
+  onConfirm?: (settings: ChosenMediaSource) => void;
 }
 
 export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => {
@@ -18,8 +18,6 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
   const [chosenCamera, setChosenCamera] = React.useState<string | null>(null);
 
   const onSettingsConfirm = () => {
-    console.log("chosenMic", chosenMic);
-    console.log("chosenCamera", chosenCamera);
     onConfirm?.call(null, { camera: chosenCamera, mic: chosenMic });
   };
 

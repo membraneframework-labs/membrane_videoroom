@@ -12,7 +12,9 @@ import Camera from "../../room-page/icons/Camera";
 import CameraOff from "../../room-page/icons/CameraOff";
 import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
+import Settings from "../../room-page/icons/Settings";
 import { remoteTrackToLocalTrack } from "../../room-page/utils/remoteTrackToLocalTrack";
+import { MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
 import { usePreviewSettings } from "../hooks/usePreviewSettings";
 
 type HomePageVideoTileProps = {
@@ -33,76 +35,100 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
   const localAudio = useMedia(AUDIO_TRACKS_CONFIG, audioAutostart.status);
   useSetLocalUserTrack("audio", peerApi, localAudio.stream, localAudio.isEnabled);
 
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  const onCancelSettings = () => {
+    setIsSettingsOpen(false);
+  };
+
+  const onConfirmSettings = () => {
+    setIsSettingsOpen(false);
+  };
+
   return (
-    <MediaPlayerTile
-      key="room-preview"
-      peerId={localPeer?.id}
-      video={videoTrack}
-      audio={null}
-      streamSource="local"
-      flipHorizontally
-      layers={
-        <>
-          {!cameraAutostart.status || !localCamera.isEnabled ? <InitialsImage initials={initials} /> : null}
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
-            {localCamera.isEnabled ? (
+    <>
+      <MediaSettingsModal isOpen={isSettingsOpen} onCancel={onCancelSettings} onConfirm={onConfirmSettings} />
+      <MediaPlayerTile
+        key="room-preview"
+        peerId={localPeer?.id}
+        video={videoTrack}
+        audio={null}
+        streamSource="local"
+        flipHorizontally
+        layers={
+          <>
+            {!cameraAutostart.status || !localCamera.isEnabled ? <InitialsImage initials={initials} /> : null}
+            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
+              {localCamera.isEnabled ? (
+                <MediaControlButton
+                  key={"cam-off"}
+                  icon={Camera}
+                  hover="Turn off the camera"
+                  className={neutralButtonStyle}
+                  onClick={() => {
+                    localCamera.disable();
+                    cameraAutostart.setCameraAutostart(false);
+                  }}
+                />
+              ) : (
+                <MediaControlButton
+                  key={"cam-on"}
+                  icon={CameraOff}
+                  hover="Turn on the camera"
+                  className={activeButtonStyle}
+                  onClick={() => {
+                    if (localCamera?.stream) {
+                      localCamera.enable();
+                    } else {
+                      localCamera.start();
+                    }
+                    cameraAutostart.setCameraAutostart(true);
+                  }}
+                />
+              )}
+
+              {localAudio.isEnabled ? (
+                <MediaControlButton
+                  key={"mic-mute"}
+                  icon={Microphone}
+                  hover="Turn off the microphone"
+                  className={neutralButtonStyle}
+                  onClick={() => {
+                    localAudio.disable();
+                    audioAutostart.setAudioAutostart(false);
+                  }}
+                />
+              ) : (
+                <MediaControlButton
+                  key={"mic-unmute"}
+                  icon={MicrophoneOff}
+                  hover="Turn on the microphone"
+                  className={activeButtonStyle}
+                  onClick={() => {
+                    if (localAudio.stream) {
+                      localAudio.enable();
+                    } else {
+                      localAudio.start();
+                    }
+                    audioAutostart.setAudioAutostart(true);
+                  }}
+                />
+              )}
+
               <MediaControlButton
-                key={"cam-off"}
-                icon={Camera}
-                hover="Turn off the camera"
+                key={"settings"}
+                icon={Settings}
+                hover="Open Settings"
                 className={neutralButtonStyle}
                 onClick={() => {
-                  localCamera.disable();
-                  cameraAutostart.setCameraAutostart(false);
+                  setIsSettingsOpen(true);
                 }}
               />
-            ) : (
-              <MediaControlButton
-                key={"cam-on"}
-                icon={CameraOff}
-                hover="Turn on the camera"
-                className={activeButtonStyle}
-                onClick={() => {
-                  if (localCamera?.stream) {
-                    localCamera.enable();
-                  } else {
-                    localCamera.start();
-                  }
-                  cameraAutostart.setCameraAutostart(true);
-                }}
-              />
-            )}
-            {localAudio.isEnabled ? (
-              <MediaControlButton
-                key={"mic-mute"}
-                icon={Microphone}
-                hover="Turn off the microphone"
-                className={neutralButtonStyle}
-                onClick={() => {
-                  localAudio.disable();
-                  audioAutostart.setAudioAutostart(false);
-                }}
-              />
-            ) : (
-              <MediaControlButton
-                key={"mic-unmute"}
-                icon={MicrophoneOff}
-                hover="Turn on the microphone"
-                className={activeButtonStyle}
-                onClick={() => {
-                  if (localAudio.stream) {
-                    localAudio.enable();
-                  } else {
-                    localAudio.start();
-                  }
-                  audioAutostart.setAudioAutostart(true);
-                }}
-              />
-            )}
-          </div>
-        </>
-      }
-    />
+            </div>
+          </>
+        }
+      />
+    </>
   );
 };
 

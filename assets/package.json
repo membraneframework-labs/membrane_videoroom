@@ -9,15 +9,18 @@
   },
   "dependencies": {
     "@jellyfish-dev/membrane-webrtc-js": "^0.4.5",
+    "@types/react-modal": "^3.13.1",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "query-string": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-modal": "^3.16.1",
     "react-page-visibility": "^7.0.0",
     "react-resize-detector": "^8.0.4",
     "react-router-dom": "^6.4.2",
+    "react-select": "^5.7.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

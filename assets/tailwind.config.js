@@ -102,6 +102,11 @@ module.exports = {
         "brand-graphite": "#2E3440",
         "brand-second-graphite": "#191B25",
         "brand-red": "#C32222",
+        additional: {
+          red: {
+            100: "#981B1B",
+          },
+        },
         text: {
           additional: "#506195",
           "additional-light": "#ACB5D2",

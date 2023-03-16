@@ -6,13 +6,12 @@ import { PinIndicator, PinTileLayer } from "../../../../features/room-page/compo
 import NameTag from "../../../../features/room-page/components/NameTag";
 import MediaPlayerTile from "./MediaPlayerTile";
 import {
-  DisabledMicIcon,
-  isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { GridConfigType, getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import clsx from "clsx";
+import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
 
 type WrapperProps = {
   children: ReactNode;
@@ -62,11 +61,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
                 {hasInitials && showDisabledIcon(pinnedTile.video) && <InitialsImage initials={pinnedTile.initials} />}
                 <PeerInfoLayer
                   topRight={<PinIndicator />}
-                  topLeft={
-                    hasInitials && showDisabledIcon(pinnedTile.audio) ? (
-                      <DisabledMicIcon isLoading={isLoading(pinnedTile.audio)} />
-                    ) : undefined
-                  }
+                  topLeft={getTileUpperLeftIcon(pinnedTile)}
                   bottomLeft={<NameTag name={pinnedTile.displayName} />}
                 />
                 <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />

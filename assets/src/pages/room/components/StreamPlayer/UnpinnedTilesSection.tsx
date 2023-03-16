@@ -14,6 +14,7 @@ import {
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
 import SoundIcon from "../../../../features/room-page/components/SoundIcon";
+import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -55,21 +56,12 @@ const UnpinnedTilesSection: FC<Props> = ({
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
-  const getUpperLeftIcon = (config: MediaPlayerTileConfig): JSX.Element | null => {
-    if (config.typeName !== "local" && config.typeName !== "remote") return null;
-
-    if (showDisabledIcon(config.audio)) return <DisabledMicIcon isLoading={isLoading(config.audio)} />;
-    if (config.isSpeaking) return <SoundIcon />;
-
-    return null;
-  };
-
   return (
     <div id="videos-grid" className={videoGridStyle}>
       {tileConfigs.map((config: MediaPlayerTileConfig) => {
         const video: TrackWithId | null = config.video;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
-        const upperLeftIcon: JSX.Element | null = getUpperLeftIcon(config);
+        const upperLeftIcon: JSX.Element | null = getTileUpperLeftIcon(config);
 
         return (
           <MediaPlayerTile

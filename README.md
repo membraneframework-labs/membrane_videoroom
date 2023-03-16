@@ -20,8 +20,13 @@ To join a room, enter the room name and your name, then click the `Join room!` b
 
 ### Installation of the dependencies
 
-To run the Phoenix application manually, you will need to have [`node.js`](https://nodejs.org/en/) installed. You can read about the installation [here](https://nodejs.org/en/download/).
-The application has been tested with `node.js` version `v18.13.0`.
+To run the Phoenix application manually, you will need to have additional dependencies installed listed in `.tool-versions` file:
+
+- [`node.js`](https://nodejs.org/en/)
+- [`elixir`](https://elixir-lang.org/)
+- [`erlang`](https://www.erlang.org/)
+
+The application has been tested with versions mentioned in `.tool-versions` file. You can use [`asdf`](https://asdf-vm.com/) tool to download and manage required dependencies.
 
 Furthermore, you will need some other dependencies.
 Depending on an operating system, you might also need to set up some
@@ -30,8 +35,8 @@ be executed on a given OS.
 
 #### macOS with Intel processor
 
-```
-brew install srtp clang-format ffmpeg
+```bash
+brew install srtp clang-format ffmpeg pkg-config
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CFLAGS="-I/usr/local/opt/openssl@1.1/include/"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include/"
@@ -40,7 +45,7 @@ export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
 
 #### macOS with M1 processor
 
-```
+```bash
 brew install srtp clang-format ffmpeg
 export C_INCLUDE_PATH=/opt/homebrew/Cellar/libnice/0.1.18/include:/opt/homebrew/Cellar/opus/1.3.1/include:/opt/homebrew/Cellar/openssl@1.1/1.1.1l_1/include
 export LIBRARY_PATH=/opt/homebrew/Cellar/opus/1.3.1/lib
@@ -49,7 +54,7 @@ export PKG_CONFIG_PATH=/opt/homebrew/Cellar/openssl@1.1/1.1.1l_1/lib/pkgconfig/
 
 #### Ubuntu
 
-```
+```bash
 sudo apt-get install libsrtp2-dev libavcodec-dev libavformat-dev libavutil-dev
 ```
 
@@ -57,18 +62,19 @@ sudo apt-get install libsrtp2-dev libavcodec-dev libavformat-dev libavutil-dev
 
 First, install all project dependencies:
 
-```
+```bash
 mix deps.get
 npm ci --prefix=assets
 ```
 
 To run, type:
 
-```
+```bash
 EXTERNAL_IP=<IPv4> mix phx.server
 ```
 
 `EXTERNAL_IP` should be set to the local IP address of the computer this is running on.
+It is required unless you only connect via `localhost`.
 
 Then go to <http://localhost:4000/>.
 
@@ -89,7 +95,7 @@ Later, you need to obtain the `EXTERNAL_IP` address. This is the IPv4 address at
 To make the server available from your local network, you can set it to a private address, like `192.168.*.*`.
 The address can be found with the use of the `ifconfig` command:
 
-```
+```bash
 $ ifconfig
 ...
 en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500

@@ -11,7 +11,7 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Endpoint.WebRTC
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.RTC.Engine.Message
-  alias Membrane.WebRTC.Extension.{Mid, RepairedRid, Rid, TWCC}
+  alias Membrane.WebRTC.Extension.{Mid, RepairedRid, Rid, TWCC, VAD}
   alias Membrane.WebRTC.Track.Encoding
 
   @mix_env Mix.env()
@@ -103,7 +103,8 @@ defmodule Videoroom.Room do
        peer_channels: %{},
        network_options: network_options,
        trace_ctx: trace_ctx,
-       simulcast?: simulcast?
+       simulcast?: simulcast?,
+       enable_vad?: false
      }}
   end
 
@@ -138,6 +139,11 @@ defmodule Videoroom.Room do
       else
         [TWCC]
       end
+
+    webrtc_extensions =
+      if state.enable_vad?,
+        do: webrtc_extensions ++ [VAD],
+        else: webrtc_extensions
 
     endpoint = %WebRTC{
       rtc_engine: state.rtc_engine,

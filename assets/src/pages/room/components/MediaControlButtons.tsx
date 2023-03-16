@@ -11,6 +11,7 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
+import Chat from "../../../features/room-page/icons/Chat";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 
 type ControlButton = MediaControlButtonProps & { id: string };
@@ -23,6 +24,8 @@ const getAutomaticControls = (
     cameraStreaming,
     displayMedia,
     screenSharingStreaming,
+    isSidebarOpen,
+    openSidebar,
   }: LocalUserMediaControls,
   navigate: NavigateFunction,
   roomId?: string
@@ -100,14 +103,14 @@ const getAutomaticControls = (
           screenSharingStreaming.setActive(true);
         },
       },
-  //TODO enable when chat is implemented
-  // {
-  //   id: "chat",
-  //   icon: Chat,
-  //   hover: "Open the chat",
-  //   className: neutralButtonStyle,
-  //   onClick: () => undefined,
-  // },
+  {
+    id: "chat",
+    icon: Chat,
+    hover: isSidebarOpen ? "Close the sidebar" : "Open the sidebar",
+    className: isSidebarOpen ? activeButtonStyle : neutralButtonStyle,
+    hideOnMobile: true,
+    onClick: openSidebar,
+  },
   {
     id: "leave-room",
     icon: HangUp,
@@ -350,6 +353,8 @@ type LocalUserMediaControls = {
   audioStreaming: MembraneStreaming;
   displayMedia: UseMediaResult;
   screenSharingStreaming: MembraneStreaming;
+  isSidebarOpen?: boolean;
+  openSidebar: () => void;
 };
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
@@ -366,7 +371,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
     <div>
       <div
         onClick={toggleShow}
-        className="absolute left-1/2 top-[-15px] z-[-10] h-[15px] w-[50px] -translate-x-1/2 rounded-t-lg hover:bg-gray-700 hover:bg-opacity-90"
+        className="absolute left-1/2 top-[-15px] z-[-10] h-[15px] w-[50px] -translate-x-1/2 rounded-t-lg hover:bg-brand-dark-gray/90"
       ></div>
       {show && (
         <div className="inset-x-0 z-10 flex flex-wrap justify-center gap-x-4 rounded-t-md">

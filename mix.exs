@@ -58,7 +58,8 @@ defmodule VideoRoom.MixProject do
 
       # Benchmarks
       {:beamchmark, "~> 1.4.0", only: :benchmark},
-      {:stampede, github: "geometerio/stampede-elixir", only: :benchmark},
+      # FIXME: use fork or replace
+      # {:stampede, github: "geometerio/stampede-elixir", only: :benchmark},
       {:httpoison, "~> 1.8", only: :benchmark},
       {:poison, "~> 5.0.0", only: :benchmark}
     ]

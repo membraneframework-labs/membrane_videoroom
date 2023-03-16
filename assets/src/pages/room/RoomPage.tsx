@@ -13,6 +13,8 @@ import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
+import Sidebar from "../../features/room-page/components/Sidebar";
+import clsx from "clsx";
 
 type Props = {
   displayName: string;
@@ -98,17 +100,35 @@ const RoomPage: FC<Props> = ({
     messageComparator
   );
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <PageLayout>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
-        <section className="flex h-full w-full flex-col">
+        <section
+          className={clsx(
+            "flex h-full w-full self-center justify-self-center 3xl:max-w-[3200px]",
+            isSidebarOpen && "gap-x-4"
+          )}
+        >
           <VideochatSection
             peers={peerState.remote}
             localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
             webrtc={webrtc}
+            unpinnedTilesHorizontal={isSidebarOpen}
           />
+
+          <div
+            className={clsx(
+              isSidebarOpen ? "max-w-[300px]" : "max-w-0",
+              "overflow-hidden transition-all duration-300",
+              "hidden w-full md:flex"
+            )}
+          >
+            <Sidebar peers={peerState.remote} localPeer={peerState.local} />
+          </div>
         </section>
 
         <MediaControlButtons
@@ -119,6 +139,8 @@ const RoomPage: FC<Props> = ({
           audioStreaming={audio.remote}
           displayMedia={screenSharing.local}
           screenSharingStreaming={screenSharing.remote}
+          isSidebarOpen={isSidebarOpen}
+          openSidebar={() => setIsSidebarOpen((prev) => !prev)}
         />
 
         {/* dev helpers */}
@@ -126,7 +148,7 @@ const RoomPage: FC<Props> = ({
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}
-              className="focus:outline-none focus:shadow-outline m-1 w-full rounded bg-brand-grey-80 py-2 px-4 text-white hover:bg-brand-grey-100"
+              className="m-1 w-full rounded bg-brand-grey-80 py-2 px-4 text-white hover:bg-brand-grey-100"
               type="submit"
             >
               Show simulcast controls

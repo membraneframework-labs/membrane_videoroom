@@ -73,18 +73,18 @@ defmodule VideoRoom.MetricsPersistor do
   end
 
   defp jsonify(report) when is_map(report) do
-    Map.new(report, fn {key, value} -> {maybe_remove_tuple(key), jsonify(value)} end)
+    Map.new(report, fn {key, value} -> {to_json_key(key), jsonify(value)} end)
   end
 
   defp jsonify(input), do: input
 
-  defp maybe_remove_tuple(key) when is_tuple(key) do
+  defp to_json_key(key) when is_tuple(key) do
     key
     |> Tuple.to_list()
     |> Enum.map_join("=", &to_string/1)
   end
 
-  defp maybe_remove_tuple(key), do: to_string(key)
+  defp to_json_key(key), do: to_string(key)
 
   @metrics_to_derive [
     :"inbound-rtp.packets",

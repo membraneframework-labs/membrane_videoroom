@@ -32,7 +32,7 @@ defmodule VideoRoom.Application do
           []
         end
 
-    opts = [strategy: :one_for_one, max_restarts: 0, name: __MODULE__]
+    opts = [strategy: :one_for_one, name: __MODULE__]
     Supervisor.start_link(children, opts)
   end
 

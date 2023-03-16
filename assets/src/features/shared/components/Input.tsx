@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React from "react";
-import { Select } from "./Select";
+import { Select, SelectProps } from "./Select";
 
 type InputType = "text" | "select"; // add other types if needed
 
@@ -18,19 +18,18 @@ type BaseInputProps = {
   wrapperClassName?: string;
 };
 
-type SelectProps = BaseInputProps & {
-  type: "select";
-  options: React.ComponentProps<typeof Select>["options"];
-  onChange?: (value: string) => void;
-};
+type SelectInputProps = BaseInputProps &
+  SelectProps & {
+    type: "select";
+  };
 
-type TextProps = BaseInputProps & {
+type TextInputProps = BaseInputProps & {
   type: "text";
   required?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 };
 
-type InputProps = SelectProps | TextProps;
+type InputProps = SelectInputProps | TextInputProps;
 
 const Input: React.FC<InputProps> = (props) => {
   const {
@@ -46,6 +45,7 @@ const Input: React.FC<InputProps> = (props) => {
     disableAutocomplete = true,
     className,
     wrapperClassName,
+    ...otherProps
   } = props;
 
   const inputClassName = clsx(
@@ -70,6 +70,7 @@ const Input: React.FC<InputProps> = (props) => {
             options={props.options}
             isDisabled={disabled}
             controlClassName={inputClassName}
+            {...otherProps}
           />
         );
 

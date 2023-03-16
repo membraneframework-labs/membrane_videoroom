@@ -1,5 +1,6 @@
 import React from "react";
 import Input from "../Input";
+import { SelectOption } from "../Select";
 import { Modal } from "./Modal";
 
 export type ChosenMediaSource = {
@@ -14,11 +15,15 @@ interface Props {
 }
 
 export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => {
-  const [chosenMic, setChosenMic] = React.useState<string | null>(null);
-  const [chosenCamera, setChosenCamera] = React.useState<string | null>(null);
+  const options: SelectOption[] = new Array(5).fill(0).map((_, i) => {
+    return { value: `option ${i}`, label: `option ${i}` };
+  });
+
+  const [chosenMic, setChosenMic] = React.useState<SelectOption>(options[0]);
+  const [chosenCamera, setChosenCamera] = React.useState<SelectOption>(options[0]);
 
   const onSettingsConfirm = () => {
-    onConfirm?.call(null, { camera: chosenCamera, mic: chosenMic });
+    onConfirm?.call(null, { camera: chosenCamera.value, mic: chosenMic.value });
   };
 
   return (
@@ -33,14 +38,13 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
       {...props}
     >
       <Input
-        wrapperClassName="mt-7"
+        wrapperClassName="mt-14"
         label="Microphone"
         type="select"
         placeholder="Select microphone"
-        options={new Array(5).fill(0).map((_, i) => {
-          return { value: `option ${i}`, label: `option ${i}` };
-        })}
+        options={options}
         onChange={(v) => setChosenMic(v)}
+        defaultValue={chosenMic}
       />
 
       <Input
@@ -48,10 +52,9 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
         label="Camera"
         type="select"
         placeholder="Select camera"
-        options={new Array(5).fill(0).map((_, i) => {
-          return { value: `option ${i}`, label: `option ${i}` };
-        })}
+        options={options}
         onChange={(v) => setChosenCamera(v)}
+        defaultValue={chosenCamera}
       />
     </Modal>
   );

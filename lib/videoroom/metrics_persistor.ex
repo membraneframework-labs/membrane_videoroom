@@ -50,10 +50,10 @@ defmodule VideoRoom.MetricsPersistor do
   def handle_info(:scrape, state) do
     report = Reporter.scrape(VideoRoomReporter)
 
-    Phoenix.PubSub.broadcast!(
-      VideoRoom.PubSub,
+    VideoRoomWeb.Endpoint.broadcast!(
+      "stats",
       "metrics",
-      {:metrics, prepare_fe_report(report, state)}
+      %{stats: prepare_fe_report(report, state)}
     )
 
     if state.store_metrics, do: TimescaleDB.store_report(report)

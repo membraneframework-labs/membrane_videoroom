@@ -5,10 +5,11 @@ import { TrackType } from "../../types";
 export const useSetLocalUserTrack = (
   type: TrackType,
   api: PeersApi,
-  stream: MediaStream | undefined,
+  stream: MediaStream | null,
   isEnabled: boolean
 ) => {
   useEffect(() => {
-    api.setLocalStream(type, isEnabled, stream);
+    // console.log({})
+    api.setLocalStream(type, isEnabled, stream || undefined);
   }, [type, api, stream, isEnabled]);
 };

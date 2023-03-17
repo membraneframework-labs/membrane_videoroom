@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 export type UseMediaResult = MediaState & MediaApi;
 
-type MediaState = {
+export type MediaState = {
   isError: boolean;
-  isSuccess: boolean;
-  stream?: MediaStream;
+  // isSuccess: boolean;
+  stream: MediaStream | null;
   isEnabled: boolean;
 };
 
@@ -29,8 +29,8 @@ const stopTracks = (stream: MediaStream) => {
 export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promise<MediaStream>): UseMediaResult => {
   const [state, setState] = useState<MediaState>({
     isError: false,
-    isSuccess: true,
-    stream: undefined,
+    // isSuccess: true,
+    stream: null,
     isEnabled: false,
   });
 
@@ -54,8 +54,8 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
     setState(
       (): MediaState => ({
         isError: true,
-        isSuccess: false,
-        stream: undefined,
+        // isSuccess: false,
+        stream: null,
         isEnabled: false,
       })
     );
@@ -65,7 +65,7 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
     setState(
       (): MediaState => ({
         isError: false,
-        isSuccess: true,
+        // isSuccess: true,
         stream: stream,
         isEnabled: true,
       })
@@ -143,8 +143,8 @@ export const useMediaDevice = (config: Config, mediaStreamSupplier: () => Promis
           setState((prevStateInner) => ({
             ...prevStateInner,
             isError: false,
-            isSuccess: true,
-            stream: undefined,
+            // isSuccess: true,
+            stream: null,
             isEnabled: false,
           }));
         },

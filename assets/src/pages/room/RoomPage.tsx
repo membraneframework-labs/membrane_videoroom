@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
@@ -15,6 +15,7 @@ import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import Sidebar from "../../features/room-page/components/Sidebar";
 import clsx from "clsx";
+import { useLocalPeer } from "../../contexts/LocalPeerContext";
 
 type Props = {
   displayName: string;
@@ -46,44 +47,31 @@ const RoomPage: FC<Props> = ({
 
   const isConnected = !!peerState?.local?.id;
 
-  const camera = useStreamManager(
-    "camera",
-    mode,
-    isConnected,
-    isSimulcastOn,
-    webrtc,
-    VIDEO_TRACKS_CONFIG,
-    peerApi,
-    cameraAutostartStreaming
-  );
-  const audio = useStreamManager(
-    "audio",
-    mode,
-    isConnected,
-    isSimulcastOn,
-    webrtc,
-    AUDIO_TRACKS_CONFIG,
-    peerApi,
-    audioAutostartStreaming
-  );
+  useEffect(() => {
+    console.log({ peerState });
+  }, [peerState]);
+
+  const { screenSharingDevice, videoDevice, audioDevice } = useLocalPeer();
+
+  const camera = useStreamManager("camera", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, videoDevice);
+  const audio = useStreamManager("audio", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, audioDevice);
   const screenSharing = useStreamManager(
     "screensharing",
     mode,
     isConnected,
     isSimulcastOn,
-    webrtc,
-    SCREEN_SHARING_TRACKS_CONFIG,
+    webrtc || null,
     peerApi,
-    false
+    screenSharingDevice
   );
 
   const { addToast } = useToast();
 
-  useEffectOnChange(screenSharing.local.isEnabled, () => {
-    if (screenSharing.local.isEnabled) {
-      addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
-    }
-  });
+  // useEffectOnChange(screenSharing.local.isEnabled, () => {
+  //   if (screenSharing.local.isEnabled) {
+  //     addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
+  //   }
+  // });
 
   useEffectOnChange(
     errorMessage,

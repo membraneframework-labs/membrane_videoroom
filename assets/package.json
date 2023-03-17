@@ -8,6 +8,7 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
+    "@jellyfish-dev/jellyfish-reacy-client": "github:jellyfish-dev/jellyfish-react-client#feature/vanilla-ts-dashboard",
     "@jellyfish-dev/membrane-webrtc-js": "^0.4.5",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",

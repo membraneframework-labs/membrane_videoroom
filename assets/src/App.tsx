@@ -5,20 +5,23 @@ import { router } from "./Routes";
 import { UserProvider } from "./contexts/UserContext";
 import { ToastProvider } from "./features/shared/context/ToastContext";
 import { PreviewSettingsProvider } from "./features/home-page/context/PreviewSettingsContext";
+import { LocalPeerProvider } from "./contexts/LocalPeerContext";
 
 const App: FC = () => {
   return (
-    <React.StrictMode>
+    // <React.StrictMode>
       <UserProvider>
         <DeveloperInfoProvider>
           <PreviewSettingsProvider>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
+            <LocalPeerProvider>
+              <ToastProvider>
+                <RouterProvider router={router} />
+              </ToastProvider>
+            </LocalPeerProvider>
           </PreviewSettingsProvider>
         </DeveloperInfoProvider>
       </UserProvider>
-    </React.StrictMode>
+    // </React.StrictMode>
   );
 };
 

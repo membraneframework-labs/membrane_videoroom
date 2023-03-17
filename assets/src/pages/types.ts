@@ -20,6 +20,7 @@ export type TrackWithId = {
   remoteTrackId: string | null;
   encodingQuality?: TrackEncoding;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  isSpeaking?: boolean;
   enabled?: boolean;
 };
 
@@ -35,6 +36,7 @@ type CommonTile = {
 export type PeerTileConfig = {
   typeName: StreamSource;
   audio: TrackWithId | null;
+  isSpeaking: boolean;
   initials: string;
 } & CommonTile;
 

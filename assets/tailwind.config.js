@@ -13,6 +13,9 @@ module.exports = {
       invert: {
         50: ".50",
       },
+      spacing: {
+        50: "12.5rem",
+      },
       fontFamily: {
         aktivGrotesk: [
           "aktiv-grotesk",
@@ -99,6 +102,11 @@ module.exports = {
         "brand-graphite": "#2E3440",
         "brand-second-graphite": "#191B25",
         "brand-red": "#C32222",
+        additional: {
+          red: {
+            100: "#981B1B",
+          },
+        },
         text: {
           additional: "#506195",
           "additional-light": "#ACB5D2",
@@ -109,11 +117,17 @@ module.exports = {
       gap: {
         18: "72px",
       },
+      maxWidth: {
+        "1/3": "calc(100% / 3)",
+      },
       screens: {
         "3xl": "3200px",
       },
       gridTemplateColumns: {
-        "3/1": "3fr 1fr",
+        "3/1": "minmax(0, 3fr) minmax(0, 1fr)",
+      },
+      gridTemplateRows: {
+        "3/1": "minmax(0, 3fr) minmax(0, 1fr)",
       },
       backgroundImage: {
         "videoroom-background": "url('/images/videoroomBackground.png')",

@@ -1,25 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
-import { AUDIO_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "../../../pages/room/consts";
-import { useMedia } from "../../../pages/room/hooks/useMedia";
-import { usePeersState } from "../../../pages/room/hooks/usePeerState";
-import { useSetLocalUserTrack } from "../../../pages/room/hooks/useSetLocalUserTrack";
-import { TrackWithId } from "../../../pages/types";
 import InitialsImage, { computeInitials } from "../../room-page/components/InitialsImage";
 import { activeButtonStyle, neutralButtonStyle } from "../../room-page/consts";
 import Camera from "../../room-page/icons/Camera";
 import CameraOff from "../../room-page/icons/CameraOff";
 import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
-import { remoteTrackToLocalTrack } from "../../room-page/utils/remoteTrackToLocalTrack";
-import { usePreviewSettings } from "../hooks/usePreviewSettings";
+import Settings from "../../room-page/icons/Settings";
+import { ChosenMediaSource, MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
 import {
   AUDIO_TRACK_CONSTRAINS,
   UseEnumerateDevices,
   useEnumerateDevices,
-  useMediaBase,
-  useMediaGeneric,
   VIDEO_TRACK_CONSTRAINTS,
 } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { useLocalPeer } from "../../../contexts/LocalPeerContext";
@@ -107,30 +100,6 @@ const DeviceSelector = ({ name, devices, type, setDeviceId }: DeviceSelectorProp
   );
 };
 
-const useLastSelectedDevice = (
-  devices: MediaDeviceInfo[] | null,
-  type: "video" | "audio",
-  setDeviceId: (id: string | null) => void
-) => {
-  const [lastSelectedId, setLastSelectedId] = useLocalStorageStateString(`last-selected-${type}-id`);
-  const [cameraInput, setCameraInput] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (devices && lastSelectedId) {
-      const result = selectDeviceId(devices, lastSelectedId);
-      if (result) {
-        setCameraInput(result);
-      }
-    }
-  }, [devices, lastSelectedId, type]);
-
-  useEffect(() => {
-    setDeviceId(cameraInput);
-  }, [cameraInput, setDeviceId]);
-
-  return { setLastSelectedCameraId: setLastSelectedId, cameraInput, setCameraInput };
-};
-
 const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
   const device = devices?.[type];
   return device?.type === "OK" ? device.devices : null;
@@ -143,8 +112,20 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
 
   const initials = computeInitials(displayName);
 
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  const onCancelSettings = () => {
+    setIsSettingsOpen(false);
+  };
+
+  const onConfirmSettings = (settings: ChosenMediaSource) => {
+    console.log("settings", settings);
+    setIsSettingsOpen(false);
+  };
+
   return (
     <>
+      <MediaSettingsModal isOpen={isSettingsOpen} onCancel={onCancelSettings} onConfirm={onConfirmSettings} />
       <DeviceSelector name="Select camera" devices={devices} type={"video"} setDeviceId={setVideoDeviceId} />
       <DeviceSelector name="Select microphone" devices={devices} type={"audio"} setDeviceId={setAudioDeviceId} />
       <MediaPlayerTile
@@ -200,6 +181,15 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   }}
                 />
               )}
+              <MediaControlButton
+                key={"settings"}
+                icon={Settings}
+                hover="Open Settings"
+                className={neutralButtonStyle}
+                onClick={() => {
+                  setIsSettingsOpen(true);
+                }}
+              />
             </div>
           </>
         }

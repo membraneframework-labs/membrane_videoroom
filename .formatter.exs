@@ -4,5 +4,5 @@
     ".formatter.exs",
     "*.exs"
   ],
-  import_deps: [:membrane_core, :ecto, :ecto_sql]
+  import_deps: [:membrane_core, :ecto, :ecto_sql, :phoenix]
 ]

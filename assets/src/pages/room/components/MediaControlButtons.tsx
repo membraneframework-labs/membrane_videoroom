@@ -13,31 +13,35 @@ import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import Chat from "../../../features/room-page/icons/Chat";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
+import { useLocalPeer, LocalPeerContextType } from "../../../contexts/LocalPeerContext";
+import { UseUserMedia } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
+import { SCREENSHARING_MEDIA_CONSTRAINTS } from "../consts";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
 const getAutomaticControls = (
   {
-    userMediaAudio,
     audioStreaming,
-    userMediaVideo,
     cameraStreaming,
-    displayMedia,
     screenSharingStreaming,
     isSidebarOpen,
     openSidebar,
   }: LocalUserMediaControls,
   navigate: NavigateFunction,
-  roomId?: string
+  roomId: string | null,
+  videoDevice: UseUserMedia,
+  audioDevice: UseUserMedia,
+  screenSharingDevice: UseUserMedia,
+  setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void
 ): ControlButton[] => [
-  userMediaVideo.isEnabled
+  videoDevice.isEnabled
     ? {
         id: "cam-off",
         icon: Camera,
         hover: "Turn off the camera",
         className: neutralButtonStyle,
         onClick: () => {
-          userMediaVideo.disable();
+          videoDevice.disable();
           cameraStreaming.setActive(false);
         },
       }
@@ -47,22 +51,22 @@ const getAutomaticControls = (
         icon: CameraOff,
         className: activeButtonStyle,
         onClick: () => {
-          if (userMediaVideo.stream) {
-            userMediaVideo.enable();
+          if (videoDevice.stream) {
+            videoDevice.enable();
           } else {
-            userMediaVideo.start();
+            videoDevice.start();
           }
           cameraStreaming.setActive(true);
         },
       },
-  userMediaAudio.isEnabled
+  audioDevice.isEnabled
     ? {
         id: "mic-mute",
         icon: Microphone,
         hover: "Turn off the microphone",
         className: neutralButtonStyle,
         onClick: () => {
-          userMediaAudio.disable();
+          audioDevice.disable();
           audioStreaming.setActive(false);
         },
       }
@@ -72,15 +76,15 @@ const getAutomaticControls = (
         hover: "Turn on the microphone",
         className: activeButtonStyle,
         onClick: () => {
-          if (userMediaAudio.stream) {
-            userMediaAudio.enable();
+          if (audioDevice.stream) {
+            audioDevice.enable();
           } else {
-            userMediaAudio.start();
+            audioDevice.start();
           }
           audioStreaming.setActive(true);
         },
       },
-  displayMedia.stream
+  screenSharingDevice.stream
     ? {
         id: "screenshare-stop",
         icon: Screenshare,
@@ -88,7 +92,7 @@ const getAutomaticControls = (
         className: neutralButtonStyle,
         hideOnMobile: true,
         onClick: () => {
-          displayMedia.stop();
+          setScreenSharingConfig(null)
           screenSharingStreaming.setActive(false);
         },
       }
@@ -99,7 +103,7 @@ const getAutomaticControls = (
         className: neutralButtonStyle,
         hideOnMobile: true,
         onClick: () => {
-          displayMedia.start();
+          setScreenSharingConfig(SCREENSHARING_MEDIA_CONSTRAINTS)
           screenSharingStreaming.setActive(true);
         },
       },
@@ -363,10 +367,12 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
 
   const navigate = useNavigate();
 
+  const { videoDevice, audioDevice, screenSharingDevice,setScreenSharingConfig } = useLocalPeer();
+
   const controls: ControlButton[][] =
     props.mode === "manual"
       ? getManualControls(props, navigate, roomId)
-      : [getAutomaticControls(props, navigate, roomId)];
+      : [getAutomaticControls(props, navigate, roomId || null, videoDevice, audioDevice, screenSharingDevice,setScreenSharingConfig)];
   return (
     <div>
       <div

@@ -63,69 +63,90 @@ function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string
 
 type DeviceSelectorProps = {
   name: string;
-  setInput: (value: ((prevState: string | null) => string | null) | string | null) => void;
-  setLastSelectedDeviceId: (newValue: string | null) => void;
-  input: string | null;
   devices: UseEnumerateDevices | null;
+  type: "audio" | "video";
+  setDeviceId: (value: string | null) => void;
 };
 
-const DeviceSelector = ({ name, setInput, setLastSelectedDeviceId, input, devices }: DeviceSelectorProps) => (
-  <select
-    className="select select-bordered m-2 w-full max-w-xs"
-    onChange={(event) => {
-      setInput(event.target.value);
-      setLastSelectedDeviceId(event.target.value);
-    }}
-    // defaultValue={getDefaultValue(lastSelectedDeviceId, enumerateDevicesState)}
-    value={input || name}
-  >
-    <option disabled>{name}</option>
-    {devices?.video.type === "OK" &&
-      devices.video?.devices?.map(({ deviceId, label }) => (
+const DeviceSelector = ({ name, devices, type, setDeviceId }: DeviceSelectorProps) => {
+  const okDevices = devicesOrNull(devices, type);
+
+  const [lastSelectedId, setLastSelectedId] = useLocalStorageStateString(`last-selected-${type}-id`);
+  const [input, setInput] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (okDevices && lastSelectedId) {
+      const result = selectDeviceId(okDevices, lastSelectedId);
+      if (result) {
+        setInput(result);
+      }
+    }
+  }, [okDevices, lastSelectedId, type]);
+
+  useEffect(() => {
+    setDeviceId(input);
+  }, [input, setDeviceId]);
+
+  return (
+    <select
+      className="select select-bordered m-2 w-full max-w-xs"
+      onChange={(event) => {
+        setInput(event.target.value);
+        setLastSelectedId(event.target.value);
+      }}
+      // defaultValue={getDefaultValue(lastSelectedDeviceId, enumerateDevicesState)}
+      value={input || name}
+    >
+      <option disabled>{name}</option>
+      {(okDevices || []).map(({ deviceId, label }) => (
         <option key={deviceId} value={deviceId}>
           {label}
         </option>
       ))}
-  </select>
-);
+    </select>
+  );
+};
 
-const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) => {
-  const { cameraAutostart, audioAutostart } = usePreviewSettings();
-  const { setVideoDeviceId, videoDevice, audioDevice } = useLocalPeer();
-
-  const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINS);
-
-  const [lastSelectedCameraId, setLastSelectedCameraId] = useLocalStorageStateString("last-selected-camera-id");
+const useLastSelectedDevice = (
+  devices: MediaDeviceInfo[] | null,
+  type: "video" | "audio",
+  setDeviceId: (id: string | null) => void
+) => {
+  const [lastSelectedId, setLastSelectedId] = useLocalStorageStateString(`last-selected-${type}-id`);
   const [cameraInput, setCameraInput] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   console.log({ peerState });
-  // }, [peerState]);
-
   useEffect(() => {
-    if (devices?.video.type === "OK" && lastSelectedCameraId) {
-      const result = selectDeviceId(devices.video.devices, lastSelectedCameraId);
+    if (devices && lastSelectedId) {
+      const result = selectDeviceId(devices, lastSelectedId);
       if (result) {
         setCameraInput(result);
       }
     }
-  }, [devices, lastSelectedCameraId]);
+  }, [devices, lastSelectedId, type]);
+
+  useEffect(() => {
+    setDeviceId(cameraInput);
+  }, [cameraInput, setDeviceId]);
+
+  return { setLastSelectedCameraId: setLastSelectedId, cameraInput, setCameraInput };
+};
+
+const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
+  const device = devices?.[type];
+  return device?.type === "OK" ? device.devices : null;
+};
+
+const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) => {
+  const { setVideoDeviceId, setAudioDeviceId, videoDevice, audioDevice } = useLocalPeer();
+
+  const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINS);
 
   const initials = computeInitials(displayName);
 
-  useEffect(() => {
-    setVideoDeviceId(cameraInput);
-  }, [cameraInput, setVideoDeviceId]);
-
   return (
     <>
-      <DeviceSelector
-        name="Select camera"
-        setInput={setCameraInput}
-        setLastSelectedDeviceId={setLastSelectedCameraId}
-        input={cameraInput}
-        devices={devices}
-      />
+      <DeviceSelector name="Select camera" devices={devices} type={"video"} setDeviceId={setVideoDeviceId} />
+      <DeviceSelector name="Select microphone" devices={devices} type={"audio"} setDeviceId={setAudioDeviceId} />
       <MediaPlayerTile
         key="room-preview"
         peerId={""}
@@ -135,7 +156,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
         flipHorizontally
         layers={
           <>
-            {!cameraAutostart.status || !videoDevice.isEnabled ? <InitialsImage initials={initials} /> : null}
+            {!videoDevice.isEnabled ? <InitialsImage initials={initials} /> : null}
             <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
               {videoDevice.isEnabled ? (
                 <MediaControlButton
@@ -145,7 +166,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   className={neutralButtonStyle}
                   onClick={() => {
                     videoDevice.stop();
-                    cameraAutostart.setCameraAutostart(false);
                   }}
                 />
               ) : (
@@ -156,7 +176,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   className={activeButtonStyle}
                   onClick={() => {
                     videoDevice.start();
-                    cameraAutostart.setCameraAutostart(true);
                   }}
                 />
               )}
@@ -167,8 +186,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   hover="Turn off the microphone"
                   className={neutralButtonStyle}
                   onClick={() => {
-                    audioDevice.disable();
-                    audioAutostart.setAudioAutostart(false);
+                    audioDevice.stop();
                   }}
                 />
               ) : (
@@ -178,12 +196,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   hover="Turn on the microphone"
                   className={activeButtonStyle}
                   onClick={() => {
-                    if (audioDevice.stream) {
-                      audioDevice.enable();
-                    } else {
-                      audioDevice.start();
-                    }
-                    audioAutostart.setAudioAutostart(true);
+                    audioDevice.start();
                   }}
                 />
               )}

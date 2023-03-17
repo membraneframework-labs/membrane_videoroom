@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useMediaGeneric, UseUserMedia } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 
-export type UserContextType = {
+export type LocalPeerContextType = {
   videoDeviceId: string | null;
   setVideoDeviceId: (id: string | null) => void;
   videoDevice: UseUserMedia;
@@ -13,7 +13,7 @@ export type UserContextType = {
   screenSharingDevice: UseUserMedia;
 };
 
-const LocalPeerContext = React.createContext<UserContextType | undefined>(undefined);
+const LocalPeerContext = React.createContext<LocalPeerContextType | undefined>(undefined);
 
 type Props = {
   children: React.ReactNode;
@@ -23,44 +23,29 @@ export const LocalPeerProvider = ({ children }: Props) => {
   const [videoDeviceId, setVideoDeviceId] = useState<string | null>(null);
 
   const videoDevice: UseUserMedia = useMediaGeneric(
-    useMemo(() => {
-      const result = videoDeviceId ? () => navigator.mediaDevices.getUserMedia({ video: { deviceId: videoDeviceId } }) : null;
-      console.log("Video result", result);
-
-      return result;
-    }, [videoDeviceId])
+    useMemo(
+      () => (videoDeviceId ? () => navigator.mediaDevices.getUserMedia({ video: { deviceId: videoDeviceId } }) : null),
+      [videoDeviceId]
+    )
   );
-
-  useEffect(() => {
-    console.log({ videoDevice });
-  }, [videoDevice])
 
   const [audioDeviceId, setAudioDeviceId] = useState<string | null>(null);
 
   const audioDevice = useMediaGeneric(
-    useMemo(() => {
-      const result = audioDeviceId
-        ? () => navigator.mediaDevices.getUserMedia({ audio: { deviceId: audioDeviceId } })
-        : null;
-      console.log("Audio result", result);
-
-      return result;
-    }, [audioDeviceId])
+    useMemo(
+      () => (audioDeviceId ? () => navigator.mediaDevices.getUserMedia({ audio: { deviceId: audioDeviceId } }) : null),
+      [audioDeviceId]
+    )
   );
 
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
 
   const screenSharingDevice = useMediaGeneric(
-    useMemo(() => {
-      const result = screenSharingConfig ? () => navigator.mediaDevices.getDisplayMedia(screenSharingConfig) : null;
-      console.log("Screen sharing result", result);
-      return result;
-    }, [screenSharingConfig])
+    useMemo(
+      () => (screenSharingConfig ? () => navigator.mediaDevices.getDisplayMedia(screenSharingConfig) : null),
+      [screenSharingConfig]
+    )
   );
-
-  // useEffect(() => {
-  //   console.log({ videoDeviceMedia });
-  // }, [videoDeviceMedia]);
 
   return (
     <LocalPeerContext.Provider
@@ -81,7 +66,7 @@ export const LocalPeerProvider = ({ children }: Props) => {
   );
 };
 
-export const useLocalPeer = (): UserContextType => {
+export const useLocalPeer = (): LocalPeerContextType => {
   const context = useContext(LocalPeerContext);
   if (!context) throw new Error("useLocalPeer must be used within a LocalPeerContext");
   return context;

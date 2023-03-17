@@ -11,7 +11,8 @@ defmodule VideoRoomWeb.Endpoint do
     from: :membrane_videoroom_demo,
     brotli: true,
     gzip: true,
-    only: ~w(assets images html svg robots.txt favicon.ico)
+    content_types: %{"apple-app-site-association" => "application/json"},
+    only: ~w(.well-known assets images html svg robots.txt favicon.ico)
   )
 
   if code_reloading? do

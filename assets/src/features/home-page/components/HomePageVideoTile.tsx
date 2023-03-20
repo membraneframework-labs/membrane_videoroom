@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
 import InitialsImage, { computeInitials } from "../../room-page/components/InitialsImage";
@@ -11,11 +11,13 @@ import Settings from "../../room-page/icons/Settings";
 import { ChosenMediaSource, MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
 import {
   AUDIO_TRACK_CONSTRAINS,
-  UseEnumerateDevices,
   useEnumerateDevices,
+  UseEnumerateDevices,
   VIDEO_TRACK_CONSTRAINTS,
 } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { useLocalPeer } from "../../../contexts/LocalPeerContext";
+import Input from "../../shared/components/Input";
+import { SelectOption } from "../../shared/components/Select";
 
 type HomePageVideoTileProps = {
   displayName: string;
@@ -44,7 +46,7 @@ export const useLocalStorageStateString = (name: string): [string | null, (newVa
   return [value, setValue];
 };
 
-function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string) {
+export function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string) {
   const result = devices.some(({ deviceId }) => deviceId === lastSelectedDeviceId);
   if (result) return lastSelectedDeviceId;
 
@@ -56,51 +58,33 @@ function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string
 
 type DeviceSelectorProps = {
   name: string;
-  devices: UseEnumerateDevices | null;
-  type: "audio" | "video";
-  setDeviceId: (value: string | null) => void;
+  devices: MediaDeviceInfo[] | null;
+  setInput: (value: string | null) => void;
+  inputValue: string | null;
 };
 
-const DeviceSelector = ({ name, devices, type, setDeviceId }: DeviceSelectorProps) => {
-  const okDevices = devicesOrNull(devices, type);
-
-  const [lastSelectedId, setLastSelectedId] = useLocalStorageStateString(`last-selected-${type}-id`);
-  const [input, setInput] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (okDevices && lastSelectedId) {
-      const result = selectDeviceId(okDevices, lastSelectedId);
-      if (result) {
-        setInput(result);
-      }
-    }
-  }, [okDevices, lastSelectedId, type]);
-
-  useEffect(() => {
-    setDeviceId(input);
-  }, [input, setDeviceId]);
+export const DeviceSelector = ({ name, devices, setInput, inputValue }: DeviceSelectorProps) => {
+  const options: SelectOption[] = (devices || []).map(({ deviceId, label }) => ({
+    value: deviceId,
+    label,
+  }));
 
   return (
-    <select
-      className="select select-bordered m-2 w-full max-w-xs"
-      onChange={(event) => {
-        setInput(event.target.value);
-        setLastSelectedId(event.target.value);
+    <Input
+      wrapperClassName="mt-14"
+      label="ABC"
+      type="select"
+      placeholder="DEF"
+      options={options}
+      onChange={(option) => {
+        setInput(option.value);
       }}
-      // defaultValue={getDefaultValue(lastSelectedDeviceId, enumerateDevicesState)}
-      value={input || name}
-    >
-      <option disabled>{name}</option>
-      {(okDevices || []).map(({ deviceId, label }) => (
-        <option key={deviceId} value={deviceId}>
-          {label}
-        </option>
-      ))}
-    </select>
+      value="6cb95ce2523c18a3f5c1da349a8556a4c66576de39ccfd6def2c06ee1fe04528"
+    />
   );
 };
 
-const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
+export const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
   const device = devices?.[type];
   return device?.type === "OK" ? device.devices : null;
 };
@@ -126,8 +110,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
   return (
     <>
       <MediaSettingsModal isOpen={isSettingsOpen} onCancel={onCancelSettings} onConfirm={onConfirmSettings} />
-      <DeviceSelector name="Select camera" devices={devices} type={"video"} setDeviceId={setVideoDeviceId} />
-      <DeviceSelector name="Select microphone" devices={devices} type={"audio"} setDeviceId={setAudioDeviceId} />
       <MediaPlayerTile
         key="room-preview"
         peerId={""}

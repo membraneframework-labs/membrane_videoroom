@@ -1,10 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useMediaGeneric, UseUserMedia } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
-import {
-  devicesOrNull,
-  getStringValue,
-  selectDeviceId,
-} from "../features/home-page/components/HomePageVideoTile";
+import { devicesOrNull, getStringValue, selectDeviceId } from "../features/home-page/components/HomePageVideoTile";
 import {
   AUDIO_TRACK_CONSTRAINS,
   useEnumerateDevices,
@@ -21,8 +17,8 @@ export type LocalPeerContextType = {
   setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void;
   screenSharingConfig: MediaStreamConstraints | null;
   screenSharingDevice: UseUserMedia;
-  allVideoDevices: MediaDeviceInfo[] | null
-  allAudioDevices: MediaDeviceInfo[] | null
+  allVideoDevices: MediaDeviceInfo[] | null;
+  allAudioDevices: MediaDeviceInfo[] | null;
 };
 
 const LocalPeerContext = React.createContext<LocalPeerContextType | undefined>(undefined);
@@ -61,34 +57,36 @@ export const LocalPeerProvider = ({ children }: Props) => {
 
   const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINS);
 
-  const allVideoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices])
-  const allAudioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices])
-  
+  const allVideoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
+  const allAudioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);
+
   useEffect(() => {
     console.log({ allVideoDevices });
-  }, [allVideoDevices])
+  }, [allVideoDevices]);
 
   useEffect(() => {
-    const okDevices = devicesOrNull(devices, "video");
-
-    if (okDevices) {
+    if (allVideoDevices) {
       const lastSelectedVideoId = getStringValue("last-selected-video-id");
-      if (lastSelectedVideoId) {
-        const result = selectDeviceId(okDevices, lastSelectedVideoId);
-        if (result) {
-          setVideoDeviceIdInner(result);
-        }
+      const video = selectDeviceId(allVideoDevices, lastSelectedVideoId);
+      if (video) {
+        setVideoDeviceIdInner(video);
       }
-
-      const lastSelectedAudioId = getStringValue("last-selected-audio-id");
-      if (lastSelectedAudioId) {
-        const result = selectDeviceId(okDevices, lastSelectedAudioId);
-        if (result) {
-          setAudioDeviceIdInner(result);
-        }
+      if (video) {
+        localStorage.setItem("last-selected-video-id", video);
       }
     }
-  }, [devices, setVideoDeviceIdInner]);
+
+    if (allAudioDevices) {
+      const lastSelectedAudioId = getStringValue("last-selected-audio-id");
+      const result = selectDeviceId(allAudioDevices, lastSelectedAudioId);
+      if (result) {
+        setAudioDeviceIdInner(result);
+      }
+      if (result) {
+        localStorage.setItem("last-selected-audio-id", result);
+      }
+    }
+  }, [allVideoDevices, allAudioDevices, setVideoDeviceIdInner]);
 
   const setVideoDeviceId = useCallback((value: string | null) => {
     setVideoDeviceIdInner(value);
@@ -99,14 +97,17 @@ export const LocalPeerProvider = ({ children }: Props) => {
     }
   }, []);
 
-  const setAudioDeviceId = useCallback((value: string | null) => {
-    setAudioDeviceIdInner(value);
-    if (value === null) {
-      localStorage.removeItem("last-selected-audio-id");
-    } else {
-      localStorage.setItem("last-selected-audio-id", value);
-    }
-  }, [setAudioDeviceIdInner]);
+  const setAudioDeviceId = useCallback(
+    (value: string | null) => {
+      setAudioDeviceIdInner(value);
+      if (value === null) {
+        localStorage.removeItem("last-selected-audio-id");
+      } else {
+        localStorage.setItem("last-selected-audio-id", value);
+      }
+    },
+    [setAudioDeviceIdInner]
+  );
 
   return (
     <LocalPeerContext.Provider
@@ -121,7 +122,7 @@ export const LocalPeerProvider = ({ children }: Props) => {
         setScreenSharingConfig,
         screenSharingDevice,
         allVideoDevices,
-        allAudioDevices
+        allAudioDevices,
       }}
     >
       {children}

@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { SelectOption } from "../Select";
 import { Modal } from "./Modal";
-import {
-  AUDIO_TRACK_CONSTRAINS,
-  useEnumerateDevices,
-  VIDEO_TRACK_CONSTRAINTS,
-} from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { DeviceSelector } from "../../../home-page/components/HomePageVideoTile";
 import { useLocalPeer } from "../../../../contexts/LocalPeerContext";
-import { UseEnumerateDevices } from "@jellyfish-dev/jellyfish-reacy-client/dist/navigator";
 
 export type ChosenMediaSource = {
   camera: string | null;
@@ -18,7 +11,7 @@ export type ChosenMediaSource = {
 interface Props {
   isOpen: boolean;
   onCancel?: () => void;
-  onConfirm?: (settings: ChosenMediaSource) => void;
+  onConfirm?: () => void;
 }
 
 export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => {
@@ -27,18 +20,19 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
   const [audioInput, setAudioInput] = useState<string | null>(null);
   const { allVideoDevices, allAudioDevices } = useLocalPeer();
 
-  // const onSettingsConfirm = () => {
-  //   onConfirm?.call(null, { camera: chosenCamera.value, mic: chosenMic.value });
-  // };
-
   useEffect(() => {
     if (allVideoDevices && videoDeviceId) {
-      console.log("Setting video input...")
-      setVideoInput(videoDeviceId)
+      console.log("Setting video input...");
+      setVideoInput(videoDeviceId);
     }
   }, [allVideoDevices, videoDeviceId]);
 
-  console.log({videoInput})
+  useEffect(() => {
+    if (allAudioDevices && audioDeviceId) {
+      console.log("Setting audio input...");
+      setAudioInput(audioDeviceId);
+    }
+  }, [allAudioDevices, audioDeviceId]);
 
   return (
     <Modal
@@ -48,8 +42,9 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
       closable
       cancelClassName="text-additional-red-100"
       onConfirm={() => {
-        setAudioDeviceId(audioInput)
-        setVideoDeviceId(videoInput)
+        setAudioDeviceId(audioInput);
+        setVideoDeviceId(videoInput);
+        onConfirm?.();
       }}
       maxWidth="max-w-md"
       {...props}
@@ -61,25 +56,6 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
         setInput={setAudioInput}
         inputValue={audioInput}
       />
-      {/*<Input*/}
-      {/*  wrapperClassName="mt-14"*/}
-      {/*  label="Microphone"*/}
-      {/*  type="select"*/}
-      {/*  placeholder="Select microphone"*/}
-      {/*  options={options}*/}
-      {/*  onChange={(v) => setChosenMic(v)}*/}
-      {/*  defaultValue={chosenMic}*/}
-      {/*/>*/}
-
-      {/*<Input*/}
-      {/*  wrapperClassName="mt-5"*/}
-      {/*  label="Camera"*/}
-      {/*  type="select"*/}
-      {/*  placeholder="Select camera"*/}
-      {/*  options={options}*/}
-      {/*  onChange={(v) => setChosenCamera(v)}*/}
-      {/*  defaultValue={chosenCamera}*/}
-      {/*/>*/}
     </Modal>
   );
 };

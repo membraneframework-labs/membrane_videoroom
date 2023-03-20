@@ -46,7 +46,7 @@ export const useLocalStorageStateString = (name: string): [string | null, (newVa
   return [value, setValue];
 };
 
-export function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string) {
+export function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string | null) {
   const result = devices.some(({ deviceId }) => deviceId === lastSelectedDeviceId);
   if (result) return lastSelectedDeviceId;
 
@@ -72,14 +72,14 @@ export const DeviceSelector = ({ name, devices, setInput, inputValue }: DeviceSe
   return (
     <Input
       wrapperClassName="mt-14"
-      label="ABC"
+      label={name}
       type="select"
       placeholder="DEF"
       options={options}
       onChange={(option) => {
         setInput(option.value);
       }}
-      value="6cb95ce2523c18a3f5c1da349a8556a4c66576de39ccfd6def2c06ee1fe04528"
+      value={options.find(({ value }) => value === inputValue)}
     />
   );
 };
@@ -90,9 +90,7 @@ export const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio"
 };
 
 const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) => {
-  const { setVideoDeviceId, setAudioDeviceId, videoDevice, audioDevice } = useLocalPeer();
-
-  const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINS);
+  const { videoDevice, audioDevice } = useLocalPeer();
 
   const initials = computeInitials(displayName);
 
@@ -102,8 +100,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
     setIsSettingsOpen(false);
   };
 
-  const onConfirmSettings = (settings: ChosenMediaSource) => {
-    console.log("settings", settings);
+  const onConfirmSettings = () => {
     setIsSettingsOpen(false);
   };
 

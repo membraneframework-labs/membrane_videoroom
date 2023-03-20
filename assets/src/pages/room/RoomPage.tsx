@@ -119,17 +119,17 @@ const RoomPage: FC<Props> = ({
           </div>
         </section>
 
-        <MediaControlButtons
-          mode={mode}
-          userMediaVideo={camera.local}
-          cameraStreaming={camera.remote}
-          userMediaAudio={audio.local}
-          audioStreaming={audio.remote}
-          displayMedia={screenSharing.local}
-          screenSharingStreaming={screenSharing.remote}
-          isSidebarOpen={isSidebarOpen}
-          openSidebar={() => setIsSidebarOpen((prev) => !prev)}
-        />
+        {/*<MediaControlButtons*/}
+        {/*  mode={mode}*/}
+        {/*  userMediaVideo={camera.local}*/}
+        {/*  cameraStreaming={camera.remote}*/}
+        {/*  userMediaAudio={audio.local}*/}
+        {/*  audioStreaming={audio.remote}*/}
+        {/*  displayMedia={screenSharing.local}*/}
+        {/*  screenSharingStreaming={screenSharing.remote}*/}
+        {/*  isSidebarOpen={isSidebarOpen}*/}
+        {/*  openSidebar={() => setIsSidebarOpen((prev) => !prev)}*/}
+        {/*/>*/}
 
         {/* dev helpers */}
         <div className="invisible absolute bottom-3 right-3 flex flex-col items-stretch md:visible">

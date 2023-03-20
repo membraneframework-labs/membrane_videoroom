@@ -1,11 +1,10 @@
 import clsx from "clsx";
 import React from "react";
-import { Select, SelectProps } from "./Select";
+import { Select, SelectOption, SelectProps } from "./Select";
 
 type InputType = "text" | "select"; // add other types if needed
 
 type BaseInputProps = {
-  value?: string;
   name?: string;
   type?: InputType;
   placeholder?: string;
@@ -21,10 +20,12 @@ type BaseInputProps = {
 type SelectInputProps = BaseInputProps &
   SelectProps & {
     type: "select";
+    value?: SelectOption;
   };
 
 type TextInputProps = BaseInputProps & {
   type: "text";
+  value?: string;
   required?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 };

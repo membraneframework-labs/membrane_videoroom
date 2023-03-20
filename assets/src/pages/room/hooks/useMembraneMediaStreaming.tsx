@@ -38,10 +38,19 @@ export const useMembraneMediaStreaming = (
       if (!webrtc) return;
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
       const simulcast = simulcastEnabled && type === "camera";
+      console.log({ stream, type });
+
 
       const track: MediaStreamTrack | undefined = tracks[0];
-      if (!track) throw "Stream has no tracks!";
+      if (!track) {
+        const audioTracks = stream.getAudioTracks()
+        const videoTracks = stream.getVideoTracks()
+        const allTracks = stream.getTracks()
+        console.log({ stream, type, audioTracks, videoTracks, allTracks });
 
+        throw Error("Stream has no tracks!");
+        // return;
+      }
       const remoteTrackId = webrtc.addTrack(
         track,
         stream,
@@ -62,7 +71,10 @@ export const useMembraneMediaStreaming = (
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
       const track: MediaStreamTrack | undefined = tracks[0];
-      if (!track) throw "Stream has no tracks!";
+      if (!track) {
+        console.log({ stream, type });
+        throw Error("Stream has no tracks!");
+      }
 
       webrtc.replaceTrack(trackIds?.remoteId, track);
     },

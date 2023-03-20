@@ -9,7 +9,6 @@ export const useSetLocalUserTrack = (
   isEnabled: boolean
 ) => {
   useEffect(() => {
-    // console.log({})
     api.setLocalStream(type, isEnabled, stream || undefined);
   }, [type, api, stream, isEnabled]);
 };

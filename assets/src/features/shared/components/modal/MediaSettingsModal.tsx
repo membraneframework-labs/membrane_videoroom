@@ -18,21 +18,19 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
   const { setVideoDeviceId, videoDeviceId, setAudioDeviceId, audioDeviceId } = useLocalPeer();
   const [videoInput, setVideoInput] = useState<string | null>(null);
   const [audioInput, setAudioInput] = useState<string | null>(null);
-  const { allVideoDevices, allAudioDevices } = useLocalPeer();
+  const { videoDevices, audioDevices } = useLocalPeer();
 
   useEffect(() => {
-    if (allVideoDevices && videoDeviceId) {
-      console.log("Setting video input...");
+    if (videoDevices && videoDeviceId) {
       setVideoInput(videoDeviceId);
     }
-  }, [allVideoDevices, videoDeviceId]);
+  }, [videoDevices, videoDeviceId]);
 
   useEffect(() => {
-    if (allAudioDevices && audioDeviceId) {
-      console.log("Setting audio input...");
+    if (audioDevices && audioDeviceId) {
       setAudioInput(audioDeviceId);
     }
-  }, [allAudioDevices, audioDeviceId]);
+  }, [audioDevices, audioDeviceId]);
 
   return (
     <Modal
@@ -49,10 +47,10 @@ export const MediaSettingsModal: React.FC<Props> = ({ onConfirm, ...props }) => 
       maxWidth="max-w-md"
       {...props}
     >
-      <DeviceSelector name="Select camera" devices={allVideoDevices} setInput={setVideoInput} inputValue={videoInput} />
+      <DeviceSelector name="Select camera" devices={videoDevices} setInput={setVideoInput} inputValue={videoInput} />
       <DeviceSelector
         name="Select microphone"
-        devices={allAudioDevices}
+        devices={audioDevices}
         setInput={setAudioInput}
         inputValue={audioInput}
       />

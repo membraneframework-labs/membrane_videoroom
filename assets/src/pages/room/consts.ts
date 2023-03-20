@@ -1,6 +1,6 @@
 import { DisplayMediaStreamConfig, MediaStreamConfig } from "./hooks/useMedia";
 
-const AUDIO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
+export const AUDIO_TRACK_CONSTRAINTS: MediaStreamConstraints = {
   audio: {
     advanced: [{ autoGainControl: true }, { noiseSuppression: true }, { echoCancellation: true }],
   },

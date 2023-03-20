@@ -8,13 +8,8 @@ import CameraOff from "../../room-page/icons/CameraOff";
 import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
-import { ChosenMediaSource, MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
-import {
-  AUDIO_TRACK_CONSTRAINS,
-  useEnumerateDevices,
-  UseEnumerateDevices,
-  VIDEO_TRACK_CONSTRAINTS,
-} from "@jellyfish-dev/jellyfish-reacy-client/navigator";
+import { MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
+import { UseEnumerateDevices } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { useLocalPeer } from "../../../contexts/LocalPeerContext";
 import Input from "../../shared/components/Input";
 import { SelectOption } from "../../shared/components/Select";
@@ -23,27 +18,12 @@ type HomePageVideoTileProps = {
   displayName: string;
 };
 
-export const getStringValue = (name: string, defaultValue: string | null = null): string | null => {
+export const getLocalStorageItem = (name: string, defaultValue: string | null = null): string | null => {
   const stringValue = localStorage.getItem(name);
   if (stringValue === null || stringValue === undefined) {
     return defaultValue;
   }
   return stringValue;
-};
-
-export const useLocalStorageStateString = (name: string): [string | null, (newValue: string | null) => void] => {
-  const [value, setValueState] = useState<string | null>(getStringValue(name));
-
-  const setValue = (newValue: string | null) => {
-    setValueState(newValue);
-    if (newValue === null) {
-      localStorage.removeItem(name);
-    } else {
-      localStorage.setItem(name, newValue);
-    }
-  };
-
-  return [value, setValue];
 };
 
 export function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string | null) {

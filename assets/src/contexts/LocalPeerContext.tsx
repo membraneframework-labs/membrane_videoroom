@@ -1,8 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useMediaGeneric, UseUserMedia } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
+import {
+  UseUserMedia,
+  useEnumerateDevices,
+  useUserMediaById,
+  useMedia,
+} from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { devicesOrNull, getLocalStorageItem, selectDeviceId } from "../features/home-page/components/HomePageVideoTile";
-import { useEnumerateDevices, VIDEO_TRACK_CONSTRAINTS } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
-import { AUDIO_TRACK_CONSTRAINTS } from "../pages/room/consts";
+import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../pages/room/consts";
 
 export type LocalPeerContextType = {
   videoDeviceId: string | null;
@@ -27,16 +31,8 @@ type Props = {
 const localStorageVideoId = "last-selected-video-id";
 const localStorageAudioId = "last-selected-audio-id";
 
-const useUserMedia = (type: "video" | "audio", deviceId: string | null) =>
-  useMediaGeneric(
-    useMemo(
-      () => (deviceId ? () => navigator.mediaDevices.getUserMedia({ [type]: { deviceId } }) : null),
-      [deviceId, type]
-    )
-  );
-
 const useDisplayMedia = (screenSharingConfig: MediaStreamConstraints | null) =>
-  useMediaGeneric(
+  useMedia(
     useMemo(
       () => (screenSharingConfig ? () => navigator.mediaDevices.getDisplayMedia(screenSharingConfig) : null),
       [screenSharingConfig]
@@ -65,26 +61,20 @@ const selectDefaultDevice = (
   }
 };
 
-const audio = {
-  advanced: [{ autoGainControl: true }, { noiseSuppression: true }, { echoCancellation: true }],
-};
-
 export const LocalPeerProvider = ({ children }: Props) => {
   const [videoDeviceId, setVideoDeviceIdInner] = useState<string | null>(null);
 
-  const videoDevice: UseUserMedia = useUserMedia("video", videoDeviceId);
+  const videoDevice: UseUserMedia = useUserMediaById("video", videoDeviceId);
   const [audioDeviceId, setAudioDeviceIdInner] = useState<string | null>(null);
 
-  const audioDevice: UseUserMedia = useUserMedia("audio", audioDeviceId);
+  const audioDevice: UseUserMedia = useUserMediaById("audio", audioDeviceId);
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
 
   const screenSharingDevice: UseUserMedia = useDisplayMedia(screenSharingConfig);
-  const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, audio);
+  const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINTS);
 
   const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
   const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);
-
-  console.log({ videoDevices, audioDevices });
 
   const setVideoDeviceId = useCallback((value: string | null) => {
     setVideoDeviceIdInner(value);

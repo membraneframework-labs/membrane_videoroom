@@ -10,20 +10,10 @@ import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
 import { UseEnumerateDevices } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { useLocalPeer } from "../../../contexts/LocalPeerContext";
-import Input from "../../shared/components/Input";
-import { SelectOption } from "../../shared/components/Select";
 import { useModal } from "../../../contexts/ModalContext";
 
 type HomePageVideoTileProps = {
   displayName: string;
-};
-
-export const getLocalStorageItem = (name: string, defaultValue: string | null = null): string | null => {
-  const stringValue = localStorage.getItem(name);
-  if (stringValue === null || stringValue === undefined) {
-    return defaultValue;
-  }
-  return stringValue;
 };
 
 export function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string | null) {
@@ -31,38 +21,8 @@ export function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId:
   if (result) return lastSelectedDeviceId;
 
   const firstDevice = devices.find(({ deviceId }) => deviceId);
-  if (firstDevice) return firstDevice.deviceId;
-
-  return null;
+  return firstDevice ? firstDevice.deviceId : null;
 }
-
-type DeviceSelectorProps = {
-  name: string;
-  devices: MediaDeviceInfo[] | null;
-  setInput: (value: string | null) => void;
-  inputValue: string | null;
-};
-
-export const DeviceSelector = ({ name, devices, setInput, inputValue }: DeviceSelectorProps) => {
-  const options: SelectOption[] = (devices || []).map(({ deviceId, label }) => ({
-    value: deviceId,
-    label,
-  }));
-
-  return (
-    <Input
-      wrapperClassName="mt-14"
-      label={name}
-      type="select"
-      placeholder="DEF"
-      options={options}
-      onChange={(option) => {
-        setInput(option.value);
-      }}
-      value={options.find(({ value }) => value === inputValue)}
-    />
-  );
-};
 
 export const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
   const device = devices?.[type];

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "./Modal";
-import { DeviceSelector } from "../../../home-page/components/HomePageVideoTile";
 import { useLocalPeer } from "../../../../contexts/LocalPeerContext";
 import { useModal } from "../../../../contexts/ModalContext";
+import { DeviceSelector } from "./DeviceSelector";
 
 export const MediaSettingsModal: React.FC = () => {
   const { setOpen, isOpen } = useModal();

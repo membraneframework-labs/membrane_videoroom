@@ -5,7 +5,7 @@ import {
   useUserMediaById,
   useMedia,
 } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
-import { devicesOrNull, getLocalStorageItem, selectDeviceId } from "../features/home-page/components/HomePageVideoTile";
+import { devicesOrNull, selectDeviceId } from "../features/home-page/components/HomePageVideoTile";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../pages/room/consts";
 
 export type LocalPeerContextType = {
@@ -47,17 +47,22 @@ const setLocalStorage = (value: string | null, key: string) => {
   }
 };
 
+const getLocalStorageItem = (name: string, defaultValue: string | null = null): string | null => {
+  const stringValue = localStorage.getItem(name);
+  return stringValue === null || stringValue === undefined ? defaultValue : stringValue;
+};
+
 const selectDefaultDevice = (
   devices: MediaDeviceInfo[] | null,
   setDeviceId: (value: string | null) => void,
   localStorageName: string
 ) => {
-  if (devices) {
-    const localStorageDeviceId = getLocalStorageItem(localStorageName);
-    const device = selectDeviceId(devices, localStorageDeviceId);
-    if (device) {
-      setDeviceId(device);
-    }
+  if (!devices) return;
+
+  const localStorageDeviceId = getLocalStorageItem(localStorageName);
+  const device = selectDeviceId(devices, localStorageDeviceId);
+  if (device) {
+    setDeviceId(device);
   }
 };
 

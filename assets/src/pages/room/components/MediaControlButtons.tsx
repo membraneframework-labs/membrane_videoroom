@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 
-import { UseMediaResult } from "../hooks/useMedia";
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { MembraneStreaming, StreamingMode } from "../hooks/useMembraneMediaStreaming";
@@ -13,20 +12,14 @@ import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import Chat from "../../../features/room-page/icons/Chat";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
-import { useLocalPeer, LocalPeerContextType } from "../../../contexts/LocalPeerContext";
+import { useLocalPeer } from "../../../contexts/LocalPeerContext";
 import { UseUserMedia } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { SCREENSHARING_MEDIA_CONSTRAINTS } from "../consts";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
 const getAutomaticControls = (
-  {
-    audioStreaming,
-    cameraStreaming,
-    screenSharingStreaming,
-    isSidebarOpen,
-    openSidebar,
-  }: LocalUserMediaControls,
+  { audioStreaming, cameraStreaming, screenSharingStreaming, isSidebarOpen, openSidebar }: LocalUserMediaControls,
   navigate: NavigateFunction,
   roomId: string | null,
   videoDevice: UseUserMedia,
@@ -92,7 +85,7 @@ const getAutomaticControls = (
         className: neutralButtonStyle,
         hideOnMobile: true,
         onClick: () => {
-          setScreenSharingConfig(null)
+          setScreenSharingConfig(null);
           screenSharingStreaming.setActive(false);
         },
       }
@@ -103,7 +96,7 @@ const getAutomaticControls = (
         className: neutralButtonStyle,
         hideOnMobile: true,
         onClick: () => {
-          setScreenSharingConfig(SCREENSHARING_MEDIA_CONSTRAINTS)
+          setScreenSharingConfig(SCREENSHARING_MEDIA_CONSTRAINTS);
           screenSharingStreaming.setActive(true);
         },
       },
@@ -351,11 +344,11 @@ type Props = {
 } & LocalUserMediaControls;
 
 type LocalUserMediaControls = {
-  userMediaVideo: UseMediaResult;
+  userMediaVideo: UseUserMedia;
   cameraStreaming: MembraneStreaming;
-  userMediaAudio: UseMediaResult;
+  userMediaAudio: UseUserMedia;
   audioStreaming: MembraneStreaming;
-  displayMedia: UseMediaResult;
+  displayMedia: UseUserMedia;
   screenSharingStreaming: MembraneStreaming;
   isSidebarOpen?: boolean;
   openSidebar: () => void;
@@ -367,12 +360,22 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
 
   const navigate = useNavigate();
 
-  const { videoDevice, audioDevice, screenSharingDevice,setScreenSharingConfig } = useLocalPeer();
+  const { videoDevice, audioDevice, screenSharingDevice, setScreenSharingConfig } = useLocalPeer();
 
   const controls: ControlButton[][] =
     props.mode === "manual"
       ? getManualControls(props, navigate, roomId)
-      : [getAutomaticControls(props, navigate, roomId || null, videoDevice, audioDevice, screenSharingDevice,setScreenSharingConfig)];
+      : [
+          getAutomaticControls(
+            props,
+            navigate,
+            roomId || null,
+            videoDevice,
+            audioDevice,
+            screenSharingDevice,
+            setScreenSharingConfig
+          ),
+        ];
   return (
     <div>
       <div

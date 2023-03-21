@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
 import InitialsImage, { computeInitials } from "../../room-page/components/InitialsImage";

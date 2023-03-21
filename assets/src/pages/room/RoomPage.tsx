@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
-import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
+import React, { FC, useEffect, useState } from "react";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
@@ -119,17 +118,17 @@ const RoomPage: FC<Props> = ({
           </div>
         </section>
 
-        {/*<MediaControlButtons*/}
-        {/*  mode={mode}*/}
-        {/*  userMediaVideo={camera.local}*/}
-        {/*  cameraStreaming={camera.remote}*/}
-        {/*  userMediaAudio={audio.local}*/}
-        {/*  audioStreaming={audio.remote}*/}
-        {/*  displayMedia={screenSharing.local}*/}
-        {/*  screenSharingStreaming={screenSharing.remote}*/}
-        {/*  isSidebarOpen={isSidebarOpen}*/}
-        {/*  openSidebar={() => setIsSidebarOpen((prev) => !prev)}*/}
-        {/*/>*/}
+        <MediaControlButtons
+          mode={mode}
+          userMediaVideo={camera.local}
+          cameraStreaming={camera.remote}
+          userMediaAudio={audio.local}
+          audioStreaming={audio.remote}
+          displayMedia={screenSharing.local}
+          screenSharingStreaming={screenSharing.remote}
+          isSidebarOpen={isSidebarOpen}
+          openSidebar={() => setIsSidebarOpen((prev) => !prev)}
+        />
 
         {/* dev helpers */}
         <div className="invisible absolute bottom-3 right-3 flex flex-col items-stretch md:visible">

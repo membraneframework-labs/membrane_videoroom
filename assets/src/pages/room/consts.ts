@@ -1,5 +1,3 @@
-import { DisplayMediaStreamConfig, MediaStreamConfig } from "./hooks/useMedia";
-
 export const AUDIO_TRACK_CONSTRAINTS: MediaTrackConstraints = {
   advanced: [{ autoGainControl: true }, { noiseSuppression: true }, { echoCancellation: true }],
 };
@@ -28,9 +26,6 @@ export const SCREENSHARING_MEDIA_CONSTRAINTS: MediaStreamConstraints = {
     height: { max: 1080, ideal: 1080 },
   },
 };
-export const VIDEO_TRACKS_CONFIG = new MediaStreamConfig({ video: VIDEO_TRACK_CONSTRAINTS });
-export const AUDIO_TRACKS_CONFIG = new MediaStreamConfig({ audio: AUDIO_TRACK_CONSTRAINTS });
-export const SCREEN_SHARING_TRACKS_CONFIG = new DisplayMediaStreamConfig(SCREENSHARING_MEDIA_CONSTRAINTS);
 
 export const LOCAL_PEER_NAME = "You";
 export const LOCAL_VIDEO_ID = "LOCAL_VIDEO_ID";

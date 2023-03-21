@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
         <MediaControlButton
           icon={Settings}
           hover="Settings"
-          buttonClassName={`${neutralButtonStyle}`}
+          buttonClassName={neutralButtonStyle}
           onClick={() => {
             setOpen(true);
           }}

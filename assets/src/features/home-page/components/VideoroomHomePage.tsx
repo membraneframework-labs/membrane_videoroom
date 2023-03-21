@@ -7,7 +7,6 @@ import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
 import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
 import Input from "../../shared/components/Input";
-import useToast from "../../shared/hooks/useToast";
 import { MobileLoginStep, MobileLoginStepType } from "../types";
 import HomePageLayout from "./HomePageLayout";
 
@@ -24,7 +23,6 @@ const VideoroomHomePage: React.FC = () => {
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
   const buttonDisabled = !displayNameInput || !roomIdInput;
 
-  // const deviceManager = useMediaDeviceManager({ askOnMount: true });
   const { simulcast, manualMode, smartLayerSwitching } = useDeveloperInfo();
 
   const [searchParams] = useSearchParams();
@@ -72,22 +70,6 @@ const VideoroomHomePage: React.FC = () => {
     smartLayerSwitching,
     smartLayerSwitchingInput,
   ]);
-
-  const { addToast } = useToast();
-  // useEffectOnChange(
-  //   deviceManager.errorMessage,
-  //   () => {
-  //     if (deviceManager.errorMessage) {
-  //       addToast({
-  //         id: deviceManager.errorMessage.id || crypto.randomUUID(),
-  //         message: deviceManager.errorMessage.message,
-  //         timeout: "INFINITY",
-  //         type: "error",
-  //       });
-  //     }
-  //   },
-  //   messageComparator
-  // );
 
   const inputs = useMemo(() => {
     return (

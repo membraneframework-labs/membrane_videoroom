@@ -13,11 +13,6 @@ export type SelectOption = {
 };
 
 export const Select: FC<SelectProps> = ({ onChange, controlClassName, ...otherProps }) => {
-  const optionClassName = clsx("px-4 py-3.5 hover:bg-brand-dark-blue-100 focus-within:bg-brand-dark-blue-100");
-  const menuClassName = clsx(
-    "max-h-40 rounded-3xl border-brand-dark-blue-200 border-2 overflow-y-auto bg-brand-white flex flex-col "
-  );
-
   return (
     <ReactSelect
       unstyled
@@ -32,8 +27,11 @@ export const Select: FC<SelectProps> = ({ onChange, controlClassName, ...otherPr
       }}
       classNames={{
         control: () => controlClassName ?? "",
-        option: () => optionClassName,
-        menu: () => menuClassName ?? "",
+        option: () => clsx("px-4 py-3.5 hover:bg-brand-dark-blue-100 focus-within:bg-brand-dark-blue-100"),
+        menu: () =>
+          clsx(
+            "max-h-40 rounded-3xl border-brand-dark-blue-200 border-2 overflow-y-auto bg-brand-white flex flex-col "
+          ),
       }}
       onChange={(v) => onChange?.call(null, v as SelectOption)}
       {...otherProps}

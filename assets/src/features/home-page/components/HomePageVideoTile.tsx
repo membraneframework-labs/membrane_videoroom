@@ -49,7 +49,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
           <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
             {videoDevice.isEnabled ? (
               <MediaControlButton
-                key={"cam-off"}
                 icon={Camera}
                 hover="Turn off the camera"
                 buttonClassName={neutralButtonStyle}
@@ -59,7 +58,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
               />
             ) : (
               <MediaControlButton
-                key={"cam-on"}
                 icon={CameraOff}
                 hover="Turn on the camera"
                 buttonClassName={activeButtonStyle}
@@ -70,7 +68,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
             )}
             {audioDevice.isEnabled ? (
               <MediaControlButton
-                key={"mic-mute"}
                 icon={Microphone}
                 hover="Turn off the microphone"
                 buttonClassName={neutralButtonStyle}
@@ -80,7 +77,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
               />
             ) : (
               <MediaControlButton
-                key={"mic-unmute"}
                 icon={MicrophoneOff}
                 hover="Turn on the microphone"
                 buttonClassName={activeButtonStyle}
@@ -90,7 +86,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
               />
             )}
             <MediaControlButton
-              key={"settings"}
               icon={Settings}
               hover="Open Settings"
               buttonClassName={neutralButtonStyle}

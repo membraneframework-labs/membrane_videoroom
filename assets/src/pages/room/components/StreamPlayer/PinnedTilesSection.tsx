@@ -5,9 +5,7 @@ import PeerInfoLayer from "./PeerInfoLayer";
 import { PinIndicator, PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import MediaPlayerTile from "./MediaPlayerTile";
-import {
-  showDisabledIcon,
-} from "../../../../features/room-page/components/DisabledTrackIcon";
+import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { GridConfigType, getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import clsx from "clsx";

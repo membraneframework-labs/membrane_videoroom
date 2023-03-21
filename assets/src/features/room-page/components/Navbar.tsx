@@ -9,13 +9,14 @@ import ShareSquare from "../icons/ShareSquare";
 import Settings from "../icons/Settings";
 import { neutralButtonStyle } from "../consts";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
-import Settings2 from "../icons/Settings2";
+import { useModal } from "../../../contexts/ModalContext";
 
 const Navbar: React.FC = () => {
   const match = useParams();
   const currentUrl = window.location.href;
   const roomId: string = match?.roomId || "";
   const { addToast } = useToast();
+  const { setOpen } = useModal();
 
   const onLinkCopy = useCallback(async () => {
     await navigator.clipboard.writeText(currentUrl);
@@ -45,7 +46,7 @@ const Navbar: React.FC = () => {
           hover="Settings"
           buttonClassName={`${neutralButtonStyle}`}
           onClick={() => {
-            console.log("Click");
+            setOpen(true);
           }}
           position="bottom"
           hoverClassName="-ml-10"

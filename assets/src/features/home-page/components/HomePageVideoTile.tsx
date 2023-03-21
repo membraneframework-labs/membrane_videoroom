@@ -8,11 +8,11 @@ import CameraOff from "../../room-page/icons/CameraOff";
 import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
-import { MediaSettingsModal } from "../../shared/components/modal/MediaSettingsModal";
 import { UseEnumerateDevices } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { useLocalPeer } from "../../../contexts/LocalPeerContext";
 import Input from "../../shared/components/Input";
 import { SelectOption } from "../../shared/components/Select";
+import { useModal } from "../../../contexts/ModalContext";
 
 type HomePageVideoTileProps = {
   displayName: string;
@@ -73,87 +73,75 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
   const { videoDevice, audioDevice } = useLocalPeer();
 
   const initials = computeInitials(displayName);
-
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
-
-  const onCancelSettings = () => {
-    setIsSettingsOpen(false);
-  };
-
-  const onConfirmSettings = () => {
-    setIsSettingsOpen(false);
-  };
+  const { setOpen } = useModal();
 
   return (
-    <>
-      <MediaSettingsModal isOpen={isSettingsOpen} onCancel={onCancelSettings} onConfirm={onConfirmSettings} />
-      <MediaPlayerTile
-        key="room-preview"
-        peerId={""}
-        video={{ stream: videoDevice.stream || undefined, remoteTrackId: "" }}
-        audio={null}
-        streamSource="local"
-        flipHorizontally
-        layers={
-          <>
-            {!videoDevice.isEnabled ? <InitialsImage initials={initials} /> : null}
-            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
-              {videoDevice.isEnabled ? (
-                <MediaControlButton
-                  key={"cam-off"}
-                  icon={Camera}
-                  hover="Turn off the camera"
-                  buttonClassName={neutralButtonStyle}
-                  onClick={() => {
-                    videoDevice.stop();
-                  }}
-                />
-              ) : (
-                <MediaControlButton
-                  key={"cam-on"}
-                  icon={CameraOff}
-                  hover="Turn on the camera"
-                  buttonClassName={activeButtonStyle}
-                  onClick={() => {
-                    videoDevice.start();
-                  }}
-                />
-              )}
-              {audioDevice.isEnabled ? (
-                <MediaControlButton
-                  key={"mic-mute"}
-                  icon={Microphone}
-                  hover="Turn off the microphone"
-                  buttonClassName={neutralButtonStyle}
-                  onClick={() => {
-                    audioDevice.stop();
-                  }}
-                />
-              ) : (
-                <MediaControlButton
-                  key={"mic-unmute"}
-                  icon={MicrophoneOff}
-                  hover="Turn on the microphone"
-                  buttonClassName={activeButtonStyle}
-                  onClick={() => {
-                    audioDevice.start();
-                  }}
-                />
-              )}
+    <MediaPlayerTile
+      key="room-preview"
+      peerId={""}
+      video={{ stream: videoDevice.stream || undefined, remoteTrackId: "" }}
+      audio={null}
+      streamSource="local"
+      flipHorizontally
+      layers={
+        <>
+          {!videoDevice.isEnabled ? <InitialsImage initials={initials} /> : null}
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-x-4">
+            {videoDevice.isEnabled ? (
               <MediaControlButton
-                key={"settings"}
-                icon={Settings}
-                hover="Open Settings"
+                key={"cam-off"}
+                icon={Camera}
+                hover="Turn off the camera"
                 buttonClassName={neutralButtonStyle}
                 onClick={() => {
-                  setIsSettingsOpen(true);
+                  videoDevice.stop();
                 }}
               />
-            </div>
-          </>
-        }
-      />
-    </>
+            ) : (
+              <MediaControlButton
+                key={"cam-on"}
+                icon={CameraOff}
+                hover="Turn on the camera"
+                buttonClassName={activeButtonStyle}
+                onClick={() => {
+                  videoDevice.start();
+                }}
+              />
+            )}
+            {audioDevice.isEnabled ? (
+              <MediaControlButton
+                key={"mic-mute"}
+                icon={Microphone}
+                hover="Turn off the microphone"
+                buttonClassName={neutralButtonStyle}
+                onClick={() => {
+                  audioDevice.stop();
+                }}
+              />
+            ) : (
+              <MediaControlButton
+                key={"mic-unmute"}
+                icon={MicrophoneOff}
+                hover="Turn on the microphone"
+                buttonClassName={activeButtonStyle}
+                onClick={() => {
+                  audioDevice.start();
+                }}
+              />
+            )}
+            <MediaControlButton
+              key={"settings"}
+              icon={Settings}
+              hover="Open Settings"
+              buttonClassName={neutralButtonStyle}
+              onClick={() => {
+                setOpen(true);
+              }}
+            />
+          </div>
+        </>
+      }
+    />
   );
 };
 

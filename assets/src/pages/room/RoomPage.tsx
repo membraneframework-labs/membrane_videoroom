@@ -21,8 +21,6 @@ type Props = {
   roomId: string;
   isSimulcastOn: boolean;
   manualMode: boolean;
-  cameraAutostartStreaming?: boolean;
-  audioAutostartStreaming?: boolean;
 };
 
 const RoomPage: FC<Props> = ({
@@ -30,8 +28,6 @@ const RoomPage: FC<Props> = ({
   displayName,
   isSimulcastOn,
   manualMode,
-  cameraAutostartStreaming,
-  audioAutostartStreaming,
 }: Props) => {
   useAcquireWakeLockAutomatically();
 
@@ -45,10 +41,6 @@ const RoomPage: FC<Props> = ({
   const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
 
   const isConnected = !!peerState?.local?.id;
-
-  useEffect(() => {
-    console.log({ peerState });
-  }, [peerState]);
 
   const { screenSharingDevice, videoDevice, audioDevice } = useLocalPeer();
 

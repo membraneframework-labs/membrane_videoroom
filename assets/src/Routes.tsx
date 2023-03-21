@@ -5,7 +5,6 @@ import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";
 import { useUser } from "./contexts/UserContext";
 import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
 import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
-import { usePreviewSettings } from "./features/home-page/hooks/usePreviewSettings";
 import Page404 from "./features/shared/components/Page404";
 
 const RoomPageWrapper: React.FC = () => {
@@ -15,7 +14,6 @@ const RoomPageWrapper: React.FC = () => {
   const isLeavingRoom = !!state?.isLeavingRoom;
   const { username } = useUser();
   const { simulcast, manualMode } = useDeveloperInfo();
-  const { cameraAutostart, audioAutostart } = usePreviewSettings();
 
   if (isLeavingRoom && roomId) {
     return <LeavingRoomScreen roomId={roomId} />;
@@ -27,8 +25,6 @@ const RoomPageWrapper: React.FC = () => {
       roomId={roomId}
       isSimulcastOn={simulcast.status}
       manualMode={manualMode.status}
-      cameraAutostartStreaming={cameraAutostart.status}
-      audioAutostartStreaming={audioAutostart.status}
     />
   ) : (
     <VideoroomHomePage />

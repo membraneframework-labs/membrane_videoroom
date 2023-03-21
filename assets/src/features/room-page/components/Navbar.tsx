@@ -6,6 +6,10 @@ import MembraneVideoroomLogo from "../../shared/components/MembraneVideoroomLogo
 import PlainLink from "../../shared/components/PlainLink";
 import useToast from "../../shared/hooks/useToast";
 import ShareSquare from "../icons/ShareSquare";
+import Settings from "../icons/Settings";
+import { neutralButtonStyle } from "../consts";
+import MediaControlButton from "../../../pages/room/components/MediaControlButton";
+import Settings2 from "../icons/Settings2";
 
 const Navbar: React.FC = () => {
   const match = useParams();
@@ -36,6 +40,16 @@ const Navbar: React.FC = () => {
         >
           {roomId} <ShareSquare className="text-lg" />
         </Button>
+        <MediaControlButton
+          icon={Settings}
+          hover="Settings"
+          buttonClassName={`${neutralButtonStyle}`}
+          onClick={() => {
+            console.log("Click");
+          }}
+          position="bottom"
+          hoverClassName="-ml-10"
+        />
       </div>
     </div>
   );

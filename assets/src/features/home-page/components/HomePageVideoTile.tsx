@@ -103,7 +103,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   key={"cam-off"}
                   icon={Camera}
                   hover="Turn off the camera"
-                  className={neutralButtonStyle}
+                  buttonClassName={neutralButtonStyle}
                   onClick={() => {
                     videoDevice.stop();
                   }}
@@ -113,7 +113,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   key={"cam-on"}
                   icon={CameraOff}
                   hover="Turn on the camera"
-                  className={activeButtonStyle}
+                  buttonClassName={activeButtonStyle}
                   onClick={() => {
                     videoDevice.start();
                   }}
@@ -124,7 +124,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   key={"mic-mute"}
                   icon={Microphone}
                   hover="Turn off the microphone"
-                  className={neutralButtonStyle}
+                  buttonClassName={neutralButtonStyle}
                   onClick={() => {
                     audioDevice.stop();
                   }}
@@ -134,7 +134,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   key={"mic-unmute"}
                   icon={MicrophoneOff}
                   hover="Turn on the microphone"
-                  className={activeButtonStyle}
+                  buttonClassName={activeButtonStyle}
                   onClick={() => {
                     audioDevice.start();
                   }}
@@ -144,7 +144,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                 key={"settings"}
                 icon={Settings}
                 hover="Open Settings"
-                className={neutralButtonStyle}
+                buttonClassName={neutralButtonStyle}
                 onClick={() => {
                   setIsSettingsOpen(true);
                 }}

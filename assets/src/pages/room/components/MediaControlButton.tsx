@@ -33,7 +33,7 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
           buttonClassName
         )}
       >
-        {Icon && <Icon className="" />}
+        {Icon && <Icon />}
       </Button>
 
       {hover && (

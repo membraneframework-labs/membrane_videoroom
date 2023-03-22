@@ -23,13 +23,17 @@ export const MediaSettingsModal: React.FC = () => {
     }
   }, [audioDevices, audioDeviceId]);
 
+  const handleClose = () => {
+    setOpen(false);
+    setAudioInput(audioDeviceId);
+    setVideoInput(videoDeviceId);
+  };
+
   return (
     <Modal
       title="Settings"
       confirmText="Save"
-      onRequestClose={() => {
-        setOpen(false);
-      }}
+      onRequestClose={handleClose}
       closable
       cancelClassName="text-additional-red-100"
       onConfirm={() => {
@@ -37,9 +41,7 @@ export const MediaSettingsModal: React.FC = () => {
         setVideoDeviceId(videoInput);
         setOpen(false);
       }}
-      onCancel={() => {
-        setOpen(false);
-      }}
+      onCancel={handleClose}
       maxWidth="max-w-md"
       isOpen={isOpen}
     >

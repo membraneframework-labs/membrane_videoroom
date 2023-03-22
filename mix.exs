@@ -29,17 +29,14 @@ defmodule VideoRoom.MixProject do
   defp deps do
     [
       {:membrane_core,
-       github: "membraneframework/membrane_core", branch: "use-push-flow", override: true},
-      {:membrane_rtc_engine, "~> 0.10.2", override: true},
-      {:membrane_rtp_plugin,
-       github: "membraneframework/membrane_rtp_plugin",
-       branch: "feature/outbound-retransmissions",
-       override: true},
+       github: "membraneframework/membrane_core", branch: "use-push-flow-0.11", override: true},
+      {:membrane_rtc_engine, "~> 0.11.0", override: true},
       {:membrane_rtc_engine_timescaledb, "~> 0.1.0", runtime: false},
       {:plug_cowboy, "~> 2.5"},
       {:phoenix, "~> 1.6.15"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_view, "~> 0.17.0"},
+      {:phoenix_pubsub, "~> 2.1.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:jason, "~> 1.2"},
       {:phoenix_inline_svg, "~> 1.4"},
@@ -56,13 +53,12 @@ defmodule VideoRoom.MixProject do
       # Otel
       {:opentelemetry, "~> 1.0"},
       {:opentelemetry_api, "~> 1.0"},
-      {:opentelemetry_exporter, "~> 1.0"},
+      {:opentelemetry_exporter, "~> 1.0.4"},
       {:opentelemetry_zipkin, "~> 1.0"},
 
       # Benchmarks
       {:beamchmark, "~> 1.4.0", only: :benchmark},
-      # FIXME: use fork or replace
-      # {:stampede, github: "geometerio/stampede-elixir", only: :benchmark},
+      {:stampede, github: "membraneframework-labs/stampede-elixir", only: :benchmark},
       {:httpoison, "~> 1.8", only: :benchmark},
       {:poison, "~> 5.0.0", only: :benchmark}
     ]

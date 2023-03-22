@@ -11,6 +11,8 @@ import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import Chat from "../../../features/room-page/icons/Chat";
+import useMobileViewport from "../../../features/shared/hooks/useMobileViewport";
+import MenuDots from "../../../features/room-page/icons/MenuDots";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 import { useLocalPeer } from "../../../contexts/LocalPeerContext";
 import { UseUserMedia } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
@@ -21,6 +23,7 @@ type ControlButton = MediaControlButtonProps & { id: string };
 const getAutomaticControls = (
   { audioStreaming, cameraStreaming, screenSharingStreaming, isSidebarOpen, openSidebar }: LocalUserMediaControls,
   navigate: NavigateFunction,
+  isMobileViewport?: boolean,
   roomId: string | null,
   videoDevice: UseUserMedia,
   audioDevice: UseUserMedia,
@@ -102,8 +105,8 @@ const getAutomaticControls = (
       },
   {
     id: "chat",
-    icon: Chat,
-    hover: isSidebarOpen ? "Close the sidebar" : "Open the sidebar",
+    icon: isMobileViewport ? MenuDots : Chat,
+    hover: isMobileViewport ? undefined : isSidebarOpen ? "Close the sidebar" : "Open the sidebar",
     buttonClassName: isSidebarOpen ? activeButtonStyle : neutralButtonStyle,
     hideOnMobile: true,
     onClick: openSidebar,
@@ -356,6 +359,7 @@ type LocalUserMediaControls = {
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
+  const isMobileViewport = useMobileViewport();
   const { roomId } = useParams();
 
   const navigate = useNavigate();
@@ -369,6 +373,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
           getAutomaticControls(
             props,
             navigate,
+            isMobileViewport,
             roomId || null,
             videoDevice,
             audioDevice,

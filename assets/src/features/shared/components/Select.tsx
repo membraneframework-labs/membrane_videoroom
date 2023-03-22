@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import React, { FC } from "react";
 import ReactSelect from "react-select";
 
@@ -27,13 +26,11 @@ export const Select: FC<SelectProps> = ({ onChange, controlClassName, ...otherPr
       }}
       classNames={{
         control: () => controlClassName ?? "",
-        option: () => clsx("px-4 py-3.5 hover:bg-brand-dark-blue-100 focus-within:bg-brand-dark-blue-100"),
+        option: () => "px-4 py-3.5 hover:bg-brand-dark-blue-100 focus-within:bg-brand-dark-blue-100",
         menu: () =>
-          clsx(
-            "max-h-40 rounded-3xl border-brand-dark-blue-200 border-2 overflow-y-auto bg-brand-white flex flex-col "
-          ),
+          "max-h-40 rounded-3xl border-brand-dark-blue-200 border-2 overflow-y-auto bg-brand-white flex flex-col",
       }}
-      onChange={(v) => onChange?.call(null, v as SelectOption)}
+      onChange={(selectOption) => onChange?.(selectOption as SelectOption)}
       {...otherProps}
     />
   );

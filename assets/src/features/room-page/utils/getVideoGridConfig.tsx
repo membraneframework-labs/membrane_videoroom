@@ -60,11 +60,12 @@ export function getGridConfig(peers: number): GridConfigType {
 
 export const getUnpinnedTilesGridStyle = (
   gridConfig: GridConfigType,
-  oneColumn: boolean,
+  isAnyTilePinned: boolean,
+  horizontalRow: boolean,
   videoInVideo: boolean,
   fixedRatio: boolean
 ): string => {
-  if (!oneColumn)
+  if (!isAnyTilePinned)
     return clsx(
       "h-full w-full",
       gridConfig.columns,
@@ -73,6 +74,7 @@ export const getUnpinnedTilesGridStyle = (
       gridConfig.padding,
       gridConfig.rows
     );
+
   if (fixedRatio)
     return clsx(
       "w-[400px]",
@@ -81,5 +83,7 @@ export const getUnpinnedTilesGridStyle = (
         : "h-full flex flex-wrap flex-col content-center justify-center"
     );
 
-  return "h-full w-full grid flex-1 grid-flow-row auto-rows-fr grid-cols-1 gap-y-3";
+  const horizontal = horizontalRow ? "sm:flex-row" : "sm:flex-col";
+
+  return `h-full w-full flex flex-col gap-y-3 ${horizontal} sm:gap-x-3 sm:justify-center`;
 };

@@ -13,49 +13,63 @@ import {
   isLoading,
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
+import SoundIcon from "../../../../features/room-page/components/SoundIcon";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  oneColumn: boolean; // screensharing or pinned user
+  isAnyTilePinned: boolean;
   webrtc?: MembraneWebRTC;
   pin: (tileId: string) => void;
   videoInVideo: boolean;
   blockPinning: boolean;
   forceEncoding?: TrackEncoding;
+  horizontal: boolean;
 };
 
 const UnpinnedTilesSection: FC<Props> = ({
   tileConfigs,
   showSimulcast,
-  oneColumn,
+  isAnyTilePinned,
   webrtc,
   pin,
   videoInVideo,
   blockPinning,
   forceEncoding,
+  horizontal,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
   const videoGridStyle = useMemo(
-    () => getUnpinnedTilesGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
-    [gridConfig, oneColumn, videoInVideo, tileConfigs.length]
+    () => getUnpinnedTilesGridStyle(gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length === 1),
+    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length]
   );
 
-  const tileStyle = !oneColumn
+  const tileStyle = !isAnyTilePinned
     ? clsx(gridConfig.span, gridConfig.tileClass)
     : tileConfigs.length === 1
     ? "w-[400px] h-[220px]"
+    : horizontal
+    ? "sm:max-w-1/3"
     : "";
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
+  const getUpperLeftIcon = (config: MediaPlayerTileConfig): JSX.Element | null => {
+    if (config.typeName !== "local" && config.typeName !== "remote") return null;
+
+    if (showDisabledIcon(config.audio)) return <DisabledMicIcon isLoading={isLoading(config.audio)} />;
+    if (config.isSpeaking) return <SoundIcon />;
+
+    return null;
+  };
+
   return (
     <div id="videos-grid" className={videoGridStyle}>
-      {tileConfigs.map((config) => {
+      {tileConfigs.map((config: MediaPlayerTileConfig) => {
         const video: TrackWithId | null = config.video;
-        const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
+        const upperLeftIcon: JSX.Element | null = getUpperLeftIcon(config);
 
         return (
           <MediaPlayerTile
@@ -69,11 +83,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
                 <PeerInfoLayer
                   bottomLeft={<NameTag name={config.displayName} />}
-                  topLeft={
-                    hasInitials && showDisabledIcon(config.audio) ? (
-                      <DisabledMicIcon isLoading={isLoading(audio)} />
-                    ) : undefined
-                  }
+                  topLeft={upperLeftIcon}
                   tileSize={tileSize}
                 />
                 {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}

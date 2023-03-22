@@ -37,6 +37,9 @@ export const MediaSettingsModal: React.FC = () => {
         setVideoDeviceId(videoInput);
         setOpen(false);
       }}
+      onCancel={() => {
+        setOpen(false);
+      }}
       maxWidth="max-w-md"
       isOpen={isOpen}
     >

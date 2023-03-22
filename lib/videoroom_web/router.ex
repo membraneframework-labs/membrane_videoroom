@@ -13,6 +13,8 @@ defmodule VideoRoomWeb.Router do
 
     get("/healthcheck", PageController, :healthcheck)
 
+    get("/webrtc-internals", StatsController, :index)
+
     # use of '/*path' route allows for client-side handing of unknown routes
     get("/*path", PageController, :index)
   end

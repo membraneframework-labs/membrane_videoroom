@@ -39,7 +39,7 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
       {hover && (
         <div
           className={clsx(
-            "invisible absolute bottom-0 z-50 flex w-full  items-center font-aktivGrotesk opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-90",
+            "invisible absolute bottom-0 z-50 flex w-full items-center font-aktivGrotesk opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-90",
             {
               "mb-12 flex-col": pos === "top",
               "-mb-12 flex-col-reverse": pos === "bottom",

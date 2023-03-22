@@ -23,12 +23,12 @@ type ControlButton = MediaControlButtonProps & { id: string };
 const getAutomaticControls = (
   { audioStreaming, cameraStreaming, screenSharingStreaming, isSidebarOpen, openSidebar }: LocalUserMediaControls,
   navigate: NavigateFunction,
-  isMobileViewport?: boolean,
   roomId: string | null,
   videoDevice: UseUserMedia,
   audioDevice: UseUserMedia,
   screenSharingDevice: UseUserMedia,
-  setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void
+  setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void,
+  isMobileViewport?: boolean
 ): ControlButton[] => [
   videoDevice.isEnabled
     ? {
@@ -108,7 +108,6 @@ const getAutomaticControls = (
     icon: isMobileViewport ? MenuDots : Chat,
     hover: isMobileViewport ? undefined : isSidebarOpen ? "Close the sidebar" : "Open the sidebar",
     buttonClassName: isSidebarOpen ? activeButtonStyle : neutralButtonStyle,
-    hideOnMobile: true,
     onClick: openSidebar,
   },
   {
@@ -373,12 +372,12 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
           getAutomaticControls(
             props,
             navigate,
-            isMobileViewport,
             roomId || null,
             videoDevice,
             audioDevice,
             screenSharingDevice,
-            setScreenSharingConfig
+            setScreenSharingConfig,
+            isMobileViewport
           ),
         ];
   return (

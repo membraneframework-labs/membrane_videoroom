@@ -28,7 +28,7 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
       <Button
         onClick={onClick}
         className={clsx(
-          "rounded-full border px-2.5 py-[4px] text-xl font-bold h-[40px] w-[40px]",
+          "h-[40px] w-[40px] rounded-full border px-2.5 py-[4px] text-xl font-bold",
           "z-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out disabled:pointer-events-none",
           buttonClassName
         )}
@@ -45,9 +45,12 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
           }
         )}
       >
-        <span className={
-          clsx("whitespace-no-wrap relative z-50 min-w-max rounded-lg bg-brand-grey-120 px-4 py-3 text-sm font-normal leading-none text-white shadow-lg", hoverClassName)
-        }>
+        <span
+          className={clsx(
+            "whitespace-no-wrap relative z-50 min-w-max rounded-lg bg-brand-grey-120 px-4 py-3 text-sm font-normal leading-none text-white shadow-lg",
+            hoverClassName
+          )}
+        >
           {hover}
         </span>
         <div

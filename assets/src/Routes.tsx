@@ -20,12 +20,7 @@ const RoomPageWrapper: React.FC = () => {
   }
 
   return username && roomId ? (
-    <RoomPage
-      displayName={username}
-      roomId={roomId}
-      isSimulcastOn={simulcast.status}
-      manualMode={manualMode.status}
-    />
+    <RoomPage displayName={username} roomId={roomId} isSimulcastOn={simulcast.status} manualMode={manualMode.status} />
   ) : (
     <VideoroomHomePage />
   );

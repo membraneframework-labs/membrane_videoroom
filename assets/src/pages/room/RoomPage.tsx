@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
@@ -23,12 +23,7 @@ type Props = {
   manualMode: boolean;
 };
 
-const RoomPage: FC<Props> = ({
-  roomId,
-  displayName,
-  isSimulcastOn,
-  manualMode,
-}: Props) => {
+const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }: Props) => {
   useAcquireWakeLockAutomatically();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";

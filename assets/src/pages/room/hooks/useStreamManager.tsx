@@ -5,7 +5,7 @@ import { useSetLocalTrackMetadata } from "./useSetLocalTrackMetadata";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { PeersApi } from "./usePeerState";
 import { TrackType } from "../../types";
-import { UseUserMedia } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
+import { UseUserMedia } from "@jellyfish-dev/jellyfish-react-client/navigator";
 
 export type Streams = {
   remote: MembraneStreaming;

@@ -20,7 +20,6 @@ export const DeviceSelector = ({ name, devices, setInput, inputValue }: Props) =
       wrapperClassName="mt-14"
       label={name}
       type="select"
-      placeholder="DEF"
       options={options}
       onChange={(option) => {
         setInput(option.value);

@@ -8,25 +8,11 @@ import CameraOff from "../../room-page/icons/CameraOff";
 import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
-import { UseEnumerateDevices } from "@jellyfish-dev/jellyfish-reacy-client/navigator";
 import { useLocalPeer } from "../../../contexts/LocalPeerContext";
 import { useModal } from "../../../contexts/ModalContext";
 
 type HomePageVideoTileProps = {
   displayName: string;
-};
-
-export function selectDeviceId(devices: MediaDeviceInfo[], lastSelectedDeviceId: string | null) {
-  const result = devices.some(({ deviceId }) => deviceId === lastSelectedDeviceId);
-  if (result) return lastSelectedDeviceId;
-
-  const firstDevice = devices.find(({ deviceId }) => deviceId);
-  return firstDevice ? firstDevice.deviceId : null;
-}
-
-export const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
-  const device = devices?.[type];
-  return device?.type === "OK" ? device.devices : null;
 };
 
 const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) => {

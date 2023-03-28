@@ -8,7 +8,7 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@jellyfish-dev/jellyfish-reacy-client": "github:jellyfish-dev/jellyfish-react-client#feature/vanilla-ts-dashboard",
+    "@jellyfish-dev/jellyfish-react-client": "github:jellyfish-dev/jellyfish-react-client#bugfix/handle-partial-enumerate-device-response",
     "@jellyfish-dev/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#feature/disable-track-stopping",
     "@types/react-modal": "^3.13.1",
     "clsx": "^1.2.1",

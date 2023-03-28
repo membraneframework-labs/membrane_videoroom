@@ -1,25 +1,33 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
-  UseUserMedia,
+  DeviceReturnType,
+  isAudio,
+  isGranted,
+  isNotGranted,
+  isVideo,
+  toMediaTrackConstraints,
   useEnumerateDevices,
-  useUserMediaById,
   useMedia,
-} from "@jellyfish-dev/jellyfish-reacy-client/navigator";
-import { devicesOrNull, selectDeviceId } from "../features/home-page/components/HomePageVideoTile";
+  UseUserMedia,
+  useUserMediaById,
+} from "@jellyfish-dev/jellyfish-react-client/navigator";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../pages/room/consts";
+import { UseEnumerateDevices } from "@jellyfish-dev/jellyfish-react-client/dist/navigator";
 
 export type LocalPeerContextType = {
   videoDeviceId: string | null;
   setVideoDeviceId: (id: string | null) => void;
   videoDevice: UseUserMedia;
+  videoDeviceError: string | null;
+  videoDevices: MediaDeviceInfo[] | null;
   audioDeviceId: string | null;
   setAudioDeviceId: (id: string | null) => void;
   audioDevice: UseUserMedia;
+  audioDeviceError: string | null;
+  audioDevices: MediaDeviceInfo[] | null;
   setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void;
   screenSharingConfig: MediaStreamConstraints | null;
   screenSharingDevice: UseUserMedia;
-  videoDevices: MediaDeviceInfo[] | null;
-  audioDevices: MediaDeviceInfo[] | null;
 };
 
 const LocalPeerContext = React.createContext<LocalPeerContextType | undefined>(undefined);
@@ -30,6 +38,14 @@ type Props = {
 
 const localStorageVideoId = "last-selected-video-id";
 const localStorageAudioId = "last-selected-audio-id";
+
+const selectDeviceId = (devices: MediaDeviceInfo[], lastSelectedDeviceId: string | null) => {
+  const result = devices.some(({ deviceId }) => deviceId === lastSelectedDeviceId);
+  if (result) return lastSelectedDeviceId;
+
+  const firstDevice = devices.find(({ deviceId }) => deviceId);
+  return firstDevice ? firstDevice.deviceId : null;
+};
 
 const useDisplayMedia = (screenSharingConfig: MediaStreamConstraints | null) =>
   useMedia(
@@ -66,6 +82,11 @@ const selectDefaultDevice = (
   }
 };
 
+const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
+  const device = devices?.[type];
+  return device?.type === "OK" ? device.devices : null;
+};
+
 export const LocalPeerProvider = ({ children }: Props) => {
   const [videoDeviceId, setVideoDeviceIdInner] = useState<string | null>(null);
 
@@ -77,9 +98,19 @@ export const LocalPeerProvider = ({ children }: Props) => {
 
   const screenSharingDevice: UseUserMedia = useDisplayMedia(screenSharingConfig);
   const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINTS);
+  console.log({ devices });
 
   const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
   const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);
+  const audioDeviceError: string | null = useMemo(
+    () => (devices?.audio.type === "Error" ? devices.audio.name : null),
+    [devices]
+  );
+
+  const videoDeviceError: string | null = useMemo(
+    () => (devices?.video.type === "Error" ? devices.video.name : null),
+    [devices]
+  );
 
   const setVideoDeviceId = useCallback((value: string | null) => {
     setVideoDeviceIdInner(value);
@@ -102,14 +133,16 @@ export const LocalPeerProvider = ({ children }: Props) => {
         videoDeviceId,
         setVideoDeviceId: setVideoDeviceId,
         videoDevice,
+        videoDevices,
+        videoDeviceError,
         audioDeviceId,
         setAudioDeviceId: setAudioDeviceId,
         audioDevice,
+        audioDevices,
+        audioDeviceError,
         screenSharingConfig,
         setScreenSharingConfig,
         screenSharingDevice,
-        videoDevices,
-        audioDevices,
       }}
     >
       {children}

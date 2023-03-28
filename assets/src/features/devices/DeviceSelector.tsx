@@ -1,6 +1,6 @@
 import React from "react";
-import { SelectOption } from "../Select";
-import Input from "../Input";
+import { SelectOption } from "../shared/components/Select";
+import Input from "../shared/components/Input";
 
 type Props = {
   name: string;

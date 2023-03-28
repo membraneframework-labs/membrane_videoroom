@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from "./Modal";
-import { useLocalPeer } from "../../../../contexts/LocalPeerContext";
-import { useModal } from "../../../../contexts/ModalContext";
 import { DeviceSelector } from "./DeviceSelector";
+import { useModal } from "../../contexts/ModalContext";
+import { useLocalPeer } from "./LocalPeerContext";
+import { Modal } from "../shared/components/modal/Modal";
 
 export const MediaSettingsModal: React.FC = () => {
   const { setOpen, isOpen } = useModal();
-  const { setVideoDeviceId, videoDeviceId, setAudioDeviceId, audioDeviceId } = useLocalPeer();
+  const { setVideoDeviceId, videoDeviceId, setAudioDeviceId, audioDeviceId, videoDevices, audioDevices } =
+    useLocalPeer();
   const [videoInput, setVideoInput] = useState<string | null>(null);
   const [audioInput, setAudioInput] = useState<string | null>(null);
-  const { videoDevices, audioDevices } = useLocalPeer();
 
   useEffect(() => {
     if (videoDevices && videoDeviceId) {

@@ -15,7 +15,7 @@ import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutom
 import Sidebar from "../../features/room-page/components/Sidebar";
 import Button from "../../features/shared/components/Button";
 import clsx from "clsx";
-import { useLocalPeer } from "../../contexts/LocalPeerContext";
+import { useLocalPeer } from "../../features/devices/LocalPeerContext";
 
 type Props = {
   displayName: string;

@@ -1,18 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
-  DeviceReturnType,
-  isAudio,
-  isGranted,
-  isNotGranted,
-  isVideo,
-  toMediaTrackConstraints,
+  UseEnumerateDevices,
   useEnumerateDevices,
   useMedia,
   UseUserMedia,
   useUserMediaById,
 } from "@jellyfish-dev/jellyfish-react-client/navigator";
-import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../pages/room/consts";
-import { UseEnumerateDevices } from "@jellyfish-dev/jellyfish-react-client/dist/navigator";
+import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 
 export type LocalPeerContextType = {
   videoDeviceId: string | null;
@@ -98,7 +92,6 @@ export const LocalPeerProvider = ({ children }: Props) => {
 
   const screenSharingDevice: UseUserMedia = useDisplayMedia(screenSharingConfig);
   const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINTS);
-  console.log({ devices });
 
   const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
   const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);

@@ -12,16 +12,8 @@ export type MediaControlButtonProps = {
   position?: "top" | "bottom";
 };
 
-const MediaControlButton: FC<MediaControlButtonProps> = ({
-  hover,
-  icon: Icon,
-  onClick,
-  hideOnMobile,
-  buttonClassName,
-  hoverClassName,
-  position,
-}: MediaControlButtonProps) => {
-  const pos = position ?? "top";
+const MediaControlButton: FC<MediaControlButtonProps> = (props: MediaControlButtonProps) => {
+  const { hover, icon: Icon, onClick, hideOnMobile, buttonClassName, hoverClassName, position = "top" } = props;
 
   return (
     <div className={clsx("group relative", hideOnMobile && "hidden-on-mobile-device")}>
@@ -40,10 +32,8 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
         <div
           className={clsx(
             "invisible absolute bottom-0 z-50 flex w-full items-center font-aktivGrotesk opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-90",
-            {
-              "mb-12 flex-col": pos === "top",
-              "-mb-12 flex-col-reverse": pos === "bottom",
-            }
+            position === "top" && "mb-12 flex-col",
+            position === "bottom" && "-mb-12 flex-col-reverse"
           )}
         >
           <span
@@ -58,7 +48,7 @@ const MediaControlButton: FC<MediaControlButtonProps> = ({
             className={clsx(
               "h-0 w-0",
               "border-b-0 border-l-[6px] border-r-[6px] border-t-[8px] border-solid border-brand-grey-120 border-l-transparent border-r-transparent",
-              { "rotate-180": pos === "bottom" }
+              position === "bottom" && "rotate-180"
             )}
           ></div>
         </div>

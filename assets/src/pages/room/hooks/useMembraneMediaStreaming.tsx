@@ -41,8 +41,10 @@ export const useMembraneMediaStreaming = (
 
       const track: MediaStreamTrack | undefined = tracks[0];
 
-      if (!track) throw Error("Stream has no tracks!");
-
+      if (!track) {
+        console.error({ stream, type });
+        throw Error("Stream has no tracks!");
+      }
       const remoteTrackId = webrtc.addTrack(
         track,
         stream,
@@ -64,7 +66,7 @@ export const useMembraneMediaStreaming = (
 
       const track: MediaStreamTrack | undefined = tracks[0];
       if (!track) {
-        console.log({ stream, type });
+        console.error({ stream, type });
         throw Error("Stream has no tracks!");
       }
 

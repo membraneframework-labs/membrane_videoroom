@@ -8,8 +8,8 @@ import CameraOff from "../../room-page/icons/CameraOff";
 import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
-import { useLocalPeer } from "../../../contexts/LocalPeerContext";
 import { useModal } from "../../../contexts/ModalContext";
+import { useLocalPeer } from "../../devices/LocalPeerContext";
 
 type HomePageVideoTileProps = {
   displayName: string;

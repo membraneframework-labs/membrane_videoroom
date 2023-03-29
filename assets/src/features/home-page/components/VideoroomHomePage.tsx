@@ -186,7 +186,7 @@ const VideoroomHomePage: React.FC = () => {
 
           {/* desktop view */}
           <>
-            <div className="hidden h-full w-full sm:inline-block sm:h-[400px] sm:max-w-[600px]">
+            <div className="hidden h-full w-full sm:inline-block sm:h-max-[400px] sm:max-w-[600px] xl:aspect-video">
               <HomePageVideoTile displayName={displayNameInput} />
             </div>
 

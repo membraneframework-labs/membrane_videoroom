@@ -43,7 +43,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div className="modal-header flex items-center justify-between">
         <div className="modal-title text-xl font-normal text-brand-dark-blue-500 sm:text-2xl">{title}</div>
         <Button onClick={() => onRequestClose?.()} className={clsx(!closable && "hidden")}>
-          <Close className="text-xl font-normal sm:text-2xl" />
+          <Close className="text-xl font-normal sm:text-2xl" width="32" height="32" />
         </Button>
       </div>
       <div className="modal-body mt-2 text-base font-normal text-text-additional">{children ?? "Modal message"}</div>

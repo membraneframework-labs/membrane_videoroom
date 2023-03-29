@@ -30,8 +30,8 @@ type Props = {
   children: React.ReactNode;
 };
 
-const localStorageVideoId = "last-selected-video-id";
-const localStorageAudioId = "last-selected-audio-id";
+const LOCAL_STORAGE_VIDEO_ID_KEY = "last-selected-video-id";
+const LOCAL_STORAGE_AUDIO_ID_KEY = "last-selected-audio-id";
 
 const selectDeviceId = (devices: MediaDeviceInfo[], lastSelectedDeviceId: string | null) => {
   const result = devices.some(({ deviceId }) => deviceId === lastSelectedDeviceId);
@@ -49,7 +49,7 @@ const useDisplayMedia = (screenSharingConfig: MediaStreamConstraints | null) =>
     )
   );
 
-const setLocalStorage = (value: string | null, key: string) => {
+const setLocalStorage = (key: string, value: string | null) => {
   if (value === null) {
     localStorage.removeItem(key);
   } else {
@@ -57,8 +57,8 @@ const setLocalStorage = (value: string | null, key: string) => {
   }
 };
 
-const getLocalStorageItem = (name: string, defaultValue: string | null = null): string | null => {
-  const stringValue = localStorage.getItem(name);
+const getLocalStorageItem = (key: string, defaultValue: string | null = null): string | null => {
+  const stringValue = localStorage.getItem(key);
   return stringValue === null || stringValue === undefined ? defaultValue : stringValue;
 };
 
@@ -107,17 +107,17 @@ export const LocalPeerProvider = ({ children }: Props) => {
 
   const setVideoDeviceId = useCallback((value: string | null) => {
     setVideoDeviceIdInner(value);
-    setLocalStorage(value, localStorageVideoId);
+    setLocalStorage(LOCAL_STORAGE_VIDEO_ID_KEY, value);
   }, []);
 
   const setAudioDeviceId = useCallback((value: string | null) => {
     setAudioDeviceIdInner(value);
-    setLocalStorage(value, localStorageAudioId);
+    setLocalStorage(LOCAL_STORAGE_AUDIO_ID_KEY, value);
   }, []);
 
   useEffect(() => {
-    selectDefaultDevice(videoDevices, setVideoDeviceId, localStorageVideoId);
-    selectDefaultDevice(audioDevices, setAudioDeviceId, localStorageAudioId);
+    selectDefaultDevice(videoDevices, setVideoDeviceId, LOCAL_STORAGE_VIDEO_ID_KEY);
+    selectDefaultDevice(audioDevices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY);
   }, [videoDevices, audioDevices, setVideoDeviceId, setAudioDeviceId]);
 
   return (

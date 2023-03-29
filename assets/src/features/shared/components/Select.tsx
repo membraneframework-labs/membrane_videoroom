@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import ReactSelect from "react-select";
+import clsx from "clsx";
 
 export type SelectProps = Omit<React.ComponentProps<typeof ReactSelect>, "onChange"> & {
   onChange?: (value: SelectOption) => void;
@@ -25,12 +26,12 @@ export const Select: FC<SelectProps> = ({ onChange, controlClassName, ...otherPr
         },
       }}
       classNames={{
-        control: () => controlClassName ?? "",
+        control: (state) => clsx(controlClassName, state.isFocused && "border-brand-sea-blue-400"),
         option: () => "px-4 py-3.5 hover:bg-brand-dark-blue-100 focus-within:bg-brand-dark-blue-100",
         menu: () =>
           "max-h-40 rounded-3xl border-brand-dark-blue-200 border-2 overflow-y-auto bg-brand-white flex flex-col",
       }}
-      onChange={(selectOption) => onChange?.(selectOption as SelectOption)}
+      onChange={(v) => onChange?.(v as SelectOption)}
       {...otherProps}
     />
   );

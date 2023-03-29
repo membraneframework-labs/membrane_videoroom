@@ -51,7 +51,7 @@ const Input: React.FC<InputProps> = (props) => {
 
   const inputClassName = clsx(
     "w-full px-3.5 py-3",
-    "rounded-[40px] border-2 text-brand-dark-blue-500 focus:outline-none",
+    "rounded-[40px] border-2 text-brand-dark-blue-500 focus:outline-none ",
     error
       ? "border-brand-red"
       : disabled

@@ -24,7 +24,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
   return (
     <MediaPlayerTile
       key="room-preview"
-      peerId={""}
+      peerId={undefined}
       video={{ stream: videoDevice.stream || undefined, remoteTrackId: "" }}
       audio={null}
       streamSource="local"

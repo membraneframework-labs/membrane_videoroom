@@ -12,6 +12,7 @@ defmodule VideoRoom.Application do
     create_integrated_turn_cert_file()
 
     store_metrics = Application.fetch_env!(:membrane_videoroom_demo, :store_metrics)
+    scrape_interval = Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
 
     children =
       [
@@ -20,15 +21,13 @@ defmodule VideoRoom.Application do
         VideoRoomWeb.Endpoint,
         {Phoenix.PubSub, name: VideoRoom.PubSub},
         {Registry, keys: :unique, name: Videoroom.Room.Registry},
-        {DynamicSupervisor, strategy: :one_for_one, name: Videoroom.RoomMonitorSupervisor}
+        {DynamicSupervisor, strategy: :one_for_one, name: Videoroom.RoomMonitorSupervisor},
+        {VideoRoom.MetricsPersistor,
+         scrape_interval: scrape_interval, store_metrics: store_metrics}
       ] ++
         if store_metrics do
           Application.ensure_all_started(:membrane_rtc_engine_timescaledb)
-
-          scrape_interval =
-            Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
-
-          [VideoRoom.Repo, {VideoRoom.MetricsPersistor, scrape_interval: scrape_interval}]
+          [VideoRoom.Repo]
         else
           []
         end

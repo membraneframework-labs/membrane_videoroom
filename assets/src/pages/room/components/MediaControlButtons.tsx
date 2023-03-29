@@ -363,7 +363,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
 
   const navigate = useNavigate();
 
-  const { videoDevice, audioDevice, screenSharingDevice, setScreenSharingConfig } = useLocalPeer();
+  const { audio, video, screenShare } = useLocalPeer();
 
   const controls: ControlButton[][] =
     props.mode === "manual"
@@ -373,10 +373,10 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
             props,
             navigate,
             roomId || null,
-            videoDevice,
-            audioDevice,
-            screenSharingDevice,
-            setScreenSharingConfig,
+            video.device,
+            audio.device,
+            screenShare.device,
+            screenShare.setConfig,
             isMobileViewport
           ),
         ];

@@ -8,20 +8,37 @@ import {
 } from "@jellyfish-dev/jellyfish-react-client/navigator";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 
+export type UserMedia = {
+  id: string | null;
+  setId: (id: string | null) => void;
+  device: UseUserMedia; // selected device / active device
+  error: string | null;
+  devices: MediaDeviceInfo[] | null;
+};
+
+export type DisplayMedia = {
+  setConfig: (constraints: MediaStreamConstraints | null) => void;
+  config: MediaStreamConstraints | null;
+  device: UseUserMedia;
+};
+
 export type LocalPeerContextType = {
-  videoDeviceId: string | null;
-  setVideoDeviceId: (id: string | null) => void;
-  videoDevice: UseUserMedia;
-  videoDeviceError: string | null;
-  videoDevices: MediaDeviceInfo[] | null;
-  audioDeviceId: string | null;
-  setAudioDeviceId: (id: string | null) => void;
-  audioDevice: UseUserMedia;
-  audioDeviceError: string | null;
-  audioDevices: MediaDeviceInfo[] | null;
-  setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void;
-  screenSharingConfig: MediaStreamConstraints | null;
-  screenSharingDevice: UseUserMedia;
+  video: UserMedia;
+  audio: UserMedia;
+  screenShare: DisplayMedia;
+  // videoDeviceId: string | null;
+  // setVideoDeviceId: (id: string | null) => void;
+  // videoDevice: UseUserMedia;
+  // videoDeviceError: string | null;
+  // videoDevices: MediaDeviceInfo[] | null;
+  // audioDeviceId: string | null;
+  // setAudioDeviceId: (id: string | null) => void;
+  // audioDevice: UseUserMedia;
+  // audioDeviceError: string | null;
+  // audioDevices: MediaDeviceInfo[] | null;
+  // setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void;
+  // screenSharingConfig: MediaStreamConstraints | null;
+  // screenSharingDevice: UseUserMedia;
 };
 
 const LocalPeerContext = React.createContext<LocalPeerContextType | undefined>(undefined);
@@ -120,22 +137,43 @@ export const LocalPeerProvider = ({ children }: Props) => {
     selectDefaultDevice(audioDevices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY);
   }, [videoDevices, audioDevices, setVideoDeviceId, setAudioDeviceId]);
 
+  const video: UserMedia = useMemo(
+    () => ({
+      id: videoDeviceId,
+      setId: setVideoDeviceId,
+      device: videoDevice,
+      devices: videoDevices,
+      error: videoDeviceError,
+    }),
+    [setVideoDeviceId, videoDevice, videoDeviceError, videoDeviceId, videoDevices]
+  );
+
+  const audio: UserMedia = useMemo(
+    () => ({
+      id: audioDeviceId,
+      setId: setAudioDeviceId,
+      device: audioDevice,
+      devices: audioDevices,
+      error: audioDeviceError,
+    }),
+    [audioDeviceId, setAudioDeviceId, audioDevice, audioDevices, audioDeviceError]
+  );
+
+  const screenShare: DisplayMedia = useMemo(
+    () => ({
+      config: screenSharingConfig,
+      setConfig: setScreenSharingConfig,
+      device: screenSharingDevice,
+    }),
+    [audioDeviceId, setAudioDeviceId, audioDevice, audioDevices, audioDeviceError]
+  );
+
   return (
     <LocalPeerContext.Provider
       value={{
-        videoDeviceId,
-        setVideoDeviceId: setVideoDeviceId,
-        videoDevice,
-        videoDevices,
-        videoDeviceError,
-        audioDeviceId,
-        setAudioDeviceId: setAudioDeviceId,
-        audioDevice,
-        audioDevices,
-        audioDeviceError,
-        screenSharingConfig,
-        setScreenSharingConfig,
-        screenSharingDevice,
+        video,
+        audio,
+        screenShare,
       }}
     >
       {children}

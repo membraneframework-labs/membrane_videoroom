@@ -6,27 +6,26 @@ import { Modal } from "../shared/components/modal/Modal";
 
 export const MediaSettingsModal: React.FC = () => {
   const { setOpen, isOpen } = useModal();
-  const { setVideoDeviceId, videoDeviceId, setAudioDeviceId, audioDeviceId, videoDevices, audioDevices } =
-    useLocalPeer();
+  const { video, audio } = useLocalPeer();
   const [videoInput, setVideoInput] = useState<string | null>(null);
   const [audioInput, setAudioInput] = useState<string | null>(null);
 
   useEffect(() => {
-    if (videoDevices && videoDeviceId) {
-      setVideoInput(videoDeviceId);
+    if (video.devices && video.id) {
+      setVideoInput(video.id);
     }
-  }, [videoDevices, videoDeviceId]);
+  }, [video.devices, video.id]);
 
   useEffect(() => {
-    if (audioDevices && audioDeviceId) {
-      setAudioInput(audioDeviceId);
+    if (audio.devices && audio.id) {
+      setAudioInput(audio.id);
     }
-  }, [audioDevices, audioDeviceId]);
+  }, [audio.devices, audio.id]);
 
   const handleClose = () => {
     setOpen(false);
-    setAudioInput(audioDeviceId);
-    setVideoInput(videoDeviceId);
+    setAudioInput(audio.id);
+    setVideoInput(video.id);
   };
 
   return (
@@ -37,18 +36,18 @@ export const MediaSettingsModal: React.FC = () => {
       closable
       cancelClassName="text-additional-red-100"
       onConfirm={() => {
-        setAudioDeviceId(audioInput);
-        setVideoDeviceId(videoInput);
+        audio.setId(audioInput);
+        video.setId(videoInput);
         setOpen(false);
       }}
       onCancel={handleClose}
       maxWidth="max-w-md"
       isOpen={isOpen}
     >
-      <DeviceSelector name="Select camera" devices={videoDevices} setInput={setVideoInput} inputValue={videoInput} />
+      <DeviceSelector name="Select camera" devices={video.devices} setInput={setVideoInput} inputValue={videoInput} />
       <DeviceSelector
         name="Select microphone"
-        devices={audioDevices}
+        devices={audio.devices}
         setInput={setAudioInput}
         inputValue={audioInput}
       />

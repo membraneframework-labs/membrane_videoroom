@@ -38,10 +38,18 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
 
   const isConnected = !!peerState?.local?.id;
 
-  const { screenSharingDevice, videoDevice, audioDevice } = useLocalPeer();
+  const { video: localVideo, audio: localAudio, screenShare } = useLocalPeer();
 
-  const camera = useStreamManager("camera", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, videoDevice);
-  const audio = useStreamManager("audio", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, audioDevice);
+  const camera = useStreamManager(
+    "camera",
+    mode,
+    isConnected,
+    isSimulcastOn,
+    webrtc || null,
+    peerApi,
+    localVideo.device
+  );
+  const audio = useStreamManager("audio", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, localAudio.device);
   const screenSharing = useStreamManager(
     "screensharing",
     mode,
@@ -49,7 +57,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
     isSimulcastOn,
     webrtc || null,
     peerApi,
-    screenSharingDevice
+    screenShare.device
   );
 
   const { addToast } = useToast();
@@ -103,7 +111,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
                   peers={peerState.remote}
                   localPeer={peerState.local}
                   onClose={() => setIsSidebarOpen(false)}
-                />{" "}
+                />
               </div>
             )}
 

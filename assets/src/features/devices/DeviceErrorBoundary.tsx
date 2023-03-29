@@ -15,12 +15,12 @@ const prepareErrorMessage = (videoDeviceError: string | null, audioDeviceError: 
 
 export const DeviceErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
   const { addToast } = useToast();
-  const { videoDeviceError, audioDeviceError } = useLocalPeer();
+  const { video, audio } = useLocalPeer();
 
   useEffectOnChange(
-    [videoDeviceError, audioDeviceError],
+    [video.error, audio.error],
     () => {
-      const message = prepareErrorMessage(videoDeviceError, audioDeviceError);
+      const message = prepareErrorMessage(video.error, audio.error);
 
       if (message) {
         addToast({

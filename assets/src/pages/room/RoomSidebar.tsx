@@ -51,7 +51,7 @@ const RoomSidebar: FC<Props> = ({ isSidebarOpen, setIsSidebarOpen, peerState }: 
               <div className="absolute inset-0" onClick={() => setIsSidebarOpen(false)}></div>
               <motion.div
                 initial={"initial"}
-                className={`touch-none absolute bottom-[-5%] left-0 z-40 h-[480px] w-full`}
+                className={`absolute bottom-[-5%] left-0 z-40 h-[480px] w-full touch-none`}
                 drag="y"
                 dragElastic={0.05}
                 dragConstraints={{

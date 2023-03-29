@@ -6,7 +6,7 @@ type Props = {
 };
 
 export const SimulcastReceivingEncoding: FC<Props> = ({ encoding }: Props) => (
-  <div className="absolute top-0 right-0 z-50 bg-white p-2 text-sm text-brand-dark-gray/80 md:text-base">
+  <div className="absolute right-0 top-0 z-50 bg-white p-2 text-sm text-brand-dark-gray/80 md:text-base">
     Encoding: {encoding}
   </div>
 );

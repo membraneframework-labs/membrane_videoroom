@@ -8,12 +8,7 @@ import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/r
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
-import {
-  DisabledMicIcon,
-  isLoading,
-  showDisabledIcon,
-} from "../../../../features/room-page/components/DisabledTrackIcon";
-import SoundIcon from "../../../../features/room-page/components/SoundIcon";
+import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
 import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
 
 type Props = {

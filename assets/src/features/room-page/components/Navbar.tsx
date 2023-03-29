@@ -7,7 +7,6 @@ import PlainLink from "../../shared/components/PlainLink";
 import useToast from "../../shared/hooks/useToast";
 import ShareSquare from "../icons/ShareSquare";
 import Settings from "../icons/Settings";
-import { neutralButtonStyle } from "../consts";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import { useModal } from "../../../contexts/ModalContext";
 
@@ -44,10 +43,11 @@ const Navbar: React.FC = () => {
         <MediaControlButton
           icon={Settings}
           hover="Settings"
-          buttonClassName={neutralButtonStyle}
+          buttonClassName="!border !border-brand-dark-blue-200 "
           onClick={() => {
             setOpen(true);
           }}
+          variant="light"
           position="bottom"
           hoverClassName="-ml-10"
         />

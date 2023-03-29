@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React, { FC, SVGAttributes } from "react";
-import Button from "../../../features/shared/components/Button";
+import Button, { ButtonVariant } from "../../../features/shared/components/Button";
 
 export type MediaControlButtonProps = {
   onClick: () => void;
@@ -9,15 +9,18 @@ export type MediaControlButtonProps = {
   hoverClassName?: string;
   hideOnMobile?: boolean;
   icon: React.FC<SVGAttributes<SVGElement>>;
+  variant?: ButtonVariant;
   position?: "top" | "bottom";
 };
 
 const MediaControlButton: FC<MediaControlButtonProps> = (props: MediaControlButtonProps) => {
-  const { hover, icon: Icon, onClick, hideOnMobile, buttonClassName, hoverClassName, position = "top" } = props;
+  const { hover, icon: Icon, onClick, hideOnMobile, buttonClassName, hoverClassName, position = "top", variant } = props;
 
   return (
     <div className={clsx("group relative", hideOnMobile && "hidden-on-mobile-device")}>
       <Button
+        removeDefaultPadding={true}
+        variant={variant}
         onClick={onClick}
         className={clsx(
           "h-[40px] w-[40px] rounded-full border px-2.5 py-[4px] text-xl font-bold",

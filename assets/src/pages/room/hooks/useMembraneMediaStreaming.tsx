@@ -45,6 +45,7 @@ export const useMembraneMediaStreaming = (
         console.error({ stream, type });
         throw Error("Stream has no tracks!");
       }
+
       const remoteTrackId = webrtc.addTrack(
         track,
         stream,

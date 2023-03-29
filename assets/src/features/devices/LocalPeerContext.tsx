@@ -11,7 +11,7 @@ import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/ro
 export type UserMedia = {
   id: string | null;
   setId: (id: string | null) => void;
-  device: UseUserMedia; // selected device / active device
+  device: UseUserMedia;
   error: string | null;
   devices: MediaDeviceInfo[] | null;
 };
@@ -26,19 +26,6 @@ export type LocalPeerContextType = {
   video: UserMedia;
   audio: UserMedia;
   screenShare: DisplayMedia;
-  // videoDeviceId: string | null;
-  // setVideoDeviceId: (id: string | null) => void;
-  // videoDevice: UseUserMedia;
-  // videoDeviceError: string | null;
-  // videoDevices: MediaDeviceInfo[] | null;
-  // audioDeviceId: string | null;
-  // setAudioDeviceId: (id: string | null) => void;
-  // audioDevice: UseUserMedia;
-  // audioDeviceError: string | null;
-  // audioDevices: MediaDeviceInfo[] | null;
-  // setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void;
-  // screenSharingConfig: MediaStreamConstraints | null;
-  // screenSharingDevice: UseUserMedia;
 };
 
 const LocalPeerContext = React.createContext<LocalPeerContextType | undefined>(undefined);
@@ -165,7 +152,7 @@ export const LocalPeerProvider = ({ children }: Props) => {
       setConfig: setScreenSharingConfig,
       device: screenSharingDevice,
     }),
-    [audioDeviceId, setAudioDeviceId, audioDevice, audioDevices, audioDeviceError]
+    [screenSharingConfig, screenSharingDevice]
   );
 
   return (

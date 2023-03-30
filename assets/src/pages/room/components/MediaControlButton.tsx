@@ -14,7 +14,16 @@ export type MediaControlButtonProps = {
 };
 
 const MediaControlButton: FC<MediaControlButtonProps> = (props: MediaControlButtonProps) => {
-  const { hover, icon: Icon, onClick, hideOnMobile, buttonClassName, hoverClassName, position = "top", variant } = props;
+  const {
+    hover,
+    icon: Icon,
+    onClick,
+    hideOnMobile,
+    buttonClassName,
+    hoverClassName,
+    position = "top",
+    variant,
+  } = props;
 
   return (
     <div className={clsx("group relative", hideOnMobile && "hidden-on-mobile-device")}>

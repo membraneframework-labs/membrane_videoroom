@@ -107,11 +107,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
             {isSidebarOpen && (
               <div className="absolute inset-0 h-screen bg-transparent/40 md:hidden">
                 <Button className="absolute inset-0" onClick={() => setIsSidebarOpen(false)}></Button>
-                <Sidebar
-                  peers={peerState.remote}
-                  localPeer={peerState.local}
-                  onClose={() => setIsSidebarOpen(false)}
-                />
+                <Sidebar peers={peerState.remote} localPeer={peerState.local} onClose={() => setIsSidebarOpen(false)} />
               </div>
             )}
 

@@ -36,6 +36,7 @@ defmodule VideoRoom.MixProject do
       {:phoenix, "~> 1.6.15"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_view, "~> 0.17.0"},
+      {:phoenix_pubsub, "~> 2.1.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:jason, "~> 1.2"},
       {:phoenix_inline_svg, "~> 1.4"},

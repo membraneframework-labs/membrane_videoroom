@@ -8,8 +8,8 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@jellyfish-dev/jellyfish-react-client": "github:jellyfish-dev/jellyfish-react-client#bugfix/handle-partial-enumerate-device-response",
-    "@jellyfish-dev/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#feature/disable-track-stopping",
+    "@jellyfish-dev/jellyfish-react-client": "github:jellyfish-dev/jellyfish-react-client#main",
+    "@jellyfish-dev/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#master",
     "@types/react-modal": "^3.13.1",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",

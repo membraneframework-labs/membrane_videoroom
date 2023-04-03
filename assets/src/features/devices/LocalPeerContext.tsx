@@ -1,12 +1,16 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import {
-  UseEnumerateDevices,
-  useEnumerateDevices,
-  useMedia,
-  UseUserMedia,
-  useUserMediaById,
-} from "@jellyfish-dev/jellyfish-react-client/navigator";
+// import {
+//   UseEnumerateDevices,
+//   useEnumerateDevices,
+//   useMedia,
+//   useUserMedia,
+//   UseUserMedia,
+//   useUserMediaById,
+// } from "@jellyfish-dev/jellyfish-react-client/navigator";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
+import { MediaType } from "@jellyfish-dev/jellyfish-react-client/dist/navigator/types";
+import { useMedia, useUserMedia, UseUserMedia } from "@jellyfish-dev/jellyfish-react-client/navigator";
+import { useEnumerateDevices, UseEnumerateDevices } from "./useEnumerateDevices";
 
 export type UserMedia = {
   id: string | null;
@@ -37,7 +41,13 @@ type Props = {
 const LOCAL_STORAGE_VIDEO_ID_KEY = "last-selected-video-id";
 const LOCAL_STORAGE_AUDIO_ID_KEY = "last-selected-audio-id";
 
-const selectDeviceId = (devices: MediaDeviceInfo[], lastSelectedDeviceId: string | null) => {
+const selectDeviceId = (
+  devices: MediaDeviceInfo[],
+  requestedDevice: string | null,
+  lastSelectedDeviceId: string | null
+) => {
+  if (requestedDevice) return requestedDevice;
+
   const result = devices.some(({ deviceId }) => deviceId === lastSelectedDeviceId);
   if (result) return lastSelectedDeviceId;
 
@@ -67,38 +77,57 @@ const getLocalStorageItem = (key: string, defaultValue: string | null = null): s
 };
 
 const selectDefaultDevice = (
-  devices: MediaDeviceInfo[] | null,
+  type: MediaType,
+  enumeratedDevices: UseEnumerateDevices,
   setDeviceId: (value: string | null) => void,
   localStorageName: string
 ) => {
-  if (!devices) return;
+  const result = enumeratedDevices?.[type];
+  if (result?.type !== "OK") return;
+  const devices = result.devices;
 
   const localStorageDeviceId = getLocalStorageItem(localStorageName);
-  const device = selectDeviceId(devices, localStorageDeviceId);
+  const device = selectDeviceId(devices, result.selectedDeviceSettings?.deviceId || null, localStorageDeviceId);
   if (device) {
     setDeviceId(device);
   }
 };
 
-const devicesOrNull = (devices: UseEnumerateDevices | null, type: "audio" | "video") => {
+const devicesOrNull = (devices: UseEnumerateDevices | null, type: MediaType) => {
   const device = devices?.[type];
   return device?.type === "OK" ? device.devices : null;
+};
+
+const useUserMediaById = (type: MediaType, constraints: MediaTrackConstraints, id: string | null) => {
+  const result = useMemo(() => {
+    if (id === null) return null;
+
+    return { [type]: { ...constraints, deviceId: id } };
+  }, [constraints, id, type]);
+
+  return useUserMedia(result);
 };
 
 export const LocalPeerProvider = ({ children }: Props) => {
   const [videoDeviceId, setVideoDeviceIdInner] = useState<string | null>(null);
 
-  const videoDevice: UseUserMedia = useUserMediaById("video", videoDeviceId);
+  const videoDevice: UseUserMedia = useUserMediaById("video", VIDEO_TRACK_CONSTRAINTS, videoDeviceId);
   const [audioDeviceId, setAudioDeviceIdInner] = useState<string | null>(null);
 
-  const audioDevice: UseUserMedia = useUserMediaById("audio", audioDeviceId);
+  const audioDevice: UseUserMedia = useUserMediaById("audio", AUDIO_TRACK_CONSTRAINTS, audioDeviceId);
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
 
-  const screenSharingDevice: UseUserMedia = useDisplayMedia(screenSharingConfig);
-  const devices = useEnumerateDevices(VIDEO_TRACK_CONSTRAINTS, AUDIO_TRACK_CONSTRAINTS);
+  const videoConstraintsWithId = useMemo(() => {
+    return { ...VIDEO_TRACK_CONSTRAINTS, deviceId: getLocalStorageItem(LOCAL_STORAGE_VIDEO_ID_KEY) || undefined };
+  }, []);
 
-  const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
-  const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);
+  const audioConstraintsWithId = useMemo(() => {
+    return { ...AUDIO_TRACK_CONSTRAINTS, deviceId: getLocalStorageItem(LOCAL_STORAGE_AUDIO_ID_KEY) || undefined };
+  }, []);
+
+  const screenSharingDevice: UseUserMedia = useDisplayMedia(screenSharingConfig);
+  const devices = useEnumerateDevices(videoConstraintsWithId, audioConstraintsWithId);
+
   const audioDeviceError: string | null = useMemo(
     () => (devices?.audio.type === "Error" ? devices.audio.name : null),
     [devices]
@@ -119,10 +148,15 @@ export const LocalPeerProvider = ({ children }: Props) => {
     setLocalStorage(LOCAL_STORAGE_AUDIO_ID_KEY, value);
   }, []);
 
+  const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
+  const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);
+
   useEffect(() => {
-    selectDefaultDevice(videoDevices, setVideoDeviceId, LOCAL_STORAGE_VIDEO_ID_KEY);
-    selectDefaultDevice(audioDevices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY);
-  }, [videoDevices, audioDevices, setVideoDeviceId, setAudioDeviceId]);
+    if (devices === null) return;
+
+    selectDefaultDevice("video", devices, setVideoDeviceId, LOCAL_STORAGE_VIDEO_ID_KEY);
+    selectDefaultDevice("audio", devices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY);
+  }, [setVideoDeviceId, setAudioDeviceId, devices]);
 
   const video: UserMedia = useMemo(
     () => ({

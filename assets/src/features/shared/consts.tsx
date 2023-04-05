@@ -1,1 +1,1 @@
-export const MOBILE_BREAKPOINT = 769;
+export const MOBILE_WIDTH_BREAKPOINT = 768;

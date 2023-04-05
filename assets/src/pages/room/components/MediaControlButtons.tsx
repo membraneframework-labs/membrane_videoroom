@@ -12,7 +12,7 @@ import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import Chat from "../../../features/room-page/icons/Chat";
-import useMobileViewport from "../../../features/shared/hooks/useMobileViewport";
+import useSmartphoneViewport from "../../../features/shared/hooks/useMobileViewport";
 import MenuDots from "../../../features/room-page/icons/MenuDots";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 
@@ -361,7 +361,7 @@ type LocalUserMediaControls = {
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
-  const isMobileViewport = useMobileViewport();
+  const isMobileViewport = useSmartphoneViewport();
   const { roomId } = useParams();
 
   const navigate = useNavigate();

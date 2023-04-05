@@ -1,23 +1,28 @@
 import { useEffect, useState } from "react";
-import { MOBILE_BREAKPOINT } from "../consts";
+import { MOBILE_WIDTH_BREAKPOINT } from "../consts";
 
-const useMobileViewport = () => {
-  const [isMobile, setIsMobile] = useState<boolean | undefined>();
+const useSmartphoneViewport = () => {
+  const [isSmartphone, setIsSmartphone] = useState<boolean | undefined>();
 
-  const updateIsMobileState = () => {
+  const updateIsSmartphoneState = () => {
     if (!window.visualViewport) return;
-    setIsMobile(window.visualViewport.width < MOBILE_BREAKPOINT);
+
+    const isCoarse = matchMedia('(pointer:coarse)').matches;
+    const hasMobileWidth = window.visualViewport.width <= MOBILE_WIDTH_BREAKPOINT;
+    
+    const isLandscapedSmartphone = screen.orientation.type.includes("landscape") && window.visualViewport.width <= 926; // iPhone 12 max  viewpor width
+    setIsSmartphone(isCoarse && (hasMobileWidth || isLandscapedSmartphone));
   };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      updateIsMobileState();
-      window.addEventListener("resize", updateIsMobileState);
-      return () => window.removeEventListener("resize", updateIsMobileState);
+      updateIsSmartphoneState();
+      window.addEventListener("resize", updateIsSmartphoneState);
+      return () => window.removeEventListener("resize", updateIsSmartphoneState);
     }
   }, []);
 
-  return isMobile;
+  return isSmartphone;
 };
 
-export default useMobileViewport;
+export default useSmartphoneViewport;

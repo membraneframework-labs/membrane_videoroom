@@ -4,11 +4,11 @@ import BlockingScreen from "../../shared/components/BlockingScreen";
 import useHorizontal from "../../shared/hooks/useHorizontal";
 
 import Navbar from "./Navbar";
-import useMobileViewport from "../../shared/hooks/useMobileViewport";
+import useSmartphoneViewport from "../../shared/hooks/useMobileViewport";
 
 const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
   const isHorizontal = useHorizontal();
-  const isMobile = useMobileViewport();
+  const isMobile = useSmartphoneViewport();
   const shouldBlockScreen = isHorizontal && isMobile;
 
   return (

@@ -3,10 +3,10 @@ import React, { PropsWithChildren } from "react";
 import BlockingScreen from "../../shared/components/BlockingScreen";
 import useHorizontal from "../../shared/hooks/useHorizontal";
 import Navbar from "./Navbar";
-import useMobileViewport from "../../shared/hooks/useMobileViewport";
+import useSmartphoneViewport from "../../shared/hooks/useMobileViewport";
 
 const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
-  const isMobile = useMobileViewport();
+  const isMobile = useSmartphoneViewport();
   const isHorizontal = useHorizontal();
 
   const shouldBlockScreen = isMobile && isHorizontal;

@@ -140,7 +140,7 @@
 }
 
 @media (pointer: coarse) and (max-width: 1290px) {
-  .hidden-on-mobile-device {
+  .hidden-on-mobile-and-tablet {
     display: none;
   }
 }

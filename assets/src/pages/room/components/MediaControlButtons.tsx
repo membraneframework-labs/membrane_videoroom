@@ -12,7 +12,7 @@ import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
 import Chat from "../../../features/room-page/icons/Chat";
-import useSmartphoneViewport from "../../../features/shared/hooks/useMobileViewport";
+import useSmartphoneViewport from "../../../features/shared/hooks/useSmartphoneViewport";
 import MenuDots from "../../../features/room-page/icons/MenuDots";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 

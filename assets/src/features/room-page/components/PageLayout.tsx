@@ -1,9 +1,8 @@
 import clsx from "clsx";
 import React, { PropsWithChildren } from "react";
 import BlockingScreen from "../../shared/components/BlockingScreen";
-import useHorizontal from "../../shared/hooks/useHorizontal";
 import Navbar from "./Navbar";
-import useSmartphoneViewport from "../../shared/hooks/useMobileViewport";
+import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 
 const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
   const { isSmartphone, isHorizontal } = useSmartphoneViewport();

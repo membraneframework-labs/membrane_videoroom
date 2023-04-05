@@ -6,7 +6,6 @@ const useMobileViewport = () => {
 
   const updateIsMobileState = () => {
     if (!window.visualViewport) return;
-
     setIsMobile(window.visualViewport.width < MOBILE_BREAKPOINT);
   };
 

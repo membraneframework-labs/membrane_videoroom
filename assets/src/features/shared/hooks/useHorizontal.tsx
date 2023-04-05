@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
 
-const MIN_USABLE_VIEWPORT_HEIGHT = 650;
-
-const useHorizontalMobile = () => {
+const useHorizontal = () => {
   const [isHorizontalOrientation, setIsHorizontalOrientation] = useState<boolean | undefined>();
 
   const updateIsHorizontalOrientationState = () => {
-    if (!window.visualViewport) return;
+    if ( !screen ) return;
 
-    setIsHorizontalOrientation(
-      window.visualViewport.width > window.visualViewport.height &&
-        window.visualViewport.height < MIN_USABLE_VIEWPORT_HEIGHT
-    );
+    setIsHorizontalOrientation(screen.orientation.type.includes("landscape"));
   };
 
   useEffect(() => {
@@ -25,4 +20,4 @@ const useHorizontalMobile = () => {
   return isHorizontalOrientation;
 };
 
-export default useHorizontalMobile;
+export default useHorizontal;

@@ -1,15 +1,13 @@
 import clsx from "clsx";
 import React, { PropsWithChildren } from "react";
 import BlockingScreen from "../../shared/components/BlockingScreen";
-import useHorizontal from "../../shared/hooks/useHorizontal";
 
 import Navbar from "./Navbar";
 import useSmartphoneViewport from "../../shared/hooks/useMobileViewport";
 
 const HomePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
-  const isHorizontal = useHorizontal();
-  const isMobile = useSmartphoneViewport();
-  const shouldBlockScreen = isHorizontal && isMobile;
+  const { isSmartphone, isHorizontal } = useSmartphoneViewport();
+  const shouldBlockScreen = isSmartphone && isHorizontal;
 
   return (
     <>

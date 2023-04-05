@@ -6,10 +6,9 @@ import Navbar from "./Navbar";
 import useSmartphoneViewport from "../../shared/hooks/useMobileViewport";
 
 const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
-  const isMobile = useSmartphoneViewport();
-  const isHorizontal = useHorizontal();
+  const { isSmartphone, isHorizontal } = useSmartphoneViewport();
 
-  const shouldBlockScreen = isMobile && isHorizontal;
+  const shouldBlockScreen = isSmartphone && isHorizontal;
   return (
     <>
       {shouldBlockScreen && <BlockingScreen message="Turn your screen to resume the call." />}

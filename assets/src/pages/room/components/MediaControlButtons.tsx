@@ -361,7 +361,7 @@ type LocalUserMediaControls = {
 
 const MediaControlButtons: FC<Props> = (props: Props) => {
   const [show, toggleShow] = useToggle(true);
-  const isMobileViewport = useSmartphoneViewport();
+  const { isSmartphone } = useSmartphoneViewport();
   const { roomId } = useParams();
 
   const navigate = useNavigate();
@@ -369,7 +369,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
   const controls: ControlButton[][] =
     props.mode === "manual"
       ? getManualControls(props, navigate)
-      : [getAutomaticControls(props, navigate, isMobileViewport, roomId)];
+      : [getAutomaticControls(props, navigate, isSmartphone, roomId)];
   return (
     <div>
       <div

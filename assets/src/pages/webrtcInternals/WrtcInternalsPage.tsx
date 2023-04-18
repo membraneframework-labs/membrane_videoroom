@@ -2,7 +2,7 @@ import { Socket } from "phoenix";
 import React, { FC, useEffect, useState } from "react";
 
 import "chart.js/auto";
-import { Chart } from "react-chartjs-2";
+import { Chart, Line } from "react-chartjs-2";
 
 type Section = {
   descriptive: DescriptiveValue[];
@@ -11,12 +11,12 @@ type Section = {
 }
 
 type DescriptiveValue = {
-  title: string;
+  name: string;
   value: string;
 }
 
 type ChartEntry = {
-  title: string;
+  chartTitle: string;
   labels: string[];
   dataset: number[]; 
 } 
@@ -25,9 +25,41 @@ type ChannelInput = {
   [key: string]: string | number | ChannelInput | null;
 }
 
+type InternalsSectionProps = {
+  section: Section,
+  title: string,
+}
+
 export const WebrtcInternalsPage: FC = () => {
 
   const [chartData, setChartData] = useState<Section>({descriptive: [], charts: []});
+
+  const Chart = ({chartTitle, labels, dataset} : ChartEntry) => {
+    const options = {responsive: false, plugins: {legend: {display: false}, title: {display: true, text: chartTitle,}}};
+    const data = {
+      labels,
+      datasets: [{data: dataset}],
+    }
+    return <Line options={options} data={data}/>;
+  }
+
+  const InternalsSection = ({title, section}: InternalsSectionProps) => {
+    const {descriptive, charts, subsections} = section;
+    //TODO chang it to `details` HTML element (persist if toggled)
+    return (<details>
+      <summary>{title}</summary>
+      <ul>   
+          {descriptive.map(({name, value}) => <li className="p-4" key={name}>{`${name}: ${value}`}</li>)}
+          {charts.map(({chartTitle, labels, dataset}) => (<li className="p-4" key={chartTitle}>
+                  <Chart chartTitle={chartTitle} labels={labels} dataset={dataset}/></li>))}
+          {subsections && Object.entries(subsections).map(([key, section]) => (
+            <li className="p-4" key={key}><InternalsSection title={key} section={section}/></li>
+            ))}
+      </ul>
+    </details>);
+  }
+
+
   useEffect(() => {
     const isChannelInput = (stats: any): stats is ChannelInput => {
       // return Object.keys(stats as ChannelInput).some((key) => /room/.test(key));
@@ -49,13 +81,13 @@ export const WebrtcInternalsPage: FC = () => {
       const charts: ChartEntry[] = entries
           .filter(([_k, v]) => typeof v === "number")
           .map(([k, v]) => {
-            const prevChart = prevSection && prevSection.charts.find( ({title}) => title === k);
+            const prevChart = prevSection && prevSection.charts.find( ({chartTitle}) => chartTitle === k);
             const newLabel = new Date().toLocaleTimeString();
             const newValue = v;
 
             return prevChart ? 
-              {title: k, labels: [...prevChart.labels, newLabel], dataset: [...prevChart.dataset, newValue]} :
-              {title: k, labels: [new Date().toLocaleTimeString()], dataset: [newValue]}
+              {chartTitle: k, labels: [...prevChart.labels, newLabel], dataset: [...prevChart.dataset, newValue]} :
+              {chartTitle: k, labels: [new Date().toLocaleTimeString()], dataset: [newValue]}
           });
 
       const subsectionEntries = entries
@@ -75,11 +107,12 @@ export const WebrtcInternalsPage: FC = () => {
       .receive("error", (res) => console.error("Couldn't join the channel, ", res));
     channel.on("metrics", ({ stats }) => {
       console.log("Received metrics", stats);
+      console.log("Parsed metrics", parseIncomingStats(stats, chartData));
       if (isChannelInput(stats)) setChartData((prevStats) => parseIncomingStats(stats, prevStats));
       // const testInputValue: ChannelInput = {
-      //   "dupa": "gowno",
-      //   "dupa123": 123,
-      //   "sraka": 245,
+      //   "piesek": "swinka",
+      //   "piesek123": 123,
+      //   "kotki": 245,
       //   "room_id=room": {
       //     "peer_id=2137": {
       //       "ice.binding_requests_received": 18,
@@ -92,12 +125,14 @@ export const WebrtcInternalsPage: FC = () => {
       // }
 
       // const prevSection: Section = {
-      //   descriptive: [{title: "dupa", value: "xyz"}],
-      //   charts: [{title: "dupa123", labels: [new Date().toLocaleTimeString()], dataset: [120]},
-      //   {title: "sraka", labels: [new Date().toLocaleTimeString()], dataset: [120]}
+      //   descriptive: [{name: "piesek", value: "xyz"}],
+      //   charts: [{chartTitle: "piesek123", labels: [new Date().toLocaleTimeString()], dataset: [120]},
+      //   {chartTitle: "kotki", labels: [new Date().toLocaleTimeString()], dataset: [120]}
       // ],
       // } 
       // console.log("test", parseIncomingStats(testInputValue, prevSection));
+
+      // setChartData((prevStats) => parseIncomingStats(testInputValue, prevSection))
     });
 
     return () => {
@@ -109,6 +144,7 @@ export const WebrtcInternalsPage: FC = () => {
   return (
     <div>
       <h1>WebRTC Internals</h1>
+      <div className="ml-4"><InternalsSection title="main" section={chartData}/></div>
     </div>
   );
 };

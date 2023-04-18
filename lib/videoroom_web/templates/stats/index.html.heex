@@ -24,7 +24,7 @@ canvas {
 
   const channel = socket.channel("stats", {})
 
-  channel.join().receive("ok", () => console.log("Joined the channel")).receive("error", (reponse) => console.error("Couldn't join the channel, ", response))
+  channel.join().receive("ok", () => console.log("Joined the channel")).receive("error", (response) => console.error("Couldn't join the channel, ", response))
   channel.on("metrics", ({stats}) => {
     render(stats, "root")
   })

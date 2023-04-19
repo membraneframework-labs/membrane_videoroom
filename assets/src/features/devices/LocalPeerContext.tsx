@@ -39,17 +39,22 @@ type Props = {
 };
 
 const LOCAL_STORAGE_VIDEO_ID_KEY = "last-selected-video-id";
+const LOCAL_STORAGE_VIDEO_NAME_KEY = "last-selected-video-name";
 const LOCAL_STORAGE_AUDIO_ID_KEY = "last-selected-audio-id";
+const LOCAL_STORAGE_AUDIO_NAME_KEY = "last-selected-audio-name";
 
 const selectDeviceId = (
   devices: MediaDeviceInfo[],
   requestedDevice: string | null,
-  lastSelectedDeviceId: string | null
+  lastSelectedDeviceId: string | null,
+  localStorageDeviceName: string | null
 ) => {
   if (requestedDevice) return requestedDevice;
 
-  const result = devices.some(({ deviceId }) => deviceId === lastSelectedDeviceId);
-  if (result) return lastSelectedDeviceId;
+  const result = devices.find(
+    ({ deviceId, label }) => deviceId === lastSelectedDeviceId || label === localStorageDeviceName
+  );
+  if (result) return result.deviceId;
 
   const firstDevice = devices.find(({ deviceId }) => deviceId);
   return firstDevice ? firstDevice.deviceId : null;
@@ -80,15 +85,26 @@ const selectDefaultDevice = (
   type: MediaType,
   enumeratedDevices: UseEnumerateDevices,
   setDeviceId: (value: string | null) => void,
+  localStorageId: string,
   localStorageName: string
 ) => {
   const result = enumeratedDevices?.[type];
   if (result?.type !== "OK") return;
   const devices = result.devices;
 
-  const localStorageDeviceId = getLocalStorageItem(localStorageName);
-  const device = selectDeviceId(devices, result.selectedDeviceSettings?.deviceId || null, localStorageDeviceId);
+  const localStorageDeviceId = getLocalStorageItem(localStorageId);
+  console.log({ localStorageDeviceId });
+  const localStorageDeviceName = getLocalStorageItem(localStorageName);
+  console.log({ localStorageDeviceName });
+  const device = selectDeviceId(
+    devices,
+    null,
+    // result.selectedDeviceSettings?.deviceId || null,
+    localStorageDeviceId,
+    localStorageDeviceName
+  );
   if (device) {
+    console.log({ name: "Selected device", device });
     setDeviceId(device);
   }
 };
@@ -110,15 +126,20 @@ const useUserMediaById = (type: MediaType, constraints: MediaTrackConstraints, i
 
 export const LocalPeerProvider = ({ children }: Props) => {
   const [videoDeviceId, setVideoDeviceIdInner] = useState<string | null>(null);
-
   const videoDevice: UseUserMedia = useUserMediaById("video", VIDEO_TRACK_CONSTRAINTS, videoDeviceId);
-  const [audioDeviceId, setAudioDeviceIdInner] = useState<string | null>(null);
 
+  const [audioDeviceId, setAudioDeviceIdInner] = useState<string | null>(null);
   const audioDevice: UseUserMedia = useUserMediaById("audio", AUDIO_TRACK_CONSTRAINTS, audioDeviceId);
+
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
 
   const videoConstraintsWithId = useMemo(() => {
     return { ...VIDEO_TRACK_CONSTRAINTS, deviceId: getLocalStorageItem(LOCAL_STORAGE_VIDEO_ID_KEY) || undefined };
+    // return { ...VIDEO_TRACK_CONSTRAINTS, deviceId: "975427B8714C037B710FB0B562725E0371623851" || undefined };
+  }, []);
+
+  useEffect(() => {
+    console.log({ id: getLocalStorageItem(LOCAL_STORAGE_VIDEO_ID_KEY) });
   }, []);
 
   const audioConstraintsWithId = useMemo(() => {
@@ -127,6 +148,10 @@ export const LocalPeerProvider = ({ children }: Props) => {
 
   const screenSharingDevice: UseUserMedia = useDisplayMedia(screenSharingConfig);
   const devices = useEnumerateDevices(videoConstraintsWithId, audioConstraintsWithId);
+
+  useEffect(() => {
+    console.log({ devices });
+  }, [devices]);
 
   const audioDeviceError: string | null = useMemo(
     () => (devices?.audio.type === "Error" ? devices.audio.name : null),
@@ -138,15 +163,46 @@ export const LocalPeerProvider = ({ children }: Props) => {
     [devices]
   );
 
-  const setVideoDeviceId = useCallback((value: string | null) => {
-    setVideoDeviceIdInner(value);
-    setLocalStorage(LOCAL_STORAGE_VIDEO_ID_KEY, value);
-  }, []);
+  const setVideoDeviceId = useCallback(
+    (value: string | null) => {
+      setVideoDeviceIdInner(value);
+      setLocalStorage(LOCAL_STORAGE_VIDEO_ID_KEY, value);
+      if (devices?.video.type === "OK") {
+        setLocalStorage(
+          LOCAL_STORAGE_VIDEO_NAME_KEY,
+          devices.video.devices.find(({ deviceId }) => deviceId === value)?.label || null
+        );
+      }
+    },
+    [devices]
+  );
 
-  const setAudioDeviceId = useCallback((value: string | null) => {
-    setAudioDeviceIdInner(value);
-    setLocalStorage(LOCAL_STORAGE_AUDIO_ID_KEY, value);
-  }, []);
+  const setAudioDeviceId = useCallback(
+    (value: string | null) => {
+      setAudioDeviceIdInner(value);
+      setLocalStorage(LOCAL_STORAGE_AUDIO_ID_KEY, value);
+      if (devices?.audio.type === "OK") {
+        setLocalStorage(
+          LOCAL_STORAGE_AUDIO_NAME_KEY,
+          devices.audio.devices.find(({ deviceId }) => deviceId === value)?.label || null
+        );
+      }
+    },
+    [devices]
+  );
+
+  // useEffect(() => {
+  //   if (devices?.video.type === "OK") {
+  //     const lastVideoDevice = devices.video.devices.find(
+  //       (device) => device.label === "iPhone (Kamil) (3) Desk View Camera"
+  //     );
+  //     if (lastVideoDevice?.deviceId) {
+  //       console.log({ name: "Setting inner to", deviceId: lastVideoDevice?.deviceId });
+  //       setVideoDeviceId(lastVideoDevice?.deviceId);
+  //     }
+  //     console.log({ lastVideoDevice });
+  //   }
+  // }, [devices]);
 
   const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
   const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);
@@ -154,8 +210,8 @@ export const LocalPeerProvider = ({ children }: Props) => {
   useEffect(() => {
     if (devices === null) return;
 
-    selectDefaultDevice("video", devices, setVideoDeviceId, LOCAL_STORAGE_VIDEO_ID_KEY);
-    selectDefaultDevice("audio", devices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY);
+    selectDefaultDevice("video", devices, setVideoDeviceId, LOCAL_STORAGE_VIDEO_ID_KEY, LOCAL_STORAGE_VIDEO_NAME_KEY);
+    // selectDefaultDevice("audio", devices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY, LOCAL_STORAGE_AUDIO_NAME_KEY);
   }, [setVideoDeviceId, setAudioDeviceId, devices]);
 
   const video: UserMedia = useMemo(

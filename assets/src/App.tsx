@@ -9,6 +9,13 @@ import { DeviceErrorBoundary } from "./features/devices/DeviceErrorBoundary";
 import { LocalPeerProvider } from "./features/devices/LocalPeerContext";
 import { MediaSettingsModal } from "./features/devices/MediaSettingsModal";
 
+// https://stackoverflow.com/questions/8788802/prevent-safari-loading-from-cache-when-back-button-is-clicked
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    window.location.reload()
+  }
+};
+
 const App: FC = () => {
   return (
     <React.StrictMode>

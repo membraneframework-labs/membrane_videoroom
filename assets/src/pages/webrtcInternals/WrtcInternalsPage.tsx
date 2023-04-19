@@ -1,10 +1,13 @@
 import { Socket } from "phoenix";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 
 import "chart.js/auto";
-import { Chart, Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
+import useDetailsToggle from "./hooks/useDetailsToggle";
+import Details from "./Details";
 
 type Section = {
+  key: string;
   descriptive: DescriptiveValue[];
   charts: ChartEntry[];
   subsections?: {[name: string]: Section};
@@ -32,22 +35,22 @@ type InternalsSectionProps = {
 
 export const WebrtcInternalsPage: FC = () => {
 
-  const [chartData, setChartData] = useState<Section>({descriptive: [], charts: []});
+  const [chartData, setChartData] = useState<Section>({descriptive: [], charts: [], key: "main"});
+  const {isOpen, toggle} = useDetailsToggle();
 
-  const Chart = ({chartTitle, labels, dataset} : ChartEntry) => {
+  const Chart = useCallback(({chartTitle, labels, dataset} : ChartEntry) => {
     const options = {responsive: false, plugins: {legend: {display: false}, title: {display: true, text: chartTitle,}}};
     const data = {
       labels,
       datasets: [{data: dataset}],
     }
     return <Line options={options} data={data}/>;
-  }
+  }, []);
 
-  const InternalsSection = ({title, section}: InternalsSectionProps) => {
-    const {descriptive, charts, subsections} = section;
-    //TODO chang it to `details` HTML element (persist if toggled)
-    return (<details>
-      <summary>{title}</summary>
+  const InternalsSection = useCallback(({title, section}: InternalsSectionProps) => {
+    const {key, descriptive, charts, subsections} = section;
+  
+    return (<Details summaryText={title} isOpen={isOpen(key)} toggle={() => toggle(key)}>
       <ul>   
           {descriptive.map(({name, value}) => <li className="p-4" key={name}>{`${name}: ${value}`}</li>)}
           {charts.map(({chartTitle, labels, dataset}) => (<li className="p-4" key={chartTitle}>
@@ -56,13 +59,12 @@ export const WebrtcInternalsPage: FC = () => {
             <li className="p-4" key={key}><InternalsSection title={key} section={section}/></li>
             ))}
       </ul>
-    </details>);
-  }
+      </Details>);
+  }, [Chart, isOpen, toggle]);
 
 
   useEffect(() => {
     const isChannelInput = (stats: any): stats is ChannelInput => {
-      // return Object.keys(stats as ChannelInput).some((key) => /room/.test(key));
       return (stats && typeof stats === "object" && Object.keys(stats).length > 0);
     }
 
@@ -72,7 +74,7 @@ export const WebrtcInternalsPage: FC = () => {
 
     const channel = socket.channel("stats", {});
 
-    const parseIncomingStats = (stats: ChannelInput, prevSection: Section | null): Section => {
+    const parseIncomingStats = (stats: ChannelInput, prevSection: Section | null, key: string): Section => {
       const entries = Object.entries(stats);
       // TODO ask the Typescript wizard 🧙‍♂️🧙‍♂️🧙‍♂️ to help with this strange case
       const descriptive: DescriptiveValue[] = entries
@@ -94,11 +96,11 @@ export const WebrtcInternalsPage: FC = () => {
           .filter(([_k, v]) => isChannelInput(v))
           .map(([k, v]) => {
             const subsection = prevSection && prevSection.subsections && k in prevSection.subsections ? prevSection.subsections[k] : null;
-            return [k, parseIncomingStats(v, subsection)]});
+            return [k, parseIncomingStats(v, subsection, `${k}:${key}`)]});
 
       const subsections: {[name: string]: Section} = Object.fromEntries(subsectionEntries);
 
-      return {descriptive, charts, subsections};
+      return {key, descriptive, charts, subsections};
     };
 
     channel
@@ -107,39 +109,17 @@ export const WebrtcInternalsPage: FC = () => {
       .receive("error", (res) => console.error("Couldn't join the channel, ", res));
     channel.on("metrics", ({ stats }) => {
       console.log("Received metrics", stats);
-      console.log("Parsed metrics", parseIncomingStats(stats, chartData));
-      if (isChannelInput(stats)) setChartData((prevStats) => parseIncomingStats(stats, prevStats));
-      // const testInputValue: ChannelInput = {
-      //   "piesek": "swinka",
-      //   "piesek123": 123,
-      //   "kotki": 245,
-      //   "room_id=room": {
-      //     "peer_id=2137": {
-      //       "ice.binding_requests_received": 18,
-      //       "ice.bytes_sent": 17298,
-      //       "track_id=7312": {
-      //         "inbound-rtp.encoding": "H264"
-      //       }
-      //     }
-      //   }
-      // }
-
-      // const prevSection: Section = {
-      //   descriptive: [{name: "piesek", value: "xyz"}],
-      //   charts: [{chartTitle: "piesek123", labels: [new Date().toLocaleTimeString()], dataset: [120]},
-      //   {chartTitle: "kotki", labels: [new Date().toLocaleTimeString()], dataset: [120]}
-      // ],
-      // } 
-      // console.log("test", parseIncomingStats(testInputValue, prevSection));
-
-      // setChartData((prevStats) => parseIncomingStats(testInputValue, prevSection))
+      console.log("Parsed metrics", parseIncomingStats(stats, chartData, "main"));
+      if (isChannelInput(stats)) setChartData((prevStats) => parseIncomingStats(stats, prevStats, "main"));
+    
+    
     });
 
     return () => {
       channel.leave();
       socket.disconnect();
     };
-  }, []);
+  }, [chartData]);
 
   return (
     <div>

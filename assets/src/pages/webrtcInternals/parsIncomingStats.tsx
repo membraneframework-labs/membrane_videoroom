@@ -26,8 +26,8 @@ type ChannelInput = {
   [key: string]: ChannelInputValue;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isChannelInput = (stats: any): stats is ChannelInput => {
-  // eslint-disable-line @typescript-eslint/no-explicit-any
   return stats && typeof stats === "object" && Object.keys(stats).length > 0;
 };
 

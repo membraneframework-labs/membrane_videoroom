@@ -5,6 +5,10 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import useDetailsToggle from "./hooks/useDetailsToggle";
 import Details from "./Details";
 import Chart from "./Chart";
+import {MAX_DATA_POINTS_ON_CHART } from "../room/consts";
+import moment from "moment";
+import { tail } from "ramda";
+
 
 type Section = {
   key: string;
@@ -20,8 +24,8 @@ type DescriptiveValue = {
 
 type ChartEntry = {
   chartTitle: string;
-  labels: string[];
-  dataset: number[]; 
+  xs: number[];
+  ys: number[]; 
 } 
 
 type ChannelInput = {
@@ -34,7 +38,6 @@ type InternalsSectionProps = {
 }
 
 export const WebrtcInternalsPage: FC = () => {
-
   const [chartData, setChartData] = useState<Section>({descriptive: [], charts: [], key: "main"});
   const {isOpen, toggle} = useDetailsToggle();
 
@@ -45,8 +48,10 @@ export const WebrtcInternalsPage: FC = () => {
     return (<Details summaryText={title} isOpen={isOpen(key)} toggle={() => toggle(key)}>
       <ul>   
           {descriptive.map(({name, value}) => <li className="p-2" key={name}>{`${name}: ${value}`}</li>)}
-          {charts.map(({chartTitle, labels, dataset}) => (<li className="p-2" key={chartTitle}>
-                  <Chart title={chartTitle} labels={labels} dataset={dataset}/></li>))}
+          <div className="flex flex-wrap">
+          {charts.map(({chartTitle, xs, ys}) => (<li className="p-2" key={chartTitle}>
+                  <Chart title={chartTitle} xs={xs} ys={ys}/></li>))}
+          </div>
           {subsections && Object.entries(subsections).map(([key, section]) => (
             <li className="p-2" key={key}><InternalsSection title={key} section={section}/></li>
             ))}
@@ -75,13 +80,20 @@ export const WebrtcInternalsPage: FC = () => {
       const charts: ChartEntry[] = entries
           .filter(([_k, v]) => typeof v === "number")
           .map(([k, v]) => {
-            const prevChart = prevSection && prevSection.charts.find( ({chartTitle}) => chartTitle === k);
-            const newLabel = new Date().toLocaleTimeString();
+            const prevChart = prevSection && prevSection.charts.find( ({chartTitle}) => chartTitle === k) || null;
+            const newLabel = Date.now();
             const newValue = v;
 
-            return prevChart ? 
-              {chartTitle: k, labels: [...prevChart.labels, newLabel], dataset: [...prevChart.dataset, newValue]} :
-              {chartTitle: k, labels: [new Date().toLocaleTimeString()], dataset: [newValue]}
+            const previousLabels = prevChart === null ? 
+              [...Array(MAX_DATA_POINTS_ON_CHART - 1).keys()].map((s) => moment(Date.now()).subtract(s+1, "seconds")).reverse() :
+              tail(prevChart.xs);
+            const previousValues = prevChart === null ?
+              Array(MAX_DATA_POINTS_ON_CHART - 1).fill(null) : tail(prevChart.ys);
+
+            const xs = [...previousLabels, newLabel];
+            const ys = [...previousValues, newValue];
+
+            return {chartTitle: k, xs, ys};
           });
 
       const subsectionEntries = entries
@@ -103,21 +115,7 @@ export const WebrtcInternalsPage: FC = () => {
       console.log("Received metrics", stats);
       console.log("Parsed metrics", parseIncomingStats(stats, chartData, "main"));
       if (isChannelInput(stats)) setChartData((prevStats) => parseIncomingStats(stats, prevStats, "main"));
-    
-    
     });
-
-
-
-
-    // const data = {
-    //   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-    //   // Our series array that contains series objects or in this case series data arrays
-    //   series: [
-    //     [5, 2, 4, 2, 0]
-    //   ]
-    // };
-    // new LineChart('.ct-chart', data);
 
     return () => {
       channel.leave();

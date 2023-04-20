@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
     element: <VideoroomHomePage />,
   },
   {
-    path: "/webrtc-internals2",
+    path: "/webrtc-internals",
     element: <WebrtcInternalsPage />,
   },
   {

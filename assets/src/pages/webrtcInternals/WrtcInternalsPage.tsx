@@ -27,8 +27,10 @@ type ChartEntry = {
   ys: number[]; 
 } 
 
+type ChannelInputValue = string | number | ChannelInput | null;
+
 type ChannelInput = {
-  [key: string]: string | number | ChannelInput | null;
+  [key: string]: ChannelInputValue;
 }
 
 type InternalsSectionProps = {
@@ -66,6 +68,21 @@ export const WebrtcInternalsPage: FC = () => {
       return (stats && typeof stats === "object" && Object.keys(stats).length > 0);
     }
 
+    const isTupleWithString = (stats: [string, ChannelInputValue]): stats is [string, string] => {
+      const [_key, value] = stats;
+      return typeof value === "string";
+    }
+
+    const isTupleWithNumber = (stats: [string, ChannelInputValue]): stats is [string, number] => {
+      const [_key, value] = stats;
+      return typeof value === "number";
+    }
+
+    const isTupleWithChannelInput = (stats: [string, ChannelInputValue]): stats is [string, ChannelInput] => {
+      const [_key, value] = stats;
+      return isChannelInput(value);
+    }
+
     const socket = new Socket("/socket");
     socket.connect();
     console.log("Connected");
@@ -76,17 +93,17 @@ export const WebrtcInternalsPage: FC = () => {
       const entries = Object.entries(stats);
       // TODO ask the Typescript wizard 🧙‍♂️🧙‍♂️🧙‍♂️ to help with this strange case
       const descriptive: DescriptiveValue[] = entries
-          .filter( ([_k, v]) => typeof v === "string")
+          .filter(isTupleWithString)
           .map(([k, v]) => ({name: k, value: v}));
       const charts: ChartEntry[] = entries
-          .filter(([_k, v]) => typeof v === "number")
+          .filter(isTupleWithNumber)
           .map(([k, v]) => {
             const prevChart = prevSection && prevSection.charts.find( ({chartTitle}) => chartTitle === k) || null;
             const newLabel = Date.now();
             const newValue = v;
 
             const previousLabels = prevChart === null ? 
-              [...Array(MAX_DATA_POINTS_ON_CHART - 1).keys()].map((s) => moment(Date.now()).subtract(s+1, "seconds")).reverse() :
+              [...Array(MAX_DATA_POINTS_ON_CHART - 1).keys()].map((s) => moment(Date.now()).subtract(s+1, "seconds").toDate().getTime()).reverse() :
               tail(prevChart.xs);
             const previousValues = prevChart === null ?
               Array(MAX_DATA_POINTS_ON_CHART - 1).fill(null) : tail(prevChart.ys);
@@ -98,7 +115,7 @@ export const WebrtcInternalsPage: FC = () => {
           });
 
       const subsectionEntries = entries
-          .filter(([_k, v]) => isChannelInput(v))
+          .filter(isTupleWithChannelInput)
           .map(([k, v]) => {
             const subsection = prevSection && prevSection.subsections && k in prevSection.subsections ? prevSection.subsections[k] : null;
             return [k, parseIncomingStats(v, subsection, `${k}:${key}`)]});
@@ -124,8 +141,6 @@ export const WebrtcInternalsPage: FC = () => {
     };
   }, [chartData]);
 
-  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-  const dataset = [5, 2, 4, 2, 0];
 
   return (
     <div>

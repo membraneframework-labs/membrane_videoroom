@@ -1,3 +1,4 @@
+import React from "react";
 import Details from "./Details";
 import Chart from "./Chart";
 import { Section } from "./parsIncomingStats";

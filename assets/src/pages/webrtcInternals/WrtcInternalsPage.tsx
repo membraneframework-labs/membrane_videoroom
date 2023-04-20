@@ -5,10 +5,12 @@ import useDetailsToggle from "./hooks/useDetailsToggle";
 
 import InternalsSection from "./InternalsSection";
 import parseIncomingStats, { Section, isChannelInput } from "./parsIncomingStats";
+import useHideVersion from "../../features/shared/hooks/useHideVersion";
 
 export const WebrtcInternalsPage: FC = () => {
   const [chartData, setChartData] = useState<Section>({ descriptive: [], charts: [], key: "main" });
   const { isOpen, toggle } = useDetailsToggle();
+  useHideVersion();
 
   useEffect(() => {
     const socket = new Socket("/socket");
@@ -32,7 +34,7 @@ export const WebrtcInternalsPage: FC = () => {
 
   return (
     <div>
-      <h1>WebRTC Internals</h1>
+      <h1>Internals</h1>
       <div className="ml-4">
         <InternalsSection title="main" section={chartData} isOpen={isOpen} toggle={toggle} />
       </div>

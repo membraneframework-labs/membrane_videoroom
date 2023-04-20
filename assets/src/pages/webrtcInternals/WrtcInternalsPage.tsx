@@ -1,10 +1,10 @@
 import { Socket } from "phoenix";
 import React, { FC, useCallback, useEffect, useState } from "react";
 
-import "chart.js/auto";
-import { Line } from "react-chartjs-2";
+
 import useDetailsToggle from "./hooks/useDetailsToggle";
 import Details from "./Details";
+import Chart from "./Chart";
 
 type Section = {
   key: string;
@@ -38,29 +38,21 @@ export const WebrtcInternalsPage: FC = () => {
   const [chartData, setChartData] = useState<Section>({descriptive: [], charts: [], key: "main"});
   const {isOpen, toggle} = useDetailsToggle();
 
-  const Chart = useCallback(({chartTitle, labels, dataset} : ChartEntry) => {
-    const options = {responsive: false, plugins: {legend: {display: false}, title: {display: true, text: chartTitle,}}};
-    const data = {
-      labels,
-      datasets: [{data: dataset}],
-    }
-    return <Line options={options} data={data}/>;
-  }, []);
 
   const InternalsSection = useCallback(({title, section}: InternalsSectionProps) => {
     const {key, descriptive, charts, subsections} = section;
   
     return (<Details summaryText={title} isOpen={isOpen(key)} toggle={() => toggle(key)}>
       <ul>   
-          {descriptive.map(({name, value}) => <li className="p-4" key={name}>{`${name}: ${value}`}</li>)}
-          {charts.map(({chartTitle, labels, dataset}) => (<li className="p-4" key={chartTitle}>
-                  <Chart chartTitle={chartTitle} labels={labels} dataset={dataset}/></li>))}
+          {descriptive.map(({name, value}) => <li className="p-2" key={name}>{`${name}: ${value}`}</li>)}
+          {charts.map(({chartTitle, labels, dataset}) => (<li className="p-2" key={chartTitle}>
+                  <Chart title={chartTitle} labels={labels} dataset={dataset}/></li>))}
           {subsections && Object.entries(subsections).map(([key, section]) => (
-            <li className="p-4" key={key}><InternalsSection title={key} section={section}/></li>
+            <li className="p-2" key={key}><InternalsSection title={key} section={section}/></li>
             ))}
       </ul>
       </Details>);
-  }, [Chart, isOpen, toggle]);
+  }, [isOpen, toggle]);
 
 
   useEffect(() => {
@@ -115,15 +107,31 @@ export const WebrtcInternalsPage: FC = () => {
     
     });
 
+
+
+
+    // const data = {
+    //   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    //   // Our series array that contains series objects or in this case series data arrays
+    //   series: [
+    //     [5, 2, 4, 2, 0]
+    //   ]
+    // };
+    // new LineChart('.ct-chart', data);
+
     return () => {
       channel.leave();
       socket.disconnect();
     };
   }, [chartData]);
 
+  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  const dataset = [5, 2, 4, 2, 0];
+
   return (
     <div>
       <h1>WebRTC Internals</h1>
+      {/* <Chart title="test" labels={labels} dataset={dataset}/> */}
       <div className="ml-4"><InternalsSection title="main" section={chartData}/></div>
     </div>
   );

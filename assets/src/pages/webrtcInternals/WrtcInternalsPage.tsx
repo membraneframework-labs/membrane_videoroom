@@ -1,7 +1,6 @@
 import { Socket } from "phoenix";
 import React, { FC, useCallback, useEffect, useState } from "react";
 
-
 import useDetailsToggle from "./hooks/useDetailsToggle";
 import Details from "./Details";
 import Chart from "./Chart";
@@ -46,8 +45,10 @@ export const WebrtcInternalsPage: FC = () => {
     const {key, descriptive, charts, subsections} = section;
   
     return (<Details summaryText={title} isOpen={isOpen(key)} toggle={() => toggle(key)}>
-      <ul>   
-          {descriptive.map(({name, value}) => <li className="p-2" key={name}>{`${name}: ${value}`}</li>)}
+      <ul className="list-disc list-inside">   
+          {descriptive.map(({name, value}) => <li className="p-2 px-4" key={name}>{`${name}: ${value}`}</li>)}
+      </ul>
+      <ul>
           <div className="flex flex-wrap">
           {charts.map(({chartTitle, xs, ys}) => (<li className="p-2" key={chartTitle}>
                   <Chart title={chartTitle} xs={xs} ys={ys}/></li>))}

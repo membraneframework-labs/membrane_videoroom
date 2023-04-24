@@ -1,16 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-// import {
-//   UseEnumerateDevices,
-//   useEnumerateDevices,
-//   useMedia,
-//   useUserMedia,
-//   UseUserMedia,
-//   useUserMediaById,
-// } from "@jellyfish-dev/jellyfish-react-client/navigator";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 import { MediaType } from "@jellyfish-dev/jellyfish-react-client/dist/navigator/types";
-import { useMedia, useUserMedia, UseUserMedia } from "@jellyfish-dev/jellyfish-react-client/navigator";
-import { useEnumerateDevices, UseEnumerateDevices } from "./useEnumerateDevices";
+import {
+  useEnumerateDevices,
+  UseEnumerateDevices, useMedia,
+  useUserMedia,
+  UseUserMedia
+} from "@jellyfish-dev/browser-media-utils";
 
 export type UserMedia = {
   id: string | null;
@@ -45,7 +41,7 @@ const LOCAL_STORAGE_AUDIO_NAME_KEY = "last-selected-audio-name";
 
 const selectDeviceId = (
   devices: MediaDeviceInfo[],
-  requestedDevice: string | null,
+  requestedDevice: string | null, // todo remove
   lastSelectedDeviceId: string | null,
   localStorageDeviceName: string | null
 ) => {
@@ -98,8 +94,8 @@ const selectDefaultDevice = (
   console.log({ localStorageDeviceName });
   const device = selectDeviceId(
     devices,
-    null,
-    // result.selectedDeviceSettings?.deviceId || null,
+    // null,
+    result.selectedDeviceSettings?.deviceId || null,
     localStorageDeviceId,
     localStorageDeviceName
   );
@@ -135,7 +131,6 @@ export const LocalPeerProvider = ({ children }: Props) => {
 
   const videoConstraintsWithId = useMemo(() => {
     return { ...VIDEO_TRACK_CONSTRAINTS, deviceId: getLocalStorageItem(LOCAL_STORAGE_VIDEO_ID_KEY) || undefined };
-    // return { ...VIDEO_TRACK_CONSTRAINTS, deviceId: "975427B8714C037B710FB0B562725E0371623851" || undefined };
   }, []);
 
   useEffect(() => {
@@ -147,6 +142,7 @@ export const LocalPeerProvider = ({ children }: Props) => {
   }, []);
 
   const screenSharingDevice: UseUserMedia = useDisplayMedia(screenSharingConfig);
+  // const devices = useEnumerateDevices(videoConstraintsWithId, audioConstraintsWithId);
   const devices = useEnumerateDevices(videoConstraintsWithId, audioConstraintsWithId);
 
   useEffect(() => {
@@ -191,19 +187,6 @@ export const LocalPeerProvider = ({ children }: Props) => {
     [devices]
   );
 
-  // useEffect(() => {
-  //   if (devices?.video.type === "OK") {
-  //     const lastVideoDevice = devices.video.devices.find(
-  //       (device) => device.label === "iPhone (Kamil) (3) Desk View Camera"
-  //     );
-  //     if (lastVideoDevice?.deviceId) {
-  //       console.log({ name: "Setting inner to", deviceId: lastVideoDevice?.deviceId });
-  //       setVideoDeviceId(lastVideoDevice?.deviceId);
-  //     }
-  //     console.log({ lastVideoDevice });
-  //   }
-  // }, [devices]);
-
   const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "video"), [devices]);
   const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(devices, "audio"), [devices]);
 
@@ -211,7 +194,7 @@ export const LocalPeerProvider = ({ children }: Props) => {
     if (devices === null) return;
 
     selectDefaultDevice("video", devices, setVideoDeviceId, LOCAL_STORAGE_VIDEO_ID_KEY, LOCAL_STORAGE_VIDEO_NAME_KEY);
-    // selectDefaultDevice("audio", devices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY, LOCAL_STORAGE_AUDIO_NAME_KEY);
+    selectDefaultDevice("audio", devices, setAudioDeviceId, LOCAL_STORAGE_AUDIO_ID_KEY, LOCAL_STORAGE_AUDIO_NAME_KEY);
   }, [setVideoDeviceId, setAudioDeviceId, devices]);
 
   const video: UserMedia = useMemo(

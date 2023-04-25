@@ -350,13 +350,10 @@ export const useUserMedia = ({
       if (!exactConstraints.audio && !exactConstraints.video) return;
 
       if (shouldRestartAudio) {
-        console.log("Stopping audio device");
         state?.audioMedia?.track?.stop();
       }
 
       if (shouldRestartVideo) {
-        console.log("Stopping video device");
-        console.log({ name: "Stopping:", video: state?.videoMedia?.deviceInfo });
         state?.videoMedia?.track?.stop();
       }
 

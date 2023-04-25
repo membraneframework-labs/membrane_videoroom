@@ -131,14 +131,9 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
         isError: false,
         isLoading: false,
         stop: () => {
-          console.log("Stopping audio...");
           stop("audio");
         },
         start: () => {
-          console.log("Starting audio...");
-          const a = loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null);
-          console.log({ a });
-
           start({ audioDeviceId: loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null)?.deviceId });
         },
         disable: () => setEnable("audio", false),
@@ -159,10 +154,6 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
     }),
     [screenSharingConfig, screenSharingDevice]
   );
-
-  useEffect(() => {
-    console.log({ data });
-  }, [data]);
 
   return (
     <LocalPeerMediaContext.Provider

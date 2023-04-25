@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren } from "react";
 import useToast from "../shared/hooks/useToast";
 import useEffectOnChange from "../shared/hooks/useEffectOnChange";
-import { useLocalPeer } from "./LocalPeerContext";
+import { useLocalPeer } from "./LocalPeerMediaContext";
 
 const prepareErrorMessage = (videoDeviceError: string | null, audioDeviceError: string | null): null | string => {
   if (videoDeviceError && audioDeviceError) {

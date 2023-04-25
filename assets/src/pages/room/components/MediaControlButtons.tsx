@@ -16,7 +16,7 @@ import MenuDots from "../../../features/room-page/icons/MenuDots";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
 import { UseUserMedia } from "@jellyfish-dev/jellyfish-react-client/navigator";
 import { SCREENSHARING_MEDIA_CONSTRAINTS } from "../consts";
-import { useLocalPeer } from "../../../features/devices/LocalPeerContext";
+import { useLocalPeer } from "../../../features/devices/LocalPeerMediaContext";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 

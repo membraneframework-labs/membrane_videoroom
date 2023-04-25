@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DeviceSelector } from "./DeviceSelector";
 import { useModal } from "../../contexts/ModalContext";
-import { useLocalPeer } from "./LocalPeerContext";
+import { useLocalPeer } from "./LocalPeerMediaContext";
 import { Modal } from "../shared/components/modal/Modal";
 
 export const MediaSettingsModal: React.FC = () => {

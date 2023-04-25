@@ -6,7 +6,7 @@ import { UserProvider } from "./contexts/UserContext";
 import { ToastProvider } from "./features/shared/context/ToastContext";
 import { ModalProvider } from "./contexts/ModalContext";
 import { DeviceErrorBoundary } from "./features/devices/DeviceErrorBoundary";
-import { LocalPeerProvider } from "./features/devices/LocalPeerContext";
+import { LocalPeerMediaProvider } from "./features/devices/LocalPeerMediaContext";
 import { MediaSettingsModal } from "./features/devices/MediaSettingsModal";
 
 // https://stackoverflow.com/questions/8788802/prevent-safari-loading-from-cache-when-back-button-is-clicked
@@ -21,7 +21,7 @@ const App: FC = () => {
     <React.StrictMode>
       <UserProvider>
         <DeveloperInfoProvider>
-          <LocalPeerProvider>
+          <LocalPeerMediaProvider>
             <ToastProvider>
               <ModalProvider>
                 <DeviceErrorBoundary>
@@ -30,7 +30,7 @@ const App: FC = () => {
                 </DeviceErrorBoundary>
               </ModalProvider>
             </ToastProvider>
-          </LocalPeerProvider>
+          </LocalPeerMediaProvider>
         </DeveloperInfoProvider>
       </UserProvider>
     </React.StrictMode>

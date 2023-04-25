@@ -9,7 +9,7 @@ import Microphone from "../../room-page/icons/Microphone";
 import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
 import { useModal } from "../../../contexts/ModalContext";
-import { useLocalPeer } from "../../devices/LocalPeerContext";
+import { useLocalPeer } from "../../devices/LocalPeerMediaContext";
 
 type HomePageVideoTileProps = {
   displayName: string;

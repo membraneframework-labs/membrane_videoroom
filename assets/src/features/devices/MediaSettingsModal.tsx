@@ -6,7 +6,7 @@ import { Modal } from "../shared/components/modal/Modal";
 
 export const MediaSettingsModal: React.FC = () => {
   const { setOpen, isOpen } = useModal();
-  const { video, audio } = useLocalPeer();
+  const { video, audio, start } = useLocalPeer();
   const [videoInput, setVideoInput] = useState<string | null>(null);
   const [audioInput, setAudioInput] = useState<string | null>(null);
 
@@ -36,8 +36,10 @@ export const MediaSettingsModal: React.FC = () => {
       closable
       cancelClassName="text-additional-red-100"
       onConfirm={() => {
-        audio.setId(audioInput);
-        video.setId(videoInput);
+        start({
+          audioDeviceId: audioInput || undefined,
+          videoDeviceId: videoInput || undefined,
+        });
         setOpen(false);
       }}
       onCancel={handleClose}

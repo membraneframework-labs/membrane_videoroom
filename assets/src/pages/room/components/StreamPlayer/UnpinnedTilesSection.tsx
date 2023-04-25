@@ -4,10 +4,7 @@ import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
-import {
-  getGridConfig,
-  getUnpinnedTilesGridStyle,
-} from "../../../../features/room-page/utils/getVideoGridConfig";
+import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";

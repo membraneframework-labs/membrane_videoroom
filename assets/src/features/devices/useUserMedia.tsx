@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+// TODO After some testing this hook should be extracted to browser-media-utils
+
 export const isGranted = (mediaDeviceInfo: MediaDeviceInfo) =>
   mediaDeviceInfo.label !== "" && mediaDeviceInfo.deviceId !== "";
 
@@ -53,8 +55,10 @@ const prepareReturn = (
 };
 
 export type UseUserMediaConfig = {
-  getPreviousVideoDevice: () => MediaDeviceInfo | null;
-  getPreviousAudioDevice: () => MediaDeviceInfo | null;
+  getLastAudioDevice: () => MediaDeviceInfo | null;
+  saveLastAudioDevice: (info: MediaDeviceInfo) => void;
+  getLastVideoDevice: () => MediaDeviceInfo | null;
+  saveLastVideoDevice: (info: MediaDeviceInfo) => void;
   videoTrackConstraints: boolean | MediaTrackConstraints;
   audioTrackConstraints: boolean | MediaTrackConstraints;
   refetchOnMount: boolean;
@@ -179,8 +183,10 @@ const shouldAskForAnyDevice = (requestedDevices: null | MediaStream) => requeste
  * Hook that returns the list of available devices
  */
 export const useUserMedia = ({
-  getPreviousVideoDevice,
-  getPreviousAudioDevice,
+  getLastAudioDevice,
+  saveLastAudioDevice,
+  getLastVideoDevice,
+  saveLastVideoDevice,
   videoTrackConstraints,
   audioTrackConstraints,
   refetchOnMount,
@@ -204,8 +210,8 @@ export const useUserMedia = ({
     if (skip.current) return;
     skip.current = true;
 
-    const previousVideoDevice: MediaDeviceInfo | null = getPreviousVideoDevice();
-    const previousAudioDevice: MediaDeviceInfo | null = getPreviousAudioDevice();
+    const previousVideoDevice: MediaDeviceInfo | null = getLastVideoDevice();
+    const previousAudioDevice: MediaDeviceInfo | null = getLastAudioDevice();
 
     const shouldAskForAudio = !!audioTrackConstraints;
     const shouldAskForVideo = !!videoTrackConstraints;
@@ -312,59 +318,85 @@ export const useUserMedia = ({
       videoError: videoError,
       audioError: audioError,
     });
+
+    if (audioDeviceInfo) {
+      saveLastAudioDevice(audioDeviceInfo);
+    }
+
+    if (videoDeviceInfo) {
+      saveLastVideoDevice(videoDeviceInfo);
+    }
   }, [
+    getLastVideoDevice,
+    getLastAudioDevice,
     audioTrackConstraints,
-    audioConstraints,
-    getPreviousAudioDevice,
-    getPreviousVideoDevice,
     videoTrackConstraints,
+    audioConstraints,
     videoConstraints,
+    saveLastAudioDevice,
+    saveLastVideoDevice,
   ]);
 
   const start = useCallback(
     async ({ audioDeviceId, videoDeviceId }: UseUserMediaStartConfig) => {
-      if (audioDeviceId) {
-        state?.audioMedia?.track?.stop();
-      }
-      if (videoDeviceId) {
-        state?.videoMedia?.track?.stop();
-      }
+      const shouldRestartVideo = !!videoDeviceId && videoDeviceId !== state.videoMedia?.deviceInfo?.deviceId;
+      const shouldRestartAudio = !!audioDeviceId && audioDeviceId !== state.audioMedia?.deviceInfo?.deviceId;
 
       const exactConstraints: MediaStreamConstraints = {
-        video: prepareMediaTrackConstraints(videoDeviceId, videoConstraints),
-        audio: prepareMediaTrackConstraints(audioDeviceId, audioConstraints),
+        video: shouldRestartVideo && prepareMediaTrackConstraints(videoDeviceId, videoConstraints),
+        audio: shouldRestartAudio && prepareMediaTrackConstraints(audioDeviceId, audioConstraints),
       };
+
+      if (!exactConstraints.audio && !exactConstraints.video) return;
+
+      if (shouldRestartAudio) {
+        console.log("Stopping audio device");
+        state?.audioMedia?.track?.stop();
+      }
+
+      if (shouldRestartVideo) {
+        console.log("Stopping video device");
+        console.log({ name: "Stopping:", video: state?.videoMedia?.deviceInfo });
+        state?.videoMedia?.track?.stop();
+      }
 
       try {
         const requestedDevices = await navigator.mediaDevices.getUserMedia(exactConstraints);
 
         const audioDevices = state.audio.type === "OK" ? state.audio.devices : [];
+        const audioInfo = audioDeviceId ? getDeviceInfo(audioDeviceId, audioDevices) : null;
+
+        if (audioInfo) {
+          saveLastAudioDevice(audioInfo);
+        }
+
         const videoDevices = state.video.type === "OK" ? state.video.devices : [];
+        const videoInfo = videoDeviceId ? getDeviceInfo(videoDeviceId, videoDevices) : null;
 
-        const audioMedia: Pick<UseUserMediaState, "audioMedia"> | Record<string, never> = audioDeviceId
-          ? {
-              audioMedia: {
+        if (videoInfo) {
+          saveLastVideoDevice(videoInfo);
+        }
+
+        setState((prevState): UseUserMediaState => {
+          const videoMedia: Media | null = shouldRestartVideo
+            ? {
+                stream: requestedDevices,
+                track: requestedDevices.getVideoTracks()[0] || null,
+                deviceInfo: videoInfo,
+                enabled: true,
+              }
+            : prevState.videoMedia;
+
+          const audioMedia: Media | null = shouldRestartAudio
+            ? {
                 stream: requestedDevices,
                 track: requestedDevices.getAudioTracks()[0] || null,
-                deviceInfo: getDeviceInfo(audioDeviceId, audioDevices),
+                deviceInfo: audioInfo,
                 enabled: true,
-              },
-            }
-          : {};
+              }
+            : prevState.audioMedia;
 
-        const videoMedia: Pick<UseUserMediaState, "videoMedia"> | Record<string, never> = videoDeviceId
-          ? {
-              videoMedia: {
-                stream: requestedDevices,
-                track: requestedDevices.getAudioTracks()[0] || null,
-                deviceInfo: getDeviceInfo(videoDeviceId, videoDevices),
-                enabled: true,
-              },
-            }
-          : {};
-
-        setState((prevState) => {
-          return { ...prevState, ...audioMedia, ...videoMedia };
+          return { ...prevState, audioMedia, videoMedia };
         });
       } catch (error: unknown) {
         const errorName = getName(error);
@@ -377,7 +409,7 @@ export const useUserMedia = ({
         });
       }
     },
-    [audioConstraints, state, videoConstraints]
+    [state, audioConstraints, saveLastAudioDevice, videoConstraints, saveLastVideoDevice]
   );
 
   const stop = useCallback(async (type: "video" | "audio") => {

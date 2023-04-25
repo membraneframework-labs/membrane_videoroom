@@ -1,9 +1,9 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 import { MediaType } from "@jellyfish-dev/jellyfish-react-client/dist/navigator/types";
-import { useMedia } from "@jellyfish-dev/browser-media-utils";
-import { useUserMedia, UseUserMediaConfig, UseUserMediaState } from "./useUserMedia";
+import { useUserMedia, UseUserMediaConfig, UseUserMediaStartConfig, UseUserMediaState } from "./useUserMedia";
 import { loadObject, saveObject } from "../shared/utils/localStorage";
+import { useMedia } from "./useMedia";
 
 export type Device = {
   isError: boolean;
@@ -18,7 +18,7 @@ export type Device = {
 
 export type UserMedia = {
   id: string | null;
-  setId: (id: string | null) => void;
+  setId: (id: string) => void;
   device: Device;
   error: string | null;
   devices: MediaDeviceInfo[] | null;
@@ -34,6 +34,7 @@ export type LocalPeerContextType = {
   video: UserMedia;
   audio: UserMedia;
   screenShare: DisplayMedia;
+  start: (config: UseUserMediaStartConfig) => void;
 };
 
 const LocalPeerMediaContext = React.createContext<LocalPeerContextType | undefined>(undefined);
@@ -59,8 +60,10 @@ const devicesOrNull = (devices: UseUserMediaState | null, type: MediaType) => {
 };
 
 const USE_USER_MEDIA_CONFIG: UseUserMediaConfig = {
-  getPreviousAudioDevice: () => loadObject(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null),
-  getPreviousVideoDevice: () => loadObject(LOCAL_STORAGE_VIDEO_DEVICE_KEY, null),
+  getLastAudioDevice: () => loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null),
+  saveLastAudioDevice: (info: MediaDeviceInfo) => saveObject<MediaDeviceInfo>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, info),
+  getLastVideoDevice: () => loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_VIDEO_DEVICE_KEY, null),
+  saveLastVideoDevice: (info: MediaDeviceInfo) => saveObject<MediaDeviceInfo>(LOCAL_STORAGE_VIDEO_DEVICE_KEY, info),
   videoTrackConstraints: VIDEO_TRACK_CONSTRAINTS,
   audioTrackConstraints: AUDIO_TRACK_CONSTRAINTS,
   refetchOnMount: true,
@@ -83,30 +86,17 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
   );
 
   const setVideoDeviceId = useCallback(
-    (value: string | null) => {
-      if (data?.video.type !== "OK" || data.videoMedia?.deviceInfo?.deviceId === value) return;
-
-      const newDevice = data.video.devices.find(({ deviceId }) => deviceId === value) || null;
-      saveObject(LOCAL_STORAGE_VIDEO_DEVICE_KEY, newDevice);
-      if (value) {
-        start({ videoDeviceId: value });
-      }
+    (value: string) => {
+      start({ videoDeviceId: value });
     },
-    [data, start]
+    [start]
   );
 
   const setAudioDeviceId = useCallback(
-    (value: string | null) => {
-      if (data?.audio.type !== "OK" || data.audioMedia?.deviceInfo?.deviceId === value) return;
-
-      const newDevice = data.audio.devices.find(({ deviceId }) => deviceId === value);
-      saveObject(LOCAL_STORAGE_AUDIO_DEVICE_KEY, newDevice);
-
-      if (value) {
-        start({ audioDeviceId: value });
-      }
+    (value: string) => {
+      start({ audioDeviceId: value });
     },
-    [data, start]
+    [start]
   );
 
   const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(data, "video"), [data]);
@@ -121,7 +111,8 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
         isError: false,
         isLoading: false,
         stop: () => stop("video"),
-        start: () => start({ videoDeviceId: data?.videoMedia?.deviceInfo?.deviceId }),
+        start: () =>
+          start({ videoDeviceId: loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_VIDEO_DEVICE_KEY, null)?.deviceId }),
         disable: () => setEnable("video", false),
         enable: () => setEnable("video", true),
         isEnabled: !!data?.videoMedia?.enabled,
@@ -139,8 +130,17 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
         stream: data?.audioMedia?.stream || null,
         isError: false,
         isLoading: false,
-        stop: () => stop("audio"),
-        start: () => start({ audioDeviceId: data?.audioMedia?.deviceInfo?.deviceId }),
+        stop: () => {
+          console.log("Stopping audio...");
+          stop("audio");
+        },
+        start: () => {
+          console.log("Starting audio...");
+          const a = loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null);
+          console.log({ a });
+
+          start({ audioDeviceId: loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null)?.deviceId });
+        },
         disable: () => setEnable("audio", false),
         enable: () => setEnable("audio", true),
         isEnabled: !!data?.audioMedia?.enabled,
@@ -160,12 +160,17 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
     [screenSharingConfig, screenSharingDevice]
   );
 
+  useEffect(() => {
+    console.log({ data });
+  }, [data]);
+
   return (
     <LocalPeerMediaContext.Provider
       value={{
         video,
         audio,
         screenShare,
+        start,
       }}
     >
       {children}

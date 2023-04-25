@@ -8,7 +8,6 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@jellyfish-dev/browser-media-utils": "github:jellyfish-dev/browser-media-utils#feature/add-selected-device",
     "@jellyfish-dev/jellyfish-react-client": "github:jellyfish-dev/jellyfish-react-client#add-lint-updated",
     "@jellyfish-dev/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#master",
     "@types/react-modal": "^3.13.1",

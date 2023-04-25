@@ -143,7 +143,7 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
         start: () => start({ audioDeviceId: data?.audioMedia?.deviceInfo?.deviceId }),
         disable: () => setEnable("audio", false),
         enable: () => setEnable("audio", true),
-        isEnabled: !!data?.videoMedia?.enabled,
+        isEnabled: !!data?.audioMedia?.enabled,
       },
       devices: audioDevices,
       error: audioDeviceError,

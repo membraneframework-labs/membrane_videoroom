@@ -4,7 +4,11 @@ import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
-import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/room-page/utils/getVideoGridConfig";
+import {
+  getGridConfig,
+  getUnpinnedTilesGridStyle,
+  GridConfigType,
+} from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
@@ -14,6 +18,7 @@ import {
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
 import SoundIcon from "../../../../features/room-page/components/SoundIcon";
+import useMobileViewport from "../../../../features/shared/hooks/useMobileViewport";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -40,9 +45,18 @@ const UnpinnedTilesSection: FC<Props> = ({
   horizontal,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
+  const isMobile = useMobileViewport();
   const videoGridStyle = useMemo(
-    () => getUnpinnedTilesGridStyle(gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length === 1),
-    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length]
+    () =>
+      getUnpinnedTilesGridStyle(
+        gridConfig,
+        isAnyTilePinned,
+        horizontal,
+        videoInVideo,
+        tileConfigs.length === 1,
+        !!isMobile
+      ),
+    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length, isMobile]
   );
 
   const tileStyle = !isAnyTilePinned

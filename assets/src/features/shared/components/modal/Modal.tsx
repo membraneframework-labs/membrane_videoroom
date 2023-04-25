@@ -37,7 +37,7 @@ export const Modal: React.FC<ModalProps> = ({
         maxWidth ?? "max-w-sm sm:max-w-xl",
         "m-4 w-full rounded-2xl bg-white px-6 py-8 focus:focus-visible:outline-none sm:p-6"
       )}
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       {...otherProps}
     >
       <div className="modal-header flex items-center justify-between">

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Button from "../../shared/components/Button";
 import MembraneVideoroomLogo from "../../shared/components/MembraneVideoroomLogo";
@@ -9,6 +9,11 @@ import ShareSquare from "../icons/ShareSquare";
 import Settings from "../icons/Settings";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import { useModal } from "../../../contexts/ModalContext";
+import useMobileViewport from "../../shared/hooks/useMobileViewport";
+
+const shorenRoomName = (roomId: string): string => {
+  return roomId;
+};
 
 const Navbar: React.FC = () => {
   const match = useParams();
@@ -22,24 +27,35 @@ const Navbar: React.FC = () => {
     addToast({ id: "toast-link-copied", message: "Link copied to clipboard" });
   }, [addToast, currentUrl]);
 
+  const isMobile = useMobileViewport();
+
   return (
-    <div className="flex w-full flex-row justify-between gap-y-4">
-      <PlainLink href="/" name="home-page" className="self-start">
-        <MembraneVideoroomLogo className="text-5xl" />
-      </PlainLink>
-      <div className="flex flex-row items-center gap-x-3 font-aktivGrotesk">
-        <span className="hidden sm:inline-block">Invite link</span>
-        <Button
-          onClick={onLinkCopy}
-          variant="light"
-          className={clsx(
-            "!rounded-3xl !border !border-brand-dark-blue-200 !px-5 !py-1",
-            "flex items-center gap-x-2",
-            "!text-base"
-          )}
-        >
-          {roomId} <ShareSquare className="text-lg" />
-        </Button>
+    <div className="flex w-full max-w-full flex-row justify-between gap-y-4">
+      {!isMobile ? (
+        <PlainLink href="/" name="home-page" className="self-start">
+          <MembraneVideoroomLogo className="text-5xl" />
+        </PlainLink>
+      ) : (
+        <h4 className="flex flex-row items-center font-rocGrotesk text-xl font-medium tracking-wide">{roomId}</h4>
+      )}
+      <div className={clsx("flex flex-row items-center gap-x-3 font-aktivGrotesk")}>
+        {!isMobile && (
+          <>
+            <span>Invite link</span>
+            <Button
+              onClick={onLinkCopy}
+              variant="light"
+              className={clsx(
+                "!rounded-3xl !border !border-brand-dark-blue-200 !px-5 !py-1",
+                "flex items-center gap-x-2",
+                "!text-base"
+              )}
+            >
+              <span className="overflow-hidden text-ellipsis">{roomId}</span>
+              <ShareSquare className="text-lg" />
+            </Button>
+          </>
+        )}
         <MediaControlButton
           icon={Settings}
           hover="Settings"

@@ -13,7 +13,7 @@ const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
         className={clsx(
           "h-screen w-full bg-auto bg-center bg-no-repeat sm:bg-videoroom-background",
           "bg-brand-sea-blue-100 font-rocGrotesk text-brand-dark-blue-500",
-          "flex flex-col items-center gap-y-4 p-4",
+          "flex flex-col items-center gap-y-4 p-4 overflow-x-hidden",
           isHorizontalMobile && "invisible"
         )}
       >

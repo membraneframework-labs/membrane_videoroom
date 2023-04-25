@@ -256,8 +256,8 @@ export const useUserMedia = ({
 
     const mediaDeviceInfos: MediaDeviceInfo[] = await navigator.mediaDevices.enumerateDevices();
 
-    // Safari changes deviceId between sessions, so we could not relay on it.
-    // We can switch randomly given device to one that have the same label as the one used in previous session.
+    // Safari changes deviceId between sessions, therefore we cannot rely on it for identification purposes.
+    // We can switch randomly given device to one that has the same label as the one used in previous session.
     if (requestedDevices) {
       try {
         const currentDevices = getCurrentDevicesSettings(requestedDevices, mediaDeviceInfos);

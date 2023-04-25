@@ -7,7 +7,6 @@ import PeerInfoLayer from "./PeerInfoLayer";
 import {
   getGridConfig,
   getUnpinnedTilesGridStyle,
-  GridConfigType,
 } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";

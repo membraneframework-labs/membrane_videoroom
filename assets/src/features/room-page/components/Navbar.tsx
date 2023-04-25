@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Button from "../../shared/components/Button";
 import MembraneVideoroomLogo from "../../shared/components/MembraneVideoroomLogo";
@@ -10,10 +10,6 @@ import Settings from "../icons/Settings";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import { useModal } from "../../../contexts/ModalContext";
 import useMobileViewport from "../../shared/hooks/useMobileViewport";
-
-const shorenRoomName = (roomId: string): string => {
-  return roomId;
-};
 
 const Navbar: React.FC = () => {
   const match = useParams();

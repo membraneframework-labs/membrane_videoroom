@@ -1,13 +1,25 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 import { MediaType } from "@jellyfish-dev/jellyfish-react-client/dist/navigator/types";
-import { useMedia, UseUserMedia as UseUserMedia2 } from "@jellyfish-dev/browser-media-utils";
-import { loadObject, saveObject, useUserMedia, UseUserMediaConfig, UseUserMediaState } from "./useUserMedia";
+import { useMedia } from "@jellyfish-dev/browser-media-utils";
+import { useUserMedia, UseUserMediaConfig, UseUserMediaState } from "./useUserMedia";
+import { loadObject, saveObject } from "../shared/utils/localStorage";
+
+export type Device = {
+  isError: boolean;
+  stream: MediaStream | null;
+  isLoading: boolean;
+  start: () => void;
+  stop: () => void;
+  isEnabled: boolean;
+  disable: () => void;
+  enable: () => void;
+};
 
 export type UserMedia = {
   id: string | null;
   setId: (id: string | null) => void;
-  device: UseUserMedia2;
+  device: Device;
   error: string | null;
   devices: MediaDeviceInfo[] | null;
 };
@@ -15,7 +27,7 @@ export type UserMedia = {
 export type DisplayMedia = {
   setConfig: (constraints: MediaStreamConstraints | null) => void;
   config: MediaStreamConstraints | null;
-  device: UseUserMedia2;
+  device: Device;
 };
 
 export type LocalPeerContextType = {
@@ -58,7 +70,7 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
   const { data, stop, start, setEnable } = useUserMedia(USE_USER_MEDIA_CONFIG);
 
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
-  const screenSharingDevice: UseUserMedia2 = useDisplayMedia(screenSharingConfig);
+  const screenSharingDevice: Device = useDisplayMedia(screenSharingConfig);
 
   const audioDeviceError: string | null = useMemo(
     () => (data?.audio.type === "Error" ? data.audio.name : null),

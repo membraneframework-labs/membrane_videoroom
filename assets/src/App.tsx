@@ -8,13 +8,12 @@ import { ModalProvider } from "./contexts/ModalContext";
 import { DeviceErrorBoundary } from "./features/devices/DeviceErrorBoundary";
 import { LocalPeerMediaProvider } from "./features/devices/LocalPeerMediaContext";
 import { MediaSettingsModal } from "./features/devices/MediaSettingsModal";
+import { disableSafariCache } from "./features/devices/disableSafariCache";
 
-// https://stackoverflow.com/questions/8788802/prevent-safari-loading-from-cache-when-back-button-is-clicked
-window.onpageshow = function (event) {
-  if (event.persisted) {
-    window.location.reload();
-  }
-};
+// When returning to the videoroom page from another domain using the 'Back' button on the Safari browser,
+// the page is served from the cache, which prevents lifecycle events from being triggered.
+// As a result, the camera and microphone do not start. To resolve this issue, one simple solution is to disable the cache.
+disableSafariCache();
 
 const App: FC = () => {
   return (

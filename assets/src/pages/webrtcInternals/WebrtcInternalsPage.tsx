@@ -3,11 +3,9 @@ import React, { FC, useEffect, useState } from "react";
 
 import InternalsSection from "./InternalsSection";
 import parseIncomingStats, { Section, isChannelInput } from "./parseIncomingStats";
-import useHideVersion from "../../features/shared/hooks/useHideVersion";
 
 export const WebrtcInternalsPage: FC = () => {
   const [chartData, setChartData] = useState<Section>({ descriptive: [], charts: [], key: "main" });
-  useHideVersion();
 
   useEffect(() => {
     const socket = new Socket("/socket");
@@ -29,7 +27,7 @@ export const WebrtcInternalsPage: FC = () => {
       channel.leave();
       socket.disconnect();
     };
-  }, [chartData]);
+  }, []);
 
   return (
     <div>

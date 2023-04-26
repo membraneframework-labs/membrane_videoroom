@@ -1,7 +1,8 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import "chartist.min.css";
+
+@import "chartist/dist/index.css";
 
 @tailwind base;
 @tailwind components;

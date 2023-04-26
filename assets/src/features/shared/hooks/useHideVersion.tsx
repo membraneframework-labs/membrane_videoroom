@@ -5,11 +5,9 @@ const useHideVersion = () => {
 
   useEffect(() => {
     const versionsElement = document.getElementById(versionElementId);
-    if (versionsElement) {
-      versionsElement.classList.remove("visible");
-      versionsElement.classList.add("hidden");
-    }
-    return () => versionsElement?.classList.remove("hidden");
+    versionsElement?.classList?.add("hidden");
+    
+    return () => versionsElement?.classList?.remove("hidden");
   }, []);
 };
 

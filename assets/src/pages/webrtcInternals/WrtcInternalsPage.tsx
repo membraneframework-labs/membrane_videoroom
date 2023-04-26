@@ -4,7 +4,7 @@ import React, { FC, useEffect, useState } from "react";
 import useDetailsToggle from "./hooks/useDetailsToggle";
 
 import InternalsSection from "./InternalsSection";
-import parseIncomingStats, { Section, isChannelInput } from "./parsIncomingStats";
+import parseIncomingStats, { Section, isChannelInput } from "./parseIncomingStats";
 import useHideVersion from "../../features/shared/hooks/useHideVersion";
 
 export const WebrtcInternalsPage: FC = () => {
@@ -23,7 +23,9 @@ export const WebrtcInternalsPage: FC = () => {
       .receive("ok", () => console.log("Joined the channel"))
       .receive("error", (res) => console.error("Couldn't join the channel, ", res));
     channel.on("metrics", ({ stats }) => {
-      if (isChannelInput(stats)) setChartData((prevStats) => parseIncomingStats(stats, prevStats, "main"));
+      if (isChannelInput(stats)) {
+        setChartData((prevStats) => parseIncomingStats(stats, prevStats, "main"));
+      }
     });
 
     return () => {

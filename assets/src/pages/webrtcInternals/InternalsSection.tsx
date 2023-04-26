@@ -1,7 +1,7 @@
 import React from "react";
 import Details from "./Details";
 import Chart from "./Chart";
-import { Section } from "./parsIncomingStats";
+import { Section } from "./parseIncomingStats";
 
 type InternalsSectionProps = {
   section: Section;
@@ -28,8 +28,7 @@ const InternalsSection = ({ title, section, isOpen, toggle }: InternalsSectionPr
             </li>
           ))}
         </div>
-        {subsections &&
-          Object.entries(subsections).map(([key, section]) => (
+        {Object.entries(subsections || {}).map(([key, section]) => (
             <li className="p-2" key={key}>
               <InternalsSection title={key} section={section} isOpen={isOpen} toggle={toggle} />
             </li>

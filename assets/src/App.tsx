@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { DeveloperInfoProvider } from "./contexts/DeveloperInfoContext";
 import { router } from "./Routes";

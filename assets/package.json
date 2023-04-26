@@ -8,7 +8,7 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@jellyfish-dev/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#master",
+    "@jellyfish-dev/membrane-webrtc-js": "^0.4.6",
     "@types/react-modal": "^3.13.1",
     "clsx": "^1.2.1",
     "phoenix": "file:../deps/phoenix",

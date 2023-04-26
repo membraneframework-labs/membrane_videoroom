@@ -9,7 +9,7 @@ type InternalsSectionProps = {
   title: string;
 };
 
-const InternalsSection = ({ title, section}: InternalsSectionProps) => {
+const InternalsSection = ({ title, section }: InternalsSectionProps) => {
   const { descriptive, charts, subsections } = section;
   const [isOpen, toggle] = useToggle(false);
 
@@ -29,10 +29,10 @@ const InternalsSection = ({ title, section}: InternalsSectionProps) => {
           ))}
         </div>
         {Object.entries(subsections || {}).map(([key, section]) => (
-            <li className="p-2" key={key}>
-              <InternalsSection title={key} section={section}/>
-            </li>
-          ))}
+          <li className="p-2" key={key}>
+            <InternalsSection title={key} section={section} />
+          </li>
+        ))}
       </ul>
     </Details>
   );

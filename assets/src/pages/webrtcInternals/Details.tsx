@@ -8,7 +8,6 @@ type DetailsProps = {
 };
 
 const Details = ({ summaryText, children, isOpen, toggle }: DetailsProps) => {
-
   const notBubblingToggle = useCallback(
     (e: SyntheticEvent) => {
       e.stopPropagation();

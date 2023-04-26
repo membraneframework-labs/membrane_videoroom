@@ -20,7 +20,7 @@ const Chart = ({ title, xs, ys }: ChartProps) => {
           const date = new Date(value);
           const formattedDate = format(date, "hh:mm:ss");
           const hasFullSecDecimal = date.getSeconds() % 10 === 0;
-          
+
           return hasFullSecDecimal ? formattedDate : null;
         },
         position: "end",

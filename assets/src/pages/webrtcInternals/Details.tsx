@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useCallback, useEffect, useState } from "react";
+import React, { SyntheticEvent, useCallback } from "react";
 
 type DetailsProps = {
   summaryText: string;
@@ -8,19 +8,14 @@ type DetailsProps = {
 };
 
 const Details = ({ summaryText, children, isOpen, toggle }: DetailsProps) => {
-  const [isMounted, setMount] = useState<boolean>(false);
 
   const notBubblingToggle = useCallback(
     (e: SyntheticEvent) => {
       e.stopPropagation();
-      isMounted && toggle();
+      toggle();
     },
-    [isMounted, toggle]
+    [toggle]
   );
-
-  useEffect(() => {
-    setMount(true);
-  }, []);
 
   return (
     <details onToggle={notBubblingToggle} open={isOpen}>

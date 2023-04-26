@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { LineChart, LineChartOptions } from "chartist";
-import moment from "moment";
+import { format } from "date-fns";
 import { zip } from "ramda";
 
 type ChartProps = {
@@ -16,8 +16,13 @@ const Chart = ({ title, xs, ys }: ChartProps) => {
   const options: LineChartOptions = useMemo(
     () => ({
       axisX: {
-        labelInterpolationFnc: (value) =>
-          moment(value).seconds() % 10 === 0 ? moment(value).format("hh:mm:ss") : null,
+        labelInterpolationFnc: (value) => {
+          const date = new Date(value);
+          const formattedDate = format(date, "hh:mm:ss");
+          const hasFullSecDecimal = date.getSeconds() % 10 === 0;
+          
+          return hasFullSecDecimal ? formattedDate : null;
+        },
         position: "end",
       },
       axisY: {

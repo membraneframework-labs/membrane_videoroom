@@ -10,7 +10,7 @@ type DetailsProps = {
 const Details = ({ summaryText, children, isOpen, toggle }: DetailsProps) => {
   const [isMounted, setMount] = useState<boolean>(false);
 
-  const unbubbledToggle = useCallback(
+  const notBubblingToggle = useCallback(
     (e: SyntheticEvent) => {
       e.stopPropagation();
       isMounted && toggle();
@@ -23,7 +23,7 @@ const Details = ({ summaryText, children, isOpen, toggle }: DetailsProps) => {
   }, []);
 
   return (
-    <details onToggle={unbubbledToggle} open={isOpen}>
+    <details onToggle={notBubblingToggle} open={isOpen}>
       <summary>{summaryText}</summary>
       {children}
     </details>

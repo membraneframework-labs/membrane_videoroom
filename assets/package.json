@@ -9,11 +9,8 @@
   },
   "dependencies": {
     "@jellyfish-dev/membrane-webrtc-js": "^0.4.5",
-    "@types/ramda": "^0.29.0",
-    "chart.js": "^4.2.1",
     "chartist": "^1.3.0",
     "clsx": "^1.2.1",
-    "moment": "^2.29.4",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "query-string": "^7.0.0",
@@ -28,6 +25,7 @@
   "devDependencies": {
     "@types/dom-screen-wake-lock": "^1.0.0",
     "@types/phoenix": "^1.5.4",
+    "@types/ramda": "^0.29.0",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "@types/react-page-visibility": "^6.4.1",
@@ -35,6 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
     "autoprefixer": "^10.4.13",
+    "date-fns": "^2.29.3",
     "eslint": "^8.25.0",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",

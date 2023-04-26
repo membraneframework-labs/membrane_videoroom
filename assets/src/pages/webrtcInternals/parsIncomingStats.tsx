@@ -1,5 +1,5 @@
-import moment from "moment";
 import { MAX_DATA_POINTS_ON_CHART } from "../room/consts";
+import { subSeconds } from 'date-fns'
 import { tail } from "ramda";
 
 export type Section = {
@@ -58,11 +58,7 @@ const mapToChartEntry = (entry: [string, number], prevSection: Section | null): 
   const newLabel = Date.now();
   const newValue = v;
 
-  const secondsBefore = (s: number) =>
-    moment(Date.now())
-      .subtract(s + 1, "seconds")
-      .toDate()
-      .getTime();
+  const secondsBefore = (s: number) => subSeconds(Date.now(), s).getTime();
   const previousSeconds = [...Array(MAX_DATA_POINTS_ON_CHART - 1).keys()].map(secondsBefore).reverse();
   const previousLabels = prevChart === null ? previousSeconds : tail(prevChart.xs);
   const previousValues = prevChart === null ? Array(MAX_DATA_POINTS_ON_CHART - 1).fill(null) : tail(prevChart.ys);

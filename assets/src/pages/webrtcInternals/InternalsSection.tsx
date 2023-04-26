@@ -2,19 +2,19 @@ import React from "react";
 import Details from "./Details";
 import Chart from "./Chart";
 import { Section } from "./parseIncomingStats";
+import { useToggle } from "../room/hooks/useToggle";
 
 type InternalsSectionProps = {
   section: Section;
   title: string;
-  isOpen: (key: string) => boolean;
-  toggle: (key: string) => void;
 };
 
-const InternalsSection = ({ title, section, isOpen, toggle }: InternalsSectionProps) => {
-  const { key, descriptive, charts, subsections } = section;
+const InternalsSection = ({ title, section}: InternalsSectionProps) => {
+  const { descriptive, charts, subsections } = section;
+  const [isOpen, toggle] = useToggle(false);
 
   return (
-    <Details summaryText={title} isOpen={isOpen(key)} toggle={() => toggle(key)}>
+    <Details summaryText={title} isOpen={isOpen} toggle={toggle}>
       <ul className="list-inside list-disc">
         {descriptive.map(({ name, value }) => (
           <li className="p-2 px-4" key={name}>{`${name}: ${value}`}</li>
@@ -30,7 +30,7 @@ const InternalsSection = ({ title, section, isOpen, toggle }: InternalsSectionPr
         </div>
         {Object.entries(subsections || {}).map(([key, section]) => (
             <li className="p-2" key={key}>
-              <InternalsSection title={key} section={section} isOpen={isOpen} toggle={toggle} />
+              <InternalsSection title={key} section={section}/>
             </li>
           ))}
       </ul>

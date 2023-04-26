@@ -20,6 +20,8 @@ export const toMediaTrackConstraints = (
 export const getName = (obj: unknown): string | null =>
   obj && typeof obj === "object" && "name" in obj && typeof obj.name === "string" ? obj["name"] : null;
 
+export type MediaType = "audio" | "video";
+
 export type DeviceReturnType =
   | { type: "OK"; devices: MediaDeviceInfo[] }
   | { type: "Error"; name: string | null }
@@ -72,8 +74,8 @@ export type UseUserMediaStartConfig = {
 export type UseUserMedia = {
   data: UseUserMediaState | null;
   start: (config: UseUserMediaStartConfig) => void;
-  stop: (type: "video" | "audio") => void;
-  setEnable: (type: "video" | "audio", value: boolean) => void;
+  stop: (type: MediaType) => void;
+  setEnable: (type: MediaType, value: boolean) => void;
   init: (videoParam: boolean | MediaTrackConstraints, audioParam: boolean | MediaTrackConstraints) => void;
 };
 
@@ -409,7 +411,7 @@ export const useUserMedia = ({
     [state, audioConstraints, saveLastAudioDevice, videoConstraints, saveLastVideoDevice]
   );
 
-  const stop = useCallback(async (type: "video" | "audio") => {
+  const stop = useCallback(async (type: MediaType) => {
     const name = type === "audio" ? "audioMedia" : "videoMedia";
 
     setState((prevState) => {
@@ -419,7 +421,7 @@ export const useUserMedia = ({
     });
   }, []);
 
-  const setEnable = useCallback((type: "video" | "audio", value: boolean) => {
+  const setEnable = useCallback((type: MediaType, value: boolean) => {
     setState((prevState) => {
       const name = type === "audio" ? "audioMedia" : "videoMedia";
       if (!prevState[name]) {

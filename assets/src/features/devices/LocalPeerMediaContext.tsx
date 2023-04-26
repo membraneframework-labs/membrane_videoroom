@@ -1,7 +1,12 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
-import { MediaType } from "@jellyfish-dev/jellyfish-react-client/dist/navigator/types";
-import { useUserMedia, UseUserMediaConfig, UseUserMediaStartConfig, UseUserMediaState } from "./useUserMedia";
+import {
+  MediaType,
+  useUserMedia,
+  UseUserMediaConfig,
+  UseUserMediaStartConfig,
+  UseUserMediaState,
+} from "./useUserMedia";
 import { loadObject, saveObject } from "../shared/utils/localStorage";
 import { useMedia } from "./useMedia";
 

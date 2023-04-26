@@ -8,7 +8,6 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@jellyfish-dev/jellyfish-react-client": "github:jellyfish-dev/jellyfish-react-client#add-lint-updated",
     "@jellyfish-dev/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#master",
     "@types/react-modal": "^3.13.1",
     "clsx": "^1.2.1",

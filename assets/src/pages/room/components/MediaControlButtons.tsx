@@ -14,9 +14,8 @@ import Chat from "../../../features/room-page/icons/Chat";
 import useMobileViewport from "../../../features/shared/hooks/useMobileViewport";
 import MenuDots from "../../../features/room-page/icons/MenuDots";
 import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../features/room-page/consts";
-import { UseUserMedia } from "@jellyfish-dev/jellyfish-react-client/navigator";
 import { SCREENSHARING_MEDIA_CONSTRAINTS } from "../consts";
-import { useLocalPeer } from "../../../features/devices/LocalPeerMediaContext";
+import { Device, useLocalPeer } from "../../../features/devices/LocalPeerMediaContext";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
@@ -24,9 +23,9 @@ const getAutomaticControls = (
   { audioStreaming, cameraStreaming, screenSharingStreaming, isSidebarOpen, openSidebar }: LocalUserMediaControls,
   navigate: NavigateFunction,
   roomId: string | null,
-  videoDevice: UseUserMedia,
-  audioDevice: UseUserMedia,
-  screenSharingDevice: UseUserMedia,
+  videoDevice: Device,
+  audioDevice: Device,
+  screenSharingDevice: Device,
   setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void,
   isMobileViewport?: boolean
 ): ControlButton[] => [
@@ -346,11 +345,11 @@ type Props = {
 } & LocalUserMediaControls;
 
 type LocalUserMediaControls = {
-  userMediaVideo: UseUserMedia;
+  userMediaVideo: Device;
   cameraStreaming: MembraneStreaming;
-  userMediaAudio: UseUserMedia;
+  userMediaAudio: Device;
   audioStreaming: MembraneStreaming;
-  displayMedia: UseUserMedia;
+  displayMedia: Device;
   screenSharingStreaming: MembraneStreaming;
   isSidebarOpen?: boolean;
   openSidebar: () => void;

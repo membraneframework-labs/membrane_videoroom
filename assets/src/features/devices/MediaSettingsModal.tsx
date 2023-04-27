@@ -34,7 +34,7 @@ export const MediaSettingsModal: React.FC = () => {
       confirmText="Save"
       onRequestClose={handleClose}
       closable
-      cancelClassName="text-additional-red-100"
+      cancelClassName="!text-additional-red-100"
       onConfirm={() => {
         start({
           audioDeviceId: audioInput || undefined,

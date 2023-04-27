@@ -27,9 +27,13 @@ export const Select: FC<SelectProps> = ({ onChange, controlClassName, ...otherPr
       }}
       classNames={{
         control: (state) => clsx(controlClassName, state.isFocused && "border-brand-sea-blue-400"),
-        option: () => "px-4 py-3.5 hover:bg-brand-dark-blue-100 focus-within:bg-brand-dark-blue-100",
+        option: (state) =>
+          clsx(
+            "px-4 py-3.5 hover:bg-brand-dark-blue-100 focus-within:bg-brand-dark-blue-100",
+            state.isFocused && "bg-brand-dark-blue-100"
+          ),
         menu: () =>
-          "max-h-40 rounded-3xl border-brand-dark-blue-200 border-2 overflow-y-auto bg-brand-white flex flex-col",
+          "max-h-40 rounded-lg border-brand-dark-blue-200 border-2 overflow-y-auto bg-brand-white flex flex-col",
       }}
       onChange={(v) => onChange?.(v as SelectOption)}
       {...otherProps}

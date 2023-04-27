@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 import {
   MediaType,
@@ -90,27 +90,13 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
     [data]
   );
 
-  const setVideoDeviceId = useCallback(
-    (value: string) => {
-      start({ videoDeviceId: value });
-    },
-    [start]
-  );
-
-  const setAudioDeviceId = useCallback(
-    (value: string) => {
-      start({ audioDeviceId: value });
-    },
-    [start]
-  );
-
   const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(data, "video"), [data]);
   const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(data, "audio"), [data]);
 
   const video: UserMedia = useMemo(() => {
     return {
       id: data?.videoMedia?.deviceInfo?.deviceId || null,
-      setId: setVideoDeviceId,
+      setId: (value: string) => start({ videoDeviceId: value }),
       device: {
         stream: data?.videoMedia?.stream || null,
         isError: false,
@@ -125,12 +111,12 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
       devices: videoDevices,
       error: videoDeviceError,
     };
-  }, [data, videoDeviceError, videoDevices, stop, start, setVideoDeviceId, setEnable]);
+  }, [data, videoDeviceError, videoDevices, stop, start, setEnable]);
 
   const audio: UserMedia = useMemo(
     () => ({
       id: data?.audioMedia?.deviceInfo?.deviceId || null,
-      setId: setAudioDeviceId,
+      setId: (value: string) => start({ audioDeviceId: value }),
       device: {
         stream: data?.audioMedia?.stream || null,
         isError: false,
@@ -148,7 +134,7 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
       devices: audioDevices,
       error: audioDeviceError,
     }),
-    [data, audioDeviceError, audioDevices, stop, start, setAudioDeviceId, setEnable]
+    [data, audioDeviceError, audioDevices, stop, start, setEnable]
   );
 
   const screenShare: DisplayMedia = useMemo(

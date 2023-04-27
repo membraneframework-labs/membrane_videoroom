@@ -202,6 +202,10 @@ export const useUserMedia = ({
     videoError: null,
   });
 
+  useEffect(() => {
+    console.log({ data: state });
+  }, [state]);
+
   const audioConstraints = useMemo(() => toMediaTrackConstraints(audioTrackConstraints), [audioTrackConstraints]);
   const videoConstraints = useMemo(() => toMediaTrackConstraints(videoTrackConstraints), [videoTrackConstraints]);
 
@@ -424,9 +428,13 @@ export const useUserMedia = ({
   const setEnable = useCallback((type: MediaType, value: boolean) => {
     setState((prevState) => {
       const name = type === "audio" ? "audioMedia" : "videoMedia";
-      if (!prevState[name]) {
+      const media = prevState[name];
+      if (!media || !media.track) {
         return prevState;
       }
+
+      media.track.enabled = value;
+
       return { ...prevState, [name]: { ...prevState[name], enabled: value } };
     });
   }, []);

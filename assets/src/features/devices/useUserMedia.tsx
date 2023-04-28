@@ -112,16 +112,23 @@ const getCurrentDevicesSettings = (
   return currentDevices;
 };
 
-const isDeviceDifferentFromLastSession = (lastDevice: MediaDeviceInfo | null, currentDevices: MediaDeviceInfo | null) =>
-  (lastDevice && currentDevices?.deviceId !== lastDevice.deviceId) || currentDevices?.label === lastDevice?.label;
+const isDeviceDifferentFromLastSession = (
+  lastDevice: MediaDeviceInfo | null,
+  currentDevices: MediaDeviceInfo | null
+) => {
+  return (
+    lastDevice && (currentDevices?.deviceId !== lastDevice.deviceId || currentDevices?.label !== lastDevice?.label)
+  );
+};
 
 const isAnyDeviceDifferentFromLastSession = (
   lastVideoDevice: MediaDeviceInfo | null,
   lastAudioDevice: MediaDeviceInfo | null,
   currentDevices: CurrentDevices | null
 ) =>
-  isDeviceDifferentFromLastSession(lastVideoDevice, currentDevices?.videoinput || null) ||
-  isDeviceDifferentFromLastSession(lastAudioDevice, currentDevices?.audioinput || null);
+  (currentDevices?.videoinput &&
+    isDeviceDifferentFromLastSession(lastVideoDevice, currentDevices?.videoinput || null)) ||
+  (currentDevices?.audioinput && isDeviceDifferentFromLastSession(lastAudioDevice, currentDevices?.audioinput || null));
 
 const stopTracks = (requestedDevices: MediaStream) => {
   requestedDevices.getTracks().forEach((track) => {
@@ -147,6 +154,25 @@ const getExactConstraints = (
   },
 });
 
+const abc = (
+  shouldAskForVideo: boolean,
+  videoIdToStart: string | undefined,
+  videoConstraints: MediaTrackConstraints | undefined
+) => {
+  if (shouldAskForVideo) {
+    if (videoIdToStart) {
+      return {
+        ...videoConstraints,
+        deviceId: { exact: videoIdToStart },
+      };
+    } else {
+      return videoConstraints;
+    }
+  } else {
+    return false;
+  }
+};
+
 const getExactConstraintsIfPossible = (
   shouldAskForVideo: boolean,
   videoIdToStart: string | undefined,
@@ -154,22 +180,21 @@ const getExactConstraintsIfPossible = (
   shouldAskForAudio: boolean,
   audioIdToStart: string | undefined,
   audioConstraints: MediaTrackConstraints | undefined
-) => ({
-  video:
-    shouldAskForVideo && !!videoIdToStart
-      ? {
-          ...videoConstraints,
-          deviceId: { exact: videoIdToStart },
-        }
-      : videoConstraints,
-  audio:
-    shouldAskForAudio && !!audioIdToStart
-      ? {
-          ...audioConstraints,
-          deviceId: { exact: audioIdToStart },
-        }
-      : audioConstraints,
-});
+) => {
+  console.log({
+    shouldAskForVideo,
+    videoIdToStart,
+    videoConstraints,
+    shouldAskForAudio,
+    audioIdToStart,
+    audioConstraints,
+  });
+
+  return {
+    video: abc(shouldAskForVideo, videoIdToStart, videoConstraints),
+    audio: abc(shouldAskForAudio, audioIdToStart, audioConstraints),
+  };
+};
 
 const REQUESTING = { type: "Requesting" } as const;
 const NOT_REQUESTED = { type: "Not requested" } as const;
@@ -180,6 +205,41 @@ const shouldAskForLastDevices = (
 ) => previousVideoDevice?.deviceId || previousAudioDevice?.deviceId;
 
 const shouldAskForAnyDevice = (requestedDevices: null | MediaStream) => requestedDevices === null;
+
+type DeviceError =
+  | {
+      name: "OverconstrainedError";
+      message: "";
+      constraint: "deviceId";
+    }
+  | {
+      message: "Permission denied";
+      name: "NotAllowedError";
+    };
+
+const PERMISSION_DENIED: DeviceError = {
+  message: "Permission denied",
+  name: "NotAllowedError",
+};
+
+const OVERCONSTRAINED_ERROR: DeviceError = {
+  name: "OverconstrainedError",
+  message: "",
+  constraint: "deviceId",
+};
+
+// https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions
+const parseError = (error: unknown): DeviceError | null => {
+  if (error && typeof error === "object" && "name" in error) {
+    if (error.name === "NotAllowedError") {
+      return PERMISSION_DENIED;
+    } else if (error.name === "OverconstrainedError") {
+      return OVERCONSTRAINED_ERROR;
+    }
+  }
+  // todo handle unknown error
+  return null;
+};
 
 /**
  * Hook that returns the list of available devices
@@ -219,52 +279,207 @@ export const useUserMedia = ({
     const previousVideoDevice: MediaDeviceInfo | null = getLastVideoDevice();
     const previousAudioDevice: MediaDeviceInfo | null = getLastAudioDevice();
 
-    const shouldAskForAudio = !!audioTrackConstraints;
-    const shouldAskForVideo = !!videoTrackConstraints;
+    const userAskFroAudio = !!audioTrackConstraints;
+    const userAskForVideo = !!videoTrackConstraints;
+
+    let shouldAskForVideo = userAskForVideo;
+    let shouldAskForAudio = userAskFroAudio;
 
     setState((prevState) => ({
       ...prevState,
-      audio: shouldAskForVideo && audioConstraints ? REQUESTING : prevState.audio ?? NOT_REQUESTED,
-      video: shouldAskForAudio && videoConstraints ? REQUESTING : prevState.video ?? NOT_REQUESTED,
+      audio: userAskForVideo && audioConstraints ? REQUESTING : prevState.audio ?? NOT_REQUESTED,
+      video: userAskFroAudio && videoConstraints ? REQUESTING : prevState.video ?? NOT_REQUESTED,
     }));
+
+    const enumeratedDevices = await navigator.mediaDevices.enumerateDevices();
+
+    const isVideoAvailable = !enumeratedDevices
+      .filter((d) => d.kind === "videoinput")
+      .some((d) => d.deviceId === "" || d.label === "");
+
+    const isAudioAvailable = !enumeratedDevices
+      .filter((d) => d.kind === "audioinput")
+      .some((d) => d.deviceId === "" || d.label === "");
+    console.log({ enumeratedDevices, isVideoAvailable, isAudioAvailable });
 
     let requestedDevices: MediaStream | null = null;
 
-    if (shouldAskForLastDevices(previousVideoDevice, previousAudioDevice)) {
+    // todo change error
+    let audioError: DeviceError | null = null;
+    let videoError: DeviceError | null = null;
+
+    console.log({ audioError, videoError });
+
+    const phase1 = !!shouldAskForLastDevices(previousVideoDevice, previousAudioDevice);
+    console.log(`%c 1. Exact constraints check (${phase1})`, "color: purple");
+    if (phase1) {
       try {
         requestedDevices = await navigator.mediaDevices.getUserMedia(
           getExactConstraints(
-            shouldAskForVideo,
+            userAskForVideo,
             videoConstraints,
             previousVideoDevice,
-            shouldAskForAudio,
+            userAskFroAudio,
             audioConstraints,
             previousAudioDevice
           )
         );
-      } catch (_: unknown) {
-        /* This error could be ignored because it will be another attempt */
+        console.log("%c   1. Exact constraints succeeded", "color: green");
+      } catch (error: unknown) {
+        console.log("%c   1. Exact constraints failed", "color: orange");
+
+        console.warn({ error });
+        const parsedError = parseError(error);
+
+        if (parsedError?.name === "NotAllowedError") {
+          audioError = isAudioAvailable ? null : PERMISSION_DENIED;
+          videoError = isVideoAvailable ? null : PERMISSION_DENIED;
+        } else if (parsedError?.name === "OverconstrainedError") {
+          // OverconstrainedError has higher priority than NotAllowedError
+          // swallow this error and handle it in phase 2
+        }
       }
+
+      /* This error could be ignored because it will be another attempt */
     }
 
-    let audioError: string | null = null;
-    let videoError: string | null = null;
+    shouldAskForVideo = userAskForVideo && videoError?.name !== "NotAllowedError";
+    shouldAskForAudio = userAskFroAudio && audioError?.name !== "NotAllowedError";
+
+    // Proba poluźnienia uprawnień
+    // urządzenia z not allowd są wykluczone, to dalej robimy
+
+    // if "NotAllowed" ->
+    //    stop asking about this device
+
+    console.log({ audioError, videoError });
+
+    const phase2 = (shouldAskForVideo || shouldAskForAudio) && shouldAskForAnyDevice(requestedDevices);
+    console.log(`%c 2. Additional exact constraints check: (${phase2})`, "color: purple");
+    if (phase2) {
+      try {
+        const exactConstraints2 = getExactConstraints(
+          shouldAskForVideo,
+          videoConstraints,
+          previousVideoDevice,
+          shouldAskForAudio,
+          audioConstraints,
+          previousAudioDevice
+        );
+
+        // console.log({ exactConstraints2 });
+
+        requestedDevices = await navigator.mediaDevices.getUserMedia(exactConstraints2);
+        console.log("%c   2. Additional exact constraints succeeded", "color: green");
+      } catch (error: unknown) {
+        console.log("%c   2. Additional exact failed", "color: orange");
+
+        console.warn({ error });
+        const parsedError = parseError(error);
+
+        if (parsedError?.name === "NotAllowedError") {
+          // There shouldn't be this error.
+          console.error("There shouldn't be this error!!!");
+          throw Error("There shouldn't be this error");
+          // audioError = isAudioAvailable ? null : PERMISSION_DENIED;
+          // videoError = isVideoAvailable ? null : PERMISSION_DENIED;
+        } else if (parsedError?.name === "OverconstrainedError") {
+          audioError = shouldAskForAudio ? OVERCONSTRAINED_ERROR : audioError;
+          videoError = shouldAskForVideo ? OVERCONSTRAINED_ERROR : videoError;
+        }
+      }
+
+      /* This error could be ignored because it will be another attempt */
+    }
+
+    // Jeżeli jest not allowed to nie ma overconstraint
+    // obsłuż not allowed
+
+    // if "OverconstrainedError" -> means "OverconstrainedError" or "OverconstrainedError" and "Not allowed"
+    //    lose constraint
+
+    console.log({ audioError, videoError });
 
     try {
-      if (shouldAskForAnyDevice(requestedDevices)) {
+      // If NotAllowedError and OverconstrainedError can be thrown OverconstrainedError has higher priority
+      // so OverconstrainedError will be thrown. (based on my tests, google chrome)
+      //
+      // It will lose constrains for ids for BOTH devices to overcome OverconstrainedError (we c)
+      // and if NotAllowedError was thrown, it will stop asking about this device.
+      //
+      // BOTH errors -> handle OverconstrainedError and ask for BOTH devices with weaker constraints -> could resolve to NotAllowedError or OK
+      // OverconstrainedError -> handle OverconstrainedError and ask for BOTH devices with weaker constraints ->
+      // NotAllowedError -> ask for another device ->
+      //
+      // If only NotAllowedError is possible this block of code will skip that device and ask only for second device.
+      // If only OverconstrainedError is possible it will lose constraints for ids. So OverconstrainedError won't be possible.
+      //
+      // If overconstrained error was thrown in 1 phase it will handle it.
+      // If not allowed error was thrown this would skip that device
+      // Overconstrained error has higher priority than NotAllowedError so this will once again handle NotAllowedError
+      const phase3 = shouldAskForAnyDevice(requestedDevices);
+      console.log(`%c 3. Any constraints check (${phase3})`, "color: purple");
+      if (phase3) {
+        console.log({ audioError, videoError });
+
+        // const anyDeviceOldConstraints: MediaStreamConstraints = {
+        //   video: userAskForVideo && videoConstraints,
+        //   audio: userAskFroAudio && audioConstraints,
+        // };
+        //
+        // console.log({ anyDeviceOldConstraints });
         const anyDeviceConstraints: MediaStreamConstraints = {
           video: shouldAskForVideo && videoConstraints,
           audio: shouldAskForAudio && audioConstraints,
         };
 
+        console.log({ anyDeviceConstraints });
+
         requestedDevices = await navigator.mediaDevices.getUserMedia(anyDeviceConstraints);
+        console.log("%c   3. Any constraints succeeded", "color: green");
       }
     } catch (error: unknown) {
-      // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions
-      const errorName = getName(error);
-      videoError = shouldAskForVideo ? errorName : null;
-      audioError = shouldAskForAudio ? errorName : null;
+      console.log("%c   3. Any constraints failed", "color: orange");
+
+      console.warn({ error });
+      const parsedError = parseError(error);
+      // tutaj jużo overconstraint nie poleci
+
+      videoError = userAskForVideo && !isVideoAvailable ? parsedError : videoError;
+      audioError = userAskFroAudio && !isAudioAvailable ? parsedError : audioError;
     }
+
+    // // * Additional run start * //
+    // try {
+    //   console.log("%c 3. Additional any constraints check", "color: purple");
+    //   if (shouldAskForAnyDevice(requestedDevices)) {
+    //     // console.warn({ audioError, videoError });
+    //
+    //     shouldAskForVideo = userAskForVideo && videoError?.name !== "NotAllowedError";
+    //     shouldAskForAudio = userAskFroAudio && audioError?.name !== "NotAllowedError";
+    //
+    //     // // console.log({ anyDeviceOldConstraints });
+    //     const anyDeviceConstraints: MediaStreamConstraints = {
+    //       video: shouldAskForVideo && videoConstraints,
+    //       audio: shouldAskForAudio && audioConstraints,
+    //     };
+    //     //
+    //     console.log({ anyDeviceConstraints });
+    //     //
+    //     requestedDevices = await navigator.mediaDevices.getUserMedia(anyDeviceConstraints);
+    //     console.log("%c   3. Additional any constraints succeeded", "color: green");
+    //   }
+    // } catch (error: unknown) {
+    //   console.log("%c   3. Additional any constraints failed", "color: orange");
+    //
+    //   console.warn({ error });
+    //   const parsedError = parseError(error);
+    //   // // tutaj jużo overconstraint nie poleci
+    //   //
+    //   // videoError = userAskForVideo && !isVideoAvailable ? parsedError : videoError;
+    //   // audioError = userAskFroAudio && !isAudioAvailable ? parsedError : audioError;
+    // }
+    // // * Additional run end * //
 
     const mediaDeviceInfos: MediaDeviceInfo[] = await navigator.mediaDevices.enumerateDevices();
 
@@ -274,7 +489,10 @@ export const useUserMedia = ({
       try {
         const currentDevices = getCurrentDevicesSettings(requestedDevices, mediaDeviceInfos);
 
-        if (isAnyDeviceDifferentFromLastSession(previousVideoDevice, previousAudioDevice, currentDevices)) {
+        // console.log({ currentDevices });
+        const phase4 = !!isAnyDeviceDifferentFromLastSession(previousVideoDevice, previousAudioDevice, currentDevices);
+        console.log(`%c 4. Device correction check (${phase4})`, "color: purple");
+        if (phase4) {
           const videoIdToStart = mediaDeviceInfos.find((info) => info.label === previousVideoDevice?.label)?.deviceId;
           const audioIdToStart = mediaDeviceInfos.find((info) => info.label === previousAudioDevice?.label)?.deviceId;
 
@@ -282,18 +500,25 @@ export const useUserMedia = ({
             stopTracks(requestedDevices);
 
             const exactConstraints: MediaStreamConstraints = getExactConstraintsIfPossible(
-              shouldAskForVideo,
+              shouldAskForVideo, // shouldAskForVideo
               videoIdToStart,
               videoConstraints,
-              shouldAskForAudio,
+              shouldAskForAudio, // shouldAskForAudio
               audioIdToStart,
               audioConstraints
             );
 
+            // console.log({ exactConstraints });
+
             requestedDevices = await navigator.mediaDevices.getUserMedia(exactConstraints);
+
+            console.log("%c   4. Device correction succeeded", "color: green");
           }
         }
       } catch (error: unknown) {
+        console.log("%c   4. Device correction failed", "color: orange");
+        console.warn({ error });
+
         /* This error could be ignored because we handle navigator errors in previous try catch */
       }
     }
@@ -307,8 +532,8 @@ export const useUserMedia = ({
     const audioDeviceInfo = getDeviceInfo(audioTrack?.getSettings()?.deviceId || null, audioDevices);
 
     setState({
-      video: prepareReturn(shouldAskForVideo, videoDevices, videoError),
-      audio: prepareReturn(shouldAskForAudio, audioDevices, audioError),
+      video: prepareReturn(userAskForVideo, videoDevices, videoError),
+      audio: prepareReturn(userAskFroAudio, audioDevices, audioError),
       audioMedia: {
         stream: requestedDevices,
         track: audioTrack,

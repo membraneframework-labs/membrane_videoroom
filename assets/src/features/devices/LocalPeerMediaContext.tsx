@@ -137,9 +137,9 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
     [data, audioDeviceError, audioDevices, stop, start, setEnable]
   );
 
-  useEffect(() => {
-    console.log({ audio });
-  }, [audio]);
+  // useEffect(() => {
+  //   console.log({ audio });
+  // }, [audio]);
 
   const screenShare: DisplayMedia = useMemo(
     () => ({

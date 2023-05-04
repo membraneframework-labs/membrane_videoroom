@@ -12,21 +12,23 @@ const useSmartphoneViewport = (): ScreenInfo => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const isLandscape =
+        screen.orientation?.type.includes("landscape") || window.matchMedia("(orientation: landscape)").matches;
+
       const updateIsSmartphoneState = () => {
         if (!window.visualViewport) return;
 
         const isCoarse = matchMedia("(pointer:coarse)").matches;
         const hasMobileWidth = window.visualViewport.width <= MOBILE_WIDTH_BREAKPOINT;
 
-        const isLandscapedSmartphone =
-          screen.orientation.type.includes("landscape") && window.visualViewport.width <= MAX_MOBILE_WIDTH_BREAKPOINT; // iPhone 12 max  viewpor width
+        const isLandscapedSmartphone = isLandscape && window.visualViewport.width <= MAX_MOBILE_WIDTH_BREAKPOINT; // iPhone 12 max  viewpor width
         setIsSmartphone(isCoarse && (hasMobileWidth || isLandscapedSmartphone));
       };
 
       const updateIsHorizontalOrientationState = () => {
         if (!screen) return;
 
-        setIsHorizontal(screen.orientation.type.includes("landscape"));
+        setIsHorizontal(isLandscape);
       };
 
       const updateState = () => {

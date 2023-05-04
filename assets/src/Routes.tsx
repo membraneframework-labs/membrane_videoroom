@@ -18,7 +18,7 @@ const RoomPageWrapper: React.FC = () => {
   const { cameraAutostart, audioAutostart } = usePreviewSettings();
 
   if (isLeavingRoom && roomId) {
-    return <LeavingRoomScreen roomId={roomId} />;
+    return <LeavingRoomScreen />;
   }
 
   return username && roomId ? (

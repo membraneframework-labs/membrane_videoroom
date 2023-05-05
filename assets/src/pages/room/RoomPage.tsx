@@ -13,9 +13,8 @@ import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
-import Sidebar from "../../features/room-page/components/Sidebar";
-import Button from "../../features/shared/components/Button";
 import clsx from "clsx";
+import RoomSidebar from "./RoomSidebar";
 
 type Props = {
   displayName: string;
@@ -121,28 +120,7 @@ const RoomPage: FC<Props> = ({
             unpinnedTilesHorizontal={isSidebarOpen}
           />
 
-          <>
-            {isSidebarOpen && (
-              <div className="absolute inset-0 h-screen bg-transparent/40 md:hidden">
-                <Button className="absolute inset-0" onClick={() => setIsSidebarOpen(false)}></Button>
-                <Sidebar
-                  peers={peerState.remote}
-                  localPeer={peerState.local}
-                  onClose={() => setIsSidebarOpen(false)}
-                />{" "}
-              </div>
-            )}
-
-            <div
-              className={clsx(
-                "hidden w-full md:inline-block",
-                isSidebarOpen ? "max-w-[300px]" : "max-w-0",
-                "overflow-hidden transition-all duration-300"
-              )}
-            >
-              <Sidebar peers={peerState.remote} localPeer={peerState.local} />
-            </div>
-          </>
+          <RoomSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} peerState={peerState} />
         </section>
 
         <MediaControlButtons
@@ -162,7 +140,7 @@ const RoomPage: FC<Props> = ({
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}
-              className="m-1 w-full rounded bg-brand-grey-80 py-2 px-4 text-white hover:bg-brand-grey-100"
+              className="m-1 w-full rounded bg-brand-grey-80 px-4 py-2 text-white hover:bg-brand-grey-100"
               type="submit"
             >
               Show simulcast controls

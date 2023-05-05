@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../../shared/components/Button";
 import QuestionnairePageLayout from "../../questionnaire-page/components/QuestionnairePageLayout";
 import Input from "../../shared/components/Input";
@@ -6,7 +6,28 @@ import Send from "../../questionnaire-page/icons/Send";
 import Plus from "../../questionnaire-page/icons/Plus";
 import Info from "../../questionnaire-page/icons/Info";
 
+type CommentBoxProps = {
+  isOpen: boolean;
+  setOpen: () => void;
+}
+
+const CommentBox = ({isOpen, setOpen}:CommentBoxProps) => {
+  const AddCommentButton = () => (<button 
+    onClick={setOpen} 
+    className="flex flex-row justify-center gap-2 p-0">
+      <Plus/>
+      <span>Add comment</span>
+    </button>);
+
+  const CommentInput = () => (<Input label="Comment (optional)"/>);
+  
+  return isOpen ? <CommentInput/> : <AddCommentButton/>;
+}
+
+
 const LeavingRoomScreen: React.FC = () => {
+  const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
+
   return (
     <QuestionnairePageLayout>
       <section className="flex h-full w-full flex-col items-center justify-center gap-y-14 sm:gap-y-20">
@@ -16,15 +37,12 @@ const LeavingRoomScreen: React.FC = () => {
 
         <div className="flex w-full flex-col content-center justify-center gap-6 text-center">
           <span>How would you rate...</span>
-          <div className="flex flex-col sm:flex-row w-full justify-center">
-            <div className="w-64 h-16">Video Quality</div>
-            <div className="w-64 h-16">Audio Quality</div>
-            <div className="w-64 h-16">Screenshare Quality</div>
+          <div className="flex flex-col sm:flex-row w-full justify-center content-center">
+            <div className="w-full h-16">Video Quality</div>
+            <div className="w-full h-16">Audio Quality</div>
+            <div className="w-full h-16">Screenshare Quality</div>
           </div>
-          <button className="flex flex-row justify-center gap-2 p-0">
-            <Plus/>
-            <span>Add comment</span>
-          </button>
+          <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)}/>
         </div>
         <div className="flex flex-col p-0 items-start w-96 gap-2">
         <Input 

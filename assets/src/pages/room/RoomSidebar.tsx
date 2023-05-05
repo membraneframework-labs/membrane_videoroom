@@ -3,7 +3,7 @@ import { PeersState } from "./hooks/usePeerState";
 import Sidebar from "../../features/room-page/components/Sidebar";
 import clsx from "clsx";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
-import useMobileViewport from "../../features/shared/hooks/useMobileViewport";
+import useSmartphoneViewport from "../../features/shared/hooks/useSmartphoneViewport";
 
 type Props = {
   isSidebarOpen: boolean;
@@ -14,7 +14,7 @@ type Props = {
 const RoomSidebar: FC<Props> = ({ isSidebarOpen, setIsSidebarOpen, peerState }: Props) => {
   const SIDEBAR_HEIGHT_MOBILE = 480;
 
-  const isMobile = useMobileViewport();
+  const isMobile = useSmartphoneViewport();
   const animationControls = useAnimation();
 
   const sidebarStyles = {

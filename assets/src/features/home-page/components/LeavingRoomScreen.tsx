@@ -30,21 +30,20 @@ const LeavingRoomScreen: React.FC = () => {
 
   return (
     <QuestionnairePageLayout>
-      <section className="flex h-full w-full flex-col items-center justify-center gap-y-14 sm:gap-y-20">
-        <div className="flex flex-col items-center gap-y-2 text-center sm:gap-y-6">
-          <h2 className="text-2xl font-medium sm:text-5xl">Thank you for participating!</h2>
-        </div>
+      <section className="flex h-full w-full flex-col items-center justify-center gap-y-10 sm:gap-y-20">
+        <h2 className="text-2xl font-medium sm:text-5xl">Thank you for participating!</h2>
 
-        <div className="flex w-full flex-col content-center justify-center gap-6 text-center">
+        <div aria-label="content" className="flex flex-col items-center justify-center p-0 gap-10">
+        <div aria-label="rating" className="flex w-full flex-col content-center justify-center gap-6 text-center">
           <span>How would you rate...</span>
           <div className="flex flex-col sm:flex-row w-full justify-center content-center">
-            <div className="w-full h-16">Video Quality</div>
-            <div className="w-full h-16">Audio Quality</div>
-            <div className="w-full h-16">Screenshare Quality</div>
+            <div className="w-64 h-16">Video Quality</div>
+            <div className="w-64 h-16">Audio Quality</div>
+            <div className="w-64 h-16">Screenshare Quality</div>
           </div>
           <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)}/>
         </div>
-        <div className="flex flex-col p-0 items-start w-96 gap-2">
+        <div aria-label="email" className="flex flex-col p-0 items-start w-96 gap-2">
         <Input 
           type="text"
           label="Your e-mail"
@@ -54,11 +53,12 @@ const LeavingRoomScreen: React.FC = () => {
             <span>Information required</span>
           </div>
         </div>
-        <div className="flex flex-col content-center gap-4">
+        <div aria-label="button" className="flex flex-col content-center gap-4">
           <Button href="/" name="main-page" variant="normal">
             Submit <Send/>
           </Button>
           <span>You need to rate at least one quality to submit</span>
+        </div>
         </div>
       </section>
     </QuestionnairePageLayout>

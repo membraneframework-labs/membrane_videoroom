@@ -39,17 +39,17 @@ export type UseUserMediaState = {
   video: DeviceReturnType | { type: "Requesting" };
   audioMedia: Media | null;
   videoMedia: Media | null;
-  audioError: string | null;
-  videoError: string | null;
+  audioError: DeviceError | null;
+  videoError: DeviceError | null;
 };
 
 const prepareReturn = (
   isInterested: boolean,
   mediaDeviceInfo: MediaDeviceInfo[],
-  permissionError: string | null
+  permissionError: DeviceError | null
 ): DeviceReturnType => {
   if (!isInterested) return { type: "Not requested" };
-  if (permissionError) return { type: "Error", name: permissionError };
+  if (permissionError) return { type: "Error", name: permissionError.name };
   return {
     type: "OK",
     devices: mediaDeviceInfo.filter(isGranted),
@@ -154,6 +154,24 @@ const getExactConstraints = (
   },
 });
 
+const getIdealConstraints = (
+  shouldAskForVideo: boolean,
+  videoConstraints: MediaTrackConstraints | undefined,
+  previousVideoDevice: MediaDeviceInfo | null,
+  shouldAskForAudio: boolean,
+  audioConstraints: MediaTrackConstraints | undefined,
+  previousAudioDevice: MediaDeviceInfo | null
+): MediaStreamConstraints => ({
+  video: shouldAskForVideo && {
+    ...videoConstraints,
+    deviceId: { exact: previousVideoDevice?.deviceId },
+  },
+  audio: shouldAskForAudio && {
+    ...audioConstraints,
+    deviceId: { exact: previousAudioDevice?.deviceId },
+  },
+});
+
 const abc = (
   shouldAskForVideo: boolean,
   videoIdToStart: string | undefined,
@@ -209,23 +227,23 @@ const shouldAskForAnyDevice = (requestedDevices: null | MediaStream) => requeste
 type DeviceError =
   | {
       name: "OverconstrainedError";
-      message: "";
-      constraint: "deviceId";
+      // message: "";
+      // constraint: "deviceId";
     }
   | {
-      message: "Permission denied";
+      // message: "Permission denied" | "Permission dismissed";
       name: "NotAllowedError";
     };
 
 const PERMISSION_DENIED: DeviceError = {
-  message: "Permission denied",
+  // message: "Permission denied",
   name: "NotAllowedError",
 };
 
 const OVERCONSTRAINED_ERROR: DeviceError = {
   name: "OverconstrainedError",
-  message: "",
-  constraint: "deviceId",
+  // message: "",
+  // constraint: "deviceId",
 };
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions
@@ -244,6 +262,30 @@ const parseError = (error: unknown): DeviceError | null => {
 // todo obsłużyć to, że użytkownik może zamknąć monit o urządzeniach
 // todo podanie exact id na null / undefined sprawia, że na chrome go ignoruje,
 //  więc może można usunąć troszkę metod
+
+const extracted2 = async (
+  constraints: MediaStreamConstraints,
+  name: string
+): Promise<
+  | { error: DeviceError | null }
+  | {
+      result: MediaStream;
+    }
+> => {
+  try {
+    console.log({ constraints });
+    const requestedDevices = await navigator.mediaDevices.getUserMedia(constraints);
+    console.log("%c   3. Any constraints succeeded", "color: green");
+    // todo clear errors
+    return { result: requestedDevices };
+  } catch (error: unknown) {
+    console.log("%c   3. Any constraints failed", "color: orange");
+
+    const parsedError = parseError(error);
+
+    return { error: parsedError };
+  }
+};
 
 /**
  * Hook that returns the list of available devices
@@ -304,7 +346,6 @@ export const useUserMedia = ({
     const isAudioAvailable = !enumeratedDevices
       .filter((d) => d.kind === "audioinput")
       .some((d) => d.deviceId === "" || d.label === "");
-    console.log({ enumeratedDevices, isVideoAvailable, isAudioAvailable });
 
     let requestedDevices: MediaStream | null = null;
 
@@ -319,7 +360,7 @@ export const useUserMedia = ({
     if (phase1) {
       try {
         requestedDevices = await navigator.mediaDevices.getUserMedia(
-          getExactConstraints(
+          getIdealConstraints(
             userAskForVideo,
             videoConstraints,
             previousVideoDevice,
@@ -343,8 +384,6 @@ export const useUserMedia = ({
           // swallow this error and handle it in phase 2
         }
       }
-
-      /* This error could be ignored because it will be another attempt */
     }
 
     shouldAskForVideo = userAskForVideo && videoError?.name !== "NotAllowedError";
@@ -362,7 +401,7 @@ export const useUserMedia = ({
     console.log(`%c 2. Additional exact constraints check: (${phase2})`, "color: purple");
     if (phase2) {
       try {
-        const exactConstraints2 = getExactConstraints(
+        const exactConstraints2 = getIdealConstraints(
           shouldAskForVideo,
           videoConstraints,
           previousVideoDevice,
@@ -382,9 +421,10 @@ export const useUserMedia = ({
         const parsedError = parseError(error);
 
         if (parsedError?.name === "NotAllowedError") {
+          // jeżeli użytkownik wyłączy okienko z komunikatmia albo nie zezwolił na uprawnienia
           // There shouldn't be this error.
-          console.error("There shouldn't be this error!!!");
-          throw Error("There shouldn't be this error");
+          // console.error("There shouldn't be this error!!!");
+          // throw Error("There shouldn't be this error");
           // audioError = isAudioAvailable ? null : PERMISSION_DENIED;
           // videoError = isVideoAvailable ? null : PERMISSION_DENIED;
         } else if (parsedError?.name === "OverconstrainedError") {
@@ -584,13 +624,13 @@ export const useUserMedia = ({
       video: prepareReturn(userAskForVideo, videoDevices, videoError),
       audio: prepareReturn(userAskFroAudio, audioDevices, audioError),
       audioMedia: {
-        stream: requestedDevices,
+        stream: audioTrack ? requestedDevices : null,
         track: audioTrack,
         deviceInfo: audioDeviceInfo,
         enabled: !!audioTrack,
       },
       videoMedia: {
-        stream: requestedDevices,
+        stream: videoTrack ? requestedDevices : null,
         track: videoTrack,
         deviceInfo: videoDeviceInfo,
         enabled: !!videoTrack,
@@ -676,11 +716,11 @@ export const useUserMedia = ({
           return { ...prevState, audioMedia, videoMedia };
         });
       } catch (error: unknown) {
-        const errorName = getName(error);
+        const parsedError = parseError(error);
 
         setState((prevState) => {
-          const videoError = exactConstraints.video ? errorName : prevState.videoError;
-          const audioError = exactConstraints.audio ? errorName : prevState.audioError;
+          const videoError = exactConstraints.video ? parsedError : prevState.videoError;
+          const audioError = exactConstraints.audio ? parsedError : prevState.audioError;
 
           return { ...prevState, audioError, videoError };
         });

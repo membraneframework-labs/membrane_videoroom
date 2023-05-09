@@ -12,11 +12,10 @@ const useSmartphoneViewport = (): ScreenInfo => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-
-      // The screen.orientation.type is widely available on most of the devices but it was recently added to mobile safari. 
+      // The screen.orientation.type is widely available on most of the devices but it was recently added to mobile safari.
       // Source: https://developer.mozilla.org/en-US/docs/Web/API/Screen/orientation
-      // At the day of writing this comment (May 8th 2023) some web apps like Chrome on iOS does NOT implement this. 
-      // The `windows.matchMedia` is used as a fallback for such devices. 
+      // At the day of writing this comment (May 8th 2023) some web apps like Chrome on iOS does NOT implement this.
+      // The `windows.matchMedia` is used as a fallback for such devices.
       const isLandscape =
         screen.orientation?.type.includes("landscape") || window.matchMedia("(orientation: landscape)").matches;
 

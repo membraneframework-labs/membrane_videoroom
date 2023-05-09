@@ -17,9 +17,6 @@ export const toMediaTrackConstraints = (
   return constraint;
 };
 
-export const getName = (obj: unknown): string | null =>
-  obj && typeof obj === "object" && "name" in obj && typeof obj.name === "string" ? obj["name"] : null;
-
 export type MediaType = "audio" | "video";
 
 export type DeviceReturnType =
@@ -216,8 +213,6 @@ const shouldAskForLastDevices = (
   previousAudioDevice: MediaDeviceInfo | null
 ): boolean => !!(previousVideoDevice?.deviceId || previousAudioDevice?.deviceId);
 
-const shouldAskForAnyDevice = (requestedDevices: null | MediaStream) => requestedDevices === null;
-
 type DeviceError = { name: "OverconstrainedError" } | { name: "NotAllowedError" };
 const PERMISSION_DENIED: DeviceError = { name: "NotAllowedError" };
 const OVERCONSTRAINED_ERROR: DeviceError = { name: "OverconstrainedError" };
@@ -236,10 +231,7 @@ const parseError = (error: unknown): DeviceError | null => {
   return null;
 };
 
-const enumerateUniqueDevices = async () =>
-  (await navigator.mediaDevices.enumerateDevices())
-    // Chrome adds copy of exising device with deviceId "default" and with additional prefix in label: "Default - Build In Camera"
-    .filter(({ deviceId }) => deviceId !== "default");
+const enumerateDevices: () => Promise<MediaDeviceInfo[]> = async () => await navigator.mediaDevices.enumerateDevices();
 
 // eslint-disable-next-line
 const log = (message?: any, ...optionalParams: any[]) => {
@@ -295,8 +287,8 @@ export const useUserMedia = ({
     const previousVideoDevice: MediaDeviceInfo | null = getLastVideoDevice();
     const previousAudioDevice: MediaDeviceInfo | null = getLastAudioDevice();
 
-    const userAskFroAudio = !!audioTrackConstraints;
     const userAskForVideo = !!videoTrackConstraints;
+    const userAskFroAudio = !!audioTrackConstraints;
 
     // todo remove usage of userAskForVideo and userAskFroAudio
     // By using this 2 variables (shouldAskForVideo and shouldAskForAudio)
@@ -306,10 +298,10 @@ export const useUserMedia = ({
 
     setState((prevState) => ({
       ...prevState,
-      audio: userAskForVideo && audioConstraints ? REQUESTING : prevState.audio ?? NOT_REQUESTED,
-      video: userAskFroAudio && videoConstraints ? REQUESTING : prevState.video ?? NOT_REQUESTED,
+      video: shouldAskForVideo && videoConstraints ? REQUESTING : prevState.video ?? NOT_REQUESTED,
+      audio: shouldAskForAudio && audioConstraints ? REQUESTING : prevState.audio ?? NOT_REQUESTED,
     }));
-    const enumeratedDevices = await enumerateUniqueDevices();
+    const enumeratedDevices = await enumerateDevices();
     log({ enumeratedDevices });
 
     const isVideoAvailable = !enumeratedDevices
@@ -322,24 +314,25 @@ export const useUserMedia = ({
 
     let requestedDevices: MediaStream | null = null;
 
-    let audioError: DeviceError | null = null;
     let videoError: DeviceError | null = null;
+    let audioError: DeviceError | null = null;
 
-    log({ audioError, videoError });
+    log({ videoError, audioError });
 
     const shouldAskForExactDevice = shouldAskForLastDevices(previousVideoDevice, previousAudioDevice);
     log(`%c 1. Exact constraints check (${shouldAskForExactDevice})`, "color: purple");
 
+    const constraints = getExactConstraints(
+      shouldAskForVideo,
+      videoConstraints,
+      previousVideoDevice,
+      shouldAskForAudio,
+      audioConstraints,
+      previousAudioDevice
+    );
+
     if (shouldAskForExactDevice) {
       try {
-        const constraints = getIdealConstraints(
-          userAskForVideo,
-          videoConstraints,
-          previousVideoDevice,
-          userAskFroAudio,
-          audioConstraints,
-          previousAudioDevice
-        );
         log({ constraints });
 
         requestedDevices = await navigator.mediaDevices.getUserMedia(constraints);
@@ -348,25 +341,25 @@ export const useUserMedia = ({
         warn({ error });
         const parsedError = parseError(error);
 
-        audioError = isAudioAvailable ? null : parsedError;
         videoError = isVideoAvailable ? null : parsedError;
+        audioError = isAudioAvailable ? null : parsedError;
       }
     }
 
-    log({ audioError, videoError });
+    log({ videoError, audioError });
 
-    shouldAskForVideo = userAskForVideo && videoError?.name !== "NotAllowedError";
-    shouldAskForAudio = userAskFroAudio && audioError?.name !== "NotAllowedError";
+    shouldAskForVideo = shouldAskForVideo && videoError?.name !== "NotAllowedError";
+    shouldAskForAudio = shouldAskForAudio && audioError?.name !== "NotAllowedError";
 
     log({ shouldAskForVideo, shouldAskForAudio });
 
     const shouldAskForExactDevicesWithoutBlocked =
-      (shouldAskForVideo || shouldAskForAudio) && shouldAskForAnyDevice(requestedDevices);
+      (shouldAskForVideo || shouldAskForAudio) && requestedDevices === null;
     log(`%c 2. Additional exact constraints check: (${shouldAskForExactDevicesWithoutBlocked})`, "color: purple");
 
     if (shouldAskForExactDevicesWithoutBlocked) {
       try {
-        const constraints = getIdealConstraints(
+        const constraints = getExactConstraints(
           shouldAskForVideo,
           videoConstraints,
           previousVideoDevice,
@@ -378,18 +371,94 @@ export const useUserMedia = ({
 
         requestedDevices = await navigator.mediaDevices.getUserMedia(constraints);
         log("%c   2. Additional exact constraints succeeded", "color: green");
-        audioError = shouldAskForAudio ? null : audioError;
         videoError = shouldAskForVideo ? null : videoError;
+        audioError = shouldAskForAudio ? null : audioError;
       } catch (error: unknown) {
         warn({ error });
         const parsedError = parseError(error);
 
-        audioError = shouldAskForAudio ? parsedError : audioError;
         videoError = shouldAskForVideo ? parsedError : videoError;
+        audioError = shouldAskForAudio ? parsedError : audioError;
       }
     }
 
-    const shouldAskForAnyDevice2 = shouldAskForAnyDevice(requestedDevices) && (shouldAskForVideo || shouldAskForAudio);
+    /* Helper-start */
+    console.log({
+      userAskForVideo,
+      userAskFroAudio,
+      audioError,
+      videoError,
+    });
+
+    if (
+      userAskForVideo &&
+      userAskFroAudio &&
+      audioError?.name === "NotAllowedError" &&
+      videoError?.name === "NotAllowedError"
+    ) {
+      log(`%c HELPER`, "color: purple");
+      // asking for video
+      try {
+        log({ videoConstraint: constraints.video });
+
+        requestedDevices = await navigator.mediaDevices.getUserMedia({ video: constraints.video });
+        log("%c   HELPER succeeded", "color: green");
+        videoError = null;
+        shouldAskForVideo = true
+      } catch (error: unknown) {
+        warn({ error });
+        const parsedError = parseError(error);
+
+        videoError = shouldAskForVideo ? parsedError : videoError;
+      }
+      if (requestedDevices === null) {
+        // asking for audio
+        try {
+          log({ audioConstraint: constraints.audio });
+
+          requestedDevices = await navigator.mediaDevices.getUserMedia({ audio: constraints.audio });
+          log("%c   HELPER succeeded", "color: green");
+          audioError = null;
+          shouldAskForAudio = true;
+        } catch (error: unknown) {
+          warn({ error });
+          const parsedError = parseError(error);
+
+          audioError = shouldAskForAudio ? parsedError : audioError;
+        }
+      }
+    }
+
+    const shouldAskOnlyForVideo = (shouldAskForVideo || shouldAskForAudio) && requestedDevices === null;
+    log(`%c 2. Additional exact constraints check: (${shouldAskOnlyForVideo})`, "color: purple");
+
+    if (shouldAskOnlyForVideo) {
+      try {
+        const constraints = getExactConstraints(
+          shouldAskForVideo,
+          videoConstraints,
+          previousVideoDevice,
+          shouldAskForAudio,
+          audioConstraints,
+          previousAudioDevice
+        );
+        log({ constraints });
+
+        requestedDevices = await navigator.mediaDevices.getUserMedia(constraints);
+        log("%c   2. Additional exact constraints succeeded", "color: green");
+        videoError = shouldAskForVideo ? null : videoError;
+        audioError = shouldAskForAudio ? null : audioError;
+      } catch (error: unknown) {
+        warn({ error });
+        const parsedError = parseError(error);
+
+        videoError = shouldAskForVideo ? parsedError : videoError;
+        audioError = shouldAskForAudio ? parsedError : audioError;
+      }
+    }
+    /* Helper-end */
+
+    const shouldAskForAnyDevice2 = requestedDevices === null && (shouldAskForVideo || shouldAskForAudio);
     log(`%c 3. Any constraints check (${shouldAskForAnyDevice2})`, "color: purple");
     log({ shouldAskForVideo, shouldAskForAudio });
 
@@ -404,8 +473,8 @@ export const useUserMedia = ({
 
         requestedDevices = await navigator.mediaDevices.getUserMedia(anyDeviceConstraints);
         log("%c   3. Any constraints succeeded", "color: green");
-        audioError = shouldAskForAudio ? null : audioError;
         videoError = shouldAskForVideo ? null : videoError;
+        audioError = shouldAskForAudio ? null : audioError;
       } catch (error: unknown) {
         log("%c   3. Any constraints failed", "color: orange");
 
@@ -413,16 +482,18 @@ export const useUserMedia = ({
         const parsedError = parseError(error);
         warn({ parsedError });
 
-        videoError = userAskForVideo && !isVideoAvailable ? parsedError : videoError;
-        audioError = userAskFroAudio && !isAudioAvailable ? parsedError : audioError;
+        videoError = shouldAskForVideo ? parsedError : videoError;
+        audioError = shouldAskForAudio ? parsedError : audioError;
+        //
+        // videoError = userAskForVideo && !isVideoAvailable ? parsedError : videoError;
+        // audioError = userAskFroAudio && !isAudioAvailable ? parsedError : audioError;
       }
     }
 
-    shouldAskForAudio = shouldAskForAudio && audioError?.name !== "NotAllowedError";
     shouldAskForVideo = shouldAskForVideo && videoError?.name !== "NotAllowedError";
+    shouldAskForAudio = shouldAskForAudio && audioError?.name !== "NotAllowedError";
 
-    const askForAnyDevicesWithoutBlocked =
-      shouldAskForAnyDevice(requestedDevices) && (shouldAskForVideo || shouldAskForAudio);
+    const askForAnyDevicesWithoutBlocked = requestedDevices === null && (shouldAskForVideo || shouldAskForAudio);
     log(`%c 4. Any constraints check 2 (${askForAnyDevicesWithoutBlocked})`, "color: purple");
     if (askForAnyDevicesWithoutBlocked) {
       try {
@@ -442,12 +513,15 @@ export const useUserMedia = ({
         warn({ error });
         const parsedError = parseError(error);
 
-        videoError = userAskForVideo && !isVideoAvailable ? parsedError : videoError;
-        audioError = userAskFroAudio && !isAudioAvailable ? parsedError : audioError;
+        videoError = shouldAskForVideo ? parsedError : videoError;
+        audioError = shouldAskForAudio ? parsedError : audioError;
+
+        // videoError = userAskForVideo && !isVideoAvailable ? parsedError : videoError;
+        // audioError = userAskFroAudio && !isAudioAvailable ? parsedError : audioError;
       }
     }
 
-    const mediaDeviceInfos: MediaDeviceInfo[] = await enumerateUniqueDevices();
+    const mediaDeviceInfos: MediaDeviceInfo[] = await enumerateDevices();
 
     // Safari changes deviceId between sessions, therefore we cannot rely on deviceId for identification purposes.
     // We can switch randomly given device to one that has the same label as the one used in previous session.
@@ -500,38 +574,38 @@ export const useUserMedia = ({
     setState({
       video: prepareReturn(userAskForVideo, videoDevices, videoError),
       audio: prepareReturn(userAskFroAudio, audioDevices, audioError),
-      audioMedia: {
-        stream: audioTrack ? requestedDevices : null,
-        track: audioTrack,
-        deviceInfo: audioDeviceInfo,
-        enabled: !!audioTrack,
-      },
       videoMedia: {
         stream: videoTrack ? requestedDevices : null,
         track: videoTrack,
         deviceInfo: videoDeviceInfo,
         enabled: !!videoTrack,
       },
+      audioMedia: {
+        stream: audioTrack ? requestedDevices : null,
+        track: audioTrack,
+        deviceInfo: audioDeviceInfo,
+        enabled: !!audioTrack,
+      },
       videoError: videoError,
       audioError: audioError,
     });
 
-    if (audioDeviceInfo) {
-      saveLastAudioDevice(audioDeviceInfo);
-    }
-
     if (videoDeviceInfo) {
       saveLastVideoDevice(videoDeviceInfo);
+    }
+
+    if (audioDeviceInfo) {
+      saveLastAudioDevice(audioDeviceInfo);
     }
   }, [
     getLastVideoDevice,
     getLastAudioDevice,
-    audioTrackConstraints,
     videoTrackConstraints,
-    audioConstraints,
+    audioTrackConstraints,
     videoConstraints,
-    saveLastAudioDevice,
+    audioConstraints,
     saveLastVideoDevice,
+    saveLastAudioDevice,
   ]);
 
   const start = useCallback(
@@ -544,24 +618,17 @@ export const useUserMedia = ({
         audio: shouldRestartAudio && prepareMediaTrackConstraints(audioDeviceId, audioConstraints),
       };
 
-      if (!exactConstraints.audio && !exactConstraints.video) return;
-
-      if (shouldRestartAudio) {
-        state?.audioMedia?.track?.stop();
-      }
-
-      if (shouldRestartVideo) {
-        state?.videoMedia?.track?.stop();
-      }
+      if (!exactConstraints.video && !exactConstraints.audio) return;
 
       try {
         const requestedDevices = await navigator.mediaDevices.getUserMedia(exactConstraints);
 
-        const audioDevices = state.audio.type === "OK" ? state.audio.devices : [];
-        const audioInfo = audioDeviceId ? getDeviceInfo(audioDeviceId, audioDevices) : null;
+        if (shouldRestartVideo) {
+          state?.videoMedia?.track?.stop();
+        }
 
-        if (audioInfo) {
-          saveLastAudioDevice(audioInfo);
+        if (shouldRestartAudio) {
+          state?.audioMedia?.track?.stop();
         }
 
         const videoDevices = state.video.type === "OK" ? state.video.devices : [];
@@ -569,6 +636,13 @@ export const useUserMedia = ({
 
         if (videoInfo) {
           saveLastVideoDevice(videoInfo);
+        }
+
+        const audioDevices = state.audio.type === "OK" ? state.audio.devices : [];
+        const audioInfo = audioDeviceId ? getDeviceInfo(audioDeviceId, audioDevices) : null;
+
+        if (audioInfo) {
+          saveLastAudioDevice(audioInfo);
         }
 
         setState((prevState): UseUserMediaState => {
@@ -590,7 +664,7 @@ export const useUserMedia = ({
               }
             : prevState.audioMedia;
 
-          return { ...prevState, audioMedia, videoMedia };
+          return { ...prevState, videoMedia, audioMedia };
         });
       } catch (error: unknown) {
         const parsedError = parseError(error);

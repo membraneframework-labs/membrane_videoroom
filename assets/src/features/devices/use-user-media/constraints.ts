@@ -18,55 +18,22 @@ export const prepareMediaTrackConstraints = (
   return { ...constraints, ...exactId };
 };
 
-export const getExactConstraints = (
-  shouldAskForVideo: boolean,
+export const getExactDeviceConstraint = (
   videoConstraints: MediaTrackConstraints | undefined,
-  previousVideoDevice: MediaDeviceInfo | null,
-  shouldAskForAudio: boolean,
-  audioConstraints: MediaTrackConstraints | undefined,
-  previousAudioDevice: MediaDeviceInfo | null
-): MediaStreamConstraints => ({
-  video: shouldAskForVideo && {
-    ...videoConstraints,
-    deviceId: { exact: previousVideoDevice?.deviceId },
-  },
-  audio: shouldAskForAudio && {
-    ...audioConstraints,
-    deviceId: { exact: previousAudioDevice?.deviceId },
-  },
+  deviceId: string | undefined
+) => ({
+  ...videoConstraints,
+  deviceId: { exact: deviceId },
 });
 
-const prepareConstraints = (
+export const prepareConstraints = (
   shouldAskForDevice: boolean,
   deviceIdToStart: string | undefined,
-  videoConstraints: MediaTrackConstraints | undefined
+  constraints: MediaTrackConstraints | undefined
 ): MediaTrackConstraints | undefined | boolean => {
   if (!shouldAskForDevice) return false;
 
-  return deviceIdToStart ? { ...videoConstraints, deviceId: { exact: deviceIdToStart } } : videoConstraints;
-};
-
-export const getExactConstraintsIfPossible = (
-  shouldAskForVideo: boolean,
-  videoIdToStart: string | undefined,
-  videoConstraints: MediaTrackConstraints | undefined,
-  shouldAskForAudio: boolean,
-  audioIdToStart: string | undefined,
-  audioConstraints: MediaTrackConstraints | undefined
-) => {
-  log({
-    shouldAskForVideo,
-    videoIdToStart,
-    videoConstraints,
-    shouldAskForAudio,
-    audioIdToStart,
-    audioConstraints,
-  });
-
-  return {
-    video: prepareConstraints(shouldAskForVideo, videoIdToStart, videoConstraints),
-    audio: prepareConstraints(shouldAskForAudio, audioIdToStart, audioConstraints),
-  };
+  return deviceIdToStart ? getExactDeviceConstraint(constraints, deviceIdToStart) : constraints;
 };
 
 export const removeExact = (

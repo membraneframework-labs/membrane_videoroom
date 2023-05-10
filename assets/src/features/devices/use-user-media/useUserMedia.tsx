@@ -13,8 +13,8 @@ import {
   UseUserMediaState,
 } from "./type";
 import {
-  getExactConstraints,
-  getExactConstraintsIfPossible,
+  getExactDeviceConstraint,
+  prepareConstraints,
   prepareMediaTrackConstraints,
   removeExact,
   toMediaTrackConstraints,
@@ -213,14 +213,10 @@ export const useUserMedia = ({
 
     let requestedDevices: MediaStream | null = null;
 
-    const constraints = getExactConstraints(
-      shouldAskForVideo,
-      videoConstraints,
-      previousVideoDevice,
-      shouldAskForAudio,
-      audioConstraints,
-      previousAudioDevice
-    );
+    const constraints = {
+      video: shouldAskForVideo && getExactDeviceConstraint(videoConstraints, previousVideoDevice?.deviceId),
+      audio: shouldAskForAudio && getExactDeviceConstraint(audioConstraints, previousAudioDevice?.deviceId),
+    };
 
     let result: GetMedia = await getMedia(constraints, {}, "Exact match");
 
@@ -251,14 +247,10 @@ export const useUserMedia = ({
         if (videoIdToStart || audioIdToStart) {
           stopTracks(requestedDevices);
 
-          const exactConstraints: MediaStreamConstraints = getExactConstraintsIfPossible(
-            !!result.constraints.video,
-            videoIdToStart,
-            videoConstraints,
-            !!result.constraints.audio,
-            audioIdToStart,
-            audioConstraints
-          );
+          const exactConstraints: MediaStreamConstraints = {
+            video: prepareConstraints(!!result.constraints.video, videoIdToStart, videoConstraints),
+            audio: prepareConstraints(!!result.constraints.audio, audioIdToStart, audioConstraints),
+          };
 
           const correctedResult = await getMedia(
             exactConstraints,

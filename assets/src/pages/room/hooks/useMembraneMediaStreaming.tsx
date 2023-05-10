@@ -35,8 +35,6 @@ export const useMembraneMediaStreaming = (
 
   const addTracks = useCallback(
     (stream: MediaStream) => {
-      console.log({ stream, type });
-
       if (!webrtc) return;
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
       const simulcast = simulcastEnabled && type === "camera";

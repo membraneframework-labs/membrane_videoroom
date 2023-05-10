@@ -9,7 +9,7 @@ import ShareSquare from "../icons/ShareSquare";
 import Settings from "../icons/Settings";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
 import { useModal } from "../../../contexts/ModalContext";
-import useMobileViewport from "../../shared/hooks/useMobileViewport";
+import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 
 const Navbar: React.FC = () => {
   const match = useParams();
@@ -23,11 +23,11 @@ const Navbar: React.FC = () => {
     addToast({ id: "toast-link-copied", message: "Link copied to clipboard" });
   }, [addToast, currentUrl]);
 
-  const isMobile = useMobileViewport();
+  const isSmartphone = useSmartphoneViewport().isSmartphone;
 
   return (
     <div className="flex w-full max-w-full flex-row justify-between gap-y-4">
-      {!isMobile ? (
+      {!isSmartphone ? (
         <PlainLink href="/" name="home-page" className="self-start">
           <MembraneVideoroomLogo className="text-5xl" />
         </PlainLink>
@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
         <h4 className="flex flex-row items-center font-rocGrotesk text-xl font-medium tracking-wide">{roomId}</h4>
       )}
       <div className={clsx("flex flex-row items-center gap-x-3 font-aktivGrotesk")}>
-        {!isMobile && (
+        {!isSmartphone && (
           <>
             <span>Invite link</span>
             <Button

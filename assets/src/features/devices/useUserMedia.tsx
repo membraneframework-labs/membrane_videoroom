@@ -217,26 +217,26 @@ const warn = (message?: any, ...optionalParams: any[]) => {
   }
 };
 
-type Restrictions = {
+type Errors = {
   audio?: DeviceError | null;
   video?: DeviceError | null;
 };
 
 type GetMedia =
-  | { stream: MediaStream; type: "OK"; constraints: MediaStreamConstraints; restrictions: Restrictions }
+  | { stream: MediaStream; type: "OK"; constraints: MediaStreamConstraints; previousErrors: Errors }
   | { error: DeviceError | null; type: "Error"; constraints: MediaStreamConstraints };
 
 const getMedia = async (
   constraints: MediaStreamConstraints,
-  restrictions: Restrictions,
+  previousErrors: Errors,
   logIdentifier?: string
 ): Promise<GetMedia> => {
   try {
-    log({ name: `${logIdentifier} invoked`, constraints, restrictions });
+    log({ name: `${logIdentifier} invoked`, constraints, errors: previousErrors });
 
     const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
     log(`%c${logIdentifier} succeeded`, "color: green");
-    return { stream: mediaStream, type: "OK", constraints, restrictions };
+    return { stream: mediaStream, type: "OK", constraints, previousErrors };
   } catch (error: unknown) {
     warn({ error });
     const parsedError: DeviceError | null = parseError(error);
@@ -254,12 +254,10 @@ const removeExact = (
   return copy;
 };
 
-// todo maybe add rest from constraint obj constraints
-// todo to nie powinno zwracac overconstrained bo wlasnie sie go pozbylem
 const handleOverconstrainedError = async (constraints: MediaStreamConstraints): Promise<GetMedia> => {
   const videoResult = await getMedia(
     { video: removeExact(constraints.video), audio: constraints.audio },
-    { video: OVERCONSTRAINED_ERROR },
+    {},
     "handleOverconstrainedError loosen video constraints"
   );
   if (videoResult.type === "OK" || videoResult.error?.name === "NotAllowedError") {
@@ -268,7 +266,7 @@ const handleOverconstrainedError = async (constraints: MediaStreamConstraints): 
 
   const audioResult = await getMedia(
     { video: constraints.video, audio: removeExact(constraints.audio) },
-    { audio: OVERCONSTRAINED_ERROR },
+    {},
     "handleOverconstrainedError loosen audio constraints"
   );
   if (audioResult.type === "OK" || audioResult.error?.name === "NotAllowedError") {
@@ -277,7 +275,7 @@ const handleOverconstrainedError = async (constraints: MediaStreamConstraints): 
 
   return await getMedia(
     { video: removeExact(constraints.video), audio: removeExact(constraints.audio) },
-    { video: OVERCONSTRAINED_ERROR, audio: OVERCONSTRAINED_ERROR },
+    {},
     "handleOverconstrainedError loosen both constraints"
   );
 };
@@ -310,7 +308,7 @@ const handleNotAllowedError = async (constraints: MediaStreamConstraints): Promi
 
 const getError = (result: GetMedia, type: "audio" | "video"): DeviceError | null => {
   if (result.type === "OK") {
-    return result.restrictions[type] || null;
+    return result.previousErrors[type] || null;
   }
   return PERMISSION_DENIED;
 };
@@ -428,16 +426,16 @@ export const useUserMedia = ({
           const correctedResult = await getMedia(
             exactConstraints,
             {
-              video: result.restrictions.video,
-              audio: result.restrictions.audio,
+              video: result.previousErrors.video,
+              audio: result.previousErrors.audio,
             },
-            "correct both Video"
+            "Correct both device"
           );
 
           if (correctedResult.type === "OK") {
             requestedDevices = correctedResult.stream;
           } else {
-            console.error("Device Manager unhandled path");
+            console.error("Device Manager unexpected error");
           }
         }
       }
@@ -508,8 +506,10 @@ export const useUserMedia = ({
 
       if (!exactConstraints.video && !exactConstraints.audio) return;
 
-      try {
-        const requestedDevices = await navigator.mediaDevices.getUserMedia(exactConstraints);
+      const result = await getMedia(exactConstraints, {}, "Restart");
+
+      if (result.type == "OK") {
+        const stream = result.stream;
 
         if (shouldRestartVideo) {
           state?.videoMedia?.track?.stop();
@@ -532,8 +532,8 @@ export const useUserMedia = ({
         setState((prevState): UseUserMediaState => {
           const videoMedia: Media | null = shouldRestartVideo
             ? {
-                stream: requestedDevices,
-                track: requestedDevices.getVideoTracks()[0] || null,
+                stream,
+                track: stream.getVideoTracks()[0] || null,
                 deviceInfo: videoInfo,
                 enabled: true,
               }
@@ -541,8 +541,8 @@ export const useUserMedia = ({
 
           const audioMedia: Media | null = shouldRestartAudio
             ? {
-                stream: requestedDevices,
-                track: requestedDevices.getAudioTracks()[0] || null,
+                stream,
+                track: stream.getAudioTracks()[0] || null,
                 deviceInfo: audioInfo,
                 enabled: true,
               }
@@ -550,8 +550,8 @@ export const useUserMedia = ({
 
           return { ...prevState, videoMedia, audioMedia };
         });
-      } catch (error: unknown) {
-        const parsedError = parseError(error);
+      } else {
+        const parsedError = result.error;
 
         setState((prevState) => {
           const videoError = exactConstraints.video ? parsedError : prevState.videoError;

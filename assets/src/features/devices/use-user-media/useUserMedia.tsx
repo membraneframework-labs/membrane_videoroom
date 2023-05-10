@@ -1,230 +1,43 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  DeviceError,
+  DeviceReturnType,
+  Errors,
+  GetMedia,
+  Media,
+  Types,
+  UseUserMedia,
+  UseUserMediaConfig,
+  UseUserMediaStartConfig,
+  UseUserMediaState,
+} from "./types";
+import {
+  getExactConstraints,
+  getExactConstraintsIfPossible,
+  prepareMediaTrackConstraints,
+  removeExact,
+  toMediaTrackConstraints,
+} from "./constraints";
+import { log, warn } from "./debug";
+import { NOT_REQUESTED, PERMISSION_DENIED, REQUESTING } from "./constants";
+import {
+  enumerateDevices,
+  getCurrentDevicesSettings,
+  getDeviceInfo,
+  isAnyDeviceDifferentFromLastSession,
+  isAudio,
+  isDeviceDifferentFromLastSession,
+  isVideo,
+  parseError,
+} from "./device-utils";
 
 // TODO After some testing this hook should be extracted to browser-media-utils
-
-export const isGranted = (mediaDeviceInfo: MediaDeviceInfo) =>
-  mediaDeviceInfo.label !== "" && mediaDeviceInfo.deviceId !== "";
-
-export const isVideo = (it: MediaDeviceInfo) => it.kind === "videoinput";
-export const isAudio = (it: MediaDeviceInfo) => it.kind === "audioinput";
-
-export const toMediaTrackConstraints = (
-  constraint?: boolean | MediaTrackConstraints
-): MediaTrackConstraints | undefined => {
-  if (typeof constraint === "boolean") {
-    return constraint ? {} : undefined;
-  }
-  return constraint;
-};
-
-export type MediaType = "audio" | "video";
-
-export type DeviceReturnType =
-  | { type: "OK" }
-  | { type: "Error"; error: DeviceError | null }
-  | { type: "Not requested" }
-  | { type: "Requesting" };
-
-export type Media = {
-  stream: MediaStream | null;
-  track: MediaStreamTrack | null;
-  enabled: boolean;
-  deviceInfo: MediaDeviceInfo | null;
-};
-
-export type UseUserMediaState = {
-  videoStatus: DeviceReturnType;
-  audioStatus: DeviceReturnType;
-  videoMedia: Media | null;
-  audioMedia: Media | null;
-  videoError: DeviceError | null;
-  audioError: DeviceError | null;
-  videoDevices: MediaDeviceInfo[] | null;
-  audioDevices: MediaDeviceInfo[] | null;
-  devices: MediaDeviceInfo[] | null;
-};
-
-export type UseUserMediaConfig = {
-  getLastAudioDevice: () => MediaDeviceInfo | null;
-  saveLastAudioDevice: (info: MediaDeviceInfo) => void;
-  getLastVideoDevice: () => MediaDeviceInfo | null;
-  saveLastVideoDevice: (info: MediaDeviceInfo) => void;
-  videoTrackConstraints: boolean | MediaTrackConstraints;
-  audioTrackConstraints: boolean | MediaTrackConstraints;
-  refetchOnMount: boolean;
-};
-
-export type UseUserMediaStartConfig = {
-  audioDeviceId?: string;
-  videoDeviceId?: string;
-};
-
-export type UseUserMedia = {
-  data: UseUserMediaState | null;
-  start: (config: UseUserMediaStartConfig) => void;
-  stop: (type: MediaType) => void;
-  setEnable: (type: MediaType, value: boolean) => void;
-  init: (videoParam: boolean | MediaTrackConstraints, audioParam: boolean | MediaTrackConstraints) => void;
-};
-
-const prepareMediaTrackConstraints = (
-  deviceId: string | undefined,
-  constraints: MediaTrackConstraints | undefined
-): MediaTrackConstraints | boolean => {
-  if (!deviceId) return false;
-  const exactId: Pick<MediaTrackConstraints, "deviceId"> = deviceId ? { deviceId: { exact: deviceId } } : {};
-  return { ...constraints, ...exactId };
-};
-
-const getDeviceInfo = (trackDeviceId: string | null, devices: MediaDeviceInfo[]): MediaDeviceInfo | null =>
-  trackDeviceId ? devices.find(({ deviceId }) => trackDeviceId === deviceId) || null : null;
-
-type CurrentDevices = { videoinput: MediaDeviceInfo | null; audioinput: MediaDeviceInfo | null };
-
-const getCurrentDevicesSettings = (
-  requestedDevices: MediaStream,
-  mediaDeviceInfos: MediaDeviceInfo[]
-): CurrentDevices => {
-  const currentDevices: CurrentDevices = { videoinput: null, audioinput: null };
-
-  requestedDevices.getTracks().forEach((track) => {
-    const settings = track.getSettings();
-    if (settings.deviceId) {
-      const currentDevice = mediaDeviceInfos.find((device) => device.deviceId == settings.deviceId);
-      const kind = currentDevice?.kind || null;
-      if ((currentDevice && kind && kind === "videoinput") || kind === "audioinput") {
-        currentDevices[kind] = currentDevice || null;
-      }
-    }
-  });
-  return currentDevices;
-};
-
-const isDeviceDifferentFromLastSession = (
-  lastDevice: MediaDeviceInfo | null,
-  currentDevices: MediaDeviceInfo | null
-) => {
-  return (
-    lastDevice && (currentDevices?.deviceId !== lastDevice.deviceId || currentDevices?.label !== lastDevice?.label)
-  );
-};
-
-const isAnyDeviceDifferentFromLastSession = (
-  lastVideoDevice: MediaDeviceInfo | null,
-  lastAudioDevice: MediaDeviceInfo | null,
-  currentDevices: CurrentDevices | null
-): boolean =>
-  !!(
-    (currentDevices?.videoinput &&
-      isDeviceDifferentFromLastSession(lastVideoDevice, currentDevices?.videoinput || null)) ||
-    (currentDevices?.audioinput &&
-      isDeviceDifferentFromLastSession(lastAudioDevice, currentDevices?.audioinput || null))
-  );
 
 const stopTracks = (requestedDevices: MediaStream) => {
   requestedDevices.getTracks().forEach((track) => {
     track.stop();
   });
 };
-
-const getExactConstraints = (
-  shouldAskForVideo: boolean,
-  videoConstraints: MediaTrackConstraints | undefined,
-  previousVideoDevice: MediaDeviceInfo | null,
-  shouldAskForAudio: boolean,
-  audioConstraints: MediaTrackConstraints | undefined,
-  previousAudioDevice: MediaDeviceInfo | null
-): MediaStreamConstraints => ({
-  video: shouldAskForVideo && {
-    ...videoConstraints,
-    deviceId: { exact: previousVideoDevice?.deviceId },
-  },
-  audio: shouldAskForAudio && {
-    ...audioConstraints,
-    deviceId: { exact: previousAudioDevice?.deviceId },
-  },
-});
-
-const prepareConstraints = (
-  shouldAskForDevice: boolean,
-  deviceIdToStart: string | undefined,
-  videoConstraints: MediaTrackConstraints | undefined
-) => {
-  if (!shouldAskForDevice) return false;
-
-  return deviceIdToStart ? { ...videoConstraints, deviceId: { exact: deviceIdToStart } } : videoConstraints;
-};
-
-const getExactConstraintsIfPossible = (
-  shouldAskForVideo: boolean,
-  videoIdToStart: string | undefined,
-  videoConstraints: MediaTrackConstraints | undefined,
-  shouldAskForAudio: boolean,
-  audioIdToStart: string | undefined,
-  audioConstraints: MediaTrackConstraints | undefined
-) => {
-  log({
-    shouldAskForVideo,
-    videoIdToStart,
-    videoConstraints,
-    shouldAskForAudio,
-    audioIdToStart,
-    audioConstraints,
-  });
-
-  return {
-    video: prepareConstraints(shouldAskForVideo, videoIdToStart, videoConstraints),
-    audio: prepareConstraints(shouldAskForAudio, audioIdToStart, audioConstraints),
-  };
-};
-
-const REQUESTING = { type: "Requesting" } as const;
-const NOT_REQUESTED = { type: "Not requested" } as const;
-
-type DeviceError = { name: "OverconstrainedError" } | { name: "NotAllowedError" };
-const PERMISSION_DENIED: DeviceError = { name: "NotAllowedError" };
-const OVERCONSTRAINED_ERROR: DeviceError = { name: "OverconstrainedError" };
-
-// https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions
-// OverconstrainedError has higher priority than NotAllowedError
-const parseError = (error: unknown): DeviceError | null => {
-  if (error && typeof error === "object" && "name" in error) {
-    if (error.name === "NotAllowedError") {
-      return PERMISSION_DENIED;
-    } else if (error.name === "OverconstrainedError") {
-      return OVERCONSTRAINED_ERROR;
-    }
-  }
-  // todo handle unknown error
-  return null;
-};
-
-const enumerateDevices: () => Promise<MediaDeviceInfo[]> = async () => await navigator.mediaDevices.enumerateDevices();
-
-// eslint-disable-next-line
-const log = (message?: any, ...optionalParams: any[]) => {
-  const logDeviceManager = localStorage.getItem("log-device-manager");
-  if (logDeviceManager === "true") {
-    console.log(message, ...optionalParams);
-  }
-};
-
-// eslint-disable-next-line
-const warn = (message?: any, ...optionalParams: any[]) => {
-  const logDeviceManager = localStorage.getItem("log-device-manager");
-  if (logDeviceManager === "true") {
-    console.warn(message, optionalParams);
-  }
-};
-
-type Errors = {
-  audio?: DeviceError | null;
-  video?: DeviceError | null;
-};
-
-type GetMedia =
-  | { stream: MediaStream; type: "OK"; constraints: MediaStreamConstraints; previousErrors: Errors }
-  | { error: DeviceError | null; type: "Error"; constraints: MediaStreamConstraints };
 
 const getMedia = async (
   constraints: MediaStreamConstraints,
@@ -242,16 +55,6 @@ const getMedia = async (
     const parsedError: DeviceError | null = parseError(error);
     return { error: parsedError, type: "Error", constraints };
   }
-};
-
-const removeExact = (
-  trackConstraints: boolean | MediaTrackConstraints | undefined
-): boolean | MediaTrackConstraints | undefined => {
-  if (trackConstraints === undefined || trackConstraints === true || trackConstraints === false)
-    return trackConstraints;
-  const copy: MediaTrackConstraints = { ...trackConstraints };
-  delete copy["deviceId"];
-  return copy;
 };
 
 const handleOverconstrainedError = async (constraints: MediaStreamConstraints): Promise<GetMedia> => {
@@ -564,7 +367,7 @@ export const useUserMedia = ({
     [state, audioConstraints, saveLastAudioDevice, videoConstraints, saveLastVideoDevice]
   );
 
-  const stop = useCallback(async (type: MediaType) => {
+  const stop = useCallback(async (type: Types) => {
     const name = type === "audio" ? "audioMedia" : "videoMedia";
 
     setState((prevState) => {
@@ -574,7 +377,7 @@ export const useUserMedia = ({
     });
   }, []);
 
-  const setEnable = useCallback((type: MediaType, value: boolean) => {
+  const setEnable = useCallback((type: Types, value: boolean) => {
     setState((prevState) => {
       const name = type === "audio" ? "audioMedia" : "videoMedia";
       const media = prevState[name];

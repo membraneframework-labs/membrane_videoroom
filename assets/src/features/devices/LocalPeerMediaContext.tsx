@@ -1,14 +1,9 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
-import {
-  MediaType,
-  useUserMedia,
-  UseUserMediaConfig,
-  UseUserMediaStartConfig,
-  UseUserMediaState,
-} from "./useUserMedia";
 import { loadObject, saveObject } from "../shared/utils/localStorage";
 import { useMedia } from "./useMedia";
+import { UseUserMediaConfig, UseUserMediaStartConfig } from "./use-user-media/types";
+import { useUserMedia } from "./use-user-media/useUserMedia";
 
 export type Device = {
   isError: boolean;

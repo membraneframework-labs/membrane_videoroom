@@ -1,4 +1,4 @@
-import { DeviceError } from "./types";
+import { DeviceError } from "./type";
 
 export const REQUESTING = { type: "Requesting" } as const;
 export const NOT_REQUESTED = { type: "Not requested" } as const;

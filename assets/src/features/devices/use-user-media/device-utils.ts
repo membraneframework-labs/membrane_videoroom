@@ -1,4 +1,4 @@
-import { CurrentDevices, DeviceError } from "./types";
+import { CurrentDevices, DeviceError } from "./type";
 import { OVERCONSTRAINED_ERROR, PERMISSION_DENIED } from "./constants";
 
 export const deviceUtils = (mediaDeviceInfo: MediaDeviceInfo) =>

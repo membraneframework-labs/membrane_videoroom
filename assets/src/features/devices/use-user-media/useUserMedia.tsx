@@ -6,12 +6,12 @@ import {
   Errors,
   GetMedia,
   Media,
-  Types,
+  Type,
   UseUserMedia,
   UseUserMediaConfig,
   UseUserMediaStartConfig,
   UseUserMediaState,
-} from "./types";
+} from "./type";
 import {
   getExactConstraints,
   getExactConstraintsIfPossible,
@@ -401,7 +401,7 @@ export const useUserMedia = ({
     [state, audioConstraints, saveLastAudioDevice, videoConstraints, saveLastVideoDevice]
   );
 
-  const stop = useCallback(async (type: Types) => {
+  const stop = useCallback(async (type: Type) => {
     setState((prevState) => {
       prevState?.[type]?.media?.track?.stop();
 
@@ -409,7 +409,7 @@ export const useUserMedia = ({
     });
   }, []);
 
-  const setEnable = useCallback((type: Types, value: boolean) => {
+  const setEnable = useCallback((type: Type, value: boolean) => {
     setState((prevState) => {
       const media = prevState[type].media;
       if (!media || !media.track) {

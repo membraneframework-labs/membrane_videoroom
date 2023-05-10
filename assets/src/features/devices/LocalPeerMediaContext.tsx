@@ -2,7 +2,12 @@ import React, { useContext, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 import { loadObject, saveObject } from "../shared/utils/localStorage";
 import { useMedia } from "./useMedia";
-import { UseUserMediaConfig, UseUserMediaStartConfig } from "./use-user-media/types";
+import {
+  DeviceState,
+  Type,
+  UseUserMediaConfig,
+  UseUserMediaStartConfig,
+} from "./use-user-media/type";
 import { useUserMedia } from "./use-user-media/useUserMedia";
 
 export type Device = {
@@ -62,51 +67,57 @@ const USE_USER_MEDIA_CONFIG: UseUserMediaConfig = {
   refetchOnMount: true,
 };
 
+const useMediaData = (
+  data: DeviceState | null,
+  type: Type,
+  localStorageKey: string,
+  start: (config: UseUserMediaStartConfig) => void,
+  stop: (type: Type) => void,
+  setEnable: (type: Type, value: boolean) => void
+) => {
+  const deviceIdKey: keyof UseUserMediaStartConfig = type === "video" ? "videoDeviceId" : "audioDeviceId";
+
+  return useMemo(
+    (): UserMedia => ({
+      id: data?.media?.deviceInfo?.deviceId || null,
+      setId: (value: string) => start({ [deviceIdKey]: value }),
+      device: {
+        stream: data?.media?.stream || null,
+        stop: () => stop(type),
+        start: () => start({ [deviceIdKey]: loadObject<MediaDeviceInfo | null>(localStorageKey, null)?.deviceId }),
+        disable: () => setEnable(type, false),
+        enable: () => setEnable(type, true),
+        isEnabled: !!data?.media?.enabled,
+      },
+      devices: data?.devices || null,
+      error: data?.error?.name || null,
+    }),
+    [data, stop, start, setEnable, type, localStorageKey, deviceIdKey]
+  );
+};
+
 export const LocalPeerMediaProvider = ({ children }: Props) => {
   const { data, stop, start, setEnable } = useUserMedia(USE_USER_MEDIA_CONFIG);
 
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
   const screenSharingDevice: Device = useDisplayMedia(screenSharingConfig);
 
-  const video: UserMedia = useMemo(
-    (): UserMedia => ({
-      id: data?.video.media?.deviceInfo?.deviceId || null,
-      setId: (value: string) => start({ videoDeviceId: value }),
-      device: {
-        stream: data?.video.media?.stream || null,
-        stop: () => stop("video"),
-        start: () =>
-          start({ videoDeviceId: loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_VIDEO_DEVICE_KEY, null)?.deviceId }),
-        disable: () => setEnable("video", false),
-        enable: () => setEnable("video", true),
-        isEnabled: !!data?.video.media?.enabled,
-      },
-      devices: data?.video.devices || null,
-      error: data?.video.error?.name || null,
-    }),
-    [data, stop, start, setEnable]
+  const video: UserMedia = useMediaData(
+    data?.video || null,
+    "video",
+    LOCAL_STORAGE_VIDEO_DEVICE_KEY,
+    start,
+    stop,
+    setEnable
   );
 
-  const audio: UserMedia = useMemo(
-    (): UserMedia => ({
-      id: data?.audio.media?.deviceInfo?.deviceId || null,
-      setId: (value: string) => start({ audioDeviceId: value }),
-      device: {
-        stream: data?.audio.media?.stream || null,
-        stop: () => {
-          stop("audio");
-        },
-        start: () => {
-          start({ audioDeviceId: loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null)?.deviceId });
-        },
-        disable: () => setEnable("audio", false),
-        enable: () => setEnable("audio", true),
-        isEnabled: !!data?.audio.media?.enabled,
-      },
-      devices: data?.audio.devices || null,
-      error:  data?.audio.error?.name || null,
-    }),
-    [data, stop, start, setEnable]
+  const audio: UserMedia = useMediaData(
+    data?.audio || null,
+    "audio",
+    LOCAL_STORAGE_AUDIO_DEVICE_KEY,
+    start,
+    stop,
+    setEnable
   );
 
   const screenShare: DisplayMedia = useMemo(

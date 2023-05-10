@@ -1,4 +1,4 @@
-export type Types = "audio" | "video";
+export type Type = "audio" | "video";
 
 export type DeviceReturnType =
   | { type: "OK" }
@@ -44,8 +44,8 @@ export type UseUserMediaStartConfig = {
 export type UseUserMedia = {
   data: UseUserMediaState | null;
   start: (config: UseUserMediaStartConfig) => void;
-  stop: (type: Types) => void;
-  setEnable: (type: Types, value: boolean) => void;
+  stop: (type: Type) => void;
+  setEnable: (type: Type, value: boolean) => void;
   init: (videoParam: boolean | MediaTrackConstraints, audioParam: boolean | MediaTrackConstraints) => void;
 };
 

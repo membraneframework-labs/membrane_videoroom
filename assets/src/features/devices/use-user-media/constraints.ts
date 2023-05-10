@@ -1,5 +1,3 @@
-import { log } from "./debug";
-
 export const toMediaTrackConstraints = (
   constraint?: boolean | MediaTrackConstraints
 ): MediaTrackConstraints | undefined => {

@@ -166,7 +166,19 @@ const INITIAL_STATE: UseUserMediaState = {
 };
 
 /**
- * Hook that returns the list of available devices
+ * This hook is responsible for managing Media Devices and Media Streams from those devices.
+ *
+ * It stores all available devices and devices that are currently in use.
+ *
+ * It can also store previously selected devices, so it can retrieve them after a page reload.
+ *
+ * The inner algorithm should only open one prompt for both audio and video.
+ *
+ * If it's not possible to get the previous device (e.g. because the device doesn't exist),
+ * it tries to recover by loosening constraints on each device one by one to overcome OverconstrainedError.
+ *
+ * If one device is not available (e.g. if the user closed the prompt or permanently blocked the device,
+ * resulting in NotAllowedError), it tries to identify which device is not available and turns on the remaining one.
  */
 export const useUserMedia = ({
   getLastAudioDevice,

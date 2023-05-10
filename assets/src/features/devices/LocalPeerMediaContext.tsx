@@ -59,11 +59,6 @@ const useDisplayMedia = (screenSharingConfig: MediaStreamConstraints | null) =>
     )
   );
 
-const devicesOrNull = (devices: UseUserMediaState | null, type: MediaType) => {
-  const device = devices?.[type];
-  return device?.type === "OK" ? device.devices : null;
-};
-
 const USE_USER_MEDIA_CONFIG: UseUserMediaConfig = {
   getLastAudioDevice: () => loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, null),
   saveLastAudioDevice: (info: MediaDeviceInfo) => saveObject<MediaDeviceInfo>(LOCAL_STORAGE_AUDIO_DEVICE_KEY, info),
@@ -80,18 +75,11 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
   const screenSharingDevice: Device = useDisplayMedia(screenSharingConfig);
 
-  const audioDeviceError: string | null = useMemo(
-    () => (data?.audio.type === "Error" ? data.audio.name : null),
-    [data]
-  );
+  const audioDeviceError: string | null = data?.audioError?.name || null;
+  const videoDeviceError: string | null = data?.videoError?.name || null;
 
-  const videoDeviceError: string | null = useMemo(
-    () => (data?.video.type === "Error" ? data.video.name : null),
-    [data]
-  );
-
-  const videoDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(data, "video"), [data]);
-  const audioDevices: MediaDeviceInfo[] | null = useMemo(() => devicesOrNull(data, "audio"), [data]);
+  const videoDevices: MediaDeviceInfo[] | null = data?.videoDevices || null;
+  const audioDevices: MediaDeviceInfo[] | null = data?.audioDevices || null;
 
   const video: UserMedia = useMemo(() => {
     return {

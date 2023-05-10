@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 import { loadObject, saveObject } from "../shared/utils/localStorage";
 import { useMedia } from "./useMedia";
@@ -6,9 +6,7 @@ import { UseUserMediaConfig, UseUserMediaStartConfig } from "./use-user-media/ty
 import { useUserMedia } from "./use-user-media/useUserMedia";
 
 export type Device = {
-  isError: boolean;
   stream: MediaStream | null;
-  isLoading: boolean;
   start: () => void;
   stop: () => void;
   isEnabled: boolean;
@@ -70,40 +68,31 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
   const [screenSharingConfig, setScreenSharingConfig] = useState<MediaStreamConstraints | null>(null);
   const screenSharingDevice: Device = useDisplayMedia(screenSharingConfig);
 
-  const audioDeviceError: string | null = data?.audioError?.name || null;
-  const videoDeviceError: string | null = data?.videoError?.name || null;
-
-  const videoDevices: MediaDeviceInfo[] | null = data?.videoDevices || null;
-  const audioDevices: MediaDeviceInfo[] | null = data?.audioDevices || null;
-
-  const video: UserMedia = useMemo(() => {
-    return {
-      id: data?.videoMedia?.deviceInfo?.deviceId || null,
+  const video: UserMedia = useMemo(
+    (): UserMedia => ({
+      id: data?.video.media?.deviceInfo?.deviceId || null,
       setId: (value: string) => start({ videoDeviceId: value }),
       device: {
-        stream: data?.videoMedia?.stream || null,
-        isError: false,
-        isLoading: false,
+        stream: data?.video.media?.stream || null,
         stop: () => stop("video"),
         start: () =>
           start({ videoDeviceId: loadObject<MediaDeviceInfo | null>(LOCAL_STORAGE_VIDEO_DEVICE_KEY, null)?.deviceId }),
         disable: () => setEnable("video", false),
         enable: () => setEnable("video", true),
-        isEnabled: !!data?.videoMedia?.enabled,
+        isEnabled: !!data?.video.media?.enabled,
       },
-      devices: videoDevices,
-      error: videoDeviceError,
-    };
-  }, [data, videoDeviceError, videoDevices, stop, start, setEnable]);
+      devices: data?.video.devices || null,
+      error: data?.video.error?.name || null,
+    }),
+    [data, stop, start, setEnable]
+  );
 
   const audio: UserMedia = useMemo(
-    () => ({
-      id: data?.audioMedia?.deviceInfo?.deviceId || null,
+    (): UserMedia => ({
+      id: data?.audio.media?.deviceInfo?.deviceId || null,
       setId: (value: string) => start({ audioDeviceId: value }),
       device: {
-        stream: data?.audioMedia?.stream || null,
-        isError: false,
-        isLoading: false,
+        stream: data?.audio.media?.stream || null,
         stop: () => {
           stop("audio");
         },
@@ -112,17 +101,13 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
         },
         disable: () => setEnable("audio", false),
         enable: () => setEnable("audio", true),
-        isEnabled: !!data?.audioMedia?.enabled,
+        isEnabled: !!data?.audio.media?.enabled,
       },
-      devices: audioDevices,
-      error: audioDeviceError,
+      devices: data?.audio.devices || null,
+      error:  data?.audio.error?.name || null,
     }),
-    [data, audioDeviceError, audioDevices, stop, start, setEnable]
+    [data, stop, start, setEnable]
   );
-
-  // useEffect(() => {
-  //   console.log({ audio });
-  // }, [audio]);
 
   const screenShare: DisplayMedia = useMemo(
     () => ({

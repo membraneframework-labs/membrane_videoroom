@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   DeviceError,
   DeviceReturnType,
+  DeviceState,
   Errors,
   GetMedia,
   Media,
@@ -26,12 +27,11 @@ import {
   getDeviceInfo,
   isAnyDeviceDifferentFromLastSession,
   isAudio,
-  isDeviceDifferentFromLastSession,
   isVideo,
   parseError,
 } from "./device-utils";
 
-// TODO After some testing this hook should be extracted to browser-media-utils
+// TODO After some testing this hook should be prepareDeviceState to browser-media-utils
 
 const stopTracks = (requestedDevices: MediaStream) => {
   requestedDevices.getTracks().forEach((track) => {
@@ -127,6 +127,44 @@ const prepareStatus = (
   return { type: "Error", error: null };
 };
 
+function prepareDeviceState<K>(
+  stream: MediaStream | null,
+  track: MediaStreamTrack | null,
+  devices: MediaDeviceInfo[],
+  error: DeviceError | null,
+  shouldAskForVideo: boolean
+) {
+  const deviceInfo = getDeviceInfo(track?.getSettings()?.deviceId || null, devices);
+
+  return {
+    devices: devices,
+    status: prepareStatus(shouldAskForVideo, track, error),
+    media: {
+      stream: track ? stream : null,
+      track: track,
+      deviceInfo,
+      enabled: !!track,
+    },
+    error: error,
+  };
+}
+
+const INITIAL_STATE: UseUserMediaState = {
+  video: {
+    status: { type: "Not requested" },
+    media: null,
+    devices: null,
+    error: null,
+  },
+  audio: {
+    status: { type: "Not requested" },
+    media: null,
+    devices: null,
+    error: null,
+  },
+  devices: null,
+};
+
 /**
  * Hook that returns the list of available devices
  */
@@ -139,17 +177,7 @@ export const useUserMedia = ({
   audioTrackConstraints,
   refetchOnMount,
 }: UseUserMediaConfig): UseUserMedia => {
-  const [state, setState] = useState<UseUserMediaState>({
-    videoStatus: { type: "Not requested" },
-    audioStatus: { type: "Not requested" },
-    audioMedia: null,
-    videoMedia: null,
-    audioError: null,
-    videoError: null,
-    devices: null,
-    audioDevices: null,
-    videoDevices: null,
-  });
+  const [state, setState] = useState<UseUserMediaState>(INITIAL_STATE);
 
   useEffect(() => {
     log({ name: "stateChange", data: state });
@@ -173,8 +201,14 @@ export const useUserMedia = ({
 
     setState((prevState) => ({
       ...prevState,
-      video: shouldAskForVideo && videoConstraints ? REQUESTING : prevState.videoStatus ?? NOT_REQUESTED,
-      audio: shouldAskForAudio && audioConstraints ? REQUESTING : prevState.audioStatus ?? NOT_REQUESTED,
+      video: {
+        ...prevState.video,
+        status: shouldAskForVideo && videoConstraints ? REQUESTING : prevState.video.status ?? NOT_REQUESTED,
+      },
+      audio: {
+        ...prevState.audio,
+        status: shouldAskForAudio && audioConstraints ? REQUESTING : prevState.audio.status ?? NOT_REQUESTED,
+      },
     }));
 
     let requestedDevices: MediaStream | null = null;
@@ -203,7 +237,7 @@ export const useUserMedia = ({
     if (result.type === "OK") {
       requestedDevices = result.stream;
       // Safari changes deviceId between sessions, therefore we cannot rely on deviceId for identification purposes.
-      // We can switch randomly given device to one that has the same label as the one used in previous session.
+      // We can switch device that comes from safari (random one) to one that has the same label as the one used in previous session.
       const currentDevices = getCurrentDevicesSettings(requestedDevices, mediaDeviceInfos);
       const shouldCorrectDevices = isAnyDeviceDifferentFromLastSession(
         previousVideoDevice,
@@ -247,44 +281,35 @@ export const useUserMedia = ({
     log("%cResult", "color: orange");
     log({ result });
 
-    const videoDevices = mediaDeviceInfos.filter(isVideo);
-    const videoTrack = requestedDevices?.getVideoTracks()[0] || null;
-    const videoDeviceInfo = getDeviceInfo(videoTrack?.getSettings()?.deviceId || null, videoDevices);
-    const videoError = getError(result, "video");
+    const video: DeviceState = prepareDeviceState(
+      requestedDevices,
+      requestedDevices?.getVideoTracks()[0] || null,
+      mediaDeviceInfos.filter(isVideo),
+      getError(result, "video"),
+      shouldAskForVideo
+    );
 
-    const audioDevices = mediaDeviceInfos.filter(isAudio);
-    const audioTrack = requestedDevices?.getAudioTracks()[0] || null;
-    const audioDeviceInfo = getDeviceInfo(audioTrack?.getSettings()?.deviceId || null, audioDevices);
-    const audioError = getError(result, "audio");
+    const audio: DeviceState = prepareDeviceState(
+      requestedDevices,
+      requestedDevices?.getAudioTracks()[0] || null,
+      mediaDeviceInfos.filter(isAudio),
+      getError(result, "audio"),
+      shouldAskForAudio
+    );
 
     setState({
       devices: mediaDeviceInfos,
-      videoDevices: videoDevices,
-      audioDevices: audioDevices,
-      videoStatus: prepareStatus(shouldAskForVideo, videoTrack, videoError),
-      audioStatus: prepareStatus(shouldAskForAudio, audioTrack, audioError),
-      videoMedia: {
-        stream: videoTrack ? requestedDevices : null,
-        track: videoTrack,
-        deviceInfo: videoDeviceInfo,
-        enabled: !!videoTrack,
-      },
-      audioMedia: {
-        stream: audioTrack ? requestedDevices : null,
-        track: audioTrack,
-        deviceInfo: audioDeviceInfo,
-        enabled: !!audioTrack,
-      },
-      videoError: videoError,
-      audioError: audioError,
+      video,
+      audio,
     });
 
-    if (videoDeviceInfo) {
-      saveLastVideoDevice(videoDeviceInfo);
+    if (video.media?.deviceInfo) {
+      log({name: "saveLastVideoDevice", info: video.media.deviceInfo})
+      saveLastVideoDevice(video.media.deviceInfo);
     }
 
-    if (audioDeviceInfo) {
-      saveLastAudioDevice(audioDeviceInfo);
+    if (audio.media?.deviceInfo) {
+      saveLastAudioDevice(audio.media?.deviceInfo);
     }
   }, [
     getLastVideoDevice,
@@ -299,8 +324,8 @@ export const useUserMedia = ({
 
   const start = useCallback(
     async ({ audioDeviceId, videoDeviceId }: UseUserMediaStartConfig) => {
-      const shouldRestartVideo = !!videoDeviceId && videoDeviceId !== state.videoMedia?.deviceInfo?.deviceId;
-      const shouldRestartAudio = !!audioDeviceId && audioDeviceId !== state.audioMedia?.deviceInfo?.deviceId;
+      const shouldRestartVideo = !!videoDeviceId && videoDeviceId !== state.video.media?.deviceInfo?.deviceId;
+      const shouldRestartAudio = !!audioDeviceId && audioDeviceId !== state.audio.media?.deviceInfo?.deviceId;
 
       const exactConstraints: MediaStreamConstraints = {
         video: shouldRestartVideo && prepareMediaTrackConstraints(videoDeviceId, videoConstraints),
@@ -315,19 +340,20 @@ export const useUserMedia = ({
         const stream = result.stream;
 
         if (shouldRestartVideo) {
-          state?.videoMedia?.track?.stop();
+          state?.video.media?.track?.stop();
         }
 
-        if (shouldRestartAudio) {
-          state?.audioMedia?.track?.stop();
-        }
-
-        const videoInfo = videoDeviceId ? getDeviceInfo(videoDeviceId, state.videoDevices ?? []) : null;
+        const videoInfo = videoDeviceId ? getDeviceInfo(videoDeviceId, state.video.devices ?? []) : null;
         if (videoInfo) {
           saveLastVideoDevice(videoInfo);
         }
 
-        const audioInfo = audioDeviceId ? getDeviceInfo(audioDeviceId, state.audioDevices ?? []) : null;
+        if (shouldRestartAudio) {
+          state?.audio.media?.track?.stop();
+        }
+
+        const audioInfo = audioDeviceId ? getDeviceInfo(audioDeviceId, state.audio.devices ?? []) : null;
+
         if (audioInfo) {
           saveLastAudioDevice(audioInfo);
         }
@@ -340,7 +366,7 @@ export const useUserMedia = ({
                 deviceInfo: videoInfo,
                 enabled: true,
               }
-            : prevState.videoMedia;
+            : prevState.video.media;
 
           const audioMedia: Media | null = shouldRestartAudio
             ? {
@@ -349,18 +375,26 @@ export const useUserMedia = ({
                 deviceInfo: audioInfo,
                 enabled: true,
               }
-            : prevState.audioMedia;
+            : prevState.audio.media;
 
-          return { ...prevState, videoMedia, audioMedia };
+          return {
+            ...prevState,
+            video: { ...prevState.video, media: videoMedia },
+            audio: { ...prevState.audio, media: audioMedia },
+          };
         });
       } else {
         const parsedError = result.error;
 
         setState((prevState) => {
-          const videoError = exactConstraints.video ? parsedError : prevState.videoError;
-          const audioError = exactConstraints.audio ? parsedError : prevState.audioError;
+          const videoError = exactConstraints.video ? parsedError : prevState.video.error;
+          const audioError = exactConstraints.audio ? parsedError : prevState.audio.error;
 
-          return { ...prevState, audioError, videoError };
+          return {
+            ...prevState,
+            video: { ...prevState.video, error: videoError },
+            audio: { ...prevState.audio, error: audioError },
+          };
         });
       }
     },
@@ -368,26 +402,23 @@ export const useUserMedia = ({
   );
 
   const stop = useCallback(async (type: Types) => {
-    const name = type === "audio" ? "audioMedia" : "videoMedia";
-
     setState((prevState) => {
-      prevState?.[name]?.track?.stop();
+      prevState?.[type]?.media?.track?.stop();
 
-      return { ...prevState, [name]: null };
+      return { ...prevState, [type]: { ...prevState[type], media: null } };
     });
   }, []);
 
   const setEnable = useCallback((type: Types, value: boolean) => {
     setState((prevState) => {
-      const name = type === "audio" ? "audioMedia" : "videoMedia";
-      const media = prevState[name];
+      const media = prevState[type].media;
       if (!media || !media.track) {
         return prevState;
       }
 
       media.track.enabled = value;
 
-      return { ...prevState, [name]: { ...prevState[name], enabled: value } };
+      return { ...prevState, [type]: { ...prevState[type], media: { ...media, enabled: value } } };
     });
   }, []);
 

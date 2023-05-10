@@ -13,15 +13,16 @@ export type Media = {
   deviceInfo: MediaDeviceInfo | null;
 };
 
+export type DeviceState = {
+  status: DeviceReturnType;
+  media: Media | null;
+  error: DeviceError | null;
+  devices: MediaDeviceInfo[] | null;
+}
+
 export type UseUserMediaState = {
-  videoStatus: DeviceReturnType;
-  audioStatus: DeviceReturnType;
-  videoMedia: Media | null;
-  audioMedia: Media | null;
-  videoError: DeviceError | null;
-  audioError: DeviceError | null;
-  videoDevices: MediaDeviceInfo[] | null;
-  audioDevices: MediaDeviceInfo[] | null;
+  video: DeviceState;
+  audio: DeviceState;
   devices: MediaDeviceInfo[] | null;
 };
 

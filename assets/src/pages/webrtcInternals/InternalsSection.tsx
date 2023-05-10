@@ -15,7 +15,8 @@ const InternalsSection = ({ title, section }: InternalsSectionProps) => {
 
   return (
     <Details summaryText={title} isOpen={isOpen} toggle={toggle}>
-      <ul className="list-inside list-disc">
+      {isOpen &&(
+      <><ul className="list-inside list-disc">
         {descriptive.map(({ name, value }) => (
           <li className="p-2 px-4" key={name}>{`${name}: ${value}`}</li>
         ))}
@@ -33,7 +34,7 @@ const InternalsSection = ({ title, section }: InternalsSectionProps) => {
             <InternalsSection title={key} section={section} />
           </li>
         ))}
-      </ul>
+      </ul></>)}
     </Details>
   );
 };

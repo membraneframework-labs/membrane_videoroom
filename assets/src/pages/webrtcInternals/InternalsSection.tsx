@@ -15,26 +15,29 @@ const InternalsSection = ({ title, section }: InternalsSectionProps) => {
 
   return (
     <Details summaryText={title} isOpen={isOpen} toggle={toggle}>
-      {isOpen &&(
-      <><ul className="list-inside list-disc">
-        {descriptive.map(({ name, value }) => (
-          <li className="p-2 px-4" key={name}>{`${name}: ${value}`}</li>
-        ))}
-      </ul>
-      <ul>
-        <div className="flex flex-wrap">
-          {charts.map(({ chartTitle, xs, ys }) => (
-            <li className="p-2" key={chartTitle}>
-              <Chart title={chartTitle} xs={xs} ys={ys} />
-            </li>
-          ))}
-        </div>
-        {Object.entries(subsections || {}).map(([key, section]) => (
-          <li className="p-2" key={key}>
-            <InternalsSection title={key} section={section} />
-          </li>
-        ))}
-      </ul></>)}
+      {isOpen && (
+        <>
+          <ul className="list-inside list-disc">
+            {descriptive.map(({ name, value }) => (
+              <li className="p-2 px-4" key={name}>{`${name}: ${value}`}</li>
+            ))}
+          </ul>
+          <ul>
+            <div className="flex flex-wrap">
+              {charts.map(({ chartTitle, xs, ys }) => (
+                <li className="p-2" key={chartTitle}>
+                  <Chart title={chartTitle} xs={xs} ys={ys} />
+                </li>
+              ))}
+            </div>
+            {Object.entries(subsections || {}).map(([key, section]) => (
+              <li className="p-2" key={key}>
+                <InternalsSection title={key} section={section} />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </Details>
   );
 };

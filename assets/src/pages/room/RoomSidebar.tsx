@@ -14,7 +14,7 @@ type Props = {
 const RoomSidebar: FC<Props> = ({ isSidebarOpen, setIsSidebarOpen, peerState }: Props) => {
   const SIDEBAR_HEIGHT_MOBILE = 480;
 
-  const isMobile = useSmartphoneViewport();
+  const isMobile: boolean | undefined = useSmartphoneViewport().isSmartphone;
   const animationControls = useAnimation();
 
   const sidebarStyles = {

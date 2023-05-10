@@ -26,7 +26,7 @@ const MediaControlButton: FC<MediaControlButtonProps> = (props: MediaControlButt
   } = props;
 
   return (
-    <div className={clsx("group relative", hideOnMobile && "hidden-on-mobile-device")}>
+    <div className={clsx("group relative", hideOnMobile && "hidden-on-mobile-and-tablet")}>
       <Button
         removeDefaultPadding={true}
         variant={variant}

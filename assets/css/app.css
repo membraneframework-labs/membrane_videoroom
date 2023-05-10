@@ -2,6 +2,8 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import "chartist/dist/index.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -48,6 +50,19 @@
   max-height: calc(
     100vh - var(--padding) - var(--navbar) - var(--gap) - var(--gap) - var(--menuTooltip) - var(--padding)
   );
+}
+
+svg.ct-chart-bar,
+svg.ct-chart-line {
+  overflow: visible;
+}
+.ct-label.ct-label.ct-horizontal.ct-end {
+  position: relative;
+  justify-content: flex-end;
+  text-align: right;
+  transform-origin: 100% 0;
+  transform: translate(-100%) rotate(-45deg);
+  white-space: nowrap;
 }
 
 /* allows for centering leftover elements in the last row of the grid */
@@ -140,7 +155,7 @@
 }
 
 @media (pointer: coarse) and (max-width: 1290px) {
-  .hidden-on-mobile-device {
+  .hidden-on-mobile-and-tablet {
     display: none;
   }
 }

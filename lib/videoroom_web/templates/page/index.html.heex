@@ -1,3 +1,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/rlp1ezr.css" />
 <script defer type="text/javascript" src={static_path(@conn, "/assets/js/app.js")}></script>
 <div id="root"></div>
+
+<%= if assigns[:version] do %>
+<label class="absolute text-brand-dark-blue-500 text-xl bottom-5 left-3 invisible md:visible">Version: <%= @version %></label>
+<% end %>

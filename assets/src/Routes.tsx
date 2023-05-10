@@ -6,6 +6,7 @@ import { useUser } from "./contexts/UserContext";
 import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
 import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
 import Page404 from "./features/shared/components/Page404";
+import { WebrtcInternalsPage } from "./pages/webrtcInternals/WebrtcInternalsPage";
 
 const RoomPageWrapper: React.FC = () => {
   const match = useParams();
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <VideoroomHomePage />,
+  },
+  {
+    path: "/webrtc-internals",
+    element: <WebrtcInternalsPage />,
   },
   {
     path: "/room/:roomId",

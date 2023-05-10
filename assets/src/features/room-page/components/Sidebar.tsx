@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ peers, localPeer, onClose }) => {
       className={clsx(
         "border-brand-dark-blue-300 bg-brand-white md:border",
         "rounded-t-2xl md:rounded-xl",
-        "md:grid-wrapper absolute bottom-0 left-0 z-40 h-[480px] w-full flex-col md:relative md:z-auto md:flex md:h-full md:w-[300px]",
+        "md:grid-wrapper h-full w-full flex-col md:relative md:z-auto md:flex md:w-[300px]",
         "whitespace-nowrap font-aktivGrotesk"
       )}
     >

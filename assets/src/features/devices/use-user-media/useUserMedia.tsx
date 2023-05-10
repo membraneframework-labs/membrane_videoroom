@@ -245,7 +245,7 @@ export const useUserMedia = ({
     if (result.type === "OK") {
       requestedDevices = result.stream;
       // Safari changes deviceId between sessions, therefore we cannot rely on deviceId for identification purposes.
-      // We can switch device that comes from safari (random one) to one that has the same label as the one used in previous session.
+      // We can switch a random device that comes from safari to one that has the same label as the one used in the previous session.
       const currentDevices = getCurrentDevicesSettings(requestedDevices, mediaDeviceInfos);
       const shouldCorrectDevices = isAnyDeviceDifferentFromLastSession(
         previousVideoDevice,

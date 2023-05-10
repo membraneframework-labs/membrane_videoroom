@@ -18,7 +18,7 @@ export type DeviceState = {
   media: Media | null;
   error: DeviceError | null;
   devices: MediaDeviceInfo[] | null;
-}
+};
 
 export type UseUserMediaState = {
   video: DeviceState;

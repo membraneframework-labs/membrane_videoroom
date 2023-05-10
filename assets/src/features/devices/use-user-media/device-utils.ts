@@ -30,8 +30,10 @@ export const getCurrentDevicesSettings = (
   return currentDevices;
 };
 // todo remove export
-export const isDeviceDifferentFromLastSession = (lastDevice: MediaDeviceInfo | null, currentDevice: MediaDeviceInfo | null) =>
-  lastDevice && (currentDevice?.deviceId !== lastDevice.deviceId || currentDevice?.label !== lastDevice?.label);
+export const isDeviceDifferentFromLastSession = (
+  lastDevice: MediaDeviceInfo | null,
+  currentDevice: MediaDeviceInfo | null
+) => lastDevice && (currentDevice?.deviceId !== lastDevice.deviceId || currentDevice?.label !== lastDevice?.label);
 
 export const isAnyDeviceDifferentFromLastSession = (
   lastVideoDevice: MediaDeviceInfo | null,

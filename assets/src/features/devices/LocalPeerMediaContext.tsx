@@ -2,12 +2,7 @@ import React, { useContext, useMemo, useState } from "react";
 import { AUDIO_TRACK_CONSTRAINTS, VIDEO_TRACK_CONSTRAINTS } from "../../pages/room/consts";
 import { loadObject, saveObject } from "../shared/utils/localStorage";
 import { useMedia } from "./useMedia";
-import {
-  DeviceState,
-  Type,
-  UseUserMediaConfig,
-  UseUserMediaStartConfig,
-} from "./use-user-media/type";
+import { DeviceState, Type, UseUserMediaConfig, UseUserMediaStartConfig } from "./use-user-media/type";
 import { useUserMedia } from "./use-user-media/useUserMedia";
 
 export type Device = {

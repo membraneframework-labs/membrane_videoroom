@@ -127,13 +127,13 @@ const prepareStatus = (
   return { type: "Error", error: null };
 };
 
-function prepareDeviceState<K>(
+const prepareDeviceState = (
   stream: MediaStream | null,
   track: MediaStreamTrack | null,
   devices: MediaDeviceInfo[],
   error: DeviceError | null,
   shouldAskForVideo: boolean
-) {
+) => {
   const deviceInfo = getDeviceInfo(track?.getSettings()?.deviceId || null, devices);
 
   return {
@@ -147,7 +147,7 @@ function prepareDeviceState<K>(
     },
     error: error,
   };
-}
+};
 
 const INITIAL_STATE: UseUserMediaState = {
   video: {
@@ -304,7 +304,7 @@ export const useUserMedia = ({
     });
 
     if (video.media?.deviceInfo) {
-      log({name: "saveLastVideoDevice", info: video.media.deviceInfo})
+      log({ name: "saveLastVideoDevice", info: video.media.deviceInfo });
       saveLastVideoDevice(video.media.deviceInfo);
     }
 

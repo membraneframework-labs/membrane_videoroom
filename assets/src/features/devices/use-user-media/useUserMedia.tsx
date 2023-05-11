@@ -285,6 +285,7 @@ export const useUserMedia = ({
     }
 
     log("%cResult", "color: orange");
+
     log({ result });
 
     const video: DeviceState = prepareDeviceState(

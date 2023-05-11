@@ -49,7 +49,11 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   hover="Turn on the camera"
                   buttonClassName={activeButtonStyle}
                   onClick={() => {
-                    video.device.start();
+                    if (video.device.stream) {
+                      video.device.enable();
+                    } else {
+                      video.device.start();
+                    }
                   }}
                 />
               )}
@@ -68,7 +72,11 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
                   hover="Turn on the microphone"
                   buttonClassName={activeButtonStyle}
                   onClick={() => {
-                    audio.device.start();
+                    if (audio.device.stream) {
+                      audio.device.enable();
+                    } else {
+                      audio.device.start();
+                    }
                   }}
                 />
               )}

@@ -46,6 +46,7 @@ export function getGridConfig(peers: number): GridConfigType {
     if (peers < 13) return "gap-3";
     return "gap-2";
   }
+
   const grid = "grid place-content-center grid-flow-row";
   const gap = getGridGap();
   const padding = peers >= 10 && peers < 13 ? "xl:px-[140px]" : "";
@@ -63,7 +64,8 @@ export const getUnpinnedTilesGridStyle = (
   isAnyTilePinned: boolean,
   horizontalRow: boolean,
   videoInVideo: boolean,
-  fixedRatio: boolean
+  fixedRatio: boolean,
+  isMobile: boolean
 ): string => {
   if (!isAnyTilePinned)
     return clsx(
@@ -77,10 +79,8 @@ export const getUnpinnedTilesGridStyle = (
 
   if (fixedRatio)
     return clsx(
-      "w-[400px]",
-      videoInVideo
-        ? "h-[220px] absolute bottom-4 right-4 z-10"
-        : "h-full flex flex-wrap flex-col content-center justify-center"
+      videoInVideo ? "absolute bottom-4 right-4 z-10" : "h-full flex flex-wrap flex-col content-center justify-center",
+      isMobile ? "w-[200px] h-[110px]" : "w-[400px] h-[220px]"
     );
 
   const horizontal = horizontalRow ? "sm:flex-row" : "sm:flex-col";

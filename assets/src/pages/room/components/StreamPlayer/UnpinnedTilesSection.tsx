@@ -14,6 +14,7 @@ import {
   showDisabledIcon,
 } from "../../../../features/room-page/components/DisabledTrackIcon";
 import SoundIcon from "../../../../features/room-page/components/SoundIcon";
+import useSmartphoneViewport from "../../../../features/shared/hooks/useSmartphoneViewport";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -40,9 +41,18 @@ const UnpinnedTilesSection: FC<Props> = ({
   horizontal,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
+  const isSmartphone = useSmartphoneViewport().isSmartphone || false;
   const videoGridStyle = useMemo(
-    () => getUnpinnedTilesGridStyle(gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length === 1),
-    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length]
+    () =>
+      getUnpinnedTilesGridStyle(
+        gridConfig,
+        isAnyTilePinned,
+        horizontal,
+        videoInVideo,
+        tileConfigs.length === 1,
+        isSmartphone
+      ),
+    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length, isSmartphone]
   );
 
   const tileStyle = !isAnyTilePinned

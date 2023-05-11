@@ -85,7 +85,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
           </>
         }
       />
-      {/*</div>*/}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import Input from "../../shared/components/Input";
 import Send from "../../questionnaire-page/icons/Send";
 import Plus from "../../questionnaire-page/icons/Plus";
 import Info from "../../questionnaire-page/icons/Info";
+import Rating from "./Rating";
 
 type CommentBoxProps = {
   isOpen: boolean;
@@ -37,9 +38,9 @@ const LeavingRoomScreen: React.FC = () => {
         <div aria-label="rating" className="flex w-full flex-col content-center justify-center gap-6 text-center">
           <h4 className="text-2xl font-medium">How would you rate...</h4>
           <div className="flex flex-col sm:flex-row w-full justify-center content-center">
-            <div className="w-64 h-16">Video Quality</div>
-            <div className="w-64 h-16">Audio Quality</div>
-            <div className="w-64 h-16">Screenshare Quality</div>
+            <Rating title="Video Quality" />
+            <Rating title="Audio Quality" />
+            <Rating title="Screenshare Quality" />
           </div>
           <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)}/>
         </div>

@@ -22,7 +22,6 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
   const { setOpen } = useModal();
 
   return (
-    // <div className="max-h-[400px] max-w-[600px]">
     <div className="h-full w-full">
       <MediaPlayerTile
         key="room-preview"

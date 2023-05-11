@@ -20,7 +20,6 @@ export const DeviceErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
   useEffectOnChange(
     [video.error, audio.error],
     () => {
-      // console.log({video, audio})
       const message = prepareErrorMessage(video.error, audio.error);
 
       if (message) {

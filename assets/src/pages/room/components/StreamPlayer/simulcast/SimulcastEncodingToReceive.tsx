@@ -23,7 +23,7 @@ export const SimulcastEncodingToReceive: FC<Props> = ({
   disabled,
 }: Props) => {
   return (
-    <div className="absolute top-0 right-0 z-50 w-full text-sm text-gray-700 md:text-base">
+    <div className="absolute right-0 top-0 z-50 w-full text-sm text-gray-700 md:text-base">
       <div className="flex flex-row justify-between">
         <div className="rounded-br-xl bg-white/80 py-2 pl-4 pr-4">
           <Tooltip text="Current encoding" textCss="left-14">

@@ -37,7 +37,7 @@ const LeavingRoomScreen: React.FC = () => {
         <div aria-label="content" className="flex flex-col items-center justify-center p-0 gap-10">
         <div aria-label="rating" className="flex w-full flex-col content-center justify-center gap-6 text-center">
           <h4 className="text-2xl font-medium">How would you rate...</h4>
-          <div className="flex flex-col sm:flex-row w-full justify-center content-center">
+          <div className="flex flex-col sm:flex-row w-full justify-center content-center gap-10">
             <Rating title="Video Quality" />
             <Rating title="Audio Quality" />
             <Rating title="Screenshare Quality" />

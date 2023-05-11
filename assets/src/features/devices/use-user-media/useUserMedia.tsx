@@ -179,6 +179,8 @@ const INITIAL_STATE: UseUserMediaState = {
  *
  * If one device is not available (e.g. if the user closed the prompt or permanently blocked the device,
  * resulting in NotAllowedError), it tries to identify which device is not available and turns on the remaining one.
+ *
+ * Logs in this hook are visible on console when setting "log-device-manager" to `"true" in your LocalStorage.
  */
 export const useUserMedia = ({
   getLastAudioDevice,

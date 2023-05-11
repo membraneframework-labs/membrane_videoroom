@@ -6,7 +6,6 @@ import MembraneVideoroomLogo from "../../shared/components/MembraneVideoroomLogo
 import PlainLink from "../../shared/components/PlainLink";
 import useToast from "../../shared/hooks/useToast";
 
-
 //TODO make one, solid, expendable navbar
 const Navbar: React.FC = () => {
   const match = useParams();
@@ -25,9 +24,9 @@ const Navbar: React.FC = () => {
         <MembraneVideoroomLogo className="text-5xl" />
       </PlainLink>
       <div className="flex flex-row items-center gap-x-3 font-aktivGrotesk">
-        <Button href={`/room/${roomId}`} name="rejoin-meeting" variant="light" >
-            Rejoin the meeting
-          </Button>
+        <Button href={`/room/${roomId}`} name="rejoin-meeting" variant="light">
+          Rejoin the meeting
+        </Button>
       </div>
     </div>
   );

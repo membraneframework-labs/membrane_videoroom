@@ -5,26 +5,25 @@ import Input from "../../shared/components/Input";
 import Send from "../../questionnaire-page/icons/Send";
 import Plus from "../../questionnaire-page/icons/Plus";
 import Info from "../../questionnaire-page/icons/Info";
-import Rating from "./Rating";
+import Rating from "../../questionnaire-page/components/Rating";
 
 type CommentBoxProps = {
   isOpen: boolean;
   setOpen: () => void;
-}
+};
 
-const CommentBox = ({isOpen, setOpen}:CommentBoxProps) => {
-  const AddCommentButton = () => (<button 
-    onClick={setOpen} 
-    className="flex flex-row justify-center gap-2 p-0">
-      <Plus/>
+const CommentBox = ({ isOpen, setOpen }: CommentBoxProps) => {
+  const AddCommentButton = () => (
+    <button onClick={setOpen} className="flex flex-row justify-center gap-2 p-0">
+      <Plus />
       <span>Add comment</span>
-    </button>);
+    </button>
+  );
 
-  const CommentInput = () => (<Input label="Comment (optional)"/>);
-  
-  return isOpen ? <CommentInput/> : <AddCommentButton/>;
-}
+  const CommentInput = () => <Input label="Comment (optional)" />;
 
+  return isOpen ? <CommentInput /> : <AddCommentButton />;
+};
 
 const LeavingRoomScreen: React.FC = () => {
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
@@ -34,32 +33,29 @@ const LeavingRoomScreen: React.FC = () => {
       <section className="flex h-full w-full flex-col items-center justify-center gap-y-10 sm:gap-y-20">
         <h2 className="text-2xl font-medium sm:text-5xl">Thank you for participating!</h2>
 
-        <div aria-label="content" className="flex flex-col items-center justify-center p-0 gap-10">
-        <div aria-label="rating" className="flex w-full flex-col content-center justify-center gap-6 text-center">
-          <h4 className="text-2xl font-medium">How would you rate...</h4>
-          <div className="flex flex-col sm:flex-row w-full justify-center content-center gap-10">
-            <Rating title="Video Quality" />
-            <Rating title="Audio Quality" />
-            <Rating title="Screenshare Quality" />
+        <div aria-label="content" className="flex flex-col items-center justify-center gap-10 p-0">
+          <div aria-label="rating" className="flex w-full flex-col content-center justify-center gap-6 text-center">
+            <h4 className="text-2xl font-medium">How would you rate...</h4>
+            <div className="flex w-full flex-col content-center justify-center gap-10 sm:flex-row">
+              <Rating title="Video Quality" />
+              <Rating title="Audio Quality" />
+              <Rating title="Screenshare Quality" />
+            </div>
+            <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)} />
           </div>
-          <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)}/>
-        </div>
-        <div aria-label="email" className="flex flex-col p-0 items-start w-96 gap-2">
-        <Input 
-          type="text"
-          label="Your e-mail"
-          required/>
-          <div>
-            <Info/>
-            <span>Information required</span>
+          <div aria-label="email" className="flex w-96 flex-col items-start gap-2 p-0">
+            <Input type="text" label="Your e-mail" required />
+            <div>
+              <Info />
+              <span>Information required</span>
+            </div>
           </div>
-        </div>
-        <div aria-label="button" className="flex flex-col content-center gap-4">
-          <Button href="/" name="main-page" variant="normal">
-            Submit <Send/>
-          </Button>
-          <span>You need to rate at least one quality to submit</span>
-        </div>
+          <div aria-label="button" className="flex flex-col content-center gap-4">
+            <Button href="/" name="main-page" variant="normal">
+              Submit <Send />
+            </Button>
+            <span>You need to rate at least one quality to submit</span>
+          </div>
         </div>
       </section>
     </QuestionnairePageLayout>

@@ -9,6 +9,7 @@ import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
+import useSmartphoneViewport from "../../../../features/shared/hooks/useSmartphoneViewport";
 import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
 
 type Props = {
@@ -36,9 +37,18 @@ const UnpinnedTilesSection: FC<Props> = ({
   horizontal,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
+  const isSmartphone = useSmartphoneViewport().isSmartphone || false;
   const videoGridStyle = useMemo(
-    () => getUnpinnedTilesGridStyle(gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length === 1),
-    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length]
+    () =>
+      getUnpinnedTilesGridStyle(
+        gridConfig,
+        isAnyTilePinned,
+        horizontal,
+        videoInVideo,
+        tileConfigs.length === 1,
+        isSmartphone
+      ),
+    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length, isSmartphone]
   );
 
   const tileStyle = !isAnyTilePinned

@@ -2,15 +2,16 @@ import clsx from "clsx";
 import React from "react";
 import PlainLink, { PlainLinkProps } from "./PlainLink";
 
-type ButtonVariant = "normal" | "light" | "transparent" | "transparent-light";
+export type ButtonVariant = "normal" | "light" | "transparent" | "transparent-light";
 
-type ButtonProps = PlainLinkProps & { variant?: ButtonVariant };
+type ButtonProps = PlainLinkProps & { variant?: ButtonVariant; removeDefaultPadding?: boolean };
 
 const Button: React.FC<ButtonProps> = (props) => {
   return (
     <PlainLink
       {...props}
       className={clsx(
+        !props.removeDefaultPadding && "px-8 py-3",
         props.variant && buttonDefaultClassName,
         props.disabled ? disabledButtonClassName : props.variant && BUTTON_CLASSES[props.variant],
         props.className
@@ -26,7 +27,6 @@ export default Button;
 const buttonDefaultClassName = clsx(
   "inline-block whitespace-nowrap text-center",
   "font-medium text-lg font-aktivGrotesk",
-  "px-8 py-3",
   "rounded-full"
 );
 

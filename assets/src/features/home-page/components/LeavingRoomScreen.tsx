@@ -6,6 +6,7 @@ import Send from "../../questionnaire-page/icons/Send";
 import Plus from "../../questionnaire-page/icons/Plus";
 import Info from "../../questionnaire-page/icons/Info";
 import Rating from "../../questionnaire-page/components/Rating";
+import TextArea from "../../shared/components/TextArea";
 
 type CommentBoxProps = {
   isOpen: boolean;
@@ -20,9 +21,11 @@ const CommentBox = ({ isOpen, setOpen }: CommentBoxProps) => {
     </button>
   );
 
-  const CommentInput = () => <Input label="Comment (optional)" />;
+  const CommentInput = () => <TextArea label="Comment (optional)" placeholder="Write your comment" className="w-96"/>;
 
-  return isOpen ? <CommentInput /> : <AddCommentButton />;
+  return (<div className="flex flex-wrap w-full justify-center">
+      {isOpen ? <CommentInput /> : <AddCommentButton />}
+      </div>);
 };
 
 const LeavingRoomScreen: React.FC = () => {
@@ -44,17 +47,17 @@ const LeavingRoomScreen: React.FC = () => {
             <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)} />
           </div>
           <div aria-label="email" className="flex w-96 flex-col items-start gap-2 p-0">
-            <Input type="text" label="Your e-mail" required />
-            <div>
-              <Info />
-              <span>Information required</span>
+            <Input type="text" label="Your e-mail" placeholder="Your e-mail" required />
+            <div className="flex flex-row gap-1">
+              <Info/>
+              <span className="font-aktivGrotesk text-xs">Information required</span>
             </div>
           </div>
           <div aria-label="button" className="flex flex-col content-center gap-4">
-            <Button href="/" name="main-page" variant="normal">
+            <Button href="/" name="main-page" variant="normal" className="flex flex-wrap justify-center align-center gap-2 px-8">
               Submit <Send />
             </Button>
-            <span>You need to rate at least one quality to submit</span>
+            <span className="font-aktivGrotesk text-xs text-text-additional">You need to rate at least one quality to submit</span>
           </div>
         </div>
       </section>

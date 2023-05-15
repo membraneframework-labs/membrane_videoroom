@@ -1,7 +1,5 @@
 import React, { FC, useState } from "react";
-import Button from "../../shared/components/Button";
 import Star from "../icons/Star";
-import clsx from "clsx";
 
 type StarButtonProps = {
   isActive: boolean;

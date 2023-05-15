@@ -13,13 +13,14 @@ const Info: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
       className={clsx("inline-block", props.className)}
       {...props}
     >
+      <path d="M12 7.00999L12 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 17L12 10" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       <path
-        d="M15 5.5H4C3.44772 5.5 3 5.94772 3 6.5V17.5C3 18.0523 3.44772 18.5 4 18.5H15C15.5523 18.5 16 18.0523 16 17.5V6.5C16 5.94772 15.5523 5.5 15 5.5Z"
-        strokeWidth="1.5"
+        d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M16 9L21 7V17L16 15" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 };

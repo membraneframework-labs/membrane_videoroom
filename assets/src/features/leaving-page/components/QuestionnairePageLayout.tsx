@@ -23,7 +23,7 @@ const QuestionnairePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
       >
         <Navbar />
 
-        <div className="flex h-full w-full items-center justify-center">{children}</div>
+        <div className="m-auto flex w-full items-center justify-center">{children}</div>
       </div>
     </>
   );

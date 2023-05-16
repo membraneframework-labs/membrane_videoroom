@@ -48,6 +48,7 @@ export default function TextArea({
             )}
           ></div>
           <textarea
+            id={name}
             maxLength={2001}
             rows={5}
             className={clsx(

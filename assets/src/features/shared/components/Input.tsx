@@ -40,6 +40,7 @@ const Input: React.FC<InputProps> = ({
         </label>
       )}
       <input
+        id={name}
         value={value}
         onChange={onChange}
         className={clsx(

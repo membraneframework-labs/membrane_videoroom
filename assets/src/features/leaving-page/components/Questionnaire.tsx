@@ -35,18 +35,15 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
 
   return (
-    <section
-      aria-label="questionnaire"
-      className="flex h-full w-full flex-col items-center justify-center gap-y-10 sm:gap-y-20"
-    >
-      <h2 className="text-2xl font-medium sm:text-4xl">Thank you for participating!</h2>
+    <section aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
+      <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
 
       <div aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0">
         <div
           aria-label="questionnaire-rating"
           className="flex w-full flex-col content-center justify-center gap-6 text-center"
         >
-          <h4 className="text-2xl font-medium">How would you rate...</h4>
+          <h4 className="text-2xl font-medium tracking-wider">How would you rate...</h4>
           <div className="flex w-full flex-col content-center justify-center gap-10 sm:flex-row">
             <Rating title="Video Quality" />
             <Rating title="Audio Quality" />
@@ -75,6 +72,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
         </div>
       </div>
     </section>
+    // </div>
   );
 };
 

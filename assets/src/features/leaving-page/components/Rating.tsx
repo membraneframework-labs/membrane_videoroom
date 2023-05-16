@@ -1,5 +1,6 @@
 import React, { FC, useState } from "react";
 import Star from "../icons/Star";
+import clsx from "clsx";
 
 type StarButtonProps = {
   isActive: boolean;
@@ -27,7 +28,7 @@ const StarButton = ({ isActive, isHoverActive, onClick, onHover, onLeave }: Star
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
     >
-      <Star className={fillColor} />
+      <Star className={clsx(fillColor, "h-6 w-6")} />
     </button>
   );
 };

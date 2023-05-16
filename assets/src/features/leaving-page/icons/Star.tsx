@@ -4,9 +4,7 @@ import React from "react";
 const Star: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
   return (
     <svg
-      width="1.5em"
-      height="1.5em"
-      viewBox="0 0 24 24"
+      viewBox="0 0 19 19"
       fill="currentColor"
       stroke="currentColor"
       xmlns="http://www.w3.org/2000/svg"

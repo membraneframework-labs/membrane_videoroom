@@ -19,9 +19,9 @@ const StarButton = ({ isActive, isHoverActive, onClick, onHover, onLeave }: Star
                     "fill-brand-white";
 
   return (
-    <div className="flex-none flex-grow-0" onClick={onClick} onMouseEnter={onHover} onMouseLeave={onLeave}>
+    <button className="flex-none flex-grow-0 items-center" onClick={onClick} onMouseEnter={onHover} onMouseLeave={onLeave}>
       <Star className={fillColor} />
-    </div>
+    </button>
   );
 };
 
@@ -40,7 +40,7 @@ const Rating: FC<RatingProps> = ({ title }) => {
             key={rateIndex}
             isActive={hoverRateValue === null && rateIndex <= rateValue}
             isHoverActive={hoverRateValue !== null && rateIndex <= hoverRateValue}
-            onClick={() => setRateValue(rateIndex)}
+            onClick={() => {setRateValue(rateIndex); setHoverRateValue(null);}}
             onHover={() => setHoverRateValue(rateIndex)}
             onLeave={() => setHoverRateValue(null)}
           />

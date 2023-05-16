@@ -50,7 +50,7 @@ const Input: React.FC<InputProps> = ({
             ? "border-brand-red"
             : disabled
             ? "border-brand-grey-60 bg-white text-brand-grey-80"
-            : "border-brand-dark-blue-500 focus:border-brand-sea-blue-400",
+            : "border-brand-dark-blue-500 hover:border-brand-sea-blue-400 focus:border-brand-sea-blue-400",
           "appearance-none",
           className
         )}

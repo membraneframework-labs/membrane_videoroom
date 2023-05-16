@@ -43,7 +43,7 @@ export default function TextArea({
         <div className="group h-full">
           <div
             className={clsx(
-              "h-5 rounded-3xl rounded-b-none border-2 border-b-0 border-brand-dark-blue-500 bg-brand-white group-hover:!border-brand-sea-blue-300 group-focus:!border-brand-sea-blue-300"
+              "h-5 rounded-3xl rounded-b-none border-2 border-b-0 border-brand-dark-blue-500 bg-brand-white group-hover:!border-brand-sea-blue-400 group-focus:!border-brand-sea-blue-400"
               //   error && '!border-brand-pink-500',
             )}
           ></div>
@@ -55,7 +55,7 @@ export default function TextArea({
               "h-auto min-h-[56px] w-full rounded-3xl rounded-t-none border-2 border-t-0 border-brand-dark-blue-500 bg-brand-white p-4 pt-0 font-aktivGrotesk text-base text-brand-dark-blue-500 outline-none group-hover:!border-brand-sea-blue-300 group-focus:!border-brand-sea-blue-300",
               icon && "!pr-10",
               disabled &&
-                "cursor-not-allowed border-2 border-[#B2B9CC] text-[#B2B9CC] group-hover:!border-[#B2B9CC] group-focus:!border-[#B2B9CC]"
+                "cursor-not-allowed border-2 border-brand-grey-60 text-brand-grey-60 group-hover:!border-grey-60 group-focus:!border-grey-60"
               //   error && '!border-brand-pink-500 border-2',
             )}
             disabled={disabled}
@@ -71,7 +71,7 @@ export default function TextArea({
             {...props}
           />
         </div>
-        {icon && <div className={clsx("absolute right-[10px] top-[45px]", disabled && "text-[#B2B9CC]")}>{icon}</div>}
+        {icon && <div className={clsx("absolute right-[10px] top-[45px]", disabled && "text-brand-grey-60")}>{icon}</div>}
         {/* {error?.message && (
           <div className={clsx('flex gap-1 items-center text-xs text-brand-pink-500')}>
             <ExclamationCircleIcon className="w-4 h-4" />
@@ -79,7 +79,7 @@ export default function TextArea({
           </div>
         )} */}
         {info && (
-          <div className={clsx("flex items-center gap-1 text-xs", disabled && "!text-[#B2B9CC]")}>
+          <div className={clsx("flex items-center gap-1 text-xs", disabled && "!text-brand-grey-60")}>
             <svg width={15} viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"

@@ -1,57 +1,61 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React from 'react';
+import React from "react";
 // import { ExclamationCircleIcon } from '@heroicons/react/outline';
-import clsx from 'clsx';
-import { ReactElement, TextareaHTMLAttributes } from 'react';
+import clsx from "clsx";
+import { ReactElement, TextareaHTMLAttributes } from "react";
 // import { Path, FieldError, UseFormRegister } from 'react-hook-form';
 
-export interface TextAreaProps<V> extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+//TODO make generic when questionnaire logic will be implemented
+export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   placeholder: string;
-//   name: Path<V>;
-//   error: FieldError | undefined;
-//   register: UseFormRegister<V>;
-  pattern?: any;
-  required?: any;
+  name: string;
+  // TODO add when questionnaire logic will be implemented
+  //   error: FieldError | undefined;
+  //   register: UseFormRegister<V>;
+  // pattern?: any;
+  // required?: any;
   icon?: ReactElement;
   info?: string;
 }
 
-export default function TextArea<V>({
+export default function TextArea({
   label,
   placeholder,
-//   name,
-//   error,
-//   register,
-  required,
-  pattern,
+  name,
+  //   error,
+  //   register,
+  // required,
+  // pattern,
   icon,
   disabled,
   info,
   className,
   ...props
-}: TextAreaProps<V>) {
+}: TextAreaProps) {
   return (
-    <div className={clsx('inline-block', className)}>
-      <div className="flex flex-col gap-2 relative justify-items-start text-start">
-        <label className="text-base font-aktivGrotesk">{label}</label>
-        <div className="h-full group">
+    <div className={clsx("inline-block", className)}>
+      <div className="relative flex flex-col justify-items-start gap-2 text-start">
+        <label htmlFor={name} className="font-aktivGrotesk text-base">
+          {label}
+        </label>
+        <div className="group h-full">
           <div
             className={clsx(
-              'border-brand-dark-blue-500 group-hover:!border-brand-sea-blue-300 group-focus:!border-brand-sea-blue-300 border-2 border-b-0 rounded-3xl rounded-b-none h-5 bg-brand-white',
-            //   error && '!border-brand-pink-500',
+              "h-5 rounded-3xl rounded-b-none border-2 border-b-0 border-brand-dark-blue-500 bg-brand-white group-hover:!border-brand-sea-blue-300 group-focus:!border-brand-sea-blue-300"
+              //   error && '!border-brand-pink-500',
             )}
           ></div>
           <textarea
             maxLength={2001}
             rows={5}
             className={clsx(
-              'outline-none border-brand-dark-blue-500 group-hover:!border-brand-sea-blue-300 group-focus:!border-brand-sea-blue-300 text-brand-dark-blue-500 border-2 border-t-0 rounded-3xl rounded-t-none min-h-[56px] h-auto p-4 pt-0 bg-brand-white text-base w-full font-aktivGrotesk',
-              icon && '!pr-10',
+              "h-auto min-h-[56px] w-full rounded-3xl rounded-t-none border-2 border-t-0 border-brand-dark-blue-500 bg-brand-white p-4 pt-0 font-aktivGrotesk text-base text-brand-dark-blue-500 outline-none group-hover:!border-brand-sea-blue-300 group-focus:!border-brand-sea-blue-300",
+              icon && "!pr-10",
               disabled &&
-                'border-[#B2B9CC] text-[#B2B9CC] border-2 cursor-not-allowed group-hover:!border-[#B2B9CC] group-focus:!border-[#B2B9CC]',
-            //   error && '!border-brand-pink-500 border-2',
+                "cursor-not-allowed border-2 border-[#B2B9CC] text-[#B2B9CC] group-hover:!border-[#B2B9CC] group-focus:!border-[#B2B9CC]"
+              //   error && '!border-brand-pink-500 border-2',
             )}
             disabled={disabled}
             placeholder={placeholder}
@@ -66,9 +70,7 @@ export default function TextArea<V>({
             {...props}
           />
         </div>
-        {icon && (
-          <div className={clsx('absolute right-[10px] top-[45px]', disabled && 'text-[#B2B9CC]')}>{icon}</div>
-        )}
+        {icon && <div className={clsx("absolute right-[10px] top-[45px]", disabled && "text-[#B2B9CC]")}>{icon}</div>}
         {/* {error?.message && (
           <div className={clsx('flex gap-1 items-center text-xs text-brand-pink-500')}>
             <ExclamationCircleIcon className="w-4 h-4" />
@@ -76,7 +78,7 @@ export default function TextArea<V>({
           </div>
         )} */}
         {info && (
-          <div className={clsx('flex gap-1 items-center text-xs', disabled && '!text-[#B2B9CC]')}>
+          <div className={clsx("flex items-center gap-1 text-xs", disabled && "!text-[#B2B9CC]")}>
             <svg width={15} viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"

@@ -13,8 +13,8 @@ const Send: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
       className={clsx("inline-block", props.className)}
       {...props}
     >
-<path d="M20 4L3 11L10 14L13 21L20 4Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M20 4L10 14" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M20 4L3 11L10 14L13 21L20 4Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20 4L10 14" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 };

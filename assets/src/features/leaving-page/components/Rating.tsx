@@ -14,12 +14,19 @@ type RatingProps = {
 };
 
 const StarButton = ({ isActive, isHoverActive, onClick, onHover, onLeave }: StarButtonProps) => {
-  const fillColor = isHoverActive ? "fill-brand-dark-blue-200" : 
-                    isActive ? "fill-brand-dark-blue-300" :
-                    "fill-brand-white";
+  const fillColor = isHoverActive
+    ? "fill-brand-dark-blue-200"
+    : isActive
+    ? "fill-brand-dark-blue-300"
+    : "fill-brand-white";
 
   return (
-    <button className="flex-none flex-grow-0 items-center" onClick={onClick} onMouseEnter={onHover} onMouseLeave={onLeave}>
+    <button
+      className="flex-none flex-grow-0 items-center"
+      onClick={onClick}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+    >
       <Star className={fillColor} />
     </button>
   );
@@ -40,7 +47,10 @@ const Rating: FC<RatingProps> = ({ title }) => {
             key={rateIndex}
             isActive={hoverRateValue === null && rateIndex <= rateValue}
             isHoverActive={hoverRateValue !== null && rateIndex <= hoverRateValue}
-            onClick={() => {setRateValue(rateIndex); setHoverRateValue(null);}}
+            onClick={() => {
+              setRateValue(rateIndex);
+              setHoverRateValue(null);
+            }}
             onHover={() => setHoverRateValue(rateIndex)}
             onLeave={() => setHoverRateValue(null)}
           />

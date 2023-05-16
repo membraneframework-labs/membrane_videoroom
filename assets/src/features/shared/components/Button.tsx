@@ -4,7 +4,7 @@ import PlainLink, { PlainLinkProps } from "./PlainLink";
 
 type ButtonVariant = "normal" | "light" | "transparent" | "transparent-light";
 
-type ButtonProps = PlainLinkProps & { variant?: ButtonVariant };
+type ButtonProps = PlainLinkProps & { variant?: ButtonVariant, type?: "button" | "submit" | "reset"};
 
 const Button: React.FC<ButtonProps> = (props) => {
   return (

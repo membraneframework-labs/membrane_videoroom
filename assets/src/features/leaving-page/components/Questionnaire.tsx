@@ -6,6 +6,7 @@ import Info from "../icons/Info";
 import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
 import Send from "../icons/Send";
+import {useForm} from "react-hook-form";
 
 type CommentBoxProps = {
   isOpen: boolean;
@@ -32,10 +33,13 @@ type QuestionnaireProps = {
 };
 
 const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
+  const {register, handleSubmit} = useForm();
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
 
+  const onSubmit = console.log;
+
   return (
-    <form aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
+    <form aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20" onSubmit={handleSubmit(onSubmit)}>
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
 
       <div aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0">
@@ -60,6 +64,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
         </div>
         <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
           <Button
+            type="submit"
             onClick={onSubmitClick}
             variant="normal"
             className="align-center flex flex-wrap justify-center gap-2 px-8"

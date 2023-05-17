@@ -4,7 +4,7 @@ import Rocket from "../icons/🚀";
 const ReviewSentScreen: FC = () => {
   return (
     <div aria-label="review-sent" className="align-center flex flex-col flex-wrap justify-center gap-20 p-0">
-      <h2 className="text-2xl font-medium sm:text-4xl tracking-wide">Thank you for participating!</h2>
+      <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
       <div>
         <div
           aria-label="review-sent-illustration"

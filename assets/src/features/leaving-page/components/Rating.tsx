@@ -23,6 +23,7 @@ const StarButton = ({ isActive, isHoverActive, onClick, onHover, onLeave }: Star
 
   return (
     <button
+      type="button"
       className="flex-none flex-grow-0 items-center"
       onClick={onClick}
       onMouseEnter={onHover}

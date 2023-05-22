@@ -21,7 +21,6 @@ class AudioMeter extends AudioWorkletProcessor {
   }
 
   process(inputs, outputs, parameters) {
-
     if (Date.now() - this.lastCall < this.interval) return true;
 
     const input = inputs[0];
@@ -29,7 +28,8 @@ class AudioMeter extends AudioWorkletProcessor {
 
     const sumSquare = samples.reduce((p, c) => p + (c * c), 0);
     const rms = Math.sqrt(sumSquare / (samples.length || 1));
-    this.volume = Math.max(rms, this.volume * SMOOTHING_FACTOR);
+    // this.volume = Math.max(rms, this.volume * SMOOTHING_FACTOR);
+    this.volume = Math.max(rms);
     this.port.postMessage({ volume: this.volume });
 
 

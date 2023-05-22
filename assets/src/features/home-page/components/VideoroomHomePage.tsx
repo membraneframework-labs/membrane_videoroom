@@ -2,15 +2,11 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
-import { messageComparator } from "../../../pages/room/errorMessage";
 import { DEFAULT_MANUAL_MODE_CHECKBOX_VALUE, DEFAULT_SMART_LAYER_SWITCHING_VALUE } from "../../../pages/room/consts";
-import { useMediaDeviceManager } from "../../../pages/room/hooks/useMediaDeviceManager";
 import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
 import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
 import Input from "../../shared/components/Input";
-import useEffectOnChange from "../../shared/hooks/useEffectOnChange";
-import useToast from "../../shared/hooks/useToast";
 import { MobileLoginStep, MobileLoginStepType } from "../types";
 import HomePageLayout from "./HomePageLayout";
 
@@ -27,7 +23,6 @@ const VideoroomHomePage: React.FC = () => {
   const [roomIdInput, setRoomIdInput] = useState<string>(roomId);
   const buttonDisabled = !displayNameInput || !roomIdInput;
 
-  const deviceManager = useMediaDeviceManager({ askOnMount: true });
   const { simulcast, manualMode, smartLayerSwitching } = useDeveloperInfo();
 
   const [searchParams] = useSearchParams();
@@ -75,22 +70,6 @@ const VideoroomHomePage: React.FC = () => {
     smartLayerSwitching,
     smartLayerSwitchingInput,
   ]);
-
-  const { addToast } = useToast();
-  useEffectOnChange(
-    deviceManager.errorMessage,
-    () => {
-      if (deviceManager.errorMessage) {
-        addToast({
-          id: deviceManager.errorMessage.id || crypto.randomUUID(),
-          message: deviceManager.errorMessage.message,
-          timeout: "INFINITY",
-          type: "error",
-        });
-      }
-    },
-    messageComparator
-  );
 
   const inputs = useMemo(() => {
     return (
@@ -207,7 +186,7 @@ const VideoroomHomePage: React.FC = () => {
 
           {/* desktop view */}
           <>
-            <div className="hidden h-full w-full sm:inline-block sm:h-[400px] sm:max-w-[600px]">
+            <div className="sm:h-max-[400px] hidden h-full w-full sm:inline-block sm:max-w-[600px] xl:aspect-video">
               <HomePageVideoTile displayName={displayNameInput} />
             </div>
 

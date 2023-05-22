@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export const useAudioMeterMain = (stream?: MediaStream, intervalMs = 500) => {
+export const useAudioMeterMain = (stream: MediaStream | null, intervalMs = 500) => {
   const audioRef = useRef({ peakDB: -Infinity, level: 0 });
   const [analyzer, setAnalyzer] = useState<AnalyserNode>();
   const intervalRef = useRef<NodeJS.Timeout>();
-  const [isSoundDetected, setIsSoundDetected] = useState(false);
+  const [audioLevel, setAudioLevel] = useState<number>(-Infinity);
 
   useEffect(() => {
     if (!stream) return;
@@ -28,9 +28,9 @@ export const useAudioMeterMain = (stream?: MediaStream, intervalMs = 500) => {
   useEffect(() => {
     if (!analyzer) return;
 
-    const checkIfSoundDetected = () => {
-      return audioRef.current.peakDB > -50;
-    };
+    // const checkIfSoundDetected = () => {
+    //   return audioRef.current.peakDB > -50;
+    // };
 
     // Analyze the sound
     intervalRef.current = setInterval(() => {
@@ -49,7 +49,7 @@ export const useAudioMeterMain = (stream?: MediaStream, intervalMs = 500) => {
 
       audioRef.current = { peakDB, level };
 
-      setIsSoundDetected(checkIfSoundDetected());
+      setAudioLevel(audioRef.current.peakDB);
     }, intervalMs);
 
     return () => {
@@ -57,5 +57,5 @@ export const useAudioMeterMain = (stream?: MediaStream, intervalMs = 500) => {
     };
   }, [analyzer, intervalMs]);
 
-  return { audioRef, isSoundDetected };
+  return audioLevel
 };

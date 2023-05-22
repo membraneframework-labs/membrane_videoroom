@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import { AUDIO_TRACKS_CONFIG, SCREEN_SHARING_TRACKS_CONFIG, VIDEO_TRACKS_CONFIG } from "./consts";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
@@ -13,26 +12,18 @@ import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
 import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
-import Sidebar from "../../features/room-page/components/Sidebar";
 import clsx from "clsx";
+import { useLocalPeer } from "../../features/devices/LocalPeerMediaContext";
+import RoomSidebar from "./RoomSidebar";
 
 type Props = {
   displayName: string;
   roomId: string;
   isSimulcastOn: boolean;
   manualMode: boolean;
-  cameraAutostartStreaming?: boolean;
-  audioAutostartStreaming?: boolean;
 };
 
-const RoomPage: FC<Props> = ({
-  roomId,
-  displayName,
-  isSimulcastOn,
-  manualMode,
-  cameraAutostartStreaming,
-  audioAutostartStreaming,
-}: Props) => {
+const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }: Props) => {
   useAcquireWakeLockAutomatically();
 
   const mode: StreamingMode = manualMode ? "manual" : "automatic";
@@ -46,41 +37,32 @@ const RoomPage: FC<Props> = ({
 
   const isConnected = !!peerState?.local?.id;
 
+  const { video: localVideo, audio: localAudio, screenShare } = useLocalPeer();
+
   const camera = useStreamManager(
     "camera",
     mode,
     isConnected,
     isSimulcastOn,
-    webrtc,
-    VIDEO_TRACKS_CONFIG,
+    webrtc || null,
     peerApi,
-    cameraAutostartStreaming
+    localVideo.device
   );
-  const audio = useStreamManager(
-    "audio",
-    mode,
-    isConnected,
-    isSimulcastOn,
-    webrtc,
-    AUDIO_TRACKS_CONFIG,
-    peerApi,
-    audioAutostartStreaming
-  );
+  const audio = useStreamManager("audio", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, localAudio.device);
   const screenSharing = useStreamManager(
     "screensharing",
     mode,
     isConnected,
     isSimulcastOn,
-    webrtc,
-    SCREEN_SHARING_TRACKS_CONFIG,
+    webrtc || null,
     peerApi,
-    false
+    screenShare.device
   );
 
   const { addToast } = useToast();
 
-  useEffectOnChange(screenSharing.local.isEnabled, () => {
-    if (screenSharing.local.isEnabled) {
+  useEffectOnChange(screenSharing.local.stream, () => {
+    if (screenSharing.local.stream) {
       addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
     }
   });
@@ -117,17 +99,10 @@ const RoomPage: FC<Props> = ({
             localPeer={peerState.local}
             showSimulcast={showSimulcastMenu}
             webrtc={webrtc}
+            unpinnedTilesHorizontal={isSidebarOpen}
           />
 
-          <div
-            className={clsx(
-              isSidebarOpen ? "max-w-[300px]" : "max-w-0",
-              "overflow-hidden transition-all duration-300",
-              "hidden w-full md:flex"
-            )}
-          >
-            <Sidebar peers={peerState.remote} localPeer={peerState.local} />
-          </div>
+          <RoomSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} peerState={peerState} />
         </section>
 
         <MediaControlButtons
@@ -147,7 +122,7 @@ const RoomPage: FC<Props> = ({
           {isSimulcastOn && (
             <button
               onClick={toggleSimulcastMenu}
-              className="m-1 w-full rounded bg-brand-grey-80 py-2 px-4 text-white hover:bg-brand-grey-100"
+              className="m-1 w-full rounded bg-brand-grey-80 px-4 py-2 text-white hover:bg-brand-grey-100"
               type="submit"
             >
               Show simulcast controls

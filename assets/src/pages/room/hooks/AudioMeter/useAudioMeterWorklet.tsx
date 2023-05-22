@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-export const useAudioMeterWorklet = (stream?: MediaStream, intervalMs = 500) => {
+export const useAudioMeterWorklet = (stream: MediaStream | null, intervalMs = 500): number => {
   const [audioNode, setAudioNode] = useState<AudioWorkletNode>();
-  const [audioLevel, setAudioLevel] = useState(-Infinity);
+  const [audioLevel, setAudioLevel] = useState<number>(-Infinity);
 
   useEffect(() => {
     if (!stream) return;
@@ -10,7 +10,7 @@ export const useAudioMeterWorklet = (stream?: MediaStream, intervalMs = 500) => 
     // Create the Audio Context
     const audioContext = new AudioContext({ latencyHint: intervalMs / 1000 });
 
-    const source = audioContext.createMediaStreamSource(stream);
+    const sources = audioContext.createMediaStreamSource(stream);
 
     let node: AudioWorkletNode;
     // Load the worklet
@@ -21,11 +21,12 @@ export const useAudioMeterWorklet = (stream?: MediaStream, intervalMs = 500) => 
 
       node.port.onmessage = (event) => {
         // Deal with message received from the Worklet processor - event.data
-        setAudioLevel(event.data);
+        console.log({ data: event.data });
+        setAudioLevel(event.data.volume);
       };
 
       // Connect the audio pipeline - this will start the processing
-      source.connect(node).connect(audioContext.destination);
+      sources.connect(node).connect(audioContext.destination);
 
       setAudioNode((prev) => {
         if (prev) {
@@ -49,5 +50,5 @@ export const useAudioMeterWorklet = (stream?: MediaStream, intervalMs = 500) => 
     audioNode?.port.postMessage({ interval: intervalMs });
   }, [audioNode?.port, intervalMs]);
 
-  return { audioNode, audioLevel };
+  return audioLevel;
 };

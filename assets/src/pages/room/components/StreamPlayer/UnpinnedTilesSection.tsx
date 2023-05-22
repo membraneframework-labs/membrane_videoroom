@@ -8,54 +8,65 @@ import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/r
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
-import {
-  DisabledMicIcon,
-  isLoading,
-  showDisabledIcon,
-} from "../../../../features/room-page/components/DisabledTrackIcon";
+import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
+import useSmartphoneViewport from "../../../../features/shared/hooks/useSmartphoneViewport";
+import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
-  oneColumn: boolean; // screensharing or pinned user
+  isAnyTilePinned: boolean;
   webrtc?: MembraneWebRTC;
   pin: (tileId: string) => void;
   videoInVideo: boolean;
   blockPinning: boolean;
   forceEncoding?: TrackEncoding;
+  horizontal: boolean;
 };
 
 const UnpinnedTilesSection: FC<Props> = ({
   tileConfigs,
   showSimulcast,
-  oneColumn,
+  isAnyTilePinned,
   webrtc,
   pin,
   videoInVideo,
   blockPinning,
   forceEncoding,
+  horizontal,
 }: Props) => {
   const gridConfig = getGridConfig(tileConfigs.length);
+  const isSmartphone = useSmartphoneViewport().isSmartphone || false;
   const videoGridStyle = useMemo(
-    () => getUnpinnedTilesGridStyle(gridConfig, oneColumn, videoInVideo, tileConfigs.length === 1),
-    [gridConfig, oneColumn, videoInVideo, tileConfigs.length]
+    () =>
+      getUnpinnedTilesGridStyle(
+        gridConfig,
+        isAnyTilePinned,
+        horizontal,
+        videoInVideo,
+        tileConfigs.length === 1,
+        isSmartphone
+      ),
+    [gridConfig, isAnyTilePinned, horizontal, videoInVideo, tileConfigs.length, isSmartphone]
   );
 
-  const tileStyle = !oneColumn
+  const tileStyle = !isAnyTilePinned
     ? clsx(gridConfig.span, gridConfig.tileClass)
     : tileConfigs.length === 1
     ? "w-[400px] h-[220px]"
+    : horizontal
+    ? "sm:max-w-1/3"
     : "";
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
 
   return (
     <div id="videos-grid" className={videoGridStyle}>
-      {tileConfigs.map((config) => {
+      {tileConfigs.map((config: MediaPlayerTileConfig) => {
         const video: TrackWithId | null = config.video;
-        const audio: TrackWithId | null = config.typeName === "remote" ? config.audio : null;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
+        const upperLeftIcon: JSX.Element | null = getTileUpperLeftIcon(config);
 
         return (
           <MediaPlayerTile
@@ -69,11 +80,7 @@ const UnpinnedTilesSection: FC<Props> = ({
                 {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
                 <PeerInfoLayer
                   bottomLeft={<NameTag name={config.displayName} />}
-                  topLeft={
-                    hasInitials && showDisabledIcon(config.audio) ? (
-                      <DisabledMicIcon isLoading={isLoading(audio)} />
-                    ) : undefined
-                  }
+                  topLeft={upperLeftIcon}
                   tileSize={tileSize}
                 />
                 {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}

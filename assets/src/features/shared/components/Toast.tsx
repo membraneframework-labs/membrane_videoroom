@@ -19,7 +19,7 @@ const Toast: React.FC<ToastProps> = ({ id, message, onClose, type = "information
       )}
     >
       <div className="min-w-[15rem] text-center sm:min-w-fit">{message}</div>
-      <Button onClick={onClose}>
+      <Button onClick={onClose} removeDefaultPadding>
         <Close className="text-lg font-medium" />
       </Button>
     </div>

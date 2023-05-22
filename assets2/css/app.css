@@ -1,0 +1,204 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import "chartist/dist/index.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .active-screensharing-grid {
+    @apply grid flex-3 gap-4;
+  }
+
+  .inactive-screensharing-grid {
+    @apply hidden;
+  }
+
+  .videos-grid-with-screensharing {
+    height: auto !important;
+  }
+}
+
+@layer base {
+  html {
+    @apply font-aktivGrotesk;
+  }
+}
+
+.flip-horizontally {
+  transform: scaleX(-1);
+}
+
+.text-shadow-lg {
+  text-shadow: 3px 1px 10px rgb(22, 22, 22);
+}
+
+.video-divider {
+  height: 70px;
+  min-height: 70px;
+}
+
+.grid-wrapper {
+  --navbar: 48px;
+  --menuTooltip: 42px;
+  --gap: 16px;
+  --padding: 16px;
+
+  max-height: calc(
+    100vh - var(--padding) - var(--navbar) - var(--gap) - var(--gap) - var(--menuTooltip) - var(--padding)
+  );
+}
+
+svg.ct-chart-bar,
+svg.ct-chart-line {
+  overflow: visible;
+}
+.ct-label.ct-label.ct-horizontal.ct-end {
+  position: relative;
+  justify-content: flex-end;
+  text-align: right;
+  transform-origin: 100% 0;
+  transform: translate(-100%) rotate(-45deg);
+  white-space: nowrap;
+}
+
+/* allows for centering leftover elements in the last row of the grid */
+@media (min-width: 769px) {
+  /* two columns -> one element left*/
+  .video-tile-grid-2:last-child:nth-child(2n - 1) {
+    grid-column-end: 4;
+  }
+
+  /* three columns -> two elements left */
+  .video-tile-grid-3:last-child:nth-child(3n - 1) {
+    grid-column-end: -2;
+  }
+
+  .video-tile-grid-3:nth-last-child(2):nth-child(3n + 1) {
+    grid-column-end: 4;
+  }
+
+  /* three columns -> one element left */
+  .video-tile-grid-3:last-child:nth-child(3n - 2) {
+    grid-column-end: 5;
+  }
+
+  /* four columns -> two elements left */
+  .video-tile-grid-4:last-child:nth-child(4n + 2) {
+    grid-column-end: -3;
+  }
+
+  .video-tile-grid-4:nth-last-child(2):nth-child(4n + 1) {
+    grid-column-end: 5;
+  }
+
+  /* four columns -> three elements left */
+  .video-tile-grid-4:last-child:nth-child(4n + 3) {
+    grid-column-end: 8;
+  }
+
+  .video-tile-grid-4:nth-last-child(2):nth-child(4n + 2) {
+    grid-column-end: 6;
+  }
+
+  .video-tile-grid-4:nth-last-child(3):nth-child(4n + 1) {
+    grid-column-end: 4;
+  }
+
+  /* four columns -> one element left */
+  .video-tile-grid-4:last-child:nth-child(4n - 3) {
+    grid-column-end: 6;
+  }
+}
+
+/* mobile screens */
+@media (max-width: 768px) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: 30%, 40%;
+    background-position: left -50px top 80px, right -70px bottom 15px;
+  }
+}
+
+/* desktop screens */
+@media (min-width: 769px) and (orientation: landscape) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -90px top 200px, right -180px top 120px;
+  }
+}
+
+/* horizontal large screens */
+@media (min-width: 1550px) and (orientation: landscape) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left -150px top 200px, right -300px top 120px;
+  }
+}
+
+/* vertical large screens */
+@media (min-width: 769px) and (orientation: portrait) {
+  .home-page {
+    background-image: url("/images/backgroundLeft.png"), url("/images/backgroundRight.png");
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: left -30% top 200px, right -30% bottom -15%;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 1290px) {
+  .hidden-on-mobile-and-tablet {
+    display: none;
+  }
+}
+
+.fromTop {
+  animation-name: from-top, fade-in;
+  animation-delay: 0.1s;
+  animation-duration: 0.25s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear, ease-in-out;
+  animation-fill-mode: both;
+}
+
+.fadeOut {
+  animation-name: fade-out;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+
+@keyframes from-top {
+  from {
+    transform: translateY(-99%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

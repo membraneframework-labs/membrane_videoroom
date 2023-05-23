@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { useMembraneClient } from "./hooks/useMembraneClient";
+// import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
 import { useToggle } from "./hooks/useToggle";
@@ -50,7 +50,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
 
   const { video: localVideo, audio: localAudio, screenShare } = useLocalPeer();
 
-  const camera = useStreamManager("camera", mode, state.status === "joined", isSimulcastOn, localVideo.device);
+  const camera = useStreamManager("camera", mode, state.status === "joined", false, localVideo.device);
   // const audio = useStreamManager("audio", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, localAudio.device);
   // const screenSharing = useStreamManager(
   //   "screensharing",
@@ -91,6 +91,52 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
 
   return (
     <PageLayout>
+      <Button
+        onClick={() => {
+          roomApi.jellyfishWebRoomControllerIndex().then((response) => {
+            const rooms = response.data.data
+
+            if(rooms[0]) {
+              peerApi.jellyfishWebPeerControllerCreate(rooms[0].id, { type: "webrtc" }).then((response) => {
+                const peerRespo = response.data.data;
+                const token = peerRespo.token;
+                console.log({ peerRespo });
+
+                setToken(token);
+
+                connect({
+                  peerMetadata: { name: displayName },
+                  token,
+                  websocketUrl: peerWebsocket,
+                });
+              })
+            } else {
+              console.log({name: "Creating new room"})
+              roomApi.jellyfishWebRoomControllerCreate({ maxPeers: 10 }).then((response) => {
+                const roomId = response.data.data.id;
+                console.log({ roomId });
+                peerApi.jellyfishWebPeerControllerCreate(roomId, { type: "webrtc" }).then((response) => {
+                  const peerRespo = response.data.data;
+                  const token = peerRespo.token;
+                  console.log({ peerRespo });
+
+                  setToken(token);
+
+                  connect({
+                    peerMetadata: { name: "Username" },
+                    token,
+                    websocketUrl: peerWebsocket,
+                  });
+                });
+              })
+            }
+          });
+
+          console.log("Connected!");
+        }}
+      >
+        Connect
+      </Button>
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section
@@ -99,59 +145,13 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
             isSidebarOpen && "gap-x-4"
           )}
         >
-          <Button
-            onClick={() => {
-              roomApi.jellyfishWebRoomControllerIndex().then((response) => {
-                const rooms = response.data.data
-
-                if(rooms[0]) {
-                  peerApi.jellyfishWebPeerControllerCreate(rooms[0].id, { type: "webrtc" }).then((response) => {
-                    const peerRespo = response.data.data;
-                    const token = peerRespo.token;
-                    console.log({ peerRespo });
-
-                    setToken(token);
-
-                    connect({
-                      peerMetadata: { name: displayName },
-                      token,
-                      websocketUrl: peerWebsocket,
-                    });
-                  })
-                } else {
-                  console.log({name: "Creating new room"})
-                  roomApi.jellyfishWebRoomControllerCreate({ maxPeers: 10 }).then((response) => {
-                    const roomId = response.data.data.id;
-                    console.log({ roomId });
-                    peerApi.jellyfishWebPeerControllerCreate(roomId, { type: "webrtc" }).then((response) => {
-                      const peerRespo = response.data.data;
-                      const token = peerRespo.token;
-                      console.log({ peerRespo });
-
-                      setToken(token);
-
-                      connect({
-                        peerMetadata: { name: "Username" },
-                        token,
-                        websocketUrl: peerWebsocket,
-                      });
-                    });
-                  })
-                }
-              });
-
-              console.log("Connected!");
-            }}
-          >
-            Connect
-          </Button>
-          {/*<VideochatSection*/}
-          {/*  peers={peerState.remote}*/}
-          {/*  localPeer={peerState.local}*/}
-          {/*  showSimulcast={showSimulcastMenu}*/}
-          {/*  webrtc={webrtc}*/}
-          {/*  unpinnedTilesHorizontal={isSidebarOpen}*/}
-          {/*/>*/}
+          <VideochatSection
+            // peers={peerState.remote}
+            // localPeer={peerState.local}
+            showSimulcast={showSimulcastMenu}
+            // webrtc={webrtc}
+            unpinnedTilesHorizontal={isSidebarOpen}
+          />
 
           {/*<RoomSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} peerState={peerState} />*/}
         </section>

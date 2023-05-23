@@ -32,12 +32,12 @@ const PinnedTilesWrapper: FC<WrapperProps> = ({ children, twoPinnedTiles, gridCo
 type Props = {
   pinnedTiles: MediaPlayerTileConfig[];
   unpin: (tileIdToUnpin: string) => void;
-  webrtc?: MembraneWebRTC;
+  // webrtc?: MembraneWebRTC;
   showSimulcast?: boolean;
   forceEncoding?: TrackEncoding;
 };
 
-const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulcast, forceEncoding }: Props) => {
+const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, showSimulcast, forceEncoding }: Props) => {
   const gridConfig = getGridConfig(pinnedTiles.length);
   return (
     <PinnedTilesWrapper twoPinnedTiles={pinnedTiles.length === 2} gridConfig={gridConfig}>
@@ -66,7 +66,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, webrtc, showSimulca
               </>
             }
             showSimulcast={showSimulcast && tileType !== "screenShare"}
-            webrtc={webrtc}
+            // webrtc={webrtc}
             forceEncoding={forceEncoding}
           />
         );

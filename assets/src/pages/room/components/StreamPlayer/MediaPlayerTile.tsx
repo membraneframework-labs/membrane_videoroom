@@ -17,7 +17,7 @@ export interface Props {
   showSimulcast?: boolean;
   streamSource?: StreamSource;
   layers?: JSX.Element;
-  webrtc?: MembraneWebRTC;
+  // webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
   forceEncoding?: TrackEncoding;
@@ -31,7 +31,7 @@ const MediaPlayerTile: FC<Props> = ({
   showSimulcast,
   streamSource,
   layers,
-  webrtc,
+  // webrtc,
   className,
   blockFillContent,
   forceEncoding,
@@ -48,11 +48,11 @@ const MediaPlayerTile: FC<Props> = ({
       video?.remoteTrackId || null,
       isLocal,
       smartLayerSwitching.status,
-      forceEncoding || null,
-      webrtc || null
+      forceEncoding || null
+      // webrtc || null
     );
 
-  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null, webrtc || null);
+  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null);
   const videoStream = video?.stream || null;
   const audioStream = audio?.stream || null;
 

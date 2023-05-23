@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
-import { useSelector } from "../../../jellifish.types";
+import { useApi, useSelector } from "../../../jellifish.types";
 
 export type MembraneStreaming = {
   trackId: string | null;
@@ -31,7 +31,7 @@ export const useMembraneMediaStreaming = (
 ): MembraneStreaming => {
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
 
-  const api = useSelector((s) => s.connectivity.api)
+  const api = useApi();
 
   // const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -41,8 +41,8 @@ export const useMembraneMediaStreaming = (
     (stream: MediaStream) => {
       if (!api) return;
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
-      // const simulcast = simulcastEnabled && type === "camera";
-      const simulcast = false
+      const simulcast = simulcastEnabled && type === "camera";
+      // const simulcast = false
 
       const track: MediaStreamTrack | undefined = tracks[0];
 
@@ -51,12 +51,20 @@ export const useMembraneMediaStreaming = (
         throw Error("Stream has no tracks!");
       }
 
+      console.log({
+        name: "Adding track",
+        stream,
+        track,
+        defaultTrackMetadata,
+        // simulcast: simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
+        // bandwidth: selectBandwidthLimit(type, simulcast),
+      });
       const remoteTrackId = api.addTrack(
         track,
         stream,
         defaultTrackMetadata,
-        simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
-        selectBandwidthLimit(type, simulcast)
+        // simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
+        // selectBandwidthLimit(type, simulcast)
       );
 
       setTrackIds({ localId: track.id, remoteId: remoteTrackId });

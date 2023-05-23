@@ -23,7 +23,6 @@ type PeersMap = {
 export type NewPeer = {
   id: string;
   displayName?: string;
-  emoji?: string;
   source: "local" | "remote";
 };
 
@@ -137,7 +136,6 @@ export const usePeersState = (): UsePeersStateResult => {
             id: peer.id,
             tracks: [],
             displayName: peer.displayName,
-            emoji: peer.emoji,
             source: peer.source,
           },
         ])

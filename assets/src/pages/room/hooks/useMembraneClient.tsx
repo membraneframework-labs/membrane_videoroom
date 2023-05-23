@@ -101,7 +101,7 @@ export const useMembraneClient = (
             {
               id: peer.id,
               displayName: peer.metadata.displayName,
-              emoji: peer.metadata.emoji,
+              // emoji: peer.metadata.emoji,
               source: "remote",
             },
           ]);

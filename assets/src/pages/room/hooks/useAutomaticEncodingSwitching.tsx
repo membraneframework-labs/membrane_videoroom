@@ -35,14 +35,14 @@ export const useAutomaticEncodingSwitching = (
   disableAutomaticLayerSwitching: boolean,
   autostartSmartLayerSwitching: boolean,
   forceEncoding: TrackEncoding | null,
-  webrtc: MembraneWebRTC | null
+  // webrtc: MembraneWebRTC | null
 ) => {
   const [smartEncodingStatus, setSmartEncodingStatus] = useState(autostartSmartLayerSwitching);
   const onInitEncodingQuality = useStoreFirstNonNullValue(currentTrackEncoding || null);
 
   const { ref, smartEncoding } = useCalculateSmartEncoding(forceEncoding);
 
-  const { setTargetEncoding, targetEncoding } = useSimulcastRemoteEncoding(peerId, trackId, webrtc);
+  const { setTargetEncoding, targetEncoding } = useSimulcastRemoteEncoding(peerId, trackId);
 
   useEffect(() => {
     if (disableAutomaticLayerSwitching || !smartEncodingStatus || !onInitEncodingQuality || !smartEncoding) return;

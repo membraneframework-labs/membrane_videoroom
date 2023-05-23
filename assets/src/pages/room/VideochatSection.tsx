@@ -1,22 +1,22 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 
-import { ApiTrack, LocalPeer, RemotePeer } from "./hooks/usePeerState";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import { ApiTrack, LocalPeer, PeerMetadata, RemotePeer, TrackMetadata } from "./hooks/usePeerState";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
 
-import { PeerTileConfig, MediaPlayerTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
+import { MediaPlayerTileConfig, PeerTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
 import useTilePinning from "./hooks/useTilePinning";
+import { toLocalTrackSelector, toRemotePeerSelector, useSelector } from "../../jellifish.types";
 
 type Props = {
-  peers: RemotePeer[];
-  localPeer?: LocalPeer;
+  // peers: RemotePeer[];
+  // localPeer?: LocalPeer;
   showSimulcast?: boolean;
-  webrtc?: MembraneWebRTC;
+  // webrtc?: MembraneWebRTC;
   unpinnedTilesHorizontal?: boolean;
 };
 
@@ -76,7 +76,7 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
       peer.tracks.map((track) => ({
         peerId: peer.id,
         track: track,
-        emoji: peer.emoji,
+        // emoji: peer.emoji,
         peerName: peer.displayName,
       }))
     )
@@ -105,20 +105,27 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
 };
 
 export const VideochatSection: FC<Props> = ({
-  peers,
-  localPeer,
+  // peers,
+  // localPeer,
   showSimulcast,
-  webrtc,
+  // webrtc,
   unpinnedTilesHorizontal,
 }: Props) => {
-  const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
-  const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
+  // const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
+  // const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
+
+  const video: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "camera"));
+  const audio: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "audio"));
+  const { peerId, initials } = useSelector((state) => ({
+    peerId: state?.local?.id || "Unknown",
+    initials: computeInitials(state?.local?.metadata?.name || ""),
+  }));
 
   const localUser: PeerTileConfig = {
     typeName: "local",
-    peerId: localPeer?.id ?? "Unknown",
+    peerId,
     displayName: LOCAL_PEER_NAME,
-    initials: computeInitials(localPeer?.metadata?.displayName || ""),
+    initials,
     video: video,
     audio: audio,
     streamSource: "local",
@@ -126,10 +133,17 @@ export const VideochatSection: FC<Props> = ({
     isSpeaking: false,
   };
 
-  const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
+  // const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
+
+  const peers: RemotePeer[] = useSelector((state) => toRemotePeerSelector(state));
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
-  const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
+  // const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
+  const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig;
+
+  useEffect(() => {
+    console.log({ allTilesConfig });
+  }, [allTilesConfig]);
 
   const { pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags } = useTilePinning(allTilesConfig);
 
@@ -153,7 +167,7 @@ export const VideochatSection: FC<Props> = ({
             pinnedTiles={pinnedTiles}
             unpin={unpinTile}
             showSimulcast={showSimulcast}
-            webrtc={webrtc}
+            // webrtc={webrtc}
             forceEncoding={forceEncoding}
           />
         )}
@@ -163,7 +177,7 @@ export const VideochatSection: FC<Props> = ({
             tileConfigs={unpinnedTiles}
             showSimulcast={showSimulcast}
             isAnyTilePinned={pinningFlags.isAnyPinned}
-            webrtc={webrtc}
+            // webrtc={webrtc}
             pin={pinTile}
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={pinningFlags.blockPinning}

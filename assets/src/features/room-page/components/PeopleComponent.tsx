@@ -1,12 +1,7 @@
 import clsx from "clsx";
-import React from "react";
-import { LocalPeer, RemotePeer } from "../../../pages/room/hooks/usePeerState";
+import React, { FC } from "react";
 import { computeInitials } from "./InitialsImage";
-
-type PeopleComponentProps = {
-  peers: RemotePeer[];
-  localPeer?: LocalPeer;
-};
+import { useSelector } from "../../../jellifish.types";
 
 type PeopleListItem = {
   peerId: string;
@@ -14,21 +9,22 @@ type PeopleListItem = {
   initials: string;
 };
 
-const mapRemotePeersToPeopleListItem = (peers: RemotePeer[]): PeopleListItem[] => {
-  return peers.map((peer) => ({
-    peerId: peer.id ?? "Unknown",
-    displayName: peer.displayName || "",
-    initials: computeInitials(peer?.displayName || ""),
+const PeopleComponent: FC = () => {
+  const localUser: PeopleListItem = useSelector((state) => ({
+    peerId: state?.local?.id || "Unknown",
+    displayName: `${state?.local?.metadata?.name} (You)` || "",
+    initials: computeInitials(state?.local?.metadata?.name || ""),
   }));
-};
 
-const PeopleComponent: React.FC<PeopleComponentProps> = ({ peers, localPeer }) => {
-  const localUser: PeopleListItem = {
-    peerId: localPeer?.id ?? "Unknown",
-    displayName: `${localPeer?.metadata?.displayName} (You)` || "",
-    initials: computeInitials(localPeer?.metadata?.displayName || ""),
-  };
-  const allPeers: PeopleListItem[] = [localUser, ...mapRemotePeersToPeopleListItem(peers)];
+  const remoteUsers: PeopleListItem[] = useSelector((state) =>
+    Object.values(state.remote || {}).map((peer) => ({
+      peerId: peer.id ?? "Unknown",
+      displayName: peer.metadata?.name || "",
+      initials: computeInitials(peer?.metadata?.name || ""),
+    }))
+  );
+
+  const allPeers: PeopleListItem[] = [localUser, ...remoteUsers];
 
   return (
     <div className={clsx("flex flex-col gap-y-4")}>

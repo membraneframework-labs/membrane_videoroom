@@ -3,6 +3,8 @@ import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
 import { useApi, useSelector } from "../../../jellifish.types";
+import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
+import { Device } from "../../../features/devices/LocalPeerMediaContext";
 
 export type MembraneStreaming = {
   trackId: string | null;
@@ -24,18 +26,17 @@ export const useMembraneMediaStreaming = (
   mode: StreamingMode,
   type: TrackType,
   isConnected: boolean,
-  simulcastEnabled: boolean,
-  // webrtc: MembraneWebRTC | null,
-  stream: MediaStream | null,
-  isEnabled: boolean
+  device: Device
 ): MembraneStreaming => {
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
 
   const api = useApi();
+  const { simulcast } = useDeveloperInfo();
+  const simulcastEnabled = simulcast.status;
 
   // const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const defaultTrackMetadata = useMemo(() => ({ active: isEnabled, type }), [isEnabled, type]);
+  const defaultTrackMetadata = useMemo(() => ({ active: device.isEnabled, type }), [device.isEnabled, type]);
 
   const addTracks = useCallback(
     (stream: MediaStream) => {
@@ -56,13 +57,13 @@ export const useMembraneMediaStreaming = (
         stream,
         track,
         defaultTrackMetadata,
-        // simulcast: simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
-        // bandwidth: selectBandwidthLimit(type, simulcast),
+        simulcast: simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
+        bandwidth: selectBandwidthLimit(type, simulcast),
       });
       const remoteTrackId = api.addTrack(
         track,
         stream,
-        defaultTrackMetadata,
+        defaultTrackMetadata
         // simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
         // selectBandwidthLimit(type, simulcast)
       );
@@ -102,6 +103,7 @@ export const useMembraneMediaStreaming = (
     if (!api || !isConnected || mode !== "automatic") {
       return;
     }
+    const stream = device.stream;
 
     const tracks = type === "audio" ? stream?.getAudioTracks() : stream?.getVideoTracks();
     const localTrackId: string | undefined = (tracks || [])[0]?.id;
@@ -113,7 +115,7 @@ export const useMembraneMediaStreaming = (
     } else if (!stream && trackIds) {
       removeTracks();
     }
-  }, [api, stream, isConnected, addTracks, mode, removeTracks, trackIds, replaceTrack, type]);
+  }, [api, device.stream, device.isEnabled, isConnected, addTracks, mode, removeTracks, trackIds, replaceTrack, type]);
 
   // useEffect(() => {
   //   setWebrtcState(webrtc || null);

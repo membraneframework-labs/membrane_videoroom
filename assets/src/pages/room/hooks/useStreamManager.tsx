@@ -1,9 +1,4 @@
 import { MembraneStreaming, StreamingMode, useMembraneMediaStreaming } from "./useMembraneMediaStreaming";
-import { useSetLocalUserTrack } from "./useSetLocalUserTrack";
-import { useSetRemoteTrackId } from "./useSetRemoteTrackId";
-import { useSetLocalTrackMetadata } from "./useSetLocalTrackMetadata";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
-import { PeersApi } from "./usePeerState";
 import { TrackType } from "../../types";
 import { Device } from "../../../features/devices/LocalPeerMediaContext";
 
@@ -21,12 +16,7 @@ export const useStreamManager = (
   // peersApi: PeersApi,
   local: Device
 ): Streams => {
-  const isEnabled = local.isEnabled;
-  const stream = local.stream;
-  const remote = useMembraneMediaStreaming(mode, type, isConnected, simulcast, stream, isEnabled);
-  // useSetLocalUserTrack(type, stream, isEnabled);
-  // useSetRemoteTrackId(type, remote.trackId, peersApi);
-  // useSetLocalTrackMetadata(type, peersApi, remote.trackMetadata);
+  const remote = useMembraneMediaStreaming(mode, type, isConnected, simulcast, local.stream, local.isEnabled);
 
   return { remote, local };
 };

@@ -123,46 +123,49 @@ const getAutomaticControls = (
 //dev helpers
 const getManualControls = (
   {
-    userMediaAudio,
+    // userMediaAudio,
     audioStreaming,
-    userMediaVideo,
+    // userMediaVideo,
     cameraStreaming,
-    displayMedia,
+    // displayMedia,
     screenSharingStreaming,
   }: LocalUserMediaControls,
+  videoDevice: Device,
+  audioDevice: Device,
+  screenSharingDevice: Device,
   navigate: NavigateFunction,
   roomId?: string
 ): ControlButton[][] => [
   [
-    userMediaAudio.stream
+    audioDevice.stream
       ? {
           id: "mic-stop",
           icon: Microphone,
           buttonClassName: neutralButtonStyle,
           hover: "Start the microphone",
-          onClick: () => userMediaAudio.stop(),
+          onClick: () => audioDevice.stop(),
         }
       : {
           id: "mic-start",
           icon: MicrophoneOff,
           buttonClassName: activeButtonStyle,
           hover: "Stop the microphone",
-          onClick: () => userMediaAudio.start(),
+          onClick: () => audioDevice.start(),
         },
-    userMediaAudio.isEnabled
+    audioDevice.isEnabled
       ? {
           id: "mic-disable",
           icon: Microphone,
           buttonClassName: neutralButtonStyle,
           hover: "Disable microphone stream",
-          onClick: () => userMediaAudio.disable(),
+          onClick: () => audioDevice.disable(),
         }
       : {
           id: "mic-enable",
           icon: MicrophoneOff,
           buttonClassName: activeButtonStyle,
           hover: "Enable microphone stream",
-          onClick: () => userMediaAudio.enable(),
+          onClick: () => audioDevice.enable(),
         },
     audioStreaming.trackId
       ? {
@@ -177,7 +180,7 @@ const getManualControls = (
           icon: MicrophoneOff,
           buttonClassName: activeButtonStyle,
           hover: "Add microphone track",
-          onClick: () => userMediaAudio?.stream && audioStreaming.addTracks(userMediaAudio?.stream),
+          onClick: () => audioDevice?.stream && audioStreaming.addTracks(audioDevice?.stream),
         },
     audioStreaming.trackMetadata?.active
       ? {
@@ -196,35 +199,35 @@ const getManualControls = (
         },
   ],
   [
-    userMediaVideo.stream
+    videoDevice.stream
       ? {
           id: "cam-stop",
           icon: Camera,
           buttonClassName: neutralButtonStyle,
           hover: "Turn off the camera",
-          onClick: () => userMediaVideo.stop(),
+          onClick: () => videoDevice.stop(),
         }
       : {
           id: "cam-start",
           hover: "Turn on the camera",
           icon: CameraOff,
           buttonClassName: activeButtonStyle,
-          onClick: () => userMediaVideo.start(),
+          onClick: () => videoDevice.start(),
         },
-    userMediaVideo.isEnabled
+    videoDevice.isEnabled
       ? {
           id: "cam-disable",
           icon: Camera,
           buttonClassName: neutralButtonStyle,
           hover: "Disable the camera stream",
-          onClick: () => userMediaVideo.disable(),
+          onClick: () => videoDevice.disable(),
         }
       : {
           id: "cam-enable",
           hover: "Enable the the camera stream",
           icon: CameraOff,
           buttonClassName: activeButtonStyle,
-          onClick: () => userMediaVideo.enable(),
+          onClick: () => videoDevice.enable(),
         },
     cameraStreaming.trackId
       ? {
@@ -239,7 +242,7 @@ const getManualControls = (
           icon: CameraOff,
           buttonClassName: activeButtonStyle,
           hover: "Add camera track",
-          onClick: () => userMediaVideo?.stream && cameraStreaming.addTracks(userMediaVideo?.stream),
+          onClick: () => videoDevice?.stream && cameraStreaming.addTracks(videoDevice?.stream),
         },
     cameraStreaming.trackMetadata?.active
       ? {
@@ -258,14 +261,14 @@ const getManualControls = (
         },
   ],
   [
-    displayMedia.stream
+    screenSharingDevice.stream
       ? {
           id: "screen-stop",
           icon: Screenshare,
           buttonClassName: neutralButtonStyle,
           hover: "Stop the screensharing",
           hideOnMobile: true,
-          onClick: () => displayMedia.stop(),
+          onClick: () => screenSharingDevice.stop(),
         }
       : {
           id: "screen-start",
@@ -273,16 +276,16 @@ const getManualControls = (
           buttonClassName: neutralButtonStyle,
           hover: "Start the screensharing",
           hideOnMobile: true,
-          onClick: () => displayMedia.start(),
+          onClick: () => screenSharingDevice.start(),
         },
-    displayMedia.isEnabled
+    screenSharingDevice.isEnabled
       ? {
           id: "screen-disable",
           icon: Screenshare,
           buttonClassName: neutralButtonStyle,
           hover: "Disable screensharing stream",
           hideOnMobile: true,
-          onClick: () => displayMedia.disable(),
+          onClick: () => screenSharingDevice.disable(),
         }
       : {
           id: "screen-enable",
@@ -290,7 +293,7 @@ const getManualControls = (
           buttonClassName: neutralButtonStyle,
           hover: "Enable screensharing stream",
           hideOnMobile: true,
-          onClick: () => displayMedia.enable(),
+          onClick: () => screenSharingDevice.enable(),
         },
     screenSharingStreaming.trackId
       ? {
@@ -307,7 +310,7 @@ const getManualControls = (
           buttonClassName: neutralButtonStyle,
           hover: "Add screensharing track",
           hideOnMobile: true,
-          onClick: () => displayMedia?.stream && screenSharingStreaming.addTracks(displayMedia?.stream),
+          onClick: () => screenSharingDevice?.stream && screenSharingStreaming.addTracks(screenSharingDevice?.stream),
         },
     screenSharingStreaming.trackMetadata?.active
       ? {
@@ -345,11 +348,11 @@ type Props = {
 } & LocalUserMediaControls;
 
 type LocalUserMediaControls = {
-  userMediaVideo: Device;
+  // userMediaVideo: Device;
   cameraStreaming: MembraneStreaming;
-  userMediaAudio: Device;
+  // userMediaAudio: Device;
   audioStreaming: MembraneStreaming;
-  displayMedia: Device;
+  // displayMedia: Device;
   screenSharingStreaming: MembraneStreaming;
   isSidebarOpen?: boolean;
   openSidebar: () => void;
@@ -366,7 +369,7 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
 
   const controls: ControlButton[][] =
     props.mode === "manual"
-      ? getManualControls(props, navigate, roomId)
+      ? getManualControls(props, video.device, audio.device, screenShare.device, navigate, roomId)
       : [
           getAutomaticControls(
             props,

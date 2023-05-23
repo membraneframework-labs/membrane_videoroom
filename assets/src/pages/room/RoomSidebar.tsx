@@ -1,5 +1,4 @@
 import React, { FC, useEffect } from "react";
-import { PeersState } from "./hooks/usePeerState";
 import Sidebar from "../../features/room-page/components/Sidebar";
 import clsx from "clsx";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
@@ -8,12 +7,11 @@ import useSmartphoneViewport from "../../features/shared/hooks/useSmartphoneView
 type Props = {
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  peerState: PeersState;
 };
 
-const RoomSidebar: FC<Props> = ({ isSidebarOpen, setIsSidebarOpen, peerState }: Props) => {
-  const SIDEBAR_HEIGHT_MOBILE = 480;
+const SIDEBAR_HEIGHT_MOBILE = 480;
 
+const RoomSidebar: FC<Props> = ({ isSidebarOpen, setIsSidebarOpen }: Props) => {
   const isMobile: boolean | undefined = useSmartphoneViewport().isSmartphone;
   const animationControls = useAnimation();
 
@@ -73,7 +71,7 @@ const RoomSidebar: FC<Props> = ({ isSidebarOpen, setIsSidebarOpen, peerState }: 
                 variants={sidebarStyles}
                 transition={{ type: "spring", damping: 60, stiffness: 180 }}
               >
-                <Sidebar peers={peerState.remote} localPeer={peerState.local} onClose={() => setIsSidebarOpen(false)} />
+                <Sidebar onClose={() => setIsSidebarOpen(false)} />
               </motion.div>
             </motion.div>
           )}
@@ -86,7 +84,7 @@ const RoomSidebar: FC<Props> = ({ isSidebarOpen, setIsSidebarOpen, peerState }: 
             "overflow-hidden transition-all duration-300"
           )}
         >
-          <Sidebar peers={peerState.remote} localPeer={peerState.local} />
+          <Sidebar />
         </div>
       )}
     </>

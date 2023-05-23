@@ -31,7 +31,13 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 //   return <div className="flex w-full flex-wrap justify-center">{isOpen ? <CommentInput /> : <AddCommentButton />}</div>;
 // };
 
+
+
 type Inputs = {
+  video: number;
+  audio: number;
+  screenshare: number;
+  // comment: string;
   email: string;
 };
 
@@ -56,14 +62,21 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
     <div aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
       <form aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0" onSubmit={handleSubmit(onSubmit)}>
-        {/* register your input into the hook by invoking the "register" function */}
-        {/* <input defaultValue="test" {...register("example")} /> */}
-
-        {/* include validation with required or other standard HTML validation rules */}
-        {/* <input {...register("exampleRequired", { required: true })} /> */}
-        {/* errors will return when field validation fails  */}
-        {/* {errors.exampleRequired && <span>This field is required</span>} */}
-
+      <div
+          aria-label="questionnaire-rating"
+          className="flex w-full flex-col content-center justify-center gap-6 text-center"
+        >
+          <h4 className="text-2xl font-medium tracking-wider">How would you rate...</h4>
+          <div className="flex w-full flex-col content-center justify-center gap-10 sm:flex-row">
+             <Controller name="video" control={control} defaultValue={0} render={
+              ({field: { value, onChange}}) => <Rating name="video" value={value} onChange={(v) => onChange(v)}/>}/>
+            <Controller name="audio" control={control} defaultValue={0} render={
+              ({field: { value, onChange}}) => <Rating name="audio" value={value} onChange={(v) => onChange(v)}/>}/>
+            <Controller name="screenshare" control={control} defaultValue={0} render={
+              ({field: { value, onChange}}) => <Rating name="screenshare" value={value} onChange={(v) => onChange(v)}/>}/>
+          </div>
+          {/* <CommentBox name={"comment"} isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)} register={register} error={errors.comment}/> */}
+        </div>
         <div aria-label="questionnaire-email" className="flex w-96 flex-col items-start gap-2 p-0">
           <Controller
             name="email"

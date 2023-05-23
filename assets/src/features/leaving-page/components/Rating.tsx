@@ -13,6 +13,8 @@ type StarButtonProps = {
 
 type RatingProps<V extends FieldValues> = {
   name: Path<V>;
+  value: number;
+  onChange: (newValue: number) => void;
 };
 
 const StarOption = ({ isActive, isHoverActive, onClick, onHover, onLeave }: StarButtonProps) => {
@@ -35,14 +37,20 @@ const StarOption = ({ isActive, isHoverActive, onClick, onHover, onLeave }: Star
   );
 };
 
-const Rating = <V extends FieldValues>({ name }: RatingProps<V>) => {
-  const [rateValue, setRateValue] = useState<number>(0);
+const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>) => {
+  const [rateValue, setRateValue] = useState<number>(value);
   const [hoverRateValue, setHoverRateValue] = useState<number | null>(null);
 
   const ratingsFromOneToFive = Array.from({ length: 5 }, (_, i) => i + 1);
 
   const capitalize = (word: string) => (word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : "");
   const title = `${capitalize(name)} Quality`;
+
+  const handleOnClick = (newValue: number) => {
+    onChange(newValue);
+    setRateValue(newValue);
+    setHoverRateValue(null);
+  }
 
   return (
     <div className="flex flex-col flex-wrap gap-4 p-0">
@@ -54,8 +62,7 @@ const Rating = <V extends FieldValues>({ name }: RatingProps<V>) => {
             isActive={hoverRateValue === null && rateIndex <= rateValue}
             isHoverActive={hoverRateValue !== null && rateIndex <= hoverRateValue}
             onClick={() => {
-              setRateValue(rateIndex);
-              setHoverRateValue(null);
+              handleOnClick(rateIndex)
             }}
             onHover={() => setHoverRateValue(rateIndex)}
             onLeave={() => setHoverRateValue(null)}

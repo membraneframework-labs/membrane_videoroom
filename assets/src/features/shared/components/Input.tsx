@@ -33,8 +33,6 @@ const Input: React.FC<InputProps> = ({
   disableAutocomplete = true,
   className,
 }) => {
-  console.log(error, "Error");
-  console.log(additionalText, "Additional text");
   return (
     <div className="w-full space-y-2 font-aktivGrotesk">
       {label && (

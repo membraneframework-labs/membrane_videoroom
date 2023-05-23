@@ -73,7 +73,6 @@ export default function TextArea<V extends FieldValues>({
         )}
         {error?.message && (
           <div className={clsx("flex items-center gap-1 text-xs text-brand-pink-500")}>
-            {/* {<ExclamationCircleIcon className="w-4 h-4" />} */}
             <div>{error?.message}</div>
           </div>
         )}

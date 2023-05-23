@@ -9,6 +9,8 @@ import { DeviceErrorBoundary } from "./features/devices/DeviceErrorBoundary";
 import { LocalPeerMediaProvider } from "./features/devices/LocalPeerMediaContext";
 import { MediaSettingsModal } from "./features/devices/MediaSettingsModal";
 import { disableSafariCache } from "./features/devices/disableSafariCache";
+import { JellyfishContextProvider } from "./jellifish.types";
+import { ServerSDKProvider } from "./ServerSdkContext";
 
 // When returning to the videoroom page from another domain using the 'Back' button on the Safari browser,
 // the page is served from the cache, which prevents lifecycle events from being triggered.
@@ -24,8 +26,12 @@ const App: FC = () => {
             <ToastProvider>
               <ModalProvider>
                 <DeviceErrorBoundary>
-                  <RouterProvider router={router} />
-                  <MediaSettingsModal />
+                  <ServerSDKProvider>
+                    <JellyfishContextProvider>
+                      <RouterProvider router={router} />
+                      <MediaSettingsModal />
+                    </JellyfishContextProvider>
+                  </ServerSDKProvider>
                 </DeviceErrorBoundary>
               </ModalProvider>
             </ToastProvider>

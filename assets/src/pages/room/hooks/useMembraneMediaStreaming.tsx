@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
+import { useSelector } from "../../../jellifish.types";
 
 export type MembraneStreaming = {
   trackId: string | null;
@@ -24,20 +25,24 @@ export const useMembraneMediaStreaming = (
   type: TrackType,
   isConnected: boolean,
   simulcastEnabled: boolean,
-  webrtc: MembraneWebRTC | null,
+  // webrtc: MembraneWebRTC | null,
   stream: MediaStream | null,
   isEnabled: boolean
 ): MembraneStreaming => {
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
-  const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc);
+
+  const api = useSelector((s) => s.connectivity.api)
+
+  // const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   const defaultTrackMetadata = useMemo(() => ({ active: isEnabled, type }), [isEnabled, type]);
 
   const addTracks = useCallback(
     (stream: MediaStream) => {
-      if (!webrtc) return;
+      if (!api) return;
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
-      const simulcast = simulcastEnabled && type === "camera";
+      // const simulcast = simulcastEnabled && type === "camera";
+      const simulcast = false
 
       const track: MediaStreamTrack | undefined = tracks[0];
 
@@ -46,7 +51,7 @@ export const useMembraneMediaStreaming = (
         throw Error("Stream has no tracks!");
       }
 
-      const remoteTrackId = webrtc.addTrack(
+      const remoteTrackId = api.addTrack(
         track,
         stream,
         defaultTrackMetadata,
@@ -57,12 +62,12 @@ export const useMembraneMediaStreaming = (
       setTrackIds({ localId: track.id, remoteId: remoteTrackId });
       setTrackMetadata(defaultTrackMetadata);
     },
-    [defaultTrackMetadata, simulcastEnabled, type, webrtc]
+    [defaultTrackMetadata, simulcastEnabled, type, api]
   );
 
   const replaceTrack = useCallback(
     (stream: MediaStream) => {
-      if (!webrtc || !trackIds) return;
+      if (!api || !trackIds) return;
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
       const track: MediaStreamTrack | undefined = tracks[0];
@@ -71,22 +76,22 @@ export const useMembraneMediaStreaming = (
         throw Error("Stream has no tracks!");
       }
 
-      webrtc.replaceTrack(trackIds?.remoteId, track);
+      api.replaceTrack(trackIds?.remoteId, track, stream);
     },
-    [trackIds, type, webrtc]
+    [trackIds, type, api]
   );
 
   const removeTracks = useCallback(() => {
     setTrackIds(null);
     setTrackMetadata(undefined);
 
-    if (!webrtc || !trackIds) return;
+    if (!api || !trackIds) return;
 
-    webrtc.removeTrack(trackIds.remoteId);
-  }, [webrtc, trackIds]);
+    api.removeTrack(trackIds.remoteId);
+  }, [api, trackIds]);
 
   useEffect(() => {
-    if (!webrtc || !isConnected || mode !== "automatic") {
+    if (!api || !isConnected || mode !== "automatic") {
       return;
     }
 
@@ -100,20 +105,20 @@ export const useMembraneMediaStreaming = (
     } else if (!stream && trackIds) {
       removeTracks();
     }
-  }, [webrtc, stream, isConnected, addTracks, mode, removeTracks, trackIds, replaceTrack, type]);
+  }, [api, stream, isConnected, addTracks, mode, removeTracks, trackIds, replaceTrack, type]);
 
-  useEffect(() => {
-    setWebrtcState(webrtc || null);
-  }, [webrtc, type]);
+  // useEffect(() => {
+  //   setWebrtcState(webrtc || null);
+  // }, [webrtc, type]);
 
   const updateTrackMetadata = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (metadata: any) => {
       if (!trackIds) return;
-      webrtcState?.updateTrackMetadata(trackIds.remoteId, metadata);
+      api?.updateTrackMetadata(trackIds.remoteId, metadata);
       setTrackMetadata(metadata);
     },
-    [webrtcState, trackIds]
+    [api, trackIds]
   );
 
   const setActive = useCallback(

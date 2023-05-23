@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
@@ -15,6 +15,10 @@ import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutom
 import clsx from "clsx";
 import { useLocalPeer } from "../../features/devices/LocalPeerMediaContext";
 import RoomSidebar from "./RoomSidebar";
+import { useConnect, useSelector } from "../../jellifish.types";
+import Button from "../../features/shared/components/Button";
+import { useServerSdk } from "../../ServerSdkContext";
+import { createFullStateSelector } from "@jellyfish-dev/react-client-sdk";
 
 type Props = {
   displayName: string;
@@ -32,40 +36,41 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
   const [peerMetadata] = useState<PeerMetadata>({ emoji: getRandomAnimalEmoji(), displayName });
 
-  const { state: peerState, api: peerApi } = usePeersState();
-  const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+  const [token, setToken] = useState<string | null>(null);
 
-  const isConnected = !!peerState?.local?.id;
+  // const { state: peerState, api: peerApi } = usePeersState();
+  // const { webrtc } = useMembraneClient(roomId, peerMetadata, isSimulcastOn, peerApi, setErrorMessage);
+
+  // const isConnected = !!peerState?.local?.id;
+  const connect = useConnect();
+  const state = useSelector(createFullStateSelector());
+  useEffect(() => {
+    console.log({ state });
+  }, [state]);
 
   const { video: localVideo, audio: localAudio, screenShare } = useLocalPeer();
 
-  const camera = useStreamManager(
-    "camera",
-    mode,
-    isConnected,
-    isSimulcastOn,
-    webrtc || null,
-    peerApi,
-    localVideo.device
-  );
-  const audio = useStreamManager("audio", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, localAudio.device);
-  const screenSharing = useStreamManager(
-    "screensharing",
-    mode,
-    isConnected,
-    isSimulcastOn,
-    webrtc || null,
-    peerApi,
-    screenShare.device
-  );
+  const camera = useStreamManager("camera", mode, state.status === "joined", isSimulcastOn, localVideo.device);
+  // const audio = useStreamManager("audio", mode, isConnected, isSimulcastOn, webrtc || null, peerApi, localAudio.device);
+  // const screenSharing = useStreamManager(
+  //   "screensharing",
+  //   mode,
+  //   isConnected,
+  //   isSimulcastOn,
+  //   webrtc || null,
+  //   peerApi,
+  //   screenShare.device
+  // );
 
   const { addToast } = useToast();
 
-  useEffectOnChange(screenSharing.local.stream, () => {
-    if (screenSharing.local.stream) {
-      addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
-    }
-  });
+  const { roomApi, peerApi, peerWebsocket } = useServerSdk();
+
+  // useEffectOnChange(screenSharing.local.stream, () => {
+  //   if (screenSharing.local.stream) {
+  //     addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
+  //   }
+  // });
 
   useEffectOnChange(
     errorMessage,
@@ -94,28 +99,74 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
             isSidebarOpen && "gap-x-4"
           )}
         >
-          <VideochatSection
-            peers={peerState.remote}
-            localPeer={peerState.local}
-            showSimulcast={showSimulcastMenu}
-            webrtc={webrtc}
-            unpinnedTilesHorizontal={isSidebarOpen}
-          />
+          <Button
+            onClick={() => {
+              roomApi.jellyfishWebRoomControllerIndex().then((response) => {
+                const rooms = response.data.data
 
-          <RoomSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} peerState={peerState} />
+                if(rooms[0]) {
+                  peerApi.jellyfishWebPeerControllerCreate(rooms[0].id, { type: "webrtc" }).then((response) => {
+                    const peerRespo = response.data.data;
+                    const token = peerRespo.token;
+                    console.log({ peerRespo });
+
+                    setToken(token);
+
+                    connect({
+                      peerMetadata: { name: displayName },
+                      token,
+                      websocketUrl: peerWebsocket,
+                    });
+                  })
+                } else {
+                  console.log({name: "Creating new room"})
+                  roomApi.jellyfishWebRoomControllerCreate({ maxPeers: 10 }).then((response) => {
+                    const roomId = response.data.data.id;
+                    console.log({ roomId });
+                    peerApi.jellyfishWebPeerControllerCreate(roomId, { type: "webrtc" }).then((response) => {
+                      const peerRespo = response.data.data;
+                      const token = peerRespo.token;
+                      console.log({ peerRespo });
+
+                      setToken(token);
+
+                      connect({
+                        peerMetadata: { name: "Username" },
+                        token,
+                        websocketUrl: peerWebsocket,
+                      });
+                    });
+                  })
+                }
+              });
+
+              console.log("Connected!");
+            }}
+          >
+            Connect
+          </Button>
+          {/*<VideochatSection*/}
+          {/*  peers={peerState.remote}*/}
+          {/*  localPeer={peerState.local}*/}
+          {/*  showSimulcast={showSimulcastMenu}*/}
+          {/*  webrtc={webrtc}*/}
+          {/*  unpinnedTilesHorizontal={isSidebarOpen}*/}
+          {/*/>*/}
+
+          {/*<RoomSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} peerState={peerState} />*/}
         </section>
 
-        <MediaControlButtons
-          mode={mode}
-          userMediaVideo={camera.local}
-          cameraStreaming={camera.remote}
-          userMediaAudio={audio.local}
-          audioStreaming={audio.remote}
-          displayMedia={screenSharing.local}
-          screenSharingStreaming={screenSharing.remote}
-          isSidebarOpen={isSidebarOpen}
-          openSidebar={() => setIsSidebarOpen((prev) => !prev)}
-        />
+        {/*<MediaControlButtons*/}
+        {/*  mode={mode}*/}
+        {/*  userMediaVideo={camera.local}*/}
+        {/*  cameraStreaming={camera.remote}*/}
+        {/*  userMediaAudio={audio.local}*/}
+        {/*  audioStreaming={audio.remote}*/}
+        {/*  displayMedia={screenSharing.local}*/}
+        {/*  screenSharingStreaming={screenSharing.remote}*/}
+        {/*  isSidebarOpen={isSidebarOpen}*/}
+        {/*  openSidebar={() => setIsSidebarOpen((prev) => !prev)}*/}
+        {/*/>*/}
 
         {/* dev helpers */}
         <div className="invisible absolute bottom-3 right-3 flex flex-col items-stretch md:visible">

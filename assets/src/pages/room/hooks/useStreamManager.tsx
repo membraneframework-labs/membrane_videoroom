@@ -17,16 +17,16 @@ export const useStreamManager = (
   mode: StreamingMode,
   isConnected: boolean,
   simulcast: boolean,
-  webrtc: MembraneWebRTC | null,
-  peersApi: PeersApi,
+  // webrtc: MembraneWebRTC | null,
+  // peersApi: PeersApi,
   local: Device
 ): Streams => {
   const isEnabled = local.isEnabled;
   const stream = local.stream;
-  const remote = useMembraneMediaStreaming(mode, type, isConnected, simulcast, webrtc, stream, isEnabled);
-  useSetLocalUserTrack(type, peersApi, stream, isEnabled);
-  useSetRemoteTrackId(type, remote.trackId, peersApi);
-  useSetLocalTrackMetadata(type, peersApi, remote.trackMetadata);
+  const remote = useMembraneMediaStreaming(mode, type, isConnected, simulcast, stream, isEnabled);
+  // useSetLocalUserTrack(type, peersApi, stream, isEnabled);
+  // useSetRemoteTrackId(type, remote.trackId, peersApi);
+  // useSetLocalTrackMetadata(type, peersApi, remote.trackMetadata);
 
   return { remote, local };
 };

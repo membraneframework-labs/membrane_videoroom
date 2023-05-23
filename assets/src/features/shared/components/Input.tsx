@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React from "react";
+import Info from "../../leaving-page/icons/Info";
 
 type InputType = "text"; // add other types if needed
 
@@ -32,6 +33,8 @@ const Input: React.FC<InputProps> = ({
   disableAutocomplete = true,
   className,
 }) => {
+  console.log(error, "Error");
+  console.log(additionalText, "Additional text");
   return (
     <div className="w-full space-y-2 font-aktivGrotesk">
       {label && (
@@ -62,6 +65,8 @@ const Input: React.FC<InputProps> = ({
         autoComplete={disableAutocomplete ? "off" : "on"}
       />
       {additionalText && (
+        <div className='flex gap-1 items-center text-xm'>
+        <Info className={clsx(error ? "stroke-brand-red" : "stroke-brand-dark-blue-500")}/>
         <span
           className={clsx(
             "block text-sm",
@@ -70,6 +75,7 @@ const Input: React.FC<InputProps> = ({
         >
           {additionalText}
         </span>
+        </div>
       )}
     </div>
   );

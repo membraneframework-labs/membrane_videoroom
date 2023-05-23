@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Star from "../icons/Star";
 import clsx from "clsx";
-import { FieldValues, Path, } from "react-hook-form";
+import { FieldValues, Path } from "react-hook-form";
 
 type StarButtonProps = {
   isActive: boolean;
@@ -15,7 +15,7 @@ type RatingProps<V extends FieldValues> = {
   name: Path<V>;
 };
 
-const StarOption =  ({ isActive, isHoverActive, onClick, onHover, onLeave}: StarButtonProps) => {
+const StarOption = ({ isActive, isHoverActive, onClick, onHover, onLeave }: StarButtonProps) => {
   const fillColor = isHoverActive
     ? "fill-brand-dark-blue-200"
     : isActive
@@ -41,7 +41,7 @@ const Rating = <V extends FieldValues>({ name }: RatingProps<V>) => {
 
   const ratingsFromOneToFive = Array.from({ length: 5 }, (_, i) => i + 1);
 
-  const capitalize = (word: string) => word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : "";
+  const capitalize = (word: string) => (word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : "");
   const title = `${capitalize(name)} Quality`;
 
   return (

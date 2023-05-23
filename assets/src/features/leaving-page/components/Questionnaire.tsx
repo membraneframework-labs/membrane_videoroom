@@ -6,7 +6,7 @@ import Info from "../icons/Info";
 import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
 import Send from "../icons/Send";
-import {SubmitHandler, useForm} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 // type CommentBoxProps<V extends FieldValues> = {
 //   name: Path<V>;
@@ -32,44 +32,85 @@ import {SubmitHandler, useForm} from "react-hook-form";
 // };
 
 type Inputs = {
-  example: string,
-  exampleRequired: string,
-}
+  email: string;
+};
 
 type QuestionnaireProps = {
   onSubmitClick: () => void;
 };
 
 const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
-  const {register, handleSubmit, formState: {errors}} = useForm<Inputs>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {console.log(data); onSubmitClick(); }
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log(data);
+    onSubmitClick();
+  };
 
   return (
-    /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {/* register your input into the hook by invoking the "register" function */}
-      <input defaultValue="test" {...register("example")} />
-      
-      {/* include validation with required or other standard HTML validation rules */}
-      <input {...register("exampleRequired", { required: true })} />
-      {/* errors will return when field validation fails  */}
-      {errors.exampleRequired && <span>This field is required</span>}
-           <Button
-     type="submit"
-     onClick={() => {}}
-     variant="normal"
-     className="align-center flex flex-wrap justify-center gap-2 px-8"
-   >
-     Submit <Send />
-   </Button>
-    </form>
+    <div aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
+      <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
+      <form aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0" onSubmit={handleSubmit(onSubmit)}>
+        {/* register your input into the hook by invoking the "register" function */}
+        {/* <input defaultValue="test" {...register("example")} /> */}
+
+        {/* include validation with required or other standard HTML validation rules */}
+        {/* <input {...register("exampleRequired", { required: true })} /> */}
+        {/* errors will return when field validation fails  */}
+        {/* {errors.exampleRequired && <span>This field is required</span>} */}
+
+        <div aria-label="questionnaire-email" className="flex w-96 flex-col items-start gap-2 p-0">
+          <Controller
+            name="email"
+            control={control}
+            rules={{
+              pattern: {
+                value:
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                message: "Please enter a valid email",
+              },
+              required: "Email is required",
+            }}
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
+              <Input
+                type="text"
+                label="Your e-mail"
+                name="email"
+                placeholder="Your e-mail"
+                value={value ?? ""}
+                onChange={(v) => onChange(v)}
+                error={!!error}
+                additionalText={error?.message}
+                required
+              />
+            )}
+          />
+        </div>
+        <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
+          <Button
+            type="submit"
+            onClick={() => {}}
+            variant="normal"
+            className="align-center flex flex-wrap justify-center gap-2 px-8"
+          >
+            Submit <Send />
+          </Button>
+          <span className="font-aktivGrotesk text-xs text-text-additional">
+            You need to rate at least one quality to submit
+          </span>
+        </div>
+      </form>
+    </div>
   );
 
   // return (
   //   <div aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
-  //     <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
+  //
 
   //     <form aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0"onSubmit={handleSubmit(onSubmit)}>
   //       <div

@@ -8,6 +8,8 @@ import Send from "../icons/Send";
 import { Controller, FieldError, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 
 
+type RatingName = "video" | "audio" | "screenshare";
+
 type Inputs = {
   video: number;
   audio: number;
@@ -57,6 +59,8 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
     onSubmitClick();
   };
 
+  const ratingNames: RatingName[]  = ["video", "audio", "screenshare"];
+
   return (
     <div aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
@@ -67,12 +71,8 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
         >
           <h4 className="text-2xl font-medium tracking-wider">How would you rate...</h4>
           <div className="flex w-full flex-col content-center justify-center gap-10 sm:flex-row">
-             <Controller name="video" control={control} defaultValue={0} render={
-              ({field: { value, onChange}}) => <Rating name="video" value={value} onChange={(v) => onChange(v)}/>}/>
-            <Controller name="audio" control={control} defaultValue={0} render={
-              ({field: { value, onChange}}) => <Rating name="audio" value={value} onChange={(v) => onChange(v)}/>}/>
-            <Controller name="screenshare" control={control} defaultValue={0} render={
-              ({field: { value, onChange}}) => <Rating name="screenshare" value={value} onChange={(v) => onChange(v)}/>}/>
+            {ratingNames.map((name) => (<Controller key={name} name={name} control={control} defaultValue={0} render={
+              ({field: { value, onChange}}) => <Rating name={name} value={value} onChange={(v) => onChange(v)}/>}/>))}
           </div>
           <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)} register={register} error={errors.comment}/>
         </div>

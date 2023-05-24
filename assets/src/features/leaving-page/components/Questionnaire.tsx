@@ -106,7 +106,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
         <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
           <Button
             type="submit"
-            onClick={() => {}}
+            onClick={() => {}} //noop here because otherwise it directs to the homepage
             variant="normal"
             className="align-center flex flex-wrap justify-center gap-2 px-8"
           >

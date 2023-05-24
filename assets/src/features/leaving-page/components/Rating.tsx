@@ -13,7 +13,7 @@ type StarButtonProps = {
 
 type RatingProps<V extends FieldValues> = {
   name: Path<V>;
-  value: number;
+  value: number | null;
   onChange: (newValue: number) => void;
 };
 
@@ -38,7 +38,7 @@ const StarOption = ({ isActive, isHoverActive, onClick, onHover, onLeave }: Star
 };
 
 const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>) => {
-  const [rateValue, setRateValue] = useState<number>(value);
+  const [rateValue, setRateValue] = useState<number>(value ?? 0);
   const [hoverRateValue, setHoverRateValue] = useState<number | null>(null);
 
   const ratingsFromOneToFive = Array.from({ length: 5 }, (_, i) => i + 1);

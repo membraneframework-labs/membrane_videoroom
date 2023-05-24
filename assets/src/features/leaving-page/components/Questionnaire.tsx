@@ -10,9 +10,9 @@ import { Controller, FieldError, SubmitHandler, UseFormRegister, useForm } from 
 type RatingName = "video" | "audio" | "screenshare";
 
 type Inputs = {
-  video: number;
-  audio: number;
-  screenshare: number;
+  video: number | null;
+  audio: number | null;
+  screenshare: number | null;
   comment: string;
   email: string;
 };
@@ -89,7 +89,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
                 key={name}
                 name={name}
                 control={control}
-                defaultValue={0}
+                defaultValue={null}
                 render={({ field: { value, onChange } }) => (
                   <Rating name={name} value={value} onChange={(v) => onChange(v)} />
                 )}

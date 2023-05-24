@@ -20,7 +20,7 @@ export const DeveloperInfoProvider = ({ children }: Props) => {
   return (
     <DeveloperInfoContext.Provider
       value={{
-        simulcast: { status: simulcast, setSimulcast: setSimulcast },
+        simulcast: { status: simulcast, setSimulcast },
         manualMode: { status: manualMode, setManualMode },
         smartLayerSwitching: { status: smartLayerSwitching, setSmartLayerSwitching },
       }}

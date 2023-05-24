@@ -1,12 +1,8 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-// import { useMembraneClient } from "./hooks/useMembraneClient";
 import MediaControlButtons from "./components/MediaControlButtons";
-import { PeerMetadata, usePeersState } from "./hooks/usePeerState";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
-import { getRandomAnimalEmoji } from "./utils";
-import { useStreamManager } from "./hooks/useStreamManager";
-import { StreamingMode, useMembraneMediaStreaming } from "./hooks/useMembraneMediaStreaming";
+import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
@@ -16,7 +12,6 @@ import clsx from "clsx";
 import { useLocalPeer } from "../../features/devices/LocalPeerMediaContext";
 import RoomSidebar from "./RoomSidebar";
 import { useConnect, useSelector } from "../../jellifish.types";
-import Button from "../../features/shared/components/Button";
 import { useServerSdk } from "../../ServerSdkContext";
 import { createFullStateSelector } from "@jellyfish-dev/react-client-sdk";
 import { useDeveloperInfo } from "../../contexts/DeveloperInfoContext";
@@ -44,13 +39,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, manualMode }: Props) => {
     console.log({ state });
   }, [state]);
 
-  const { video, audio, screenShare } = useLocalPeer();
-
-  const isConnected = state.status === "joined";
-
-  const cameraStreaming = useMembraneMediaStreaming(mode, "camera", isConnected, video.device);
-  const audioStreaming = useMembraneMediaStreaming(mode, "audio", isConnected, audio.device);
-  const screenSharingStreaming = useMembraneMediaStreaming(mode, "screensharing", isConnected, screenShare.device);
+  const { screenShare } = useLocalPeer();
 
   const { addToast } = useToast();
 
@@ -145,9 +134,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, manualMode }: Props) => {
 
         <MediaControlButtons
           mode={mode}
-          cameraStreaming={cameraStreaming}
-          audioStreaming={audioStreaming}
-          screenSharingStreaming={screenSharingStreaming}
           isSidebarOpen={isSidebarOpen}
           openSidebar={() => setIsSidebarOpen((prev) => !prev)}
         />

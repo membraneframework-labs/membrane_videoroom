@@ -10,6 +10,7 @@ import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
 import { useModal } from "../../../contexts/ModalContext";
 import { useLocalPeer } from "../../devices/LocalPeerMediaContext";
+import { useSelector } from "../../../jellifish.types";
 
 type HomePageVideoTileProps = {
   displayName: string;
@@ -17,6 +18,12 @@ type HomePageVideoTileProps = {
 
 const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) => {
   const { audio, video } = useLocalPeer();
+  const videoTrackId = useSelector(
+    (s) =>
+      Object.values(s?.local?.tracks || {})
+        .filter((track) => track?.metadata?.type === "camera")
+        .map((track) => track.trackId)[0] || null
+  );
 
   const initials = computeInitials(displayName);
   const { setOpen } = useModal();
@@ -26,7 +33,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
       <MediaPlayerTile
         key="room-preview"
         peerId={undefined}
-        video={{ stream: video.device.stream || undefined, remoteTrackId: "" }}
+        video={{ stream: video.device.stream || undefined, remoteTrackId: videoTrackId }}
         audio={null}
         streamSource="local"
         flipHorizontally

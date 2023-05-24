@@ -27,7 +27,9 @@ const VideoroomHomePage: React.FC = () => {
 
   const [searchParams] = useSearchParams();
   const simulcastParam: string = searchParams?.get("simulcast") || "true";
-  const simulcastDefaultValue: boolean = simulcastParam === "true";
+  // const simulcastDefaultValue: boolean = simulcastParam === "true";
+  // right now Jellifish does not support simulcast
+  const simulcastDefaultValue = false;
 
   const [simulcastInput, toggleSimulcastCheckbox] = useToggle(simulcastDefaultValue);
   const [manualModeInput, toggleManualModeCheckbox] = useToggle(DEFAULT_MANUAL_MODE_CHECKBOX_VALUE);
@@ -39,6 +41,7 @@ const VideoroomHomePage: React.FC = () => {
       id: "simulcast",
       onChange: toggleSimulcastCheckbox,
       status: simulcastInput,
+      disabled: true,
     },
     {
       label: "Smart layer switching",
@@ -193,8 +196,8 @@ const VideoroomHomePage: React.FC = () => {
             <div className="hidden w-auto flex-col items-center justify-center gap-y-6 sm:flex">
               {inputs}
               <div className="space-y-1">
-                {checkboxes.map(({ label, id, status, onChange }) => (
-                  <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} />
+                {checkboxes.map(({ label, id, status, onChange, disabled }) => (
+                  <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} disabled={disabled}/>
                 ))}
               </div>
               <Button

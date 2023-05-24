@@ -1,5 +1,5 @@
 import { useToggle } from "./useToggle";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { useApi } from "../../../jellifish.types";
 
 export type UseSimulcastLocalEncoding = {
@@ -19,6 +19,7 @@ export const useSimulcastSend = (trackId: string | null): UseSimulcastLocalEncod
       throw Error("Toggling simulcast layer is not possible when trackId is null");
     }
 
+    console.log(trackId)
     status ? api?.enableTrackEncoding(trackId, encodingName) : api?.disableTrackEncoding(trackId, encodingName);
   };
 

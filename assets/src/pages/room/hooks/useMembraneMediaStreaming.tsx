@@ -32,7 +32,8 @@ export const useMembraneMediaStreaming = (
 
   const api = useApi();
   const { simulcast } = useDeveloperInfo();
-  const simulcastEnabled = simulcast.status;
+  const simulcastEnabled = false;
+  // const simulcastEnabled = simulcast.status;
 
   // const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -63,7 +64,7 @@ export const useMembraneMediaStreaming = (
       const remoteTrackId = api.addTrack(
         track,
         stream,
-        defaultTrackMetadata
+        defaultTrackMetadata,
         // simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
         // selectBandwidthLimit(type, simulcast)
       );

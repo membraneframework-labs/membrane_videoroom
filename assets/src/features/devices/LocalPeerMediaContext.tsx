@@ -28,14 +28,14 @@ export type DisplayMedia = {
   device: Device;
 };
 
-export type LocalPeerContextType = {
+export type LocalPeerContext = {
   video: UserMedia;
   audio: UserMedia;
   screenShare: DisplayMedia;
   start: (config: UseUserMediaStartConfig) => void;
 };
 
-const LocalPeerMediaContext = React.createContext<LocalPeerContextType | undefined>(undefined);
+const LocalPeerMediaContext = React.createContext<LocalPeerContext | undefined>(undefined);
 
 type Props = {
   children: React.ReactNode;
@@ -138,7 +138,7 @@ export const LocalPeerMediaProvider = ({ children }: Props) => {
   );
 };
 
-export const useLocalPeer = (): LocalPeerContextType => {
+export const useLocalPeer = (): LocalPeerContext => {
   const context = useContext(LocalPeerMediaContext);
   if (!context) throw new Error("useLocalPeer must be used within a LocalPeerMediaContext");
   return context;

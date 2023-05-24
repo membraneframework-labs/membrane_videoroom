@@ -1,6 +1,6 @@
 import { useToggle } from "./useToggle";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { useApi } from "../../../jellifish.types";
+import { useApi, useCurrentUserVideoTrackId } from "../../../jellifish.types";
 
 export type UseSimulcastLocalEncoding = {
   highQuality: boolean;
@@ -11,15 +11,16 @@ export type UseSimulcastLocalEncoding = {
   toggleLowQuality: () => void;
 };
 
-export const useSimulcastSend = (trackId: string | null): UseSimulcastLocalEncoding => {
-  const api = useApi()
+export const useSimulcastSend = (): UseSimulcastLocalEncoding => {
+  const api = useApi();
+  const trackId = useCurrentUserVideoTrackId();
 
   const toggleRemoteEncoding = (status: boolean, encodingName: TrackEncoding) => {
     if (!trackId) {
       throw Error("Toggling simulcast layer is not possible when trackId is null");
     }
 
-    console.log(trackId)
+    console.log(trackId);
     status ? api?.enableTrackEncoding(trackId, encodingName) : api?.disableTrackEncoding(trackId, encodingName);
   };
 

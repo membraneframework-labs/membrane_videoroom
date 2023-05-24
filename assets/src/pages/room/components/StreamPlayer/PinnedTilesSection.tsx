@@ -4,12 +4,13 @@ import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js
 import PeerInfoLayer from "./PeerInfoLayer";
 import { PinIndicator, PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import NameTag from "../../../../features/room-page/components/NameTag";
-import MediaPlayerTile from "./MediaPlayerTile";
+import RemoteMediaPlayerTile from "./RemoteMediaPlayerTile";
 import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
 import { GridConfigType, getGridConfig } from "../../../../features/room-page/utils/getVideoGridConfig";
 import clsx from "clsx";
 import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
+import LocalMediaPlayerTile from "./LocalMediaPlayerTile";
 
 type WrapperProps = {
   children: ReactNode;
@@ -44,16 +45,70 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, showSimulcast, forc
       {pinnedTiles.map((pinnedTile: MediaPlayerTileConfig) => {
         const tileType = pinnedTile.typeName;
         const hasInitials = tileType === "local" || tileType === "remote";
+
+        if (tileType === "screenShare") {
+          return (
+            <RemoteMediaPlayerTile
+              key={pinnedTile.mediaPlayerId}
+              className={clsx(gridConfig.span, gridConfig.tileClass)}
+              peerId={pinnedTile.peerId}
+              video={pinnedTile.video}
+              audio={null}
+              blockFillContent={true}
+              flipHorizontally={false}
+              layers={
+                <>
+                  <PeerInfoLayer
+                    topRight={<PinIndicator />}
+                    topLeft={getTileUpperLeftIcon(pinnedTile)}
+                    bottomLeft={<NameTag name={pinnedTile.displayName} />}
+                  />
+                  <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
+                </>
+              }
+              showSimulcast={false}
+              forceEncoding={forceEncoding}
+            />
+          );
+        }
+
+        if (tileType === "local") {
+          return (
+            <LocalMediaPlayerTile
+              key={pinnedTile.mediaPlayerId}
+              className={clsx(gridConfig.span, gridConfig.tileClass)}
+              peerId={pinnedTile.peerId}
+              video={pinnedTile.video?.stream || null}
+              audio={null}
+              blockFillContent={false}
+              flipHorizontally={tileType === "local"}
+              layers={
+                <>
+                  {hasInitials && showDisabledIcon(pinnedTile.video) && (
+                    <InitialsImage initials={pinnedTile.initials} />
+                  )}
+                  <PeerInfoLayer
+                    topRight={<PinIndicator />}
+                    topLeft={getTileUpperLeftIcon(pinnedTile)}
+                    bottomLeft={<NameTag name={pinnedTile.displayName} />}
+                  />
+                  <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
+                </>
+              }
+              showSimulcast={showSimulcast}
+            />
+          );
+        }
+
         return (
-          <MediaPlayerTile
+          <RemoteMediaPlayerTile
             key={pinnedTile.mediaPlayerId}
             className={clsx(gridConfig.span, gridConfig.tileClass)}
             peerId={pinnedTile.peerId}
             video={pinnedTile.video}
             audio={tileType === "remote" ? pinnedTile.audio : null}
-            streamSource={pinnedTile.streamSource}
-            blockFillContent={tileType === "screenShare"}
-            flipHorizontally={tileType === "local"}
+            blockFillContent={false}
+            flipHorizontally={false}
             layers={
               <>
                 {hasInitials && showDisabledIcon(pinnedTile.video) && <InitialsImage initials={pinnedTile.initials} />}
@@ -65,8 +120,7 @@ const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, showSimulcast, forc
                 <PinTileLayer pinned={true} onClick={() => unpin(pinnedTile.mediaPlayerId)} />
               </>
             }
-            showSimulcast={showSimulcast && tileType !== "screenShare"}
-            // webrtc={webrtc}
+            showSimulcast={showSimulcast}
             forceEncoding={forceEncoding}
           />
         );

@@ -18,18 +18,26 @@ export const { useSelector, useConnect, JellyfishContextProvider } = create<Peer
 
 export const useApi = () => useSelector((s) => s.connectivity.api);
 
+export const useCurrentUserVideoTrackId = (): string | null =>
+  useSelector(
+    (s) =>
+      Object.values(s?.local?.tracks || {})
+        .filter((track) => track?.metadata?.type === "camera")
+        .map((track) => track.trackId)[0] || null
+  );
+
 export const toLocalTrackSelector = (state: State<PeerMetadata, TrackMetadata>, type: TrackType) =>
   toPairs(state?.local?.tracks || {})
     .filter(([_, value]) => value?.metadata?.type === type)
     .map(([key, value]): TrackWithId => {
-      const { stream, metadata } = value;
+      const { stream, metadata, encoding } = value;
       return {
         stream: stream || undefined,
         remoteTrackId: key,
         metadata,
         isSpeaking: true,
         enabled: true,
-        encodingQuality: "h",
+        encodingQuality: encoding,
       };
     })[0] || null;
 

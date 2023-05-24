@@ -8,6 +8,7 @@ import {
   VIDEO_TILE_RESIZE_DETECTOR_DEBOUNCE_VALUE,
 } from "../consts";
 import { useSimulcastRemoteEncoding } from "./useSimulcastRemoteEncoding";
+import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 
 const getHighestAllowedEncoding = (height: number | null): TrackEncoding | null => {
   if (height === null) return null;
@@ -33,10 +34,10 @@ export const useAutomaticEncodingSwitching = (
   peerId: string | null,
   trackId: string | null,
   disableAutomaticLayerSwitching: boolean,
-  autostartSmartLayerSwitching: boolean,
   forceEncoding: TrackEncoding | null,
-  // webrtc: MembraneWebRTC | null
 ) => {
+  const { smartLayerSwitching } = useDeveloperInfo();
+  const autostartSmartLayerSwitching = smartLayerSwitching.status
   const [smartEncodingStatus, setSmartEncodingStatus] = useState(autostartSmartLayerSwitching);
   const onInitEncodingQuality = useStoreFirstNonNullValue(currentTrackEncoding || null);
 

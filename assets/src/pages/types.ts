@@ -18,7 +18,7 @@ export type StreamSource = (typeof StreamSourceValues)[number];
 export type TrackWithId = {
   stream?: MediaStream;
   remoteTrackId: string | null;
-  encodingQuality?: TrackEncoding;
+  encodingQuality: TrackEncoding | null;
   metadata?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   isSpeaking?: boolean;
   enabled?: boolean;

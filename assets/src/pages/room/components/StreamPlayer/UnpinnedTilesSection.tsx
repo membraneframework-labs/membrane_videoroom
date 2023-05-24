@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from "react";
-import MediaPlayerTile from "./MediaPlayerTile";
+import RemoteMediaPlayerTile from "./RemoteMediaPlayerTile";
 import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
@@ -11,13 +11,13 @@ import { PinTileLayer } from "../../../../features/room-page/components/PinCompo
 import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
 import useSmartphoneViewport from "../../../../features/shared/hooks/useSmartphoneViewport";
 import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
+import LocalMediaPlayerTile from "./LocalMediaPlayerTile";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   isAnyTilePinned: boolean;
-  webrtc?: MembraneWebRTC;
   pin: (tileId: string) => void;
   videoInVideo: boolean;
   blockPinning: boolean;
@@ -29,7 +29,6 @@ const UnpinnedTilesSection: FC<Props> = ({
   tileConfigs,
   showSimulcast,
   isAnyTilePinned,
-  webrtc,
   pin,
   videoInVideo,
   blockPinning,
@@ -68,8 +67,62 @@ const UnpinnedTilesSection: FC<Props> = ({
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
         const upperLeftIcon: JSX.Element | null = getTileUpperLeftIcon(config);
 
+        if(config.typeName === "screenShare") {
+          return (
+            <RemoteMediaPlayerTile
+              key={config.mediaPlayerId}
+              peerId={config.peerId}
+              video={video}
+              audio={null}
+              className={tileStyle}
+              layers={
+                <>
+                  <PeerInfoLayer
+                    bottomLeft={<NameTag name={config.displayName} />}
+                    topLeft={upperLeftIcon}
+                    tileSize={tileSize}
+                  />
+                  {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
+                </>
+              }
+              showSimulcast={showSimulcast && config.typeName !== "screenShare"}
+              flipHorizontally={false}
+              blockFillContent={config.typeName === "screenShare"}
+              forceEncoding={forceEncoding}
+            />
+          );
+        }
+
+        if (config.typeName === "local") {
+          return (
+            <LocalMediaPlayerTile
+              key={config.mediaPlayerId}
+              peerId={config.peerId}
+              video={video?.stream || null}
+              audio={null}
+              className={tileStyle}
+              layers={
+                <>
+                  {hasInitials && showDisabledIcon(video) && <InitialsImage initials={config.initials} />}
+                  <PeerInfoLayer
+                    bottomLeft={<NameTag name={config.displayName} />}
+                    topLeft={upperLeftIcon}
+                    tileSize={tileSize}
+                  />
+                  {!blockPinning ? (
+                    <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} />
+                  ) : undefined}
+                </>
+              }
+              showSimulcast={showSimulcast} // disable if screenshare
+              flipHorizontally={true}
+              blockFillContent={false} // always false or always true
+            />
+          );
+        }
+
         return (
-          <MediaPlayerTile
+          <RemoteMediaPlayerTile
             key={config.mediaPlayerId}
             peerId={config.peerId}
             video={video}
@@ -86,11 +139,9 @@ const UnpinnedTilesSection: FC<Props> = ({
                 {!blockPinning ? <PinTileLayer pinned={false} onClick={() => pin(config.mediaPlayerId)} /> : undefined}
               </>
             }
-            showSimulcast={showSimulcast && config.typeName !== "screenShare"}
-            streamSource={config.streamSource}
-            flipHorizontally={config.typeName === "local"}
-            webrtc={webrtc}
-            blockFillContent={config.typeName === "screenShare"}
+            showSimulcast={showSimulcast}
+            flipHorizontally={false}
+            blockFillContent={false}
             forceEncoding={forceEncoding}
           />
         );

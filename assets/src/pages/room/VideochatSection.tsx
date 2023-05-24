@@ -27,7 +27,7 @@ const getTrack = (tracks: ApiTrack[], type: TrackType): TrackWithId | null =>
       (track): TrackWithId => ({
         stream: track.mediaStream,
         remoteTrackId: track.trackId,
-        encodingQuality: track.encoding,
+        encodingQuality: track.encoding || null,
         metadata: track.metadata,
         isSpeaking: track.isSpeaking,
         enabled: true,
@@ -87,7 +87,7 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
         video: {
           stream: track.mediaStream,
           remoteTrackId: track.trackId,
-          encodingQuality: track.encoding,
+          encodingQuality: track.encoding || null,
           metadata: track.metadata,
         },
         streamSource: "local",
@@ -167,7 +167,6 @@ export const VideochatSection: FC<Props> = ({
             pinnedTiles={pinnedTiles}
             unpin={unpinTile}
             showSimulcast={showSimulcast}
-            // webrtc={webrtc}
             forceEncoding={forceEncoding}
           />
         )}
@@ -177,7 +176,6 @@ export const VideochatSection: FC<Props> = ({
             tileConfigs={unpinnedTiles}
             showSimulcast={showSimulcast}
             isAnyTilePinned={pinningFlags.isAnyPinned}
-            // webrtc={webrtc}
             pin={pinTile}
             videoInVideo={pinnedTiles.length === 1}
             blockPinning={pinningFlags.blockPinning}

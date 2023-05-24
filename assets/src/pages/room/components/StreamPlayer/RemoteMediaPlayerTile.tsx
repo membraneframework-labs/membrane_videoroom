@@ -6,7 +6,6 @@ import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimu
 import { StreamSource, TrackWithId } from "../../../types";
 import clsx from "clsx";
 import { useAutomaticEncodingSwitching } from "../../hooks/useAutomaticEncodingSwitching";
-import { useDeveloperInfo } from "../../../../contexts/DeveloperInfoContext";
 import { SimulcastEncodingToReceive } from "./simulcast/SimulcastEncodingToReceive";
 
 export interface Props {
@@ -15,44 +14,33 @@ export interface Props {
   flipHorizontally?: boolean;
   audio: TrackWithId | null;
   showSimulcast?: boolean;
-  streamSource?: StreamSource;
   layers?: JSX.Element;
-  // webrtc?: MembraneWebRTC;
   className?: string;
   blockFillContent?: boolean;
   forceEncoding?: TrackEncoding;
 }
 
-const MediaPlayerTile: FC<Props> = ({
+// todo divide to ScreenShare and RemoteTile
+const RemoteMediaPlayerTile: FC<Props> = ({
   peerId,
   video,
   audio,
   flipHorizontally,
   showSimulcast,
-  streamSource,
   layers,
-  // webrtc,
   className,
   blockFillContent,
   forceEncoding,
 }: Props) => {
-  const { smartLayerSwitching } = useDeveloperInfo();
-
-  const isRemote = streamSource === "remote";
-  const isLocal = streamSource === "local";
-
   const { ref, setTargetEncoding, targetEncoding, smartEncoding, smartEncodingStatus, setSmartEncodingStatus } =
     useAutomaticEncodingSwitching(
       video?.encodingQuality || null,
       peerId || null,
       video?.remoteTrackId || null,
-      isLocal,
-      smartLayerSwitching.status,
+      false, // todo remove
       forceEncoding || null
-      // webrtc || null
     );
 
-  const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend(video?.remoteTrackId || null);
   const videoStream = video?.stream || null;
   const audioStream = audio?.stream || null;
 
@@ -73,7 +61,7 @@ const MediaPlayerTile: FC<Props> = ({
         blockFillContent={blockFillContent}
       />
       {layers}
-      {showSimulcast && isRemote && (
+      {showSimulcast && (
         <SimulcastEncodingToReceive
           currentEncoding={video?.encodingQuality || null}
           disabled={!video?.stream}
@@ -84,9 +72,8 @@ const MediaPlayerTile: FC<Props> = ({
           setTargetEncoding={setTargetEncoding}
         />
       )}
-      {showSimulcast && isLocal && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!video?.stream} />}
     </div>
   );
 };
 
-export default MediaPlayerTile;
+export default RemoteMediaPlayerTile;

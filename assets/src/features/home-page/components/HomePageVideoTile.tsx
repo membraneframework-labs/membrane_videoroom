@@ -1,6 +1,6 @@
 import React from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
-import MediaPlayerTile from "../../../pages/room/components/StreamPlayer/MediaPlayerTile";
+import RemoteMediaPlayerTile from "../../../pages/room/components/StreamPlayer/RemoteMediaPlayerTile";
 import InitialsImage, { computeInitials } from "../../room-page/components/InitialsImage";
 import { activeButtonStyle, neutralButtonStyle } from "../../room-page/consts";
 import Camera from "../../room-page/icons/Camera";
@@ -10,7 +10,8 @@ import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
 import { useModal } from "../../../contexts/ModalContext";
 import { useLocalPeer } from "../../devices/LocalPeerMediaContext";
-import { useSelector } from "../../../jellifish.types";
+import { useCurrentUserVideoTrackId, useSelector } from "../../../jellifish.types";
+import LocalMediaPlayerTile from "../../../pages/room/components/StreamPlayer/LocalMediaPlayerTile";
 
 type HomePageVideoTileProps = {
   displayName: string;
@@ -18,24 +19,17 @@ type HomePageVideoTileProps = {
 
 const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) => {
   const { audio, video } = useLocalPeer();
-  const videoTrackId = useSelector(
-    (s) =>
-      Object.values(s?.local?.tracks || {})
-        .filter((track) => track?.metadata?.type === "camera")
-        .map((track) => track.trackId)[0] || null
-  );
 
   const initials = computeInitials(displayName);
   const { setOpen } = useModal();
 
   return (
     <div className="h-full w-full">
-      <MediaPlayerTile
+      <LocalMediaPlayerTile
         key="room-preview"
         peerId={undefined}
-        video={{ stream: video.device.stream || undefined, remoteTrackId: videoTrackId }}
+        video={video.device.stream || null}
         audio={null}
-        streamSource="local"
         flipHorizontally
         layers={
           <>

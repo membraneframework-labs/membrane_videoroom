@@ -1,19 +1,11 @@
-import React, { FC } from "react";
-import MediaPlayer from "./MediaPlayer";
+import React, { ComponentProps, FC } from "react";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
-import clsx from "clsx";
+import GenericMediaPlayerTile from "./GenericMediaPlayerTile";
 
-export interface Props {
-  peerId?: string;
-  video: MediaStream | null;
-  flipHorizontally?: boolean; // always true
-  audio: MediaStream | null; // always false
-  showSimulcast?: boolean;
-  layers?: JSX.Element;
-  className?: string;
-  blockFillContent?: boolean;
-}
+export type Props = {
+  showSimulcast: boolean;
+} & ComponentProps<typeof GenericMediaPlayerTile>;
 
 const LocalMediaPlayerTile: FC<Props> = ({
   video,
@@ -27,23 +19,20 @@ const LocalMediaPlayerTile: FC<Props> = ({
   const localEncoding: UseSimulcastLocalEncoding = useSimulcastSend();
 
   return (
-    <div
+    <GenericMediaPlayerTile
       data-name="video-feed"
-      className={clsx(
-        className,
-        "relative flex h-full w-full justify-center overflow-hidden",
-        "rounded-xl border border-brand-dark-blue-300 bg-gray-900"
-      )}
-    >
-      <MediaPlayer
-        videoStream={video}
-        audioStream={audio}
-        flipHorizontally={flipHorizontally}
-        blockFillContent={blockFillContent}
-      />
-      {layers}
-      {showSimulcast && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!!video} />}
-    </div>
+      className={className}
+      video={video}
+      audio={audio}
+      flipHorizontally={flipHorizontally}
+      blockFillContent={blockFillContent}
+      layers={
+        <>
+          {layers}
+          {showSimulcast && <SimulcastEncodingToSend localEncoding={localEncoding} disabled={!!video} />}
+        </>
+      }
+    />
   );
 };
 

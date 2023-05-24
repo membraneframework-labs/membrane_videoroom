@@ -1,24 +1,16 @@
-import React, { FC } from "react";
-import MediaPlayer from "./MediaPlayer";
-import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
+import React, { ComponentProps, FC } from "react";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
-import { StreamSource, TrackWithId } from "../../../types";
-import clsx from "clsx";
 import { useAutomaticEncodingSwitching } from "../../hooks/useAutomaticEncodingSwitching";
 import { SimulcastEncodingToReceive } from "./simulcast/SimulcastEncodingToReceive";
+import GenericMediaPlayerTile from "./GenericMediaPlayerTile";
 
-export interface Props {
-  peerId?: string;
-  video: TrackWithId | null;
-  flipHorizontally?: boolean;
-  audio: TrackWithId | null;
-  showSimulcast?: boolean;
-  layers?: JSX.Element;
-  className?: string;
-  blockFillContent?: boolean;
-  forceEncoding?: TrackEncoding;
-}
+export type Props = {
+  peerId: string | null;
+  remoteTrackId: string | null;
+  encodingQuality: TrackEncoding | null;
+  showSimulcast: boolean;
+  forceEncoding: TrackEncoding | null;
+} & ComponentProps<typeof GenericMediaPlayerTile>;
 
 // todo divide to ScreenShare and RemoteTile
 const RemoteMediaPlayerTile: FC<Props> = ({
@@ -26,6 +18,8 @@ const RemoteMediaPlayerTile: FC<Props> = ({
   video,
   audio,
   flipHorizontally,
+  remoteTrackId,
+  encodingQuality,
   showSimulcast,
   layers,
   className,
@@ -34,45 +28,38 @@ const RemoteMediaPlayerTile: FC<Props> = ({
 }: Props) => {
   const { ref, setTargetEncoding, targetEncoding, smartEncoding, smartEncodingStatus, setSmartEncodingStatus } =
     useAutomaticEncodingSwitching(
-      video?.encodingQuality || null,
-      peerId || null,
-      video?.remoteTrackId || null,
+      encodingQuality,
+      peerId,
+      remoteTrackId,
       false, // todo remove
-      forceEncoding || null
+      forceEncoding
     );
 
-  const videoStream = video?.stream || null;
-  const audioStream = audio?.stream || null;
-
   return (
-    <div
+    <GenericMediaPlayerTile
       ref={ref}
-      data-name="video-feed"
-      className={clsx(
-        className,
-        "relative flex h-full w-full justify-center overflow-hidden",
-        "rounded-xl border border-brand-dark-blue-300 bg-gray-900"
-      )}
-    >
-      <MediaPlayer
-        videoStream={videoStream}
-        audioStream={audioStream}
-        flipHorizontally={flipHorizontally}
-        blockFillContent={blockFillContent}
-      />
-      {layers}
-      {showSimulcast && (
-        <SimulcastEncodingToReceive
-          currentEncoding={video?.encodingQuality || null}
-          disabled={!video?.stream}
-          targetEncoding={targetEncoding || null}
-          smartEncoding={smartEncoding}
-          localSmartEncodingStatus={smartEncodingStatus}
-          setLocalSmartEncodingStatus={setSmartEncodingStatus}
-          setTargetEncoding={setTargetEncoding}
-        />
-      )}
-    </div>
+      video={video}
+      audio={audio}
+      flipHorizontally={flipHorizontally}
+      blockFillContent={blockFillContent}
+      className={className}
+      layers={
+        <>
+          {layers}
+          {showSimulcast && (
+            <SimulcastEncodingToReceive
+              currentEncoding={encodingQuality}
+              disabled={!video}
+              targetEncoding={targetEncoding || null}
+              smartEncoding={smartEncoding}
+              localSmartEncodingStatus={smartEncodingStatus}
+              setLocalSmartEncodingStatus={setSmartEncodingStatus}
+              setTargetEncoding={setTargetEncoding}
+            />
+          )}
+        </>
+      }
+    />
   );
 };
 

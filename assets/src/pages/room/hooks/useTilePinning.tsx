@@ -69,6 +69,7 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
     autoPinSecondPeer();
   }, [pinNewScreenShares, autoPinSecondPeer]);
 
+  // todo refactor to useMemo
   const takeOutPinnedTiles = useCallback((): {
     pinnedTiles: MediaPlayerTileConfig[];
     unpinnedTiles: MediaPlayerTileConfig[];

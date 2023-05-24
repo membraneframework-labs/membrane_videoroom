@@ -13,10 +13,7 @@ import useTilePinning from "./hooks/useTilePinning";
 import { toLocalTrackSelector, toRemotePeerSelector, useSelector } from "../../jellifish.types";
 
 type Props = {
-  // peers: RemotePeer[];
-  // localPeer?: LocalPeer;
-  showSimulcast?: boolean;
-  // webrtc?: MembraneWebRTC;
+  showSimulcast: boolean;
   unpinnedTilesHorizontal?: boolean;
 };
 
@@ -105,14 +102,9 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
 };
 
 export const VideochatSection: FC<Props> = ({
-  // peers,
-  // localPeer,
   showSimulcast,
-  // webrtc,
   unpinnedTilesHorizontal,
 }: Props) => {
-  // const video: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["camera"]);
-  // const audio: TrackWithId | null = remoteTrackToLocalTrack(localPeer?.tracks["audio"]);
 
   const video: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "camera"));
   const audio: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "audio"));

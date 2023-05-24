@@ -12,6 +12,7 @@ import { useModal } from "../../../contexts/ModalContext";
 import { useLocalPeer } from "../../devices/LocalPeerMediaContext";
 import { useCurrentUserVideoTrackId, useSelector } from "../../../jellifish.types";
 import LocalMediaPlayerTile from "../../../pages/room/components/StreamPlayer/LocalMediaPlayerTile";
+import GenericMediaPlayerTile from "../../../pages/room/components/StreamPlayer/GenericMediaPlayerTile";
 
 type HomePageVideoTileProps = {
   displayName: string;
@@ -25,9 +26,7 @@ const HomePageVideoTile: React.FC<HomePageVideoTileProps> = ({ displayName }) =>
 
   return (
     <div className="h-full w-full">
-      <LocalMediaPlayerTile
-        key="room-preview"
-        peerId={undefined}
+      <GenericMediaPlayerTile
         video={video.device.stream || null}
         audio={null}
         flipHorizontally

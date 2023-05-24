@@ -50,7 +50,7 @@ const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>
     onChange(newValue);
     setRateValue(newValue);
     setHoverRateValue(null);
-  }
+  };
 
   return (
     <div className="flex flex-col flex-wrap gap-4 p-0">
@@ -62,7 +62,7 @@ const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>
             isActive={hoverRateValue === null && rateIndex <= rateValue}
             isHoverActive={hoverRateValue !== null && rateIndex <= hoverRateValue}
             onClick={() => {
-              handleOnClick(rateIndex)
+              handleOnClick(rateIndex);
             }}
             onHover={() => setHoverRateValue(rateIndex)}
             onLeave={() => setHoverRateValue(null)}

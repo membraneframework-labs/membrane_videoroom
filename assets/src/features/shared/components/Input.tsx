@@ -63,16 +63,16 @@ const Input: React.FC<InputProps> = ({
         autoComplete={disableAutocomplete ? "off" : "on"}
       />
       {additionalText && (
-        <div className='flex gap-1 items-center text-xm'>
-        <Info className={clsx(error ? "stroke-brand-red" : "stroke-brand-dark-blue-500")}/>
-        <span
-          className={clsx(
-            "block text-sm",
-            disabled ? "text-brand-grey-80" : error ? "text-brand-red" : "text-brand-dark-blue-500"
-          )}
-        >
-          {additionalText}
-        </span>
+        <div className="text-xm flex items-center gap-1">
+          <Info className={clsx(error ? "stroke-brand-red" : "stroke-brand-dark-blue-500")} />
+          <span
+            className={clsx(
+              "block text-sm",
+              disabled ? "text-brand-grey-80" : error ? "text-brand-red" : "text-brand-dark-blue-500"
+            )}
+          >
+            {additionalText}
+          </span>
         </div>
       )}
     </div>

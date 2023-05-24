@@ -7,7 +7,6 @@ import Button from "../../shared/components/Button";
 import Send from "../icons/Send";
 import { Controller, FieldError, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 
-
 type RatingName = "video" | "audio" | "screenshare";
 
 type Inputs = {
@@ -34,12 +33,18 @@ const CommentBox = ({ isOpen, setOpen, register, error }: CommentBoxProps) => {
   );
 
   const CommentInput = () => (
-    <TextArea name="comment" label="Comment (optional)" placeholder="Write your comment"  className="w-96" register={register} error={error}/>
+    <TextArea
+      name="comment"
+      label="Comment (optional)"
+      placeholder="Write your comment"
+      className="w-96"
+      register={register}
+      error={error}
+    />
   );
 
   return <div className="flex w-full flex-wrap justify-center">{isOpen ? <CommentInput /> : <AddCommentButton />}</div>;
 };
-
 
 type QuestionnaireProps = {
   onSubmitClick: () => void;
@@ -59,22 +64,40 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
     onSubmitClick();
   };
 
-  const ratingNames: RatingName[]  = ["video", "audio", "screenshare"];
+  const ratingNames: RatingName[] = ["video", "audio", "screenshare"];
 
   return (
     <div aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
-      <form aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0" onSubmit={handleSubmit(onSubmit)}>
-      <div
+      <form
+        aria-label="questionnaire-content"
+        className="flex flex-col items-center justify-center gap-10 p-0"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div
           aria-label="questionnaire-rating"
           className="flex w-full flex-col content-center justify-center gap-6 text-center"
         >
           <h4 className="text-2xl font-medium tracking-wider">How would you rate...</h4>
           <div className="flex w-full flex-col content-center justify-center gap-10 sm:flex-row">
-            {ratingNames.map((name) => (<Controller key={name} name={name} control={control} defaultValue={0} render={
-              ({field: { value, onChange}}) => <Rating name={name} value={value} onChange={(v) => onChange(v)}/>}/>))}
+            {ratingNames.map((name) => (
+              <Controller
+                key={name}
+                name={name}
+                control={control}
+                defaultValue={0}
+                render={({ field: { value, onChange } }) => (
+                  <Rating name={name} value={value} onChange={(v) => onChange(v)} />
+                )}
+              />
+            ))}
           </div>
-          <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)} register={register} error={errors.comment}/>
+          <CommentBox
+            isOpen={isCommentBoxOpen}
+            setOpen={() => setCommentBoxOpen(true)}
+            register={register}
+            error={errors.comment}
+          />
         </div>
         <div aria-label="questionnaire-email" className="flex w-96 flex-col items-start gap-2 p-0">
           <Controller

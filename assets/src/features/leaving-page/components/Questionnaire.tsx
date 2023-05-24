@@ -51,13 +51,17 @@ type QuestionnaireProps = {
 };
 
 const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
+  const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
+  
   const {
     control,
     register,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
-  const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
+  const emailInput = watch("email");
+  const emailFilled = !!emailInput && !errors.email;
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
@@ -132,6 +136,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
             onClick={() => {}} //noop here because otherwise it directs to the homepage
             variant="normal"
             className="align-center flex flex-wrap justify-center gap-2 px-8"
+            disabled={!emailFilled}
           >
             Submit <Send />
           </Button>

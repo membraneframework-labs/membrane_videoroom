@@ -11,9 +11,9 @@ const Button: React.FC<ButtonProps> = (props) => {
     <PlainLink
       {...props}
       className={clsx(
+        props.className,
         props.variant && buttonDefaultClassName,
         props.disabled ? disabledButtonClassName : props.variant && BUTTON_CLASSES[props.variant],
-        props.className
       )}
     >
       {props.children}

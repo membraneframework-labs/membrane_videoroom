@@ -9,7 +9,7 @@ import { Controller, FieldError, SubmitHandler, UseFormRegister, useForm } from 
 
 type RatingName = "video" | "audio" | "screenshare";
 
-type Inputs = {
+export type Inputs = {
   video: number | null;
   audio: number | null;
   screenshare: number | null;

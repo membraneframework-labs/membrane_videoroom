@@ -22,7 +22,7 @@ const CommentBox = ({ isOpen, setOpen }: CommentBoxProps) => {
   );
 
   const CommentInput = () => (
-    <TextArea label="Comment (optional)" placeholder="Write your comment" name="comment" className="w-96" />
+    <TextArea label="Comment (optional)" placeholder="Write your comment" name="comment" className="w-72 sm:w-96" />
   );
 
   return <div className="flex w-full flex-wrap justify-center">{isOpen ? <CommentInput /> : <AddCommentButton />}</div>;
@@ -45,7 +45,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
           aria-label="questionnaire-rating"
           className="flex w-full flex-col content-center justify-center gap-6 text-center"
         >
-          <h4 className="text-2xl font-medium tracking-wider">How would you rate...</h4>
+          <h4 className="text-xl sm:text-2xl font-medium tracking-wider">How would you rate...</h4>
           <div className="flex w-full flex-col content-center justify-center gap-10 sm:flex-row">
             <Rating title="Video Quality" />
             <Rating title="Audio Quality" />
@@ -53,7 +53,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
           </div>
           <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)} />
         </div>
-        <div aria-label="questionnaire-email" className="flex w-96 flex-col items-start gap-2 p-0">
+        <div aria-label="questionnaire-email" className="flex w-72 sm:w-96 flex-col items-start gap-2 p-0">
           <Input type="text" label="Your e-mail" name="email" placeholder="Your e-mail" required />
           <div className="flex flex-row gap-1">
             <Info />

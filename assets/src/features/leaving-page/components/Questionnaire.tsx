@@ -6,6 +6,7 @@ import Info from "../icons/Info";
 import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
 import Send from "../icons/Send";
+import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 
 type CommentBoxProps = {
   isOpen: boolean;
@@ -33,6 +34,7 @@ type QuestionnaireProps = {
 
 const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
+  const {isSmartphone} = useSmartphoneViewport();
 
   return (
     <form aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
@@ -58,7 +60,8 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
             <span className="font-aktivGrotesk text-xs">Information required</span>
           </div>
         </div>
-        <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
+        {!isSmartphone &&
+          <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
           <Button
             onClick={onSubmitClick}
             variant="normal"
@@ -69,7 +72,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
           <span className="font-aktivGrotesk text-xs text-text-additional">
             You need to rate at least one quality to submit
           </span>
-        </div>
+        </div>}
       </div>
     </form>
   );

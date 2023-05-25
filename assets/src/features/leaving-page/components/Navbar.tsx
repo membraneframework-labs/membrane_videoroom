@@ -1,10 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import Button from "../../shared/components/Button";
-import MembraneVideoroomLogo from "../../shared/components/MembraneVideoroomLogo";
+import MembraneVideoroomLogo from "../../shared/icons/MembraneVideoroomLogo";
 import PlainLink from "../../shared/components/PlainLink";
 import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
-import Logo from "../../shared/components/Logo";
+import Logo from "../../shared/icons/Logo";
 import clsx from "clsx";
 
 //TODO make one, solid, expendable navbar

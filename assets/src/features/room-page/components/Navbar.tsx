@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Button from "../../shared/components/Button";
-import MembraneVideoroomLogo from "../../shared/components/MembraneVideoroomLogo";
+import MembraneVideoroomLogo from "../../shared/icons/MembraneVideoroomLogo";
 import PlainLink from "../../shared/components/PlainLink";
 import useToast from "../../shared/hooks/useToast";
 import ShareSquare from "../icons/ShareSquare";

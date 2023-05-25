@@ -1,5 +1,5 @@
 import React from "react";
-import MembraneLogo from "../../shared/components/MembraneLogo";
+import MembraneLogo from "../../shared/icons/MembraneLogo";
 import PlainLink from "../../shared/components/PlainLink";
 
 const Navbar: React.FC = () => {

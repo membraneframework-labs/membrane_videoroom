@@ -5,6 +5,7 @@ import Rating from "./Rating";
 import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
 import Send from "../icons/Send";
+import sendForm from "../utils/sendForm";
 import { Controller, FieldError, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 
 type RatingName = "video" | "audio" | "screenshare";
@@ -52,7 +53,7 @@ type QuestionnaireProps = {
 
 const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
-  
+
   const {
     control,
     register,
@@ -64,7 +65,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const emailFilled = !!emailInput && !errors.email;
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
+    sendForm(data);
     onSubmitClick();
   };
 

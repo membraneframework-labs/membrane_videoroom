@@ -12,6 +12,7 @@ import { disableSafariCache } from "./features/devices/disableSafariCache";
 import { JellyfishContextProvider } from "./jellifish.types";
 import { ServerSDKProvider } from "./ServerSdkContext";
 import { StreamingProvider } from "./features/streaming/StreamingContext";
+import { RoomProvider } from "./contexts/RoomContext";
 
 // When returning to the videoroom page from another domain using the 'Back' button on the Safari browser,
 // the page is served from the cache, which prevents lifecycle events from being triggered.
@@ -29,10 +30,12 @@ const App: FC = () => {
                 <DeviceErrorBoundary>
                   <ServerSDKProvider>
                     <JellyfishContextProvider>
-                      <StreamingProvider>
-                        <RouterProvider router={router} />
-                        <MediaSettingsModal />
-                      </StreamingProvider>
+                      <RoomProvider>
+                        <StreamingProvider>
+                          <RouterProvider router={router} />
+                          <MediaSettingsModal />
+                        </StreamingProvider>
+                      </RoomProvider>
                     </JellyfishContextProvider>
                   </ServerSDKProvider>
                 </DeviceErrorBoundary>

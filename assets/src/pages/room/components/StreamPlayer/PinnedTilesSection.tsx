@@ -11,6 +11,7 @@ import { getGridConfig, GridConfigType } from "../../../../features/room-page/ut
 import clsx from "clsx";
 import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
 import LocalMediaPlayerTile from "./LocalMediaPlayerTile";
+import Tile from "./Tile";
 
 type WrapperProps = {
   children: ReactNode;
@@ -39,75 +40,19 @@ type Props = {
 
 const PinnedTilesSection: FC<Props> = ({ pinnedTiles, unpin, showSimulcast, forceEncoding }: Props) => {
   const gridConfig = getGridConfig(pinnedTiles.length);
+  const className = clsx(gridConfig.span, gridConfig.tileClass);
   return (
     <PinnedTilesWrapper twoPinnedTiles={pinnedTiles.length === 2} gridConfig={gridConfig}>
-      {pinnedTiles.map((tile: MediaPlayerTileConfig) => {
-        const InfoLayer = () => (
-          <PeerInfoLayer
-            topRight={<PinIndicator />}
-            topLeft={getTileUpperLeftIcon(tile)}
-            bottomLeft={<NameTag name={tile.displayName} />}
-          />
-        );
-        const PinLayer = () => <PinTileLayer pinned onClick={() => unpin(tile.mediaPlayerId)} />;
-
-        if (tile.typeName === "screenShare") {
-          return (
-            <RemoteMediaPlayerTile
-              key={tile.mediaPlayerId}
-              className={clsx(gridConfig.span, gridConfig.tileClass)}
-              peerId={tile.peerId}
-              video={tile.video?.stream || null}
-              layers={
-                <>
-                  <InfoLayer />
-                  <PinLayer />
-                </>
-              }
-              showSimulcast={false}
-              forceEncoding={forceEncoding || null}
-              encodingQuality={tile.video?.encodingQuality || null}
-              remoteTrackId={tile.video?.remoteTrackId || null}
-            />
-          );
-        }
-
-        const Layers = () => (
-          <>
-            {showDisabledIcon(tile.video) && <InitialsImage initials={tile.initials} />}
-            <InfoLayer />
-            <PinLayer />
-          </>
-        );
-
-        if (tile.typeName === "local") {
-          return (
-            <LocalMediaPlayerTile
-              key={tile.mediaPlayerId}
-              className={clsx(gridConfig.span, gridConfig.tileClass)}
-              video={tile.video?.stream}
-              flipHorizontally
-              layers={<Layers />}
-              showSimulcast={showSimulcast}
-            />
-          );
-        }
-
-        return (
-          <RemoteMediaPlayerTile
-            key={tile.mediaPlayerId}
-            className={clsx(gridConfig.span, gridConfig.tileClass)}
-            peerId={tile.peerId}
-            video={tile.video?.stream}
-            audio={tile?.audio?.stream}
-            layers={<Layers />}
-            showSimulcast={showSimulcast}
-            forceEncoding={forceEncoding || null}
-            encodingQuality={tile.video?.encodingQuality || null}
-            remoteTrackId={tile.video?.remoteTrackId || null}
-          />
-        );
-      })}
+      {pinnedTiles.map((tile) => (
+        <Tile
+          key={tile.mediaPlayerId} // todo rename mediaPlayerId to tileId
+          tile={tile}
+          className={className}
+          forceEncoding={forceEncoding}
+          showSimulcast={showSimulcast}
+          pinLayer={<PinTileLayer pinned onClick={() => unpin(tile.mediaPlayerId)} />}
+        />
+      ))}
     </PinnedTilesWrapper>
   );
 };

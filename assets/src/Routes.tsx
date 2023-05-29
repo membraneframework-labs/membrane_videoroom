@@ -1,7 +1,6 @@
 import React from "react";
 import RoomPage from "./pages/room/RoomPage";
 import { createBrowserRouter, useLocation, useParams } from "react-router-dom";
-import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";
 import { useUser } from "./contexts/UserContext";
 import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
 import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
@@ -14,17 +13,12 @@ const RoomPageWrapper: React.FC = () => {
   const { state } = useLocation();
   const isLeavingRoom = !!state?.isLeavingRoom;
   const { username } = useUser();
-  const { simulcast, manualMode } = useDeveloperInfo();
 
   if (isLeavingRoom && roomId) {
     return <LeavingRoomScreen roomId={roomId} />;
   }
 
-  return username && roomId ? (
-    <RoomPage displayName={username} roomId={roomId} isSimulcastOn={simulcast.status} manualMode={manualMode.status} />
-  ) : (
-    <VideoroomHomePage />
-  );
+  return username && roomId ? <RoomPage roomId={roomId} /> : <VideoroomHomePage />;
 };
 
 export const router = createBrowserRouter([

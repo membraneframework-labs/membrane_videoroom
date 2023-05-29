@@ -1,8 +1,7 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
-import { StreamingMode } from "./hooks/useMembraneMediaStreaming";
 import PageLayout from "../../features/room-page/components/PageLayout";
 import useToast from "../../features/shared/hooks/useToast";
 import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
@@ -12,28 +11,26 @@ import clsx from "clsx";
 import { useLocalPeer } from "../../features/devices/LocalPeerMediaContext";
 import RoomSidebar from "./RoomSidebar";
 import { useConnect, useSelector } from "../../jellifish.types";
-import { useServerSdk } from "../../ServerSdkContext";
 import { createFullStateSelector } from "@jellyfish-dev/react-client-sdk";
 import { useDeveloperInfo } from "../../contexts/DeveloperInfoContext";
+import { useUser } from "../../contexts/UserContext";
+import { useRoom } from "../../contexts/RoomContext";
+import { JELLYFISH_WEBSOCKET_URL } from "./consts";
 
 type Props = {
-  displayName: string;
   roomId: string;
-  isSimulcastOn: boolean;
-  manualMode: boolean;
 };
 
-const RoomPage: FC<Props> = ({ roomId, displayName, manualMode }: Props) => {
+const RoomPage: FC<Props> = ({ roomId }: Props) => {
   useAcquireWakeLockAutomatically();
 
-  const mode: StreamingMode = manualMode ? "manual" : "automatic";
   const { simulcast } = useDeveloperInfo();
   const isSimulcastOn = simulcast.status;
 
+  // todo handle errors
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | undefined>();
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
 
-  const connect = useConnect();
   const state = useSelector(createFullStateSelector());
   useEffect(() => {
     console.log({ state });
@@ -42,8 +39,6 @@ const RoomPage: FC<Props> = ({ roomId, displayName, manualMode }: Props) => {
   const { screenShare } = useLocalPeer();
 
   const { addToast } = useToast();
-
-  const { roomApi, peerApi, peerWebsocket } = useServerSdk();
 
   useEffectOnChange(screenShare.device.stream, () => {
     if (screenShare.device.stream) {
@@ -68,57 +63,27 @@ const RoomPage: FC<Props> = ({ roomId, displayName, manualMode }: Props) => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const connectFn = useCallback(() => {
-    roomApi.jellyfishWebRoomControllerIndex().then((response) => {
-      const rooms = response.data.data;
+  const connect = useConnect();
+  const { username } = useUser();
+  const { token } = useRoom();
 
-      if (rooms[0]) {
-        peerApi.jellyfishWebPeerControllerCreate(rooms[0].id, { type: "webrtc" }).then((response) => {
-          const peerRespo = response.data.data;
-          const token = peerRespo.token;
-          console.log({ peerRespo });
+  useEffect(() => {
+    if (!username) throw Error("Username is null");
+    if (!token) return;
 
-          connect({
-            peerMetadata: { name: displayName },
-            token,
-            websocketUrl: peerWebsocket,
-          });
-        });
-      } else {
-        console.log({ name: "Creating new room" });
-        roomApi.jellyfishWebRoomControllerCreate({ maxPeers: 10 }).then((response) => {
-          const roomId = response.data.data.id;
-          console.log({ roomId });
-          peerApi.jellyfishWebPeerControllerCreate(roomId, { type: "webrtc" }).then((response) => {
-            const peerRespo = response.data.data;
-            const token = peerRespo.token;
-            console.log({ peerRespo });
-
-            connect({
-              peerMetadata: { name: displayName },
-              token,
-              websocketUrl: peerWebsocket,
-            });
-          });
-        });
-      }
+    const disconnect = connect({
+      peerMetadata: { name: username },
+      token: token,
+      websocketUrl: JELLYFISH_WEBSOCKET_URL,
     });
 
-    console.log("Connected!");
-  }, [connect, displayName, peerApi, peerWebsocket, roomApi]);
-
-  // todo refactor me!
-  const firstTime = useRef<boolean>(true);
-  useEffect(() => {
-    if (firstTime.current) {
-      connectFn();
-      firstTime.current = false;
-    }
-  }, [connectFn]);
+    return () => {
+      disconnect();
+    };
+  }, [connect, roomId, token, username]);
 
   return (
     <PageLayout>
-      {/*<Button onClick={connectFn}>Connect</Button>*/}
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section
@@ -132,11 +97,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, manualMode }: Props) => {
           <RoomSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         </section>
 
-        <MediaControlButtons
-          mode={mode}
-          isSidebarOpen={isSidebarOpen}
-          openSidebar={() => setIsSidebarOpen((prev) => !prev)}
-        />
+        <MediaControlButtons isSidebarOpen={isSidebarOpen} openSidebar={() => setIsSidebarOpen((prev) => !prev)} />
 
         {/* dev helpers */}
         <div className="invisible absolute bottom-3 right-3 flex flex-col items-stretch md:visible">

@@ -2,7 +2,11 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
-import { DEFAULT_MANUAL_MODE_CHECKBOX_VALUE, DEFAULT_SMART_LAYER_SWITCHING_VALUE } from "../../../pages/room/consts";
+import {
+  BACKEND_URL,
+  DEFAULT_MANUAL_MODE_CHECKBOX_VALUE,
+  DEFAULT_SMART_LAYER_SWITCHING_VALUE,
+} from "../../../pages/room/consts";
 import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
 import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
@@ -11,6 +15,9 @@ import { MobileLoginStep, MobileLoginStepType } from "../types";
 import HomePageLayout from "./HomePageLayout";
 
 import HomePageVideoTile from "./HomePageVideoTile";
+import { RoomApi } from "../../../api";
+import axios from "axios";
+import { useRoom } from "../../../contexts/RoomContext";
 
 const VideoroomHomePage: React.FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
@@ -48,6 +55,7 @@ const VideoroomHomePage: React.FC = () => {
       id: "smart-layer-mode",
       onChange: toggleSmartLayerSwitchingInput,
       status: smartLayerSwitchingInput,
+      disabled: true,
     },
     {
       label: "Manual mode",
@@ -57,22 +65,17 @@ const VideoroomHomePage: React.FC = () => {
     },
   ];
 
+  const { join } = useRoom();
+
   const onJoin = useCallback(() => {
     localStorage.setItem("displayName", displayNameInput);
     setUsername(displayNameInput);
     smartLayerSwitching.setSmartLayerSwitching(smartLayerSwitchingInput);
     simulcast.setSimulcast(simulcastInput);
     manualMode.setManualMode(manualModeInput);
-  }, [
-    displayNameInput,
-    manualMode,
-    manualModeInput,
-    setUsername,
-    simulcast,
-    simulcastInput,
-    smartLayerSwitching,
-    smartLayerSwitchingInput,
-  ]);
+
+    join(roomId);
+  }, [displayNameInput, join, manualMode, manualModeInput, roomId, setUsername, simulcast, simulcastInput, smartLayerSwitching, smartLayerSwitchingInput]);
 
   const inputs = useMemo(() => {
     return (
@@ -197,7 +200,7 @@ const VideoroomHomePage: React.FC = () => {
               {inputs}
               <div className="space-y-1">
                 {checkboxes.map(({ label, id, status, onChange, disabled }) => (
-                  <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} disabled={disabled}/>
+                  <Checkbox key={id} label={label} id={id} status={status} onChange={onChange} disabled={disabled} />
                 ))}
               </div>
               <Button

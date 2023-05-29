@@ -8,7 +8,7 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@jellyfish-dev/react-client-sdk": "github:jellyfish-dev/react-client-sdk#docker-edge",
+    "@jellyfish-dev/react-client-sdk": "github:jellyfish-dev/react-client-sdk#feature/videoroom",
     "axios": "^1.4.0",
     "chartist": "^1.3.0",
     "clsx": "^1.2.1",

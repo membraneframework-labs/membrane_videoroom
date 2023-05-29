@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
@@ -17,8 +17,15 @@ import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../
 import { SCREENSHARING_MEDIA_CONSTRAINTS } from "../consts";
 import { LocalPeerContext, useLocalPeer } from "../../../features/devices/LocalPeerMediaContext";
 import { StreamingContext, useStreaming } from "../../../features/streaming/StreamingContext";
+import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
+import { useSelector } from "../../../jellifish.types";
 
 type ControlButton = MediaControlButtonProps & { id: string };
+
+type Sidebar = {
+  isSidebarOpen: boolean;
+  openSidebar: () => void;
+};
 
 const getAutomaticControls = (
   { microphone, camera, screenShare }: StreamingContext,
@@ -334,20 +341,24 @@ const getManualControls = (
   ],
 ];
 
-type Props = {
-  mode: StreamingMode;
-} & Sidebar;
+type MediaControlButtonsProps = Sidebar;
 
-type Sidebar = {
-  isSidebarOpen: boolean;
-  openSidebar: () => void;
-};
+const MediaControlButtons: FC<MediaControlButtonsProps> = ({
+  openSidebar,
+  isSidebarOpen,
+}: MediaControlButtonsProps) => {
+  const { manualMode } = useDeveloperInfo();
+  const mode: StreamingMode = manualMode.status ? "manual" : "automatic";
 
-const MediaControlButtons: FC<Props> = ({ openSidebar, isSidebarOpen, mode }: Props) => {
   const [show, toggleShow] = useToggle(true);
   const streaming = useStreaming();
   const { isSmartphone } = useSmartphoneViewport();
   const { roomId } = useParams();
+  const client = useSelector((s) => s.connectivity.client);
+  
+  useEffect(() => {
+    console.log({ client });
+  }, [client]);
 
   const navigate = useNavigate();
   const localPeer = useLocalPeer();

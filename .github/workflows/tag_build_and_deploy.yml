@@ -79,7 +79,7 @@ jobs:
       - name: Remove Grafana and Videoroom containers with volumes
         uses: JimCronqvist/action-ssh@master
         with:
-          hosts: ${{ secrets.DEMO_HOST }}
+          hosts: ${{ secrets.DEMO_HOST }}:${{ secrets.SSH_PROD_PORT }}
           privateKey: ${{ secrets.SSH_PRIV_KEY }}
           command: |
             docker rm -f ${{ env.PROJECT }}_grafana_1
@@ -91,6 +91,7 @@ jobs:
         uses: TapTap21/docker-remote-deployment-action@v1.1
         with:
           remote_docker_host: ${{ secrets.DEMO_HOST }}
+          ssh_port: ${{ secrets.SSH_PROD_PORT }}
           ssh_private_key: ${{ secrets.SSH_PRIV_KEY }}
           ssh_public_key: ${{ secrets.SSH_KNOWN_HOSTS}}
           stack_file_name: docker-compose.yml

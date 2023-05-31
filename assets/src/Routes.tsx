@@ -4,7 +4,7 @@ import { createBrowserRouter, useLocation, useParams } from "react-router-dom";
 import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";
 import { useUser } from "./contexts/UserContext";
 import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
-import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
+import LeavingRoomScreen from "./features/leaving-page/LeavingRoomScreen";
 import { usePreviewSettings } from "./features/home-page/hooks/usePreviewSettings";
 import Page404 from "./features/shared/components/Page404";
 

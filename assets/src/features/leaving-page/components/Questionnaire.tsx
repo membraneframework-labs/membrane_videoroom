@@ -16,6 +16,7 @@ type Inputs = {
   comment: string;
   email: string;
 };
+import Info from "../icons/Info";
 
 type CommentBoxProps = {
   isOpen: boolean;
@@ -52,7 +53,7 @@ type QuestionnaireProps = {
 
 const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
-  
+
   const {
     control,
     register,

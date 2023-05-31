@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import Rocket from "../icons/🚀";
+import Rocket from "../icons/Rocket";
 
 const ReviewSentScreen: FC = () => {
   return (
@@ -11,7 +11,7 @@ const ReviewSentScreen: FC = () => {
           className="flex flex-col flex-wrap items-center justify-center gap-10 p-0"
         >
           <div className="h-50 w-50 rounded-full bg-brand-sea-blue-300">
-            <Rocket className="" />
+            <Rocket />
           </div>
           <span className="text-2xl tracking-wide">Your review was sent!</span>
         </div>

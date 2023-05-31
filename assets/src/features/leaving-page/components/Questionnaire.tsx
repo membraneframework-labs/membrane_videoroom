@@ -7,6 +7,7 @@ import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
 import Send from "../icons/Send";
 import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
+import clsx from "clsx";
 
 type CommentBoxProps = {
   isOpen: boolean;
@@ -37,7 +38,10 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const {isSmartphone} = useSmartphoneViewport();
 
   return (
-    <form aria-label="questionnaire" className="flex flex-col items-center justify-center gap-y-10 sm:gap-y-20">
+    <form aria-label="questionnaire" className={
+      clsx("flex flex-col items-center justify-center",
+      "gap-y-10 sm:gap-y-20",
+      isSmartphone && "mb-36")}>
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
 
       <div aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0">
@@ -74,6 +78,10 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
           </span>
         </div>}
       </div>
+      {isSmartphone && 
+                <div className="fixed bottom-0 left-0 right-0 w-full h-36 bg-brand-white">
+                <Button onClick={()=> {}}>Submit</Button>
+              </div>}
     </form>
   );
 };

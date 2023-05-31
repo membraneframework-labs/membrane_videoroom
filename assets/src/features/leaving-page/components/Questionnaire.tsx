@@ -37,6 +37,14 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
   const {isSmartphone} = useSmartphoneViewport();
 
+  const SubmitButton = ({fullWidth}: {fullWidth?: boolean}) => (<Button
+    onClick={onSubmitClick}
+    variant="normal"
+    className={clsx("align-center flex flex-wrap justify-center gap-2 px-8", fullWidth && "w-full")}
+  >
+    Submit <Send />
+  </Button>)
+
   return (
     <form aria-label="questionnaire" className={
       clsx("flex flex-col items-center justify-center",
@@ -66,22 +74,22 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
         </div>
         {!isSmartphone &&
           <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
-          <Button
-            onClick={onSubmitClick}
-            variant="normal"
-            className="align-center flex flex-wrap justify-center gap-2 px-8"
-          >
-            Submit <Send />
-          </Button>
+            <SubmitButton/>
           <span className="font-aktivGrotesk text-xs text-text-additional">
             You need to rate at least one quality to submit
           </span>
         </div>}
       </div>
       {isSmartphone && 
-                <div className="fixed bottom-0 left-0 right-0 w-full h-36 bg-brand-white">
-                <Button onClick={()=> {}}>Submit</Button>
-              </div>}
+        <div className={clsx("fixed bottom-0 left-0 right-0",
+        "w-full h-36 bg-brand-white",
+        "flex flex-col items-center gap-4",
+        "px-8 pt-6",)}>
+            <SubmitButton fullWidth/>
+            <span className="font-aktivGrotesk text-xs text-text-additional">
+            You need to rate at least one quality to submit
+          </span>
+        </div>}
     </form>
   );
 };

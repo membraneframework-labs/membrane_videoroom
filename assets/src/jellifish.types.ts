@@ -1,7 +1,12 @@
 import { toPairs } from "ramda";
-import { create, State } from "@jellyfish-dev/react-client-sdk";
 import { TrackWithId } from "./pages/types";
 import { ApiTrack, RemotePeer } from "./pages/room/hooks/usePeerState";
+import {Api, create, State} from "./jellyfishClient";
+import {JellyfishClient} from "./jellyfishClient/JellyfishClient";
+// import { Api, create, State } from "@jellyfish-dev/react-client-sdk";
+// import { Api, State } from "@jellyfish-dev/react-client-sdk";
+// import { create } from "@jellyfish-dev/react-client-sdk";
+// import { create } from "@jellyfish-dev/react-client-sdk/experimental";
 
 const TrackTypeValues = ["screensharing", "camera", "audio"] as const;
 export type TrackType = (typeof TrackTypeValues)[number];
@@ -15,8 +20,11 @@ export type TrackMetadata = {
 };
 
 export const { useSelector, useConnect, JellyfishContextProvider } = create<PeerMetadata, TrackMetadata>();
+// export const { useSelector, useConnect } = create<PeerMetadata, TrackMetadata>();
 
-export const useApi = () => useSelector((s) => s.connectivity.api);
+export const useApi = (): Api<TrackMetadata> | null => useSelector((s) => s.connectivity.api);
+export const useJellyfishClient = (): JellyfishClient<PeerMetadata, TrackMetadata> | null =>
+  useSelector((s) => s.connectivity.client);
 
 export const useCurrentUserVideoTrackId = (): string | null =>
   useSelector(

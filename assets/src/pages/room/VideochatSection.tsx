@@ -133,9 +133,9 @@ export const VideochatSection: FC<Props> = ({
   // const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig;
 
-  useEffect(() => {
-    console.log({ allTilesConfig });
-  }, [allTilesConfig]);
+  // useEffect(() => {
+  //   console.log({ allTilesConfig });
+  // }, [allTilesConfig]);
 
   const { pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags } = useTilePinning(allTilesConfig);
 

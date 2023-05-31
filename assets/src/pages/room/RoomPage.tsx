@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
@@ -10,15 +10,54 @@ import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutom
 import clsx from "clsx";
 import { useLocalPeer } from "../../features/devices/LocalPeerMediaContext";
 import RoomSidebar from "./RoomSidebar";
-import { useConnect, useSelector } from "../../jellifish.types";
-import { createFullStateSelector } from "@jellyfish-dev/react-client-sdk";
+import { useJellyfishClient, useConnect, useSelector } from "../../jellifish.types";
 import { useDeveloperInfo } from "../../contexts/DeveloperInfoContext";
 import { useUser } from "../../contexts/UserContext";
-import { useRoom } from "../../contexts/RoomContext";
+import { getToken, useRoom } from "../../contexts/RoomContext";
 import { JELLYFISH_WEBSOCKET_URL } from "./consts";
+
+type ConnectComponentProps = {
+  username: string;
+  roomId: string;
+  // setToken: (token: string | null) => void;
+};
+
+const ConnectComponent: FC<ConnectComponentProps> = ({ username, roomId }) => {
+  const connect = useConnect();
+  // const { username } = useUser();
+  // const { disconnect } = useRoom();
+
+  useEffect(() => {
+    // if (!username) throw Error("Username is null");
+    // if (!token) return;
+    //
+    // console.log({token})
+    console.log("Invoke function 'connect'!");
+    const disconnectPromise = getToken(roomId).then((token) => {
+      console.log({ token });
+      return connect({
+        peerMetadata: { name: username },
+        token: token,
+        websocketUrl: JELLYFISH_WEBSOCKET_URL,
+      });
+    });
+
+    return () => {
+      // console.log("Invoke function 'disconnect'!");
+      // setToken(null);
+      disconnectPromise.then((disconnect) => {
+        disconnect();
+      });
+    };
+  }, []);
+
+  return <></>;
+};
 
 type Props = {
   roomId: string;
+  // username: string;
+  // token: string;
 };
 
 const RoomPage: FC<Props> = ({ roomId }: Props) => {
@@ -28,10 +67,53 @@ const RoomPage: FC<Props> = ({ roomId }: Props) => {
   const isSimulcastOn = simulcast.status;
 
   // todo handle errors
-  const [errorMessage, setErrorMessage] = useState<ErrorMessage | undefined>();
+  // const [errorMessage, setErrorMessage] = useState<ErrorMessage | undefined>();
+  //
+  const client = useJellyfishClient();
+  //
+  // const handleError = useCallback(
+  //   (text: string, id?: string) => {
+  //     console.error(text);
+  //     setErrorMessage({ message: text, id: id });
+  //   },
+  //   [setErrorMessage]
+  // );
+  //
+  // useEffect(() => {
+  //   if (!client) return;
+  //
+  //   const onSocketError = () => {
+  //     handleError(`Socket error occurred.`, "socket-error");
+  //   };
+  //
+  //   const onConnectionError = (message: string) => {
+  //     handleError(`Connection error occurred. ${message ?? ""}`);
+  //   };
+  //   const onJoinError = (metadata: unknown) => {
+  //     console.error(metadata);
+  //
+  //     handleError(`Failed to join the room`);
+  //   };
+  //   const onAuthError = () => {
+  //     handleError(`Socket error occurred.`, "socket-error");
+  //   };
+  //
+  //   client.on("onSocketError", onSocketError);
+  //   client.on("onConnectionError", onConnectionError);
+  //   client.on("onJoinError", onJoinError);
+  //   client.on("onAuthError", onAuthError);
+  //
+  //   return () => {
+  //     client.off("onSocketError", onSocketError);
+  //     client.off("onConnectionError", onConnectionError);
+  //     client.off("onJoinError", onJoinError);
+  //     client.off("onAuthError", onAuthError);
+  //   };
+  // }, [client, handleError]);
+
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
 
-  const state = useSelector(createFullStateSelector());
+  const state = useSelector((s) => s);
   useEffect(() => {
     console.log({ state });
   }, [state]);
@@ -46,44 +128,49 @@ const RoomPage: FC<Props> = ({ roomId }: Props) => {
     }
   });
 
-  useEffectOnChange(
-    errorMessage,
-    () => {
-      if (errorMessage) {
-        addToast({
-          id: errorMessage.id || crypto.randomUUID(),
-          message: errorMessage.message,
-          timeout: "INFINITY",
-          type: "error",
-        });
-      }
-    },
-    messageComparator
-  );
+  // useEffectOnChange(
+  //   errorMessage,
+  //   () => {
+  //     if (errorMessage) {
+  //       addToast({
+  //         id: errorMessage.id || crypto.randomUUID(),
+  //         message: errorMessage.message,
+  //         timeout: "INFINITY",
+  //         type: "error",
+  //       });
+  //     }
+  //   },
+  //   messageComparator
+  // );
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const connect = useConnect();
   const { username } = useUser();
-  const { token } = useRoom();
+  // const { token, setToken } = useRoom();
 
-  useEffect(() => {
-    if (!username) throw Error("Username is null");
-    if (!token) return;
-
-    const disconnect = connect({
-      peerMetadata: { name: username },
-      token: token,
-      websocketUrl: JELLYFISH_WEBSOCKET_URL,
-    });
-
-    return () => {
-      disconnect();
-    };
-  }, [connect, roomId, token, username]);
+  // useEffect(() => {
+  //   // if (!username) throw Error("Username is null");
+  //   // if (!token) return;
+  //   //
+  //   // console.log({token})
+  //   // console.log("Invoke function 'connect'!")
+  //
+  //   const disconnect = connect({
+  //     peerMetadata: { name: username },
+  //     token: token,
+  //     websocketUrl: JELLYFISH_WEBSOCKET_URL,
+  //   });
+  //
+  //   return () => {
+  //     console.log("Invoke function 'disconnect'!");
+  //     disconnect?.();
+  //   };
+  // }, [connect, token, username]);
 
   return (
     <PageLayout>
+      {username && <ConnectComponent username={username} roomId={roomId} />}
       <div className="flex h-full w-full flex-col gap-y-4">
         {/* main grid - videos + future chat */}
         <section

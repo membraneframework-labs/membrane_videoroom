@@ -356,9 +356,9 @@ const MediaControlButtons: FC<MediaControlButtonsProps> = ({
   const { roomId } = useParams();
   const client = useSelector((s) => s.connectivity.client);
   
-  useEffect(() => {
-    console.log({ client });
-  }, [client]);
+  // useEffect(() => {
+  //   console.log({ client });
+  // }, [client]);
 
   const navigate = useNavigate();
   const localPeer = useLocalPeer();

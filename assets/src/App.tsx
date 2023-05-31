@@ -10,9 +10,9 @@ import { LocalPeerMediaProvider } from "./features/devices/LocalPeerMediaContext
 import { MediaSettingsModal } from "./features/devices/MediaSettingsModal";
 import { disableSafariCache } from "./features/devices/disableSafariCache";
 import { JellyfishContextProvider } from "./jellifish.types";
-import { ServerSDKProvider } from "./ServerSdkContext";
 import { StreamingProvider } from "./features/streaming/StreamingContext";
 import { RoomProvider } from "./contexts/RoomContext";
+import { StreamingErrorBoundary } from "./features/streaming/StreamingErrorBoundary";
 
 // When returning to the videoroom page from another domain using the 'Back' button on the Safari browser,
 // the page is served from the cache, which prevents lifecycle events from being triggered.
@@ -28,16 +28,16 @@ const App: FC = () => {
             <ToastProvider>
               <ModalProvider>
                 <DeviceErrorBoundary>
-                  <ServerSDKProvider>
-                    <JellyfishContextProvider>
-                      <RoomProvider>
+                  <JellyfishContextProvider>
+                    <RoomProvider>
+                      <StreamingErrorBoundary>
                         <StreamingProvider>
                           <RouterProvider router={router} />
                           <MediaSettingsModal />
                         </StreamingProvider>
-                      </RoomProvider>
-                    </JellyfishContextProvider>
-                  </ServerSDKProvider>
+                      </StreamingErrorBoundary>
+                    </RoomProvider>
+                  </JellyfishContextProvider>
                 </DeviceErrorBoundary>
               </ModalProvider>
             </ToastProvider>

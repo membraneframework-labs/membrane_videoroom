@@ -65,7 +65,7 @@ const VideoroomHomePage: React.FC = () => {
     },
   ];
 
-  const { join } = useRoom();
+  // const { join } = useRoom();
 
   const onJoin = useCallback(() => {
     localStorage.setItem("displayName", displayNameInput);
@@ -74,8 +74,17 @@ const VideoroomHomePage: React.FC = () => {
     simulcast.setSimulcast(simulcastInput);
     manualMode.setManualMode(manualModeInput);
 
-    join(roomId);
-  }, [displayNameInput, join, manualMode, manualModeInput, roomId, setUsername, simulcast, simulcastInput, smartLayerSwitching, smartLayerSwitchingInput]);
+    // join(joiningExistingRoom ? roomId : roomIdInput);
+  }, [
+    displayNameInput,
+    manualMode,
+    manualModeInput,
+    setUsername,
+    simulcast,
+    simulcastInput,
+    smartLayerSwitching,
+    smartLayerSwitchingInput,
+  ]);
 
   const inputs = useMemo(() => {
     return (

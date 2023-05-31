@@ -4,10 +4,10 @@ defmodule VideoRoom.Repo.Migrations.CreateRtcEngineMetricsPersistenceTables do
   alias Membrane.RTC.Engine.TimescaleDB.Migrations
 
   def up do
-    Migrations.up()
+    Migrations.up(version: 1)
   end
 
   def down do
-    Migrations.down()
+    Migrations.down(version: 1)
   end
 end

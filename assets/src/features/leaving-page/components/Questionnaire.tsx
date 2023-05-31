@@ -35,21 +35,23 @@ type QuestionnaireProps = {
 
 const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const [isCommentBoxOpen, setCommentBoxOpen] = useState<boolean>(false);
-  const {isSmartphone} = useSmartphoneViewport();
+  const { isSmartphone } = useSmartphoneViewport();
 
-  const SubmitButton = ({fullWidth}: {fullWidth?: boolean}) => (<Button
-    onClick={onSubmitClick}
-    variant="normal"
-    className={clsx("align-center flex flex-wrap justify-center gap-2 px-8", fullWidth && "w-full")}
-  >
-    Submit <Send />
-  </Button>)
+  const SubmitButton = ({ fullWidth }: { fullWidth?: boolean }) => (
+    <Button
+      onClick={onSubmitClick}
+      variant="normal"
+      className={clsx("align-center flex flex-wrap justify-center gap-2 px-8", fullWidth && "w-full")}
+    >
+      Submit <Send />
+    </Button>
+  );
 
   return (
-    <form aria-label="questionnaire" className={
-      clsx("flex flex-col items-center justify-center",
-      "gap-y-10 sm:gap-y-20",
-      isSmartphone && "mb-36")}>
+    <form
+      aria-label="questionnaire"
+      className={clsx("flex flex-col items-center justify-center", "gap-y-10 sm:gap-y-20", isSmartphone && "mb-36")}
+    >
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>
 
       <div aria-label="questionnaire-content" className="flex flex-col items-center justify-center gap-10 p-0">
@@ -57,7 +59,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
           aria-label="questionnaire-rating"
           className="flex w-full flex-col content-center justify-center gap-6 text-center"
         >
-          <h4 className="text-xl sm:text-2xl font-medium tracking-wider">How would you rate...</h4>
+          <h4 className="text-xl font-medium tracking-wider sm:text-2xl">How would you rate...</h4>
           <div className="flex w-full flex-col content-center justify-center gap-10 sm:flex-row">
             <Rating title="Video Quality" />
             <Rating title="Audio Quality" />
@@ -65,31 +67,37 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
           </div>
           <CommentBox isOpen={isCommentBoxOpen} setOpen={() => setCommentBoxOpen(true)} />
         </div>
-        <div aria-label="questionnaire-email" className="flex w-72 sm:w-96 flex-col items-start gap-2 p-0">
+        <div aria-label="questionnaire-email" className="flex w-72 flex-col items-start gap-2 p-0 sm:w-96">
           <Input type="text" label="Your e-mail" name="email" placeholder="Your e-mail" required />
           <div className="flex flex-row gap-1">
             <Info />
             <span className="font-aktivGrotesk text-xs">Information required</span>
           </div>
         </div>
-        {!isSmartphone &&
+        {!isSmartphone && (
           <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
-            <SubmitButton/>
+            <SubmitButton />
+            <span className="font-aktivGrotesk text-xs text-text-additional">
+              You need to rate at least one quality to submit
+            </span>
+          </div>
+        )}
+      </div>
+      {isSmartphone && (
+        <div
+          className={clsx(
+            "fixed bottom-0 left-0 right-0",
+            "h-36 w-full bg-brand-white",
+            "flex flex-col items-center gap-4",
+            "px-8 pt-6"
+          )}
+        >
+          <SubmitButton fullWidth />
           <span className="font-aktivGrotesk text-xs text-text-additional">
             You need to rate at least one quality to submit
           </span>
-        </div>}
-      </div>
-      {isSmartphone && 
-        <div className={clsx("fixed bottom-0 left-0 right-0",
-        "w-full h-36 bg-brand-white",
-        "flex flex-col items-center gap-4",
-        "px-8 pt-6",)}>
-            <SubmitButton fullWidth/>
-            <span className="font-aktivGrotesk text-xs text-text-additional">
-            You need to rate at least one quality to submit
-          </span>
-        </div>}
+        </div>
+      )}
     </form>
   );
 };

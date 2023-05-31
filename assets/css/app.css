@@ -27,19 +27,18 @@
 }
 
 @layer utilities {
-  @variants responsive{
+  @variants responsive {
     /* for Chrome, Safari, Opera */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
 
     /* for Edge and Firefox */
-    .no-scrollbar{
-      -ms-overflow-style: none; 
-      scrollbar-width: none;   
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   }
-
 }
 
 .flip-horizontally {

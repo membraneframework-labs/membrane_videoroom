@@ -10,7 +10,7 @@ const LeavingRoomScreen: React.FC = () => {
   const [pageState, setPageState] = useState<LeavePageState>("questionnaire");
 
   return (
-    <QuestionnairePageLayout >
+    <QuestionnairePageLayout>
       {pageState === "questionnaire" && <Questionnaire onSubmitClick={() => setPageState("review-sent")} />}
       {pageState === "review-sent" && <ReviewSentScreen />}
     </QuestionnairePageLayout>

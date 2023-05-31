@@ -13,7 +13,7 @@ const Button: React.FC<ButtonProps> = (props) => {
       className={clsx(
         props.className,
         props.variant && buttonDefaultClassName,
-        props.disabled ? disabledButtonClassName : props.variant && BUTTON_CLASSES[props.variant],
+        props.disabled ? disabledButtonClassName : props.variant && BUTTON_CLASSES[props.variant]
       )}
     >
       {props.children}

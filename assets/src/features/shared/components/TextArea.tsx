@@ -1,21 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react";
-// import { ExclamationCircleIcon } from '@heroicons/react/outline';
 import clsx from "clsx";
 import { ReactElement, TextareaHTMLAttributes } from "react";
-// import { Path, FieldError, UseFormRegister } from 'react-hook-form';
 
-//TODO make generic when questionnaire logic will be implemented
 export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   placeholder: string;
   name: string;
-  // TODO add when questionnaire logic will be implemented
-  //   error: FieldError | undefined;
-  //   register: UseFormRegister<V>;
-  // pattern?: any;
-  // required?: any;
   icon?: ReactElement;
   info?: string;
 }
@@ -24,10 +16,6 @@ export default function TextArea({
   label,
   placeholder,
   name,
-  //   error,
-  //   register,
-  // required,
-  // pattern,
   icon,
   disabled,
   info,
@@ -44,7 +32,6 @@ export default function TextArea({
           <div
             className={clsx(
               "h-5 rounded-3xl rounded-b-none border-2 border-b-0 border-brand-dark-blue-500 bg-brand-white group-hover:!border-brand-sea-blue-400 group-focus:!border-brand-sea-blue-400"
-              //   error && '!border-brand-pink-500',
             )}
           ></div>
           <textarea
@@ -56,30 +43,15 @@ export default function TextArea({
               icon && "!pr-10",
               disabled &&
                 "group-hover:!border-grey-60 group-focus:!border-grey-60 cursor-not-allowed border-2 border-brand-grey-60 text-brand-grey-60"
-              //   error && '!border-brand-pink-500 border-2',
             )}
             disabled={disabled}
             placeholder={placeholder}
-            // {...register(name, {
-            //   required,
-            //   pattern,
-            //   maxLength: {
-            //     value: 2000,
-            //     message: 'Maximum 2000 characters allowed.',
-            //   },
-            // })}
             {...props}
           />
         </div>
         {icon && (
           <div className={clsx("absolute right-[10px] top-[45px]", disabled && "text-brand-grey-60")}>{icon}</div>
         )}
-        {/* {error?.message && (
-          <div className={clsx('flex gap-1 items-center text-xs text-brand-pink-500')}>
-            <ExclamationCircleIcon className="w-4 h-4" />
-            <div>{error?.message}</div>
-          </div>
-        )} */}
         {info && (
           <div className={clsx("flex items-center gap-1 text-xs", disabled && "!text-brand-grey-60")}>
             <svg width={15} viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -18,4 +18,4 @@ export const DisabledMicIcon = ({ isLoading }: DisabledMicIconProps) => {
 export const isLoading = (track: TrackWithId | null) =>
   track !== null && track?.stream === undefined && track?.metadata?.active === true;
 export const showDisabledIcon = (track: TrackWithId | null) =>
-  (track !== null && track?.stream === undefined) || track?.metadata?.active === false;
+  track === null || !track?.stream || track?.metadata?.active === false;

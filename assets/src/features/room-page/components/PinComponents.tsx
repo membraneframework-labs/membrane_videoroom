@@ -37,11 +37,11 @@ export const PinTileLayer: FC<PinUserButtonProps> = ({ pinned, onClick }: PinUse
       {showLayer && (
         <Button
           className={clsx(
-            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+            "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
             "hidden group-hover:flex group-hover:duration-200",
             "flex-row content-center",
             "opacity-50 hover:opacity-75",
-            "gap-2 py-4 px-8",
+            "gap-2 px-8 py-4",
             "rounded-full bg-brand-grey-100"
           )}
           onClick={onClick}

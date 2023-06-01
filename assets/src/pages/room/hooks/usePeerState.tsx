@@ -69,7 +69,7 @@ export type PeersApi = {
   setEncoding: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   setIsSpeaking: (peerId: string, trackId: string, vadStatus: VadStatus) => void;
   setLocalPeer: (id: string, metadata?: PeerMetadata) => void;
-  setLocalStream: (type: TrackType, enabled: boolean, stream: MediaStream | undefined) => void;
+  setLocalStream: (type: TrackType, enabled: boolean, stream: MediaStream | null) => void;
   setLocalTrackId: (type: TrackType, trackId: string | null) => void;
   setLocalTrackMetadata: (type: TrackType, metadata?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
@@ -100,7 +100,7 @@ export const usePeersState = (): UsePeersStateResult => {
     });
   }, []);
 
-  const setLocalStream = useCallback((type: TrackType, enabled: boolean, stream?: MediaStream) => {
+  const setLocalStream = useCallback((type: TrackType, enabled: boolean, stream: MediaStream | null) => {
     setLocalPeerState((prevState: LocalPeer | undefined) => {
       const state: LocalPeer = prevState ? { ...prevState } : { tracks: {} };
       const newTrack = { ...state.tracks[type], enabled, stream };

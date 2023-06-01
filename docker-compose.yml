@@ -20,14 +20,23 @@ services:
       - type: volume
         source: grafana-provisioning
         target: /app/grafana/provisioning
+    depends_on:
+      - timescale
   timescale:
-    image: timescale/timescaledb:2.5.1-pg14
-    network_mode: "host"    
+    image: timescale/timescaledb:2.10.3-pg14
+    network_mode: "host"
     restart: on-failure
     environment:
       POSTGRES_DB: "membrane"
       POSTGRES_USER: "${DB_USERNAME}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    healthcheck:
+      test: pg_isready -d membrane
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
   grafana:
     image: grafana/grafana:9.1.5
     network_mode: "host"

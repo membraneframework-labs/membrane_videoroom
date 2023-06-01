@@ -1,70 +1,21 @@
 import React, { FC, useState } from "react";
-import Plus from "../icons/Plus";
-import TextArea from "../../shared/components/TextArea";
 import Rating from "./Rating";
 import Input from "../../shared/components/Input";
-import Button from "../../shared/components/Button";
-import Send from "../icons/Send";
-import { Controller, FieldError, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
+import { Controller,  SubmitHandler,  useForm } from "react-hook-form";
 import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 import clsx from "clsx";
-import noop from "../../shared/utils/noop";
+import CommentBox from "./CommentBox";
+import SubmitButton from "./SubmitButton";
 
 type RatingName = "video" | "audio" | "screenshare";
 
-type Inputs = {
+export type Inputs = {
   video: number | null;
   audio: number | null;
   screenshare: number | null;
   comment: string;
   email: string;
 };
-
-type CommentBoxProps = {
-  isOpen: boolean;
-  setOpen: () => void;
-  register: UseFormRegister<Inputs>;
-  error: FieldError | undefined;
-};
-
-const CommentBox = ({ isOpen, setOpen, register, error }: CommentBoxProps) => {
-  const AddCommentButton = () => (
-    <button onClick={setOpen} className="flex flex-row justify-center gap-2 p-0">
-      <Plus />
-      <span>Add comment</span>
-    </button>
-  );
-
-  const CommentInput = () => (
-    <TextArea
-      name="comment"
-      label="Comment (optional)"
-      placeholder="Write your comment"
-      className="w-96"
-      register={register}
-      error={error}
-    />
-  );
-
-  return <div className="flex w-full flex-wrap justify-center">{isOpen ? <CommentInput /> : <AddCommentButton />}</div>;
-};
-
-type SubmitButtonProps = {
-  disabled: boolean;
-  fullWidth?: boolean;
-};
-
-const SubmitButton = ({ fullWidth, disabled }: SubmitButtonProps) => (
-  <Button
-    type="submit"
-    onClick={noop}
-    variant="normal"
-    className={clsx("align-center flex flex-wrap justify-center gap-2 px-8", fullWidth && "w-full")}
-    disabled={disabled}
-  >
-    Submit <Send />
-  </Button>
-);
 
 type QuestionnaireProps = {
   onSubmitClick: () => void;

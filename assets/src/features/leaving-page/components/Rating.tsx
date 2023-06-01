@@ -53,9 +53,9 @@ const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>
   };
 
   return (
-    <div className="flex flex-col flex-wrap gap-4 p-0">
+    <div className="flex flex-col flex-wrap items-center gap-4 p-0">
       <div className="font-aktivGrotesk text-lg ">{title}</div>
-      <div className="flex flex-row flex-wrap gap-3 rounded-xl bg-brand-white px-8 py-10">
+      <div className="flex flex-row flex-wrap items-center justify-center gap-6 rounded-xl bg-brand-white px-7 py-5 sm:gap-3 sm:px-8 sm:py-10">
         {ratingsFromOneToFive.map((rateIndex) => (
           <StarOption
             key={rateIndex}

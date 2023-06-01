@@ -6,6 +6,7 @@ import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 import clsx from "clsx";
 import CommentBox from "./CommentBox";
 import SubmitButton from "./SubmitButton";
+import sendForm from "../utils/sendForm";
 
 type RatingName = "video" | "audio" | "screenshare";
 
@@ -37,8 +38,8 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const emailPattern =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-  //eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSubmit: SubmitHandler<Inputs> = (_data) => {
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    sendForm(data);
     onSubmitClick();
   };
 
@@ -47,7 +48,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   return (
     <form
       aria-label="questionnaire"
-      className={clsx("flex flex-col items-center justify-center", "gap-y-10 sm:gap-y-20", isSmartphone && "mb-36")}
+      className={clsx("flex flex-col items-center justify-center", "gap-y-10 sm:gap-y-16", isSmartphone && "mb-36")}
       onSubmit={handleSubmit(onSubmit)}
     >
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>

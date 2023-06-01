@@ -48,7 +48,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   return (
     <form
       aria-label="questionnaire"
-      className={clsx("flex flex-col items-center justify-center", "gap-y-10 sm:gap-y-20", isSmartphone && "mb-36")}
+      className={clsx("flex flex-col items-center justify-center", "gap-y-10 sm:gap-y-16", isSmartphone && "mb-36")}
       onSubmit={handleSubmit(onSubmit)}
     >
       <h2 className="text-2xl font-medium tracking-wide sm:text-4xl">Thank you for participating!</h2>

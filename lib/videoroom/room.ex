@@ -104,7 +104,7 @@ defmodule Videoroom.Room do
        network_options: network_options,
        trace_ctx: trace_ctx,
        simulcast?: simulcast?,
-       enable_vad?: false
+       enable_vad?: true
      }}
   end
 

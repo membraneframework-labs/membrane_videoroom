@@ -24,13 +24,14 @@ export const useMembraneMediaStreaming = (
   type: TrackType,
   isConnected: boolean,
   simulcastEnabled: boolean,
-  webrtc?: MembraneWebRTC,
-  stream?: MediaStream
+  webrtc: MembraneWebRTC | null,
+  stream: MediaStream | null,
+  isEnabled: boolean
 ): MembraneStreaming => {
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
-  const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc || null);
+  const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const defaultTrackMetadata = useMemo(() => ({ active: true, type }), [type]);
+  const defaultTrackMetadata = useMemo(() => ({ active: isEnabled, type }), [isEnabled, type]);
 
   const addTracks = useCallback(
     (stream: MediaStream) => {
@@ -39,7 +40,11 @@ export const useMembraneMediaStreaming = (
       const simulcast = simulcastEnabled && type === "camera";
 
       const track: MediaStreamTrack | undefined = tracks[0];
-      if (!track) throw "Stream has no tracks!";
+
+      if (!track) {
+        console.error({ stream, type });
+        throw Error("Stream has no tracks!");
+      }
 
       const remoteTrackId = webrtc.addTrack(
         track,
@@ -61,7 +66,10 @@ export const useMembraneMediaStreaming = (
       const tracks = type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
 
       const track: MediaStreamTrack | undefined = tracks[0];
-      if (!track) throw "Stream has no tracks!";
+      if (!track) {
+        console.error({ stream, type });
+        throw Error("Stream has no tracks!");
+      }
 
       webrtc.replaceTrack(trackIds?.remoteId, track);
     },

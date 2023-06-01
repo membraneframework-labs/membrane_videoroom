@@ -15,13 +15,12 @@ export type LayerButtonProps = {
 export const LayerButton = ({ onClick, text, tooltipText, disabled, selected, tooltipCss = "" }: LayerButtonProps) => (
   <Tooltip text={tooltipText} textCss={tooltipCss}>
     <Button
+      removeDefaultPadding
       disabled={disabled}
       onClick={onClick}
       className={clsx(
         "mx-0.5 flex min-w-[26px] items-center justify-center rounded-full border px-2 disabled:pointer-events-none",
-        {
-          "bg-red-100": selected,
-        }
+        selected && "bg-red-100"
       )}
     >
       {text}

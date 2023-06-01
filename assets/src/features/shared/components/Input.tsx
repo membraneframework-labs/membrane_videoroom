@@ -64,7 +64,11 @@ const Input: React.FC<InputProps> = ({
       />
       {additionalText && (
         <div className="text-xm flex items-center gap-1">
-          <Info className={clsx(error ? "stroke-brand-red" : "stroke-brand-dark-blue-500")} />
+          <Info
+            className={clsx(
+              disabled ? "text-brand-grey-80" : error ? "stroke-brand-red" : "stroke-brand-dark-blue-500"
+            )}
+          />
           <span
             className={clsx(
               "block text-sm",

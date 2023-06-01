@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
 import Rating from "./Rating";
 import Input from "../../shared/components/Input";
-import { Controller,  SubmitHandler,  useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 import clsx from "clsx";
 import CommentBox from "./CommentBox";
@@ -34,7 +34,8 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   } = useForm<Inputs>();
   const emailInput = watch("email");
   const emailFilled = !!emailInput && !errors.email;
-  const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const emailPattern =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   //eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSubmit: SubmitHandler<Inputs> = (_data) => {

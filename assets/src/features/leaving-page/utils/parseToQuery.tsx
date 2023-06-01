@@ -12,7 +12,7 @@ const renameKeysToEntries = (formInput: Inputs): ResultType => {
   return Object.fromEntries(
     Object.keys(formInput)
       .filter(isKeyOfInputs)
-      .map(k => [k, new String(formInput[k])] as const)
+      .map((k) => [k, new String(formInput[k])] as const)
       .filter(([_, v]) => v !== null)
       .map(([k, v]) => [m[k], v])
   ) as ResultType;

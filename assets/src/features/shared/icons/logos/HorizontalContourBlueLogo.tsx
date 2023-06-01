@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 
-const MembraneLogo: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
+const HorizontalContourBlueLogo: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
   return (
     <svg
       width="4.5em"
@@ -108,4 +108,4 @@ const MembraneLogo: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
   );
 };
 
-export default MembraneLogo;
+export default HorizontalContourBlueLogo;

@@ -16,9 +16,10 @@ const QuestionnairePageLayout: React.FC<PropsWithChildren> = ({ children }) => {
         className={clsx(
           "home-page h-screen w-full",
           "bg-brand-sea-blue-200 font-rocGrotesk text-brand-dark-blue-500",
-          "flex flex-col items-center gap-y-4 p-4",
+          "flex flex-col items-center gap-y-12 p-4 sm:gap-y-4",
           "relative overflow-y-auto",
-          shouldBlockScreen && "invisible"
+          shouldBlockScreen && "invisible",
+          isSmartphone && "no-scrollbar"
         )}
       >
         <Navbar />

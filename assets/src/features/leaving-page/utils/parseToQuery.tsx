@@ -7,18 +7,12 @@ type ResultType = {
 
 const renameKeysToEntries = (formInput: Inputs): ResultType => {
   const m = keyToEntryMap;
+  const isKeyOfInputs = (k: string): k is keyof Inputs => k in formInput;
 
   return Object.fromEntries(
     Object.keys(formInput)
-      .filter((k) => k in formInput) //TODO merge this nad next line with type guard
-      .map((k) => {
-        const k1 = k as keyof Inputs;
-        return k1;
-      })
-      .map((k) => {
-        const v = new String(formInput[k]);
-        return [k, v] as const;
-      })
+      .filter(isKeyOfInputs)
+      .map(k => [k, new String(formInput[k])] as const)
       .filter(([_, v]) => v !== null)
       .map(([k, v]) => [m[k], v])
   ) as ResultType;

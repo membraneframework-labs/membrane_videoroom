@@ -3,17 +3,18 @@ import React from "react";
 import PlainLink, { PlainLinkProps } from "./PlainLink";
 
 type ButtonVariant = "normal" | "light" | "transparent" | "transparent-light";
+type ButtonType = "button" | "submit" | "reset";
 
-type ButtonProps = PlainLinkProps & { variant?: ButtonVariant; type?: "button" | "submit" | "reset" };
+type ButtonProps = PlainLinkProps & { variant?: ButtonVariant; type?: ButtonType };
 
 const Button: React.FC<ButtonProps> = (props) => {
   return (
     <PlainLink
       {...props}
       className={clsx(
+        props.className,
         props.variant && buttonDefaultClassName,
-        props.disabled ? disabledButtonClassName : props.variant && BUTTON_CLASSES[props.variant],
-        props.className
+        props.disabled ? disabledButtonClassName : props.variant && BUTTON_CLASSES[props.variant]
       )}
     >
       {props.children}

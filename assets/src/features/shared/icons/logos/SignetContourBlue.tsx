@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 
-const Logo: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
+const SignetContourBlueLogo: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
   return (
     <svg
       width="32"
@@ -76,4 +76,4 @@ const Logo: React.FC<React.SVGAttributes<SVGElement>> = (props) => {
   );
 };
 
-export default Logo;
+export default SignetContourBlueLogo;

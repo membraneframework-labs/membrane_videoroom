@@ -11,7 +11,7 @@ const sendForm = async (form: Inputs) => {
   // The {mode: "no-cors"} allows the url to be fetched.
 
   // Since the request is opaque, we have no direct information
-  // if hte response has completed successfully or not.
+  // if the response has completed successfully or not.
   // In case of wrong input values, the `fetch` function logs `REQ_ERR` on stderr.
   fetch(url, { mode: "no-cors" }).then((response) => {
     console.log("Response", response);

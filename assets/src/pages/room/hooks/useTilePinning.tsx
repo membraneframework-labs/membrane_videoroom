@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { MediaPlayerTileConfig, StreamSource } from "../../types";
-import usePinning from "./usePinning";
+import usePinning, { InitialState, reducer } from "./usePinning";
 import { groupBy } from "../utils";
 
 type PinningFlags = {
@@ -18,7 +18,9 @@ type TilePinningApi = {
 };
 
 const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi => {
-  const { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned } = usePinning();
+  // const { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned } = usePinning();
+  const [state, dispatch] = useReducer(reducer, InitialState);
+
   const [numberOfTiles, setNumberOfTiles] = useState<number>(tileConfigs.length);
   const [autoPinned, setAutoPinned] = useState<string | null>(null);
 
@@ -26,16 +28,16 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
     tileConfigs
       .filter((tile) => tile.typeName === "screenShare")
       .map((tile) => tile.mediaPlayerId)
-      .forEach(pinIfNotAlreadyPinned);
-  }, [tileConfigs, pinIfNotAlreadyPinned]);
+      .forEach((tileId) => dispatch({ type: "pinIfNotAlreadyPinned", tileId }));
+  }, [tileConfigs]);
 
   const unpinAutoPinnedWhenNumberOfTilesChanged = useCallback(
     (oldNumber: number, newNumber: number): void => {
       if (autoPinned && oldNumber !== newNumber) {
-        unpin(autoPinned);
+        dispatch({ type: "unpin", tileId: autoPinned })
       }
     },
-    [autoPinned, unpin]
+    [autoPinned]
   );
 
   const removeAutoPin = useCallback(() => setAutoPinned(null), []);
@@ -55,14 +57,14 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
     const remoteUserTileId = findTileId("remote");
     if (!localUserTileId || !remoteUserTileId) return;
 
-    const isLocalPinned = pinnedTileIds.includes(localUserTileId);
-    const isRemotePinned = pinnedTileIds.includes(remoteUserTileId);
+    const isLocalPinned = state.pinnedTilesIds.includes(localUserTileId);
+    const isRemotePinned = state.pinnedTilesIds.includes(remoteUserTileId);
 
     if (!isLocalPinned && !isRemotePinned) {
-      pinIfNotAlreadyPinned(remoteUserTileId);
+      dispatch({ type: "pinIfNotAlreadyPinned", tileId: remoteUserTileId });
       setAutoPinned(remoteUserTileId);
     }
-  }, [tileConfigs, pinnedTileIds, pinIfNotAlreadyPinned]);
+  }, [tileConfigs, state.pinnedTilesIds]);
 
   useEffect(() => {
     pinNewScreenShares();
@@ -75,33 +77,33 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
     unpinnedTiles: MediaPlayerTileConfig[];
   } => {
     const { pinnedTiles, unpinnedTiles } = groupBy(tileConfigs, ({ mediaPlayerId }) =>
-      pinnedTileIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
+      state.pinnedTilesIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
     );
     return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
-  }, [tileConfigs, pinnedTileIds]);
+  }, [tileConfigs, state.pinnedTilesIds]);
 
   const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles();
 
   const unpinFirstIfNecessary = useCallback(() => {
-    if (tileConfigs.length !== 2 || !pinnedTileIds[0]) return;
-    const pinnedTileId = pinnedTileIds[0];
-    unpin(pinnedTileId);
-  }, [tileConfigs.length, pinnedTileIds, unpin]);
+    if (tileConfigs.length !== 2 || !state.pinnedTilesIds[0]) return;
+    const pinnedTileId = state.pinnedTilesIds[0];
+    dispatch({ type: "unpin", tileId: pinnedTileId });
+  }, [tileConfigs.length, state.pinnedTilesIds]);
 
   const pinTile = useCallback(
     (tileId: string) => {
       unpinFirstIfNecessary();
-      pin(tileId);
+      dispatch({ type: "pin", tileId })
     },
-    [unpinFirstIfNecessary, pin]
+    [unpinFirstIfNecessary]
   );
 
   const unpinTile = useCallback(
     (tileId: string) => {
       if (tileId === autoPinned) removeAutoPin();
-      unpin(tileId);
+      dispatch({ type: "unpin", tileId })
     },
-    [autoPinned, removeAutoPin, unpin]
+    [autoPinned, removeAutoPin]
   );
 
   const pinningFlags: PinningFlags = {

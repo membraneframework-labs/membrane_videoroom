@@ -322,7 +322,7 @@ const onConnect = <PeerMetadata, TrackMetadata>(
   };
 };
 
-const reducer = <PeerMetadata, TrackMetadata>(
+export const reducer = <PeerMetadata, TrackMetadata>(
   state: State<PeerMetadata, TrackMetadata>,
   action: Action<PeerMetadata, TrackMetadata>
 ): State<PeerMetadata, TrackMetadata> => {

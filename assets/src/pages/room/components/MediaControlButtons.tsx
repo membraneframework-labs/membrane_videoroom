@@ -354,8 +354,7 @@ const MediaControlButtons: FC<MediaControlButtonsProps> = ({
   const streaming = useStreaming();
   const { isSmartphone } = useSmartphoneViewport();
   const { roomId } = useParams();
-  const client = useSelector((s) => s.connectivity.client);
-  
+
   // useEffect(() => {
   //   console.log({ client });
   // }, [client]);

@@ -31,10 +31,11 @@ export const useMembraneMediaStreaming = (
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
 
   const api = useApi();
+  // const api = null;
 
-  useEffect(() => {
-    console.log({ name: "api", api });
-  }, [api]);
+  // useEffect(() => {
+  //   console.log({ name: "api", api });
+  // }, [api]);
   const { simulcast } = useDeveloperInfo();
   const simulcastEnabled = false;
   // const simulcastEnabled = simulcast.status;

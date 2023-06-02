@@ -24,7 +24,8 @@ export const StreamingProvider = ({ children }: Props) => {
   const { manualMode } = useDeveloperInfo();
   const mode: StreamingMode = manualMode.status ? "manual" : "automatic";
   const isConnected = useSelector((snapshot) => snapshot.status === "joined");
-
+  // const isConnected = false;
+  //
   const { video, audio, screenShare: screenShareMedia } = useLocalPeer();
 
   // todo refactor mode to boolean -> e.g isManual?

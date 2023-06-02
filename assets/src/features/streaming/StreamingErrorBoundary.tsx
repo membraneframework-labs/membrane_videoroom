@@ -69,6 +69,14 @@ export const StreamingErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
     };
   }, [client, handleError]);
 
+  const { screenShare } = useLocalPeer();
+
+  useEffectOnChange(screenShare.device.stream, () => {
+    if (screenShare.device.stream) {
+      addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
+    }
+  });
+
   useEffectOnChange(
     errorMessage,
     () => {

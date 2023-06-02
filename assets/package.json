@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/dom-screen-wake-lock": "^1.0.0",
+    "@types/lodash.isequal": "^4.5.6",
     "@types/phoenix": "^1.5.4",
     "@types/ramda": "^0.29.0",
     "@types/react": "^18.0.21",

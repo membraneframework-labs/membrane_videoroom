@@ -10,7 +10,6 @@ import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
 import { useModal } from "../../../contexts/ModalContext";
 import { useLocalPeer } from "../../devices/LocalPeerMediaContext";
-import { useCurrentUserVideoTrackId, useSelector } from "../../../jellifish.types";
 import LocalMediaPlayerTile from "../../../pages/room/components/StreamPlayer/LocalMediaPlayerTile";
 import GenericMediaPlayerTile from "../../../pages/room/components/StreamPlayer/GenericMediaPlayerTile";
 

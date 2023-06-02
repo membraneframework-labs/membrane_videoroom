@@ -10,7 +10,7 @@ import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutom
 import clsx from "clsx";
 import { useLocalPeer } from "../../features/devices/LocalPeerMediaContext";
 import RoomSidebar from "./RoomSidebar";
-import { useJellyfishClient, useConnect, useSelector } from "../../jellifish.types";
+import { useJellyfishClient, useConnect, useSelector, toLocalTrackSelector } from "../../jellifish.types";
 import { useDeveloperInfo } from "../../contexts/DeveloperInfoContext";
 import { useUser } from "../../contexts/UserContext";
 import { getToken, useRoom } from "../../contexts/RoomContext";
@@ -56,20 +56,11 @@ const RoomPage: FC<Props> = ({ roomId }: Props) => {
 
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
 
-  const state = useSelector((s) => s);
-  useEffect(() => {
-    console.log({ state });
-  }, [state]);
-
-  const { screenShare } = useLocalPeer();
-
-  const { addToast } = useToast();
-
-  useEffectOnChange(screenShare.device.stream, () => {
-    if (screenShare.device.stream) {
-      addToast({ id: "screen-sharing", message: "You are sharing the screen now", timeout: 4000 });
-    }
-  });
+  // const state = useSelector((s) => ({ a: 1 }));
+  // useSelector((s) => toLocalTrackSelector(s, "camera"));
+  // useEffect(() => {
+  //   console.log({ state });
+  // }, [state]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

@@ -11,6 +11,7 @@ import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
 import useTilePinning from "./hooks/useTilePinning";
 import { toLocalTrackSelector, toRemotePeerSelector, useSelector } from "../../jellifish.types";
+import { State } from "../../jellyfishClient";
 
 type Props = {
   showSimulcast: boolean;
@@ -101,17 +102,25 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
   return screenSharingStreams;
 };
 
-export const VideochatSection: FC<Props> = ({
-  showSimulcast,
-  unpinnedTilesHorizontal,
-}: Props) => {
+// const createToLocalTrackSelecor = <PeerMetadata, TrackMetadata>(state: State<PeerMetadata, TrackMetadata>) => toLocalTrackSelector(state, "camera")
 
+export const VideochatSection: FC<Props> = ({ showSimulcast, unpinnedTilesHorizontal }: Props) => {
+  // useSelector((state) => toLocalTrackSelector(state, "camera"));
+  // useSelector((state) => state);
   const video: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "camera"));
-  const audio: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "audio"));
+  //  useSelector((state) => toLocalTrackSelector(state, "camera"));
+  // const audio: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "audio"));
+  const audio = useSelector((state) => toLocalTrackSelector(state, "audio"));
   const { peerId, initials } = useSelector((state) => ({
     peerId: state?.local?.id || "Unknown",
     initials: computeInitials(state?.local?.metadata?.name || ""),
   }));
+  // const video: TrackWithId | null = null;
+  // const audio: TrackWithId | null = null;
+  // const { peerId, initials } = {
+  //   peerId: "Unknown",
+  //   initials: computeInitials(""),
+  // };
 
   const localUser: PeerTileConfig = {
     typeName: "local",
@@ -127,6 +136,7 @@ export const VideochatSection: FC<Props> = ({
 
   // const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
 
+  // const peers: RemotePeer[] = [];
   const peers: RemotePeer[] = useSelector((state) => toRemotePeerSelector(state));
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];

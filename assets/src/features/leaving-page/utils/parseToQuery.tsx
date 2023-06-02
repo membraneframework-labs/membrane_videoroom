@@ -8,7 +8,7 @@ type ResultType = {
 const renameKeysToEntries = (formInput: Inputs): ResultType => {
   const m = keyToEntryMap;
   const isKeyOfInputs = (k: string): k is keyof Inputs => k in formInput;
-  const parseToString = (v: string | number | null): string =>  new String(v).toString();
+  const parseToString = (v: string | number | null): string => new String(v).toString();
 
   return Object.fromEntries(
     Object.keys(formInput)

@@ -5,7 +5,7 @@ import { router } from "./Routes";
 import { UserProvider } from "./contexts/UserContext";
 import { ToastProvider } from "./features/shared/context/ToastContext";
 import { ModalProvider } from "./contexts/ModalContext";
-import { DeviceErrorBoundary } from "./features/devices/DeviceErrorBoundary";
+import { LocalMediaMessagesBoundary } from "./features/devices/LocalMediaMessagesBoundary";
 import { LocalPeerMediaProvider } from "./features/devices/LocalPeerMediaContext";
 import { MediaSettingsModal } from "./features/devices/MediaSettingsModal";
 import { disableSafariCache } from "./features/devices/disableSafariCache";
@@ -27,7 +27,7 @@ const App: FC = () => {
           <LocalPeerMediaProvider>
             <ToastProvider>
               <ModalProvider>
-                <DeviceErrorBoundary>
+                <LocalMediaMessagesBoundary>
                   <JellyfishContextProvider>
                     <RoomProvider>
                       <StreamingErrorBoundary>
@@ -38,7 +38,7 @@ const App: FC = () => {
                       </StreamingErrorBoundary>
                     </RoomProvider>
                   </JellyfishContextProvider>
-                </DeviceErrorBoundary>
+                </LocalMediaMessagesBoundary>
               </ModalProvider>
             </ToastProvider>
           </LocalPeerMediaProvider>

@@ -1,12 +1,12 @@
 import React, { createContext, Dispatch, useContext, useMemo, useReducer } from "react";
-import type { State, Selector } from "./state.types";
+import type { Selector, State } from "./state.types";
 import { DEFAULT_STORE } from "./state";
 import {
+  addTrack,
   onAuthError,
   onAuthSuccess,
   onBandwidthEstimationChanged,
   onDisconnected,
-  onEncodingChanged,
   onJoinError,
   onJoinSuccess,
   onPeerJoined,
@@ -21,10 +21,12 @@ import {
   onTrackRemoved,
   onTracksPriorityChanged,
   onTrackUpdated,
-  onVoiceActivityChanged,
+  removeTrack,
+  replaceTrack,
+  updateTrackMetadata,
 } from "./stateMappers";
 import { createApiWrapper } from "./api";
-import { Peer } from "@jellyfish-dev/membrane-webrtc-js";
+import { Peer, SimulcastConfig, TrackContext, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { Config, JellyfishClient } from "./JellyfishClient";
 
 export type JellyfishContextProviderProps = {
@@ -33,7 +35,7 @@ export type JellyfishContextProviderProps = {
 
 type JellyfishContextType<PeerMetadata, TrackMetadata> = {
   state: State<PeerMetadata, TrackMetadata>;
-  dispatch: Dispatch<Action<PeerMetadata>>;
+  dispatch: Dispatch<Action<PeerMetadata, TrackMetadata>>;
 };
 
 export type UseConnect<PeerMetadata> = (config: Config<PeerMetadata>) => () => void;
@@ -53,14 +55,27 @@ export const createDefaultState = <PeerMetadata, TrackMetadata>(): State<PeerMet
   };
 };
 
-export type ConnectAction<PeerMetadata> = {
+export type ConnectAction<PeerMetadata, TrackMetadata> = {
   type: "connect";
   config: Config<PeerMetadata>;
-  dispatch: Dispatch<Action<PeerMetadata>>;
+  dispatch: Dispatch<Action<PeerMetadata, TrackMetadata>>;
 };
 
 export type DisconnectAction = {
   type: "disconnect";
+};
+
+export type OnJoinErrorAction = {
+  type: "onJoinError";
+  metadata: any;
+};
+
+export type OnSocketErrorAction = {
+  type: "onSocketError";
+};
+
+export type OnAuthErrorAction = {
+  type: "onAuthError";
 };
 
 export type OnJoinSuccessAction<PeerMetadata> = {
@@ -72,99 +87,202 @@ export type OnJoinSuccessAction<PeerMetadata> = {
 
 export type OnAuthSuccessAction = {
   type: "onAuthSuccess";
+  id: string;
 };
 
 export type OnSocketOpenAction = {
   type: "onSocketOpen";
+  id: string;
+};
+export type OnRemovedAction = {
+  type: "onRemoved";
+  reason: string;
 };
 
-export type Action<PeerMetadata> =
-  | ConnectAction<PeerMetadata>
+export type OnDisconnectedAction = {
+  type: "onDisconnected";
+  id: string;
+};
+
+export type OnTrackAddedAction = {
+  type: "onTrackAdded";
+  ctx: TrackContext;
+};
+
+export type OnTrackReadyAction = {
+  type: "onTrackReady";
+  ctx: TrackContext;
+};
+
+export type OnTrackRemovedAction = {
+  type: "onTrackRemoved";
+  ctx: TrackContext;
+};
+
+export type OnTrackUpdatedAction = {
+  type: "onTrackUpdated";
+  ctx: TrackContext;
+};
+
+export type OnBandwidthEstimationChangedAction = {
+  type: "onBandwidthEstimationChanged";
+  estimation: bigint;
+};
+
+export type OnTrackEncodingChangedAction = {
+  type: "onTrackEncodingChanged";
+  peerId: string;
+  trackId: string;
+  encoding: TrackEncoding;
+};
+
+export type OnTracksPriorityChangedAction = {
+  type: "onTracksPriorityChanged";
+  enabledTracks: TrackContext[];
+  disabledTracks: TrackContext[];
+};
+
+export type OnPeerJoinedAction = {
+  type: "onPeerJoined";
+  peer: Peer;
+};
+
+export type OnPeerLeftAction = {
+  type: "onPeerLeft";
+  peer: Peer;
+};
+
+export type OnPeerUpdatedAction = {
+  type: "onPeerUpdated";
+  peer: Peer;
+};
+
+// Local
+export type LocalAddTrackAction<TrackMetadata> = {
+  type: "localAddTrack";
+  remoteTrackId: string;
+  track: MediaStreamTrack;
+  stream: MediaStream;
+  trackMetadata?: TrackMetadata;
+  simulcastConfig?: SimulcastConfig;
+};
+
+export type LocalReplaceTrackAction<TrackMetadata> = {
+  type: "localReplaceTrack";
+  trackId: string;
+  newTrack: MediaStreamTrack;
+  stream: MediaStream;
+  newTrackMetadata?: TrackMetadata;
+};
+
+export type LocalRemoveTrackAction = {
+  type: "localRemoveTrack";
+  trackId: string;
+};
+
+export type LocalUpdateTrackMetadataAction<TrackMetadata> = {
+  type: "localUpdateTrackMetadata";
+  trackId: string;
+  trackMetadata: TrackMetadata;
+};
+
+export type Action<PeerMetadata, TrackMetadata> =
+  | ConnectAction<PeerMetadata, TrackMetadata>
   | DisconnectAction
   | OnJoinSuccessAction<PeerMetadata>
   | OnAuthSuccessAction
-  | OnSocketOpenAction;
+  | OnSocketOpenAction
+  | OnSocketErrorAction
+  | OnAuthErrorAction
+  | OnDisconnectedAction
+  | OnRemovedAction
+  | OnTrackReadyAction
+  | OnTrackAddedAction
+  | OnTrackUpdatedAction
+  | OnTrackRemovedAction
+  | OnBandwidthEstimationChangedAction
+  | OnTrackEncodingChangedAction
+  | OnTracksPriorityChangedAction
+  | OnPeerUpdatedAction
+  | OnPeerLeftAction
+  | OnPeerJoinedAction
+  | OnJoinErrorAction
+  | LocalReplaceTrackAction<TrackMetadata>
+  | LocalRemoveTrackAction
+  | LocalUpdateTrackMetadataAction<TrackMetadata>
+  | LocalAddTrackAction<TrackMetadata>;
 
-const handleConnectAction = <PeerMetadata, TrackMetadata>(
+const onConnect = <PeerMetadata, TrackMetadata>(
   state: State<PeerMetadata, TrackMetadata>,
-  action: ConnectAction<PeerMetadata>
+  action: ConnectAction<PeerMetadata, TrackMetadata>
 ): State<PeerMetadata, TrackMetadata> => {
-  console.log({ name: "handleConnectAction" });
-  const { peerMetadata } = action.config;
-
   const client: JellyfishClient<PeerMetadata, TrackMetadata> | null = state?.connectivity.client;
+
+  const { peerMetadata } = action.config;
 
   if (client === null) {
     console.log({ state, action });
     throw Error("Client is null");
   }
 
+  const api = state?.connectivity.api ? state?.connectivity.api : createApiWrapper(client, action.dispatch);
+
+  if (client?.status === "initialized") {
+    return {
+      ...state,
+      status: "connecting",
+      connectivity: {
+        ...state.connectivity,
+        api,
+        client,
+      },
+    };
+  }
+
   client.on("onSocketOpen", () => {
-    console.log({ name: "$$-onSocketOpen+" });
-    action.dispatch({ type: "onSocketOpen" });
+    action.dispatch({ type: "onSocketOpen", id: client.id });
   });
 
   client.on("onSocketError", () => {
-    console.log({ name: "$$-onSocketError" });
-
-    // setStore(onSocketError());
+    action.dispatch({ type: "onSocketError" });
   });
 
   client.on("onAuthSuccess", () => {
-    console.log({ name: "$$-onAuthSuccess+" });
-    action.dispatch({ type: "onAuthSuccess" });
+    action.dispatch({ type: "onAuthSuccess", id: client.id });
   });
 
   client.on("onAuthError", () => {
-    console.log({ name: "$$-onAuthError" });
-
-    // setStore(onAuthError());
+    action.dispatch({ type: "onAuthError" });
   });
 
   client.on("onDisconnected", () => {
-    console.log({ name: "$$-onDisconnected" });
-
-    // setStore(onDisconnected());
+    action.dispatch({ type: "onDisconnected", id: client.id });
   });
 
   client.on("onJoinSuccess", (peerId, peersInRoom) => {
-    console.log({ name: "$$-onJoinSuccess+" });
-
     action.dispatch({ type: "onJoinSuccess", peersInRoom, peerId, peerMetadata });
   });
   // todo handle state and handle callback
   client.on("onJoinError", (metadata) => {
-    console.log({ name: "$$-onJoinError" });
-
-    // setStore(onJoinError(metadata));
+    action.dispatch({ type: "onJoinError", metadata });
   });
   client.on("onRemoved", (reason) => {
-    console.log({ name: "$$-onRemoved" });
-
-    // setStore(onPeerRemoved(reason));
+    action.dispatch({ type: "onRemoved", reason });
   });
   client.on("onPeerJoined", (peer) => {
-    console.log({ name: "$$-onPeerJoined" });
-
-    // return setStore(onPeerJoined(peer));
+    action.dispatch({ type: "onPeerJoined", peer });
   });
   client.on("onPeerUpdated", (peer) => {
-    console.log({ name: "$$-onPeerUpdated" });
-
-    // setStore(onPeerUpdated(peer));
+    action.dispatch({ type: "onPeerUpdated", peer });
   });
   client.on("onPeerLeft", (peer) => {
-    console.log({ name: "$$-onPeerLeft" });
-
-    // setStore(onPeerLeft(peer));
+    action.dispatch({ type: "onPeerLeft", peer });
   });
   client.on("onTrackReady", (ctx) => {
-    console.log({ name: "$$-onTrackReady" });
-
-    // setStore(onTrackReady(ctx));
+    action.dispatch({ type: "onTrackReady", ctx });
   });
   client.on("onTrackAdded", (ctx) => {
-    console.log({ name: "$$-onTrackAdded" });
+    action.dispatch({ type: "onTrackAdded", ctx });
 
     // setStore(onTrackAdded(ctx));
     // ctx.on("onEncodingChanged", () => {
@@ -175,52 +293,30 @@ const handleConnectAction = <PeerMetadata, TrackMetadata>(
     // });
   });
   client.on("onTrackRemoved", (ctx) => {
-    console.log({ name: "$$-onTrackRemoved" });
-
-    // setStore(onTrackRemoved(ctx));
+    action.dispatch({ type: "onTrackRemoved", ctx });
   });
   client.on("onTrackUpdated", (ctx) => {
-    console.log({ name: "$$-onTrackUpdated" });
-
-    // setStore(onTrackUpdated(ctx));
+    action.dispatch({ type: "onTrackUpdated", ctx });
   });
   client.on("onBandwidthEstimationChanged", (estimation) => {
-    console.log({ name: "$$-onBandwidthEstimationChanged" });
-
-    // setStore(onBandwidthEstimationChanged(estimation));
+    action.dispatch({ type: "onBandwidthEstimationChanged", estimation });
   });
   client.on("onTrackEncodingChanged", (peerId, trackId, encoding) => {
-    console.log({ name: "$$-onTrackEncodingChanged" });
-
-    // setStore(onTrackEncodingChanged(peerId, trackId, encoding));
+    action.dispatch({ type: "onTrackEncodingChanged", peerId, trackId, encoding });
   });
   // todo handle state
   client.on("onTracksPriorityChanged", (enabledTracks, disabledTracks) => {
-    console.log({ name: "$$-onTracksPriorityChanged" });
-
-    // setStore(onTracksPriorityChanged(enabledTracks, disabledTracks));
+    action.dispatch({ type: "onTracksPriorityChanged", enabledTracks, disabledTracks });
   });
 
-  console.log({ name: "Start connecting", config: action.config });
   client.connect(action.config);
 
-  // setStore((prevState: State<PeerMetadata, TrackMetadata>): State<PeerMetadata, TrackMetadata> => {
-  //   return {
-  //     ...prevState,
-  //     status: "connecting",
-  //     connectivity: {
-  //       ...prevState.connectivity,
-  //       api: client ? createApiWrapper(client, setStore) : null,
-  //       client: client,
-  //     },
-  //   };
-  // });
   return {
     ...state,
     status: "connecting",
     connectivity: {
       ...state.connectivity,
-      // api: client ? createApiWrapper(client, setStore) : null,
+      api,
       client: client,
     },
   };
@@ -228,32 +324,87 @@ const handleConnectAction = <PeerMetadata, TrackMetadata>(
 
 const reducer = <PeerMetadata, TrackMetadata>(
   state: State<PeerMetadata, TrackMetadata>,
-  action: Action<PeerMetadata>
+  action: Action<PeerMetadata, TrackMetadata>
 ): State<PeerMetadata, TrackMetadata> => {
-  console.log({ name: "reducer", state, action });
+  console.log({ name: "reducer", state, action, type: action.type });
   switch (action.type) {
+    // Internal events
     case "connect":
-      console.log("reducer-connect");
-      return handleConnectAction<PeerMetadata, TrackMetadata>(state, action);
+      return onConnect<PeerMetadata, TrackMetadata>(state, action);
     case "disconnect":
-      console.log("reducer-disconnect");
       state?.connectivity?.client?.removeAllListeners();
       state?.connectivity?.client?.cleanUp();
       return createDefaultState();
-    case "onJoinSuccess":
-      console.log("reducer-onJoinSuccess");
-      return onJoinSuccess<PeerMetadata, TrackMetadata>(action.peersInRoom, action.peerId, action.peerMetadata)(state);
-    case "onAuthSuccess":
-      console.log("reducer-onAuthSuccess");
-      return onAuthSuccess<PeerMetadata, TrackMetadata>()(state);
+    // connections events
     case "onSocketOpen":
-      console.log("reducer-onSocketOpen");
       return onSocketOpen<PeerMetadata, TrackMetadata>()(state);
+    case "onSocketError":
+      return onSocketError<PeerMetadata, TrackMetadata>()(state);
+    case "onJoinSuccess":
+      return onJoinSuccess<PeerMetadata, TrackMetadata>(action.peersInRoom, action.peerId, action.peerMetadata)(state);
+    case "onJoinError":
+      return onJoinError<PeerMetadata, TrackMetadata>(action.metadata)(state);
+    case "onDisconnected":
+      state?.connectivity?.client?.removeAllListeners();
+      state?.connectivity?.client?.cleanUp();
+      return createDefaultState();
+    case "onAuthSuccess":
+      return onAuthSuccess<PeerMetadata, TrackMetadata>()(state);
+    case "onAuthError":
+      return onAuthError<PeerMetadata, TrackMetadata>()(state);
+    case "onRemoved":
+      return onPeerRemoved<PeerMetadata, TrackMetadata>(action.reason)(state);
+    // this peer events
+    case "onBandwidthEstimationChanged":
+      return onBandwidthEstimationChanged<PeerMetadata, TrackMetadata>(action.estimation)(state);
+    // remote peers events
+    case "onPeerJoined":
+      return onPeerJoined<PeerMetadata, TrackMetadata>(action.peer)(state);
+    case "onPeerLeft":
+      return onPeerLeft<PeerMetadata, TrackMetadata>(action.peer)(state);
+    case "onPeerUpdated":
+      return onPeerUpdated<PeerMetadata, TrackMetadata>(action.peer)(state);
+    // remote track events
+    case "onTrackAdded":
+      return onTrackAdded<PeerMetadata, TrackMetadata>(action.ctx)(state);
+    case "onTrackReady":
+      return onTrackReady<PeerMetadata, TrackMetadata>(action.ctx)(state);
+    case "onTrackUpdated":
+      return onTrackUpdated<PeerMetadata, TrackMetadata>(action.ctx)(state);
+    case "onTrackRemoved":
+      return onTrackRemoved<PeerMetadata, TrackMetadata>(action.ctx)(state);
+    case "onTrackEncodingChanged":
+      return onTrackEncodingChanged<PeerMetadata, TrackMetadata>(action.peerId, action.trackId, action.encoding)(state);
+    // local track events
+    case "localAddTrack":
+      return addTrack<PeerMetadata, TrackMetadata>(
+        action.remoteTrackId,
+        action.track,
+        action.stream,
+        action.trackMetadata,
+        action.simulcastConfig
+      )(state);
+    case "localRemoveTrack":
+      return removeTrack<PeerMetadata, TrackMetadata>(action.trackId)(state);
+    case "localReplaceTrack":
+      return replaceTrack<PeerMetadata, TrackMetadata>(
+        action.trackId,
+        action.newTrack,
+        action.stream,
+        action.newTrackMetadata
+      )(state);
+    case "localUpdateTrackMetadata":
+      return updateTrackMetadata<PeerMetadata, TrackMetadata>(action.trackId, action.trackMetadata)(state);
+    case "onTracksPriorityChanged":
+      return onTracksPriorityChanged<PeerMetadata, TrackMetadata>(action.enabledTracks, action.disabledTracks)(state);
   }
-
-  return DEFAULT_STORE;
+  throw Error("Nie obslugiwany blad");
 };
 
+type Reducer<PeerMetadata, TrackMetadata> = (
+  state: State<PeerMetadata, TrackMetadata>,
+  action: Action<PeerMetadata, TrackMetadata>
+) => State<PeerMetadata, TrackMetadata>;
 /**
  * Create a client that can be used with a context.
  * Returns context provider, and two hooks to interact with the context.
@@ -264,10 +415,11 @@ export const create = <PeerMetadata, TrackMetadata>() => {
   const JellyfishContext = createContext<JellyfishContextType<PeerMetadata, TrackMetadata> | undefined>(undefined);
 
   const JellyfishContextProvider = ({ children }: JellyfishContextProviderProps) => {
-    const [state, dispatch] = useReducer<
-      (state: State<PeerMetadata, TrackMetadata>, action: Action<PeerMetadata>) => State<PeerMetadata, TrackMetadata>,
-      State<PeerMetadata, TrackMetadata>
-    >(reducer, DEFAULT_STORE, () => createDefaultState());
+    const [state, dispatch] = useReducer<Reducer<PeerMetadata, TrackMetadata>, State<PeerMetadata, TrackMetadata>>(
+      reducer,
+      DEFAULT_STORE,
+      () => createDefaultState()
+    );
 
     return <JellyfishContext.Provider value={{ state, dispatch }}>{children}</JellyfishContext.Provider>;
   };

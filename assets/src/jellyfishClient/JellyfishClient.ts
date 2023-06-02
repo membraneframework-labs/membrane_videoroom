@@ -199,9 +199,10 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
   private websocket: WebSocket | null = null;
   private webrtc: MembraneWebRTC | null = null;
   private removeEventListeners: (() => void) | null = null;
-  private webrtcStatus: "new" | "connecting" | "connected" | "disconnected" | "failed" | "closed" = "new";
 
+  // todo remove
   public readonly id: string;
+  public status: "new" | "initialized" = "new";
 
   constructor(id: string) {
     super();
@@ -228,10 +229,10 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
   connect(config: Config<PeerMetadata>): void {
     const { peerMetadata, websocketUrl = "ws://localhost:4000/socket/peer/websocket" } = config;
 
-    console.log({ name: "Connect in client", websocket: this.websocket });
-
+    // todo change to initialized
     if ((this.websocket && this.websocket.readyState === WebSocket.OPEN) || this.webrtc) {
-      console.log("Invoked again!");
+      // if (this.status === "initialized") {
+      console.log("Cleaning up previous data");
       this.cleanUp();
     }
 
@@ -241,7 +242,7 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
     const onOpen = (event: Event) => {
       this.emit("onSocketOpen", event);
       const message = PeerMessage.encode({ authRequest: { token: config?.token } }).finish();
-      console.log({ id: this.id });
+      // console.log({ id: this.id });
       this.websocket?.send(message);
     };
 
@@ -263,10 +264,10 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
     //   this.websocket?.send(message);
     // });
 
-    console.log({ name: "Old webrtc", webrtc: this.webrtc, id: this.id });
+    // console.log({ name: "Old webrtc", webrtc: this.webrtc, id: this.id });
     this.webrtc = new MembraneWebRTC();
 
-    console.log({ name: "New webrtc", webrtc: this.webrtc, id: this.id });
+    // console.log({ name: "New webrtc", webrtc: this.webrtc, id: this.id });
 
     // const id = crypto.randomUUID();
     // console.log({ name: "Creating ID", id });
@@ -297,18 +298,12 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
       this.websocket?.removeEventListener("close", onClose);
       this.websocket?.removeEventListener("message", onMessage);
     };
+    this.status = "initialized";
   }
 
   private setupCallbacks() {
     this.webrtc?.on("onSendMediaEvent", (mediaEvent: SerializedMediaEvent) => {
-      // if (this.webrtcStatus !== "connected") {
-      //   console.log({ name: "message skipped (onSendMediaEvent)" });
-      //   return;
-      // }
-      // if still in connecting state then skip
-
       const message = PeerMessage.encode({ mediaEvent: { data: mediaEvent } }).finish();
-      console.log({ name: "Trying to send!", message, id: this.id });
       this.websocket?.send(message);
     });
 
@@ -735,8 +730,6 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
    * ```
    */
   cleanUp() {
-    console.log({ name: "CleanUp", id: this.id });
-
     try {
       this.webrtc?.removeAllListeners();
       this.webrtc?.leave();
@@ -747,6 +740,8 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
     }
     this.removeEventListeners?.();
     this.removeEventListeners = null;
+    // todo add
+    // remove all listeners if possible
     if (this.isOpen(this.websocket || null)) {
       this.websocket?.close();
     }

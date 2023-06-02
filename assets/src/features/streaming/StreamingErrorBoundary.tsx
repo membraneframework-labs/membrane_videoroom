@@ -3,6 +3,7 @@ import useToast from "../shared/hooks/useToast";
 import { ErrorMessage, messageComparator } from "../../pages/room/errorMessage";
 import { useJellyfishClient } from "../../jellifish.types";
 import useEffectOnChange from "../shared/hooks/useEffectOnChange";
+import {useLocalPeer} from "../devices/LocalPeerMediaContext";
 
 export const StreamingErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
   const { addToast } = useToast();
@@ -21,12 +22,12 @@ export const StreamingErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
   );
 
   useEffect(() => {
-    console.log({ name: "Try register callback", client });
+    // console.log({ name: "Try register callback", client });
     if (!client) return;
 
     const id = client.id;
 
-    console.log({ name: "Registering", client, id });
+    // console.log({ name: "Registering", client, id });
 
     const onSocketError = (event: Event) => {
       console.log({ name: "onSocketError", event, id });
@@ -59,7 +60,7 @@ export const StreamingErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
     client.on("onSocketClose", onSocketClose);
 
     return () => {
-      console.log("Unregister!");
+      // console.log("Unregister!");
       client.off("onSocketError", onSocketError);
       client.off("onConnectionError", onConnectionError);
       client.off("onJoinError", onJoinError);

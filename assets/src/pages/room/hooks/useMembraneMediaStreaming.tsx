@@ -31,6 +31,10 @@ export const useMembraneMediaStreaming = (
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
 
   const api = useApi();
+
+  useEffect(() => {
+    console.log({ name: "api", api });
+  }, [api]);
   const { simulcast } = useDeveloperInfo();
   const simulcastEnabled = false;
   // const simulcastEnabled = simulcast.status;
@@ -64,7 +68,7 @@ export const useMembraneMediaStreaming = (
       const remoteTrackId = api.addTrack(
         track,
         stream,
-        defaultTrackMetadata,
+        defaultTrackMetadata
         // simulcast ? { enabled: true, active_encodings: ["l", "m", "h"] } : undefined,
         // selectBandwidthLimit(type, simulcast)
       );

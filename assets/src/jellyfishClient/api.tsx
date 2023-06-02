@@ -1,7 +1,7 @@
-import { addTrack, removeTrack, replaceTrack, updateTrackMetadata } from "./stateMappers";
 import { JellyfishClient } from "./JellyfishClient";
-import {SimulcastConfig, TrackBandwidthLimit, TrackEncoding} from "@jellyfish-dev/membrane-webrtc-js";
-import {SetStore} from "./state.types";
+import { SimulcastConfig, TrackBandwidthLimit, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { Dispatch } from "react";
+import { Action } from "./create";
 
 // todo implement
 //  setTrackBandwidth
@@ -35,12 +35,12 @@ export type Api<TrackMetadata> = {
  * Creates a wrapper for the MembraneWebRTC instance to enable updating the store.
  *
  * @param webrtc - MembraneWebRTC instance
- * @param setStore - function that sets the store
+ * @param dispatch - function that sets the store
  * @returns Wrapper for the MembraneWebRTC instance
  */
 export const createApiWrapper = <PeerMetadata, TrackMetadata>(
   webrtc: JellyfishClient<PeerMetadata, TrackMetadata>,
-  setStore: SetStore<PeerMetadata, TrackMetadata>
+  dispatch: Dispatch<Action<PeerMetadata, TrackMetadata>>
 ): Api<TrackMetadata> => ({
   addTrack: (
     track: MediaStreamTrack,
@@ -49,36 +49,49 @@ export const createApiWrapper = <PeerMetadata, TrackMetadata>(
     simulcastConfig?: SimulcastConfig,
     maxBandwidth?: TrackBandwidthLimit
   ) => {
+    console.log("createApiWrapper--addTrack");
     const remoteTrackId = webrtc.addTrack(track, stream, trackMetadata, simulcastConfig, maxBandwidth);
-    setStore(addTrack(remoteTrackId, track, stream, trackMetadata, simulcastConfig));
+    dispatch({ type: "localAddTrack", remoteTrackId, track, stream, trackMetadata, simulcastConfig });
     return remoteTrackId;
   },
 
   replaceTrack: (trackId, newTrack, stream, newTrackMetadata) => {
+    console.log("createApiWrapper--addTrack");
+
     const promise = webrtc.replaceTrack(trackId, newTrack, newTrackMetadata);
-    setStore(replaceTrack(trackId, newTrack, stream, newTrackMetadata));
+    dispatch({ type: "localReplaceTrack", trackId, newTrack, stream, newTrackMetadata });
     return promise;
   },
 
   removeTrack: (trackId) => {
+    console.log("createApiWrapper--removeTrack");
+
     webrtc.removeTrack(trackId);
-    setStore(removeTrack(trackId));
+    dispatch({ type: "localRemoveTrack", trackId });
   },
 
   updateTrackMetadata: (trackId, trackMetadata) => {
+    console.log("createApiWrapper--updateTrackMetadata");
+
     webrtc.updateTrackMetadata(trackId, trackMetadata);
-    setStore(updateTrackMetadata(trackId, trackMetadata));
+    dispatch({ type: "localUpdateTrackMetadata", trackId, trackMetadata });
   },
 
   enableTrackEncoding: (trackId, encoding) => {
+    console.log("createApiWrapper--enableTrackEncoding");
+
     webrtc.enableTrackEncoding(trackId, encoding);
   },
 
   disableTrackEncoding: (trackId: string, encoding: TrackEncoding): void => {
+    console.log("createApiWrapper--disableTrackEncoding");
+
     webrtc.disableTrackEncoding(trackId, encoding);
   },
 
   setTargetTrackEncoding: (trackId, encoding) => {
+    console.log("createApiWrapper--setTargetTrackEncoding");
+
     webrtc.setTargetTrackEncoding(trackId, encoding);
   },
 });

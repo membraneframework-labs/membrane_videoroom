@@ -24,17 +24,9 @@ type ConnectComponentProps = {
 
 const ConnectComponent: FC<ConnectComponentProps> = ({ username, roomId }) => {
   const connect = useConnect();
-  // const { username } = useUser();
-  // const { disconnect } = useRoom();
 
   useEffect(() => {
-    // if (!username) throw Error("Username is null");
-    // if (!token) return;
-    //
-    // console.log({token})
-    console.log("Invoke function 'connect'!");
     const disconnectPromise = getToken(roomId).then((token) => {
-      console.log({ token });
       return connect({
         peerMetadata: { name: username },
         token: token,
@@ -43,8 +35,6 @@ const ConnectComponent: FC<ConnectComponentProps> = ({ username, roomId }) => {
     });
 
     return () => {
-      // console.log("Invoke function 'disconnect'!");
-      // setToken(null);
       disconnectPromise.then((disconnect) => {
         disconnect();
       });
@@ -56,8 +46,6 @@ const ConnectComponent: FC<ConnectComponentProps> = ({ username, roomId }) => {
 
 type Props = {
   roomId: string;
-  // username: string;
-  // token: string;
 };
 
 const RoomPage: FC<Props> = ({ roomId }: Props) => {
@@ -65,51 +53,6 @@ const RoomPage: FC<Props> = ({ roomId }: Props) => {
 
   const { simulcast } = useDeveloperInfo();
   const isSimulcastOn = simulcast.status;
-
-  // todo handle errors
-  // const [errorMessage, setErrorMessage] = useState<ErrorMessage | undefined>();
-  //
-  const client = useJellyfishClient();
-  //
-  // const handleError = useCallback(
-  //   (text: string, id?: string) => {
-  //     console.error(text);
-  //     setErrorMessage({ message: text, id: id });
-  //   },
-  //   [setErrorMessage]
-  // );
-  //
-  // useEffect(() => {
-  //   if (!client) return;
-  //
-  //   const onSocketError = () => {
-  //     handleError(`Socket error occurred.`, "socket-error");
-  //   };
-  //
-  //   const onConnectionError = (message: string) => {
-  //     handleError(`Connection error occurred. ${message ?? ""}`);
-  //   };
-  //   const onJoinError = (metadata: unknown) => {
-  //     console.error(metadata);
-  //
-  //     handleError(`Failed to join the room`);
-  //   };
-  //   const onAuthError = () => {
-  //     handleError(`Socket error occurred.`, "socket-error");
-  //   };
-  //
-  //   client.on("onSocketError", onSocketError);
-  //   client.on("onConnectionError", onConnectionError);
-  //   client.on("onJoinError", onJoinError);
-  //   client.on("onAuthError", onAuthError);
-  //
-  //   return () => {
-  //     client.off("onSocketError", onSocketError);
-  //     client.off("onConnectionError", onConnectionError);
-  //     client.off("onJoinError", onJoinError);
-  //     client.off("onAuthError", onAuthError);
-  //   };
-  // }, [client, handleError]);
 
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
 
@@ -128,45 +71,9 @@ const RoomPage: FC<Props> = ({ roomId }: Props) => {
     }
   });
 
-  // useEffectOnChange(
-  //   errorMessage,
-  //   () => {
-  //     if (errorMessage) {
-  //       addToast({
-  //         id: errorMessage.id || crypto.randomUUID(),
-  //         message: errorMessage.message,
-  //         timeout: "INFINITY",
-  //         type: "error",
-  //       });
-  //     }
-  //   },
-  //   messageComparator
-  // );
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const connect = useConnect();
   const { username } = useUser();
-  // const { token, setToken } = useRoom();
-
-  // useEffect(() => {
-  //   // if (!username) throw Error("Username is null");
-  //   // if (!token) return;
-  //   //
-  //   // console.log({token})
-  //   // console.log("Invoke function 'connect'!")
-  //
-  //   const disconnect = connect({
-  //     peerMetadata: { name: username },
-  //     token: token,
-  //     websocketUrl: JELLYFISH_WEBSOCKET_URL,
-  //   });
-  //
-  //   return () => {
-  //     console.log("Invoke function 'disconnect'!");
-  //     disconnect?.();
-  //   };
-  // }, [connect, token, username]);
 
   return (
     <PageLayout>

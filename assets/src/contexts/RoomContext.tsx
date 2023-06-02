@@ -21,7 +21,7 @@ const API = new RoomApi(undefined, BACKEND_URL, axios);
 
 export const getToken = (roomId: string) =>
   API.videoroomWebRoomControllerShow(roomId).then((resp) => {
-    console.log(resp);
+    // console.log(resp);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const token = resp?.data?.data?.token || "";
@@ -40,10 +40,10 @@ export const RoomProvider: FC<Props> = ({ children }: Props) => {
     //   console.log("Username is empty!");
     //   return;
     // }
-    console.log({ name: "Joining RoomId:", roomId });
+    // console.log({ name: "Joining RoomId:", roomId });
 
     new RoomApi(undefined, BACKEND_URL, axios).videoroomWebRoomControllerShow(roomId).then((resp) => {
-      console.log(resp);
+      // console.log(resp);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       const token = resp?.data?.data?.token || "";

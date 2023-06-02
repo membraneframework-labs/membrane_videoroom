@@ -20,7 +20,7 @@ export const useSimulcastSend = (): UseSimulcastLocalEncoding => {
       throw Error("Toggling simulcast layer is not possible when trackId is null");
     }
 
-    console.log(trackId);
+    // console.log(trackId);
     status ? api?.enableTrackEncoding(trackId, encodingName) : api?.disableTrackEncoding(trackId, encodingName);
   };
 

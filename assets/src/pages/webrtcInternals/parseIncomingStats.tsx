@@ -21,7 +21,7 @@ type SdpInfoKey = (typeof SdpInfoNames)[number];
 
 type SdpInfo = {
   name: SdpInfoKey;
-  value: string[];
+  values: string[];
 };
 
 type ChartEntry = {
@@ -88,8 +88,8 @@ const parseIncomingStats = (stats: ChannelInput, prevSection: Section | null, ke
   const allDescriptive: DescriptiveValue[] = entries.filter(isTupleWithString).map(([k, v]) => ({ name: k, value: v }));
 
   const sdpInfo: SdpInfo[] = allDescriptive.filter(containsSdpInfo).map(({ name, value }) => {
-    const valueSplit = value.split("\r\n").filter((s) => s !== "");
-    return { name, value: valueSplit };
+    const values = value.split("\r\n").filter((s) => s !== "");
+    return { name, values };
   });
   const descriptive: DescriptiveValue[] = allDescriptive.filter((d) => !containsSdpInfo(d));
   const charts: ChartEntry[] = entries.filter(isTupleWithNumber).map((entry) => mapToChartEntry(entry, prevSection));

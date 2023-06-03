@@ -1,13 +1,15 @@
 import React, { SyntheticEvent, useCallback } from "react";
+import { useToggle } from "../room/hooks/useToggle";
 
 type DetailsProps = {
   summaryText: string;
   children: React.ReactNode;
-  isOpen: boolean;
-  toggle: () => void;
+  className?: string;
 };
 
-const Details = ({ summaryText, children, isOpen, toggle }: DetailsProps) => {
+const Details = ({ summaryText, children, className }: DetailsProps) => {
+  const [isOpen, toggle] = useToggle(false);
+
   const notBubblingToggle = useCallback(
     (e: SyntheticEvent) => {
       e.stopPropagation();
@@ -17,9 +19,9 @@ const Details = ({ summaryText, children, isOpen, toggle }: DetailsProps) => {
   );
 
   return (
-    <details onToggle={notBubblingToggle} open={isOpen}>
+    <details onToggle={notBubblingToggle} open={isOpen} className={className}>
       <summary>{summaryText}</summary>
-      {children}
+      {isOpen && children}
     </details>
   );
 };

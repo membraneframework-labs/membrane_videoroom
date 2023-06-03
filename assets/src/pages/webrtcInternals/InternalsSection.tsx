@@ -2,7 +2,6 @@ import React from "react";
 import Details from "./Details";
 import Chart from "./Chart";
 import { Section } from "./parseIncomingStats";
-import { useToggle } from "../room/hooks/useToggle";
 
 type InternalsSectionProps = {
   section: Section;
@@ -10,34 +9,42 @@ type InternalsSectionProps = {
 };
 
 const InternalsSection = ({ title, section }: InternalsSectionProps) => {
-  const { descriptive, charts, subsections } = section;
-  const [isOpen, toggle] = useToggle(false);
-
+  const { descriptive, sdpInfo, charts, subsections } = section;
+  console.log(section, "section");
   return (
-    <Details summaryText={title} isOpen={isOpen} toggle={toggle}>
-      {isOpen && (
-        <>
-          <ul className="list-inside list-disc">
-            {descriptive.map(({ name, value }) => (
-              <li className="p-2 px-4" key={name}>{`${name}: ${value}`}</li>
-            ))}
-          </ul>
-          <ul>
-            <div className="flex flex-wrap">
-              {charts.map(({ chartTitle, xs, ys }) => (
-                <li className="p-2" key={chartTitle}>
-                  <Chart title={chartTitle} xs={xs} ys={ys} />
+    <Details summaryText={title}>
+      <>
+        <ul className="list-inside list-disc">
+          {descriptive.map(({ name, value }) => (
+            <li className="p-2 px-4" key={name}>{`${name}: ${value}`}</li>
+          ))}
+        </ul>
+        {sdpInfo.map(({ name, values }) => (
+          <Details className="pl-4" summaryText={name}>
+            <ul className="list-inside list-disc">
+              {values.map((v) => (
+                <li className="px-4" key={`${Date.now().toString()}:${v}`}>
+                  {v}
                 </li>
               ))}
-            </div>
-            {Object.entries(subsections || {}).map(([key, section]) => (
-              <li className="p-2" key={key}>
-                <InternalsSection title={key} section={section} />
+            </ul>
+          </Details>
+        ))}
+        <ul>
+          <div className="flex flex-wrap">
+            {charts.map(({ chartTitle, xs, ys }) => (
+              <li className="p-2" key={chartTitle}>
+                <Chart title={chartTitle} xs={xs} ys={ys} />
               </li>
             ))}
-          </ul>
-        </>
-      )}
+          </div>
+          {Object.entries(subsections || {}).map(([key, section]) => (
+            <li className="p-2" key={key}>
+              <InternalsSection title={key} section={section} />
+            </li>
+          ))}
+        </ul>
+      </>
     </Details>
   );
 };

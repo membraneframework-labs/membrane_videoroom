@@ -10,7 +10,6 @@ type InternalsSectionProps = {
 
 const InternalsSection = ({ title, section }: InternalsSectionProps) => {
   const { descriptive, sdpInfo, charts, subsections } = section;
-  console.log(section, "section");
   return (
     <Details summaryText={title}>
       <>
@@ -20,10 +19,10 @@ const InternalsSection = ({ title, section }: InternalsSectionProps) => {
           ))}
         </ul>
         {sdpInfo.map(({ name, values }) => (
-          <Details className="pl-4" summaryText={name}>
-            <ul className="list-inside list-disc">
+          <Details key={name} className="pl-4" summaryText={name}>
+            <ul>
               {values.map((v) => (
-                <li className="px-4" key={`${Date.now().toString()}:${v}`}>
+                <li className="px-4" key={v}>
                   {v}
                 </li>
               ))}

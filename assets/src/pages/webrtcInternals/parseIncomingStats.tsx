@@ -88,7 +88,10 @@ const parseIncomingStats = (stats: ChannelInput, prevSection: Section | null, ke
   const allDescriptive: DescriptiveValue[] = entries.filter(isTupleWithString).map(([k, v]) => ({ name: k, value: v }));
 
   const sdpInfo: SdpInfo[] = allDescriptive.filter(containsSdpInfo).map(({ name, value }) => {
-    const values = value.split("\r\n").filter((s) => s !== "");
+    const values = value
+      .split("\n")
+      .filter((s) => s !== "")
+      .map((v, idx) => `[${idx}]: ${v}`);
     return { name, values };
   });
   const descriptive: DescriptiveValue[] = allDescriptive.filter((d) => !containsSdpInfo(d));

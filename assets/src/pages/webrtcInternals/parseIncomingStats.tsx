@@ -1,10 +1,11 @@
 import { MAX_DATA_POINTS_ON_CHART } from "../room/consts";
 import { subSeconds } from "date-fns";
-import { tail } from "ramda";
+import { empty, tail } from "ramda";
 
 export type Section = {
   key: string;
   descriptive: DescriptiveValue[];
+  sdpInfo: SdpInfo[];
   charts: ChartEntry[];
   subsections?: { [name: string]: Section };
 };
@@ -12,6 +13,15 @@ export type Section = {
 type DescriptiveValue = {
   name: string;
   value: string;
+};
+
+const SdpInfoNames = ["sdp.answer", "sdp.offer"] as const;
+
+type SdpInfoKey = (typeof SdpInfoNames)[number];
+
+type SdpInfo = {
+  name: SdpInfoKey;
+  value: string[];
 };
 
 type ChartEntry = {
@@ -50,6 +60,10 @@ const isTupleWithChannelInput = (stats: [string, ChannelInputValue]): stats is [
   return isCertainTuple<ChannelInput>(stats, isChannelInput);
 };
 
+const containsSdpInfo = (descriptive: DescriptiveValue): descriptive is { name: SdpInfoKey; value: string } => {
+  return SdpInfoNames.includes(descriptive.name as SdpInfoKey);
+};
+
 const mapToChartEntry = (entry: [string, number], prevSection: Section | null): ChartEntry => {
   const [k, v] = entry;
 
@@ -70,7 +84,14 @@ const mapToChartEntry = (entry: [string, number], prevSection: Section | null): 
 
 const parseIncomingStats = (stats: ChannelInput, prevSection: Section | null, key: string): Section => {
   const entries = Object.entries(stats);
-  const descriptive: DescriptiveValue[] = entries.filter(isTupleWithString).map(([k, v]) => ({ name: k, value: v }));
+
+  const allDescriptive: DescriptiveValue[] = entries.filter(isTupleWithString).map(([k, v]) => ({ name: k, value: v }));
+
+  const sdpInfo: SdpInfo[] = allDescriptive.filter(containsSdpInfo).map(({ name, value }) => {
+    const valueSplit = value.split("\r\n").filter((s) => s !== "");
+    return { name, value: valueSplit };
+  });
+  const descriptive: DescriptiveValue[] = allDescriptive.filter((d) => !containsSdpInfo(d));
   const charts: ChartEntry[] = entries.filter(isTupleWithNumber).map((entry) => mapToChartEntry(entry, prevSection));
   const subsectionEntries = entries.filter(isTupleWithChannelInput).map(([k, v]) => {
     const subsection =
@@ -80,7 +101,7 @@ const parseIncomingStats = (stats: ChannelInput, prevSection: Section | null, ke
 
   const subsections: { [name: string]: Section } = Object.fromEntries(subsectionEntries);
 
-  return { key, descriptive, charts, subsections };
+  return { key, descriptive, sdpInfo, charts, subsections };
 };
 
 export default parseIncomingStats;

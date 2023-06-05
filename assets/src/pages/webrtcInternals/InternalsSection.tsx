@@ -22,7 +22,7 @@ const InternalsSection = ({ title, section }: InternalsSectionProps) => {
           <Details key={name} className="pl-4" summaryText={name}>
             <ul>
               {values.map((v, idx) => (
-                <li className="px-4" key={`${idx}:${v}`}>
+                <li className="px-4 text-xs" key={`${idx}:${v}`}>
                   {v}
                 </li>
               ))}

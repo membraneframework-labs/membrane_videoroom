@@ -21,8 +21,8 @@ const InternalsSection = ({ title, section }: InternalsSectionProps) => {
         {sdpInfo.map(({ name, values }) => (
           <Details key={name} className="pl-4" summaryText={name}>
             <ul>
-              {values.map((v) => (
-                <li className="px-4" key={v}>
+              {values.map((v, idx) => (
+                <li className="px-4" key={`${idx}:${v}`}>
                   {v}
                 </li>
               ))}

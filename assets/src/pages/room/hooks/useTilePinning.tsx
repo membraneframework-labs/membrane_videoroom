@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { MediaPlayerTileConfig, StreamSource } from "../../types";
-import usePinning, { InitialState, reducer } from "./usePinning";
 import { groupBy } from "../utils";
 
 type PinningFlags = {
@@ -17,9 +16,49 @@ type TilePinningApi = {
   pinningFlags: PinningFlags;
 };
 
+const INITIAL_STATE: PinState = {
+  pinnedTilesIds: [],
+  pinnedTileIdHistory: new Set<string>(),
+};
+
+type Action =
+  | { type: "pin"; tileId: string }
+  | { type: "unpin"; tileId: string }
+  | {
+      type: "pinIfNotAlreadyPinned";
+      tileId: string;
+    };
+
+const pin = (state: PinState, tileId: string) =>
+  !state.pinnedTilesIds.includes(tileId)
+    ? {
+        pinnedTilesIds: [...state.pinnedTilesIds, tileId],
+        pinnedTileIdHistory: new Set(state.pinnedTileIdHistory).add(tileId),
+      }
+    : state;
+
+const reducer = (state: PinState, action: Action): PinState => {
+  if (action.type === "pin") {
+    return pin(state, action.tileId);
+  } else if (action.type === "unpin") {
+    return {
+      ...state,
+      pinnedTilesIds: state.pinnedTilesIds.filter((tileId) => tileId !== action.tileId),
+    };
+  } else if (action.type === "pinIfNotAlreadyPinned" && !state.pinnedTileIdHistory.has(action.tileId)) {
+    return pin(state, action.tileId);
+  }
+
+  return INITIAL_STATE;
+};
+
+export type PinState = {
+  pinnedTilesIds: string[];
+  pinnedTileIdHistory: Set<string>;
+};
+
 const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi => {
-  // const { pinnedTileIds, pin, unpin, pinIfNotAlreadyPinned } = usePinning();
-  const [state, dispatch] = useReducer(reducer, InitialState);
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   const [numberOfTiles, setNumberOfTiles] = useState<number>(tileConfigs.length);
   const [autoPinned, setAutoPinned] = useState<string | null>(null);
@@ -34,7 +73,7 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
   const unpinAutoPinnedWhenNumberOfTilesChanged = useCallback(
     (oldNumber: number, newNumber: number): void => {
       if (autoPinned && oldNumber !== newNumber) {
-        dispatch({ type: "unpin", tileId: autoPinned })
+        dispatch({ type: "unpin", tileId: autoPinned });
       }
     },
     [autoPinned]
@@ -71,21 +110,34 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
     autoPinSecondPeer();
   }, [pinNewScreenShares, autoPinSecondPeer]);
 
-  // todo refactor to useMemo
-  const takeOutPinnedTiles = useCallback((): {
+  // todo remove
+  //   const takeOutPinnedTiles = useCallback((): {
+  //     pinnedTiles: MediaPlayerTileConfig[];
+  //     unpinnedTiles: MediaPlayerTileConfig[];
+  //   } => {
+  //     const { pinnedTiles, unpinnedTiles } = groupBy(tileConfigs, ({ mediaPlayerId }) =>
+  //       state.pinnedTilesIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
+  //     );
+  //     return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
+  //   }, [tileConfigs, state.pinnedTilesIds]);
+  //
+  //   const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles();
+  const {
+    pinnedTiles,
+    unpinnedTiles,
+  }: {
     pinnedTiles: MediaPlayerTileConfig[];
     unpinnedTiles: MediaPlayerTileConfig[];
-  } => {
+  } = useMemo(() => {
     const { pinnedTiles, unpinnedTiles } = groupBy(tileConfigs, ({ mediaPlayerId }) =>
       state.pinnedTilesIds.includes(mediaPlayerId) ? "pinnedTiles" : "unpinnedTiles"
     );
     return { pinnedTiles: pinnedTiles ?? [], unpinnedTiles: unpinnedTiles ?? [] };
   }, [tileConfigs, state.pinnedTilesIds]);
 
-  const { pinnedTiles, unpinnedTiles } = takeOutPinnedTiles();
-
   const unpinFirstIfNecessary = useCallback(() => {
     if (tileConfigs.length !== 2 || !state.pinnedTilesIds[0]) return;
+
     const pinnedTileId = state.pinnedTilesIds[0];
     dispatch({ type: "unpin", tileId: pinnedTileId });
   }, [tileConfigs.length, state.pinnedTilesIds]);
@@ -93,15 +145,17 @@ const useTilePinning = (tileConfigs: MediaPlayerTileConfig[]): TilePinningApi =>
   const pinTile = useCallback(
     (tileId: string) => {
       unpinFirstIfNecessary();
-      dispatch({ type: "pin", tileId })
+      dispatch({ type: "pin", tileId });
     },
     [unpinFirstIfNecessary]
   );
 
   const unpinTile = useCallback(
     (tileId: string) => {
-      if (tileId === autoPinned) removeAutoPin();
-      dispatch({ type: "unpin", tileId })
+      if (tileId === autoPinned) {
+        removeAutoPin();
+      }
+      dispatch({ type: "unpin", tileId });
     },
     [autoPinned, removeAutoPin]
   );

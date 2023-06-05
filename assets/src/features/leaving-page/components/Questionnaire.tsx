@@ -7,6 +7,7 @@ import clsx from "clsx";
 import CommentBox from "./CommentBox";
 import SubmitButton from "./SubmitButton";
 import sendForm from "../utils/sendForm";
+import { isNotNil } from "ramda";
 
 type RatingName = "video" | "audio" | "screenshare";
 
@@ -33,17 +34,18 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
-  const emailInput = watch("email");
-  const emailFilled = !!emailInput && !errors.email;
-  const emailPattern =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     sendForm(data);
     onSubmitClick();
   };
 
+  const emailInput = watch("email");
+  const emailFilled = !!emailInput && !errors.email;
+  const emailPattern =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
   const ratingNames: RatingName[] = ["video", "audio", "screenshare"];
+  const isOneQualityRated = ratingNames.map(watch).some(isNotNil);
 
   return (
     <form
@@ -104,29 +106,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
             )}
           />
         </div>
-        {!isSmartphone && (
-          <div aria-label="questionnaire-submit" className="flex flex-col content-center gap-4">
-            <SubmitButton disabled={!emailFilled} />
-            <span className="font-aktivGrotesk text-xs text-text-additional">
-              You need to rate at least one quality to submit
-            </span>
-          </div>
-        )}
-        {isSmartphone && (
-          <div
-            className={clsx(
-              "fixed bottom-0 left-0 right-0",
-              "h-36 w-full bg-brand-white",
-              "flex flex-col items-center gap-4",
-              "px-8 pt-6"
-            )}
-          >
-            <SubmitButton fullWidth disabled={!emailFilled} />
-            <span className="font-aktivGrotesk text-xs text-text-additional">
-              You need to rate at least one quality to submit
-            </span>
-          </div>
-        )}
+        <SubmitButton isSmartphone={!!isSmartphone} disabled={!emailFilled && isOneQualityRated} />
       </div>
     </form>
   );

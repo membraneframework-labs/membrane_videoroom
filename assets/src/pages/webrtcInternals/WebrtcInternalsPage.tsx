@@ -5,7 +5,7 @@ import InternalsSection from "./InternalsSection";
 import parseIncomingStats, { Section, isChannelInput } from "./parseIncomingStats";
 
 export const WebrtcInternalsPage: FC = () => {
-  const [chartData, setChartData] = useState<Section>({ descriptive: [], charts: [], key: "main" });
+  const [chartData, setChartData] = useState<Section>({ descriptive: [], sdpInfo: [], charts: [], key: "main" });
 
   useEffect(() => {
     const socket = new Socket("/socket");

@@ -100,13 +100,13 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
                 value={value ?? ""}
                 onChange={(v) => onChange(v)}
                 error={!!error}
-                additionalText={error?.message}
+                additionalText={error?.message || "Information required"}
                 required
               />
             )}
           />
         </div>
-        <SubmitButton isSmartphone={!!isSmartphone} disabled={!emailFilled && isOneQualityRated} />
+        <SubmitButton isSmartphone={!!isSmartphone} disabled={!emailFilled || !isOneQualityRated} />
       </div>
     </form>
   );

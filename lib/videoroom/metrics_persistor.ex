@@ -96,10 +96,10 @@ defmodule VideoRoom.MetricsPersistor do
     :"ice.packets_sent"
   ]
 
-  # {metric1, metric2, result}
+  # {metric1, metric2, result_key}
   # compound metrics are calculated as:
   # (m1_value - old_m1_value) / (m2_value - old_m2_value)
-  # and saved under the key `result`
+  # and saved under the `result_key`
   @compound_metrics_to_derive [
     {:"ice.buffers_processed_time", :"ice.buffers_processed", :avg_buff_proc_time}
   ]
@@ -131,17 +131,20 @@ defmodule VideoRoom.MetricsPersistor do
       |> Enum.into(report)
 
     for {m1, m2, res} <- @compound_metrics_to_derive do
-      case Map.take(report, [m1, m2]) do
+      case report do
         %{^m1 => m1_v, ^m2 => m2_v} ->
-          old_m1_v = get_in(state, [:prev_report | path ++ [m1]])
-          old_m2_v = get_in(state, [:prev_report | path ++ [m2]])
+          old_values = get_in(state.prev_report, path) || %{}
+          old_m1_v = Map.get(old_values, m1, 0)
+          old_m2_v = Map.get(old_values, m2, 0)
 
-          if is_nil(old_m1_v) or is_nil(old_m2_v) do
-            nil
-          else
-            metric = (m1_v - old_m1_v) / (m2_v - old_m2_v)
-            {"#{res}", metric}
-          end
+          metric =
+            if m2_v != old_m2_v do
+              (m1_v - old_m1_v) / (m2_v - old_m2_v)
+            else
+              0
+            end
+
+          {"#{res}", metric}
 
         _otherwise ->
           nil

@@ -13,7 +13,7 @@ const PageLayout: React.FC<PropsWithChildren> = ({ children }) => {
       {shouldBlockScreen && <BlockingScreen message="Turn your screen to resume the call." />}
       <div
         className={clsx(
-          "h-screen w-full bg-auto bg-center bg-no-repeat sm:bg-videoroom-background",
+          "h-inner-height w-full bg-auto bg-center bg-no-repeat sm:bg-videoroom-background",
           "bg-brand-sea-blue-100 font-rocGrotesk text-brand-dark-blue-500",
           "flex flex-col items-center gap-y-4 overflow-x-hidden p-4",
           shouldBlockScreen && "invisible"

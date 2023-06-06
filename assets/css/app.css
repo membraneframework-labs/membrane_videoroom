@@ -41,6 +41,10 @@
       scrollbar-width: none;
     }
   }
+
+  .h-inner-height {
+    height: calc(var(--window-inner-height) - 1px) !important;
+  }
 }
 
 .flip-horizontally {

@@ -29,7 +29,7 @@ export const BASE_URL =
 export const keyToEntryMap: KeyToEntryMapType = {
   video: "entry.591363284",
   audio: "entry.757169526",
-  screenshare: "entry.1384677715",
+  screensharing: "entry.1384677715",
   comment: "entry.1456515354",
   email: "entry.1201063562",
 };

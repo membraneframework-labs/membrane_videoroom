@@ -13,15 +13,14 @@ const renameKeysToEntries = (formInput: Inputs): ResultType => {
   return Object.fromEntries(
     Object.keys(formInput)
       .filter(isKeyOfInputs)
+      .filter((k) => !!formInput[k])
       .map((k) => [k, parseToString(formInput[k])] as const)
-      .filter(([_, v]) => v !== null)
       .map(([k, v]) => [m[k], v])
   ) as ResultType;
 };
 
 const parseToQuery = (formInput: Inputs): string => {
   const parsable = renameKeysToEntries(formInput);
-
   return new URLSearchParams(parsable).toString();
 };
 

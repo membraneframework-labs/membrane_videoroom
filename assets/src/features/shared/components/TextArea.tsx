@@ -49,7 +49,7 @@ export default function TextArea<V extends FieldValues>({
             maxLength={2001}
             rows={5}
             className={clsx(
-              "h-auto min-h-[56px] w-full rounded-3xl rounded-t-none border-2 border-t-0 border-brand-dark-blue-500 bg-brand-white p-4 pt-0 font-aktivGrotesk text-base text-brand-dark-blue-500 outline-none group-hover:!border-brand-sea-blue-300 group-focus:!border-brand-sea-blue-300",
+              "h-auto min-h-[56px] w-full rounded-3xl rounded-t-none border-2 border-t-0 border-brand-dark-blue-500 bg-brand-white p-4 pt-0 font-aktivGrotesk text-base text-brand-dark-blue-500 outline-none group-hover:!border-brand-sea-blue-400 group-focus:!border-brand-sea-blue-400",
               icon && "!pr-10",
               disabled &&
                 "group-hover:!border-grey-60 group-focus:!border-grey-60 cursor-not-allowed border-2 border-brand-grey-60 text-brand-grey-60",

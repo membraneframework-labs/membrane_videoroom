@@ -6,6 +6,7 @@ import PlainLink from "../../shared/components/PlainLink";
 import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 import SignetContourBlueLogo from "../../shared/icons/logos/SignetContourBlue";
 import clsx from "clsx";
+import HorizontalContourBlueLogo from "../../shared/icons/logos/HorizontalContourBlueLogo";
 
 const Navbar: React.FC = () => {
   const match = useParams();
@@ -16,7 +17,7 @@ const Navbar: React.FC = () => {
   return (
     <div className="flex w-full flex-row justify-between gap-y-4">
       <PlainLink href="/" name="home-page" className="my-auto self-start">
-        {isSmartphone ? <SignetContourBlueLogo /> : <HorizontalLogo className="text-5xl" />}
+        {isSmartphone ? <SignetContourBlueLogo /> : <HorizontalContourBlueLogo className="text-5xl" />}
       </PlainLink>
       <div className="flex flex-row items-center gap-x-3 font-aktivGrotesk">
         <Button

@@ -9,12 +9,10 @@ import SubmitButton from "./SubmitButton";
 import sendForm from "../utils/sendForm";
 import { isNotNil } from "ramda";
 
-type RatingName = "video" | "audio" | "screenshare";
-
 export type Inputs = {
   video: number | null;
   audio: number | null;
-  screenshare: number | null;
+  screensharing: number | null;
   comment: string;
   email: string;
 };
@@ -44,8 +42,9 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
   const emailPattern =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-  const ratingNames: RatingName[] = ["video", "audio", "screenshare"];
+  const ratingNames = ["video", "audio", "screensharing"] as const;
   const isOneQualityRated = ratingNames.map(watch).some(isNotNil);
+  const canSubmit = emailFilled && isOneQualityRated;
 
   return (
     <form
@@ -106,7 +105,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
             )}
           />
         </div>
-        <SubmitButton isSmartphone={!!isSmartphone} disabled={!emailFilled && isOneQualityRated} />
+        <SubmitButton isSmartphone={!!isSmartphone} disabled={!canSubmit} />
       </div>
     </form>
   );

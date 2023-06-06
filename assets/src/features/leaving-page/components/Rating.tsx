@@ -47,8 +47,10 @@ const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>
   const title = `${capitalize(name)} Quality`;
 
   const handleOnClick = (newValue: number) => {
-    onChange(newValue);
-    setRateValue(newValue);
+    const newValueOrZero = newValue === rateValue ? 0 : newValue;
+
+    onChange(newValueOrZero);
+    setRateValue(newValueOrZero);
     setHoverRateValue(null);
   };
 

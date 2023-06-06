@@ -165,7 +165,7 @@ defmodule Videoroom.Room do
       }
     }
 
-    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, peer_id: peer_id, node: peer_node)
+    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, id: peer_id, node: peer_node)
 
     {:reply, :ok, state}
   end

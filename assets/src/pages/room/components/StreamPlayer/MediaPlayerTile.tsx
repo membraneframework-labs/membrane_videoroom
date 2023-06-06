@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import MediaPlayer from "./MediaPlayer";
 import { SimulcastEncodingToSend } from "./simulcast/SimulcastEncodingToSend";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { WebRTCEndpoint, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { UseSimulcastLocalEncoding, useSimulcastSend } from "../../hooks/useSimulcastSend";
 import { StreamSource, TrackWithId } from "../../../types";
 import clsx from "clsx";
@@ -17,7 +17,7 @@ export interface Props {
   showSimulcast?: boolean;
   streamSource?: StreamSource;
   layers?: JSX.Element;
-  webrtc?: MembraneWebRTC;
+  webrtc?: WebRTCEndpoint;
   className?: string;
   blockFillContent?: boolean;
   forceEncoding?: TrackEncoding;

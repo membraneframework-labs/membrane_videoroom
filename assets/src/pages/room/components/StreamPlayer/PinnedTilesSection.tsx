@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { MediaPlayerTileConfig } from "../../../types";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { WebRTCEndpoint, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { PinIndicator, PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import NameTag from "../../../../features/room-page/components/NameTag";
@@ -32,7 +32,7 @@ const PinnedTilesWrapper: FC<WrapperProps> = ({ children, twoPinnedTiles, gridCo
 type Props = {
   pinnedTiles: MediaPlayerTileConfig[];
   unpin: (tileIdToUnpin: string) => void;
-  webrtc?: MembraneWebRTC;
+  webrtc?: WebRTCEndpoint;
   showSimulcast?: boolean;
   forceEncoding?: TrackEncoding;
 };

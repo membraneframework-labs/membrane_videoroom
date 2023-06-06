@@ -8,7 +8,7 @@
     "typing:check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@jellyfish-dev/membrane-webrtc-js": "^0.4.6",
+    "@jellyfish-dev/membrane-webrtc-js": "github:jellyfish-dev/membrane-webrtc-js#typped-emitter",
     "chartist": "^1.3.0",
     "clsx": "^1.2.1",
     "date-fns": "^2.29.3",

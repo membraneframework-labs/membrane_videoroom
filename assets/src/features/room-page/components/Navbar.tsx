@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Button from "../../shared/components/Button";
-import MembraneVideoroomLogo from "../../shared/components/MembraneVideoroomLogo";
+import HorizontalLogo from "../../shared/icons/logos/HorizontalLogo";
 import PlainLink from "../../shared/components/PlainLink";
 import useToast from "../../shared/hooks/useToast";
 import ShareSquare from "../icons/ShareSquare";
@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
     <div className="flex w-full max-w-full flex-row justify-between gap-y-4">
       {!isSmartphone ? (
         <PlainLink href="/" name="home-page" className="self-start">
-          <MembraneVideoroomLogo className="text-5xl" />
+          <HorizontalLogo className="text-5xl" />
         </PlainLink>
       ) : (
         <h4 className="flex flex-row items-center font-rocGrotesk text-xl font-medium tracking-wide">{roomId}</h4>

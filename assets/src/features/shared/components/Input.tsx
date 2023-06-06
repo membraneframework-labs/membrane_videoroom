@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React from "react";
+import Info from "../../leaving-page/icons/Info";
 import { Select, SelectOption, SelectProps } from "./Select";
 
 type InputType = "text" | "select"; // add other types if needed
@@ -51,12 +52,12 @@ const Input: React.FC<InputProps> = (props) => {
 
   const inputClassName = clsx(
     "w-full px-3.5 py-3",
-    "rounded-[40px] border-2 text-brand-dark-blue-500 focus:outline-none ",
+    "rounded-[40px] border-2 text-brand-dark-blue-500 focus:outline-none",
     error
       ? "border-brand-red"
       : disabled
       ? "border-brand-grey-60 bg-white text-brand-grey-80"
-      : "border-brand-dark-blue-500 focus:border-brand-sea-blue-400",
+      : "border-brand-dark-blue-500 hover:border-brand-sea-blue-400 focus:border-brand-sea-blue-400",
     "appearance-none",
     className
   );
@@ -79,6 +80,7 @@ const Input: React.FC<InputProps> = (props) => {
       default:
         return (
           <input
+            id={name}
             value={value}
             onChange={onChange}
             className={inputClassName}
@@ -104,14 +106,21 @@ const Input: React.FC<InputProps> = (props) => {
       {getComponent()}
 
       {additionalText && (
-        <span
-          className={clsx(
-            "block text-sm",
-            disabled ? "text-brand-grey-80" : error ? "text-brand-red" : "text-brand-dark-blue-500"
-          )}
-        >
-          {additionalText}
-        </span>
+        <div className="text-xm flex items-center gap-1">
+          <Info
+            className={clsx(
+              disabled ? "text-brand-grey-80" : error ? "stroke-brand-red" : "stroke-brand-dark-blue-500"
+            )}
+          />
+          <span
+            className={clsx(
+              "block text-sm",
+              disabled ? "text-brand-grey-80" : error ? "text-brand-red" : "text-brand-dark-blue-500"
+            )}
+          >
+            {additionalText}
+          </span>
+        </div>
       )}
     </div>
   );

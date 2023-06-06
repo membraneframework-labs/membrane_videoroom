@@ -19,6 +19,7 @@
     "ramda": "^0.29.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.9",
     "react-modal": "^3.16.1",
     "react-page-visibility": "^7.0.0",
     "react-resize-detector": "^8.0.4",

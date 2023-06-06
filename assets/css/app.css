@@ -28,6 +28,21 @@
   }
 }
 
+@layer utilities {
+  @variants responsive {
+    /* for Chrome, Safari, Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* for Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  }
+}
+
 .flip-horizontally {
   transform: scaleX(-1);
 }

@@ -4,7 +4,7 @@ import { createBrowserRouter, useLocation, useParams } from "react-router-dom";
 import { useDeveloperInfo } from "./contexts/DeveloperInfoContext";
 import { useUser } from "./contexts/UserContext";
 import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage";
-import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
+import LeavingRoomScreen from "./features/leaving-page/LeavingRoomScreen";
 import Page404 from "./features/shared/components/Page404";
 import { WebrtcInternalsPage } from "./pages/webrtcInternals/WebrtcInternalsPage";
 
@@ -17,7 +17,7 @@ const RoomPageWrapper: React.FC = () => {
   const { simulcast, manualMode } = useDeveloperInfo();
 
   if (isLeavingRoom && roomId) {
-    return <LeavingRoomScreen roomId={roomId} />;
+    return <LeavingRoomScreen />;
   }
 
   return username && roomId ? (

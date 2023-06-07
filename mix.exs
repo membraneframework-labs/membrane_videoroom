@@ -30,11 +30,13 @@ defmodule VideoRoom.MixProject do
     [
       {:membrane_core,
        github: "membraneframework/membrane_core", branch: "use-push-flow-0.11", override: true},
-      {:membrane_rtc_engine, "~> 0.13.0", override: true},
-      {:membrane_rtc_engine_timescaledb, "~> 0.1.0",
-       github: "jellyfish-dev/membrane_rtc_engine_timescaledb",
-       branch: "RTC-245-delete_all_timeout",
-       runtime: false},
+      {:membrane_rtc_engine, "~> 0.13.0"},
+      {
+        :membrane_rtc_engine_timescaledb,
+        "~> 0.2.0",
+        # github: "jellyfish-dev/membrane_rtc_engine_timescaledb",
+        runtime: false
+      },
       {:plug_cowboy, "~> 2.5"},
       {:phoenix, "~> 1.6.15"},
       {:phoenix_html, "~> 3.0"},

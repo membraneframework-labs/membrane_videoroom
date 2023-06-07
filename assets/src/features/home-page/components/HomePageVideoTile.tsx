@@ -1,6 +1,5 @@
 import React from "react";
 import MediaControlButton from "../../../pages/room/components/MediaControlButton";
-import RemoteMediaPlayerTile from "../../../pages/room/components/StreamPlayer/RemoteMediaPlayerTile";
 import InitialsImage, { computeInitials } from "../../room-page/components/InitialsImage";
 import { activeButtonStyle, neutralButtonStyle } from "../../room-page/consts";
 import Camera from "../../room-page/icons/Camera";
@@ -10,7 +9,6 @@ import MicrophoneOff from "../../room-page/icons/MicrophoneOff";
 import Settings from "../../room-page/icons/Settings";
 import { useModal } from "../../../contexts/ModalContext";
 import { useLocalPeer } from "../../devices/LocalPeerMediaContext";
-import LocalMediaPlayerTile from "../../../pages/room/components/StreamPlayer/LocalMediaPlayerTile";
 import GenericMediaPlayerTile from "../../../pages/room/components/StreamPlayer/GenericMediaPlayerTile";
 
 type HomePageVideoTileProps = {

@@ -6,7 +6,6 @@ import {
   onAuthError,
   onAuthSuccess,
   onBandwidthEstimationChanged,
-  onDisconnected,
   onJoinError,
   onJoinSuccess,
   onPeerJoined,
@@ -40,20 +39,16 @@ type JellyfishContextType<PeerMetadata, TrackMetadata> = {
 
 export type UseConnect<PeerMetadata> = (config: Config<PeerMetadata>) => () => void;
 
-export const createDefaultState = <PeerMetadata, TrackMetadata>(): State<PeerMetadata, TrackMetadata> => {
-  // console.log("Creating new client");
-
-  return {
-    local: null,
-    remote: {},
-    status: null,
-    bandwidthEstimation: BigInt(0), // todo investigate bigint n notation
-    connectivity: {
-      api: null,
-      client: new JellyfishClient<PeerMetadata, TrackMetadata>(crypto.randomUUID()),
-    },
-  };
-};
+export const createDefaultState = <PeerMetadata, TrackMetadata>(): State<PeerMetadata, TrackMetadata> => ({
+  local: null,
+  remote: {},
+  status: null,
+  bandwidthEstimation: BigInt(0), // todo investigate bigint n notation
+  connectivity: {
+    api: null,
+    client: new JellyfishClient<PeerMetadata, TrackMetadata>(),
+  },
+});
 
 export type ConnectAction<PeerMetadata, TrackMetadata> = {
   type: "connect";
@@ -67,6 +62,7 @@ export type DisconnectAction = {
 
 export type OnJoinErrorAction = {
   type: "onJoinError";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: any;
 };
 
@@ -87,12 +83,10 @@ export type OnJoinSuccessAction<PeerMetadata> = {
 
 export type OnAuthSuccessAction = {
   type: "onAuthSuccess";
-  id: string;
 };
 
 export type OnSocketOpenAction = {
   type: "onSocketOpen";
-  id: string;
 };
 export type OnRemovedAction = {
   type: "onRemoved";
@@ -101,7 +95,6 @@ export type OnRemovedAction = {
 
 export type OnDisconnectedAction = {
   type: "onDisconnected";
-  id: string;
 };
 
 export type OnTrackAddedAction = {
@@ -240,7 +233,7 @@ const onConnect = <PeerMetadata, TrackMetadata>(
   }
 
   client.on("onSocketOpen", () => {
-    action.dispatch({ type: "onSocketOpen", id: client.id });
+    action.dispatch({ type: "onSocketOpen" });
   });
 
   client.on("onSocketError", () => {
@@ -248,7 +241,7 @@ const onConnect = <PeerMetadata, TrackMetadata>(
   });
 
   client.on("onAuthSuccess", () => {
-    action.dispatch({ type: "onAuthSuccess", id: client.id });
+    action.dispatch({ type: "onAuthSuccess" });
   });
 
   client.on("onAuthError", () => {
@@ -256,7 +249,7 @@ const onConnect = <PeerMetadata, TrackMetadata>(
   });
 
   client.on("onDisconnected", () => {
-    action.dispatch({ type: "onDisconnected", id: client.id });
+    action.dispatch({ type: "onDisconnected" });
   });
 
   client.on("onJoinSuccess", (peerId, peersInRoom) => {
@@ -326,7 +319,6 @@ export const reducer = <PeerMetadata, TrackMetadata>(
   state: State<PeerMetadata, TrackMetadata>,
   action: Action<PeerMetadata, TrackMetadata>
 ): State<PeerMetadata, TrackMetadata> => {
-  // console.log({ name: "reducer", state, action, type: action.type });
   switch (action.type) {
     // Internal events
     case "connect":
@@ -347,6 +339,7 @@ export const reducer = <PeerMetadata, TrackMetadata>(
     case "onDisconnected":
       state?.connectivity?.client?.removeAllListeners();
       state?.connectivity?.client?.cleanUp();
+      // return onDisconnected<PeerMetadata, TrackMetadata>()(state)
       return createDefaultState();
     case "onAuthSuccess":
       return onAuthSuccess<PeerMetadata, TrackMetadata>()(state);

@@ -6,7 +6,6 @@ import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage
 import LeavingRoomScreen from "./features/home-page/components/LeavingRoomScreen";
 import Page404 from "./features/shared/components/Page404";
 import { WebrtcInternalsPage } from "./pages/webrtcInternals/WebrtcInternalsPage";
-import { useRoom } from "./contexts/RoomContext";
 
 const RoomPageWrapper: React.FC = () => {
   const match = useParams();

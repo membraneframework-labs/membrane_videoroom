@@ -1,13 +1,13 @@
 import React, { FC, useMemo } from "react";
 import RemoteMediaPlayerTile from "./RemoteMediaPlayerTile";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
 import InitialsImage from "../../../../features/room-page/components/InitialsImage";
-import { PinIndicator, PinTileLayer } from "../../../../features/room-page/components/PinComponents";
+import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
 import useSmartphoneViewport from "../../../../features/shared/hooks/useSmartphoneViewport";
 import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";

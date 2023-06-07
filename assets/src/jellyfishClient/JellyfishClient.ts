@@ -55,7 +55,7 @@ export interface MessageEvents {
    * Called when peer was not accepted
    * @param metadata - Pass thru for client application to communicate further actions to frontend
    */
-  onJoinError: (metadata: any) => void;
+  onJoinError: (metadata: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   /**
    * Called every time a local peer is removed by the server.
@@ -200,14 +200,10 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
   private webrtc: MembraneWebRTC | null = null;
   private removeEventListeners: (() => void) | null = null;
 
-  // todo remove
-  public readonly id: string;
   public status: "new" | "initialized" = "new";
 
-  constructor(id: string) {
+  constructor() {
     super();
-    this.id = id;
-    // console.log({ name: "New Client created!", id });
   }
 
   /**
@@ -273,6 +269,7 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
     // console.log({ name: "Creating ID", id });
     this.setupCallbacks();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onMessage = (event: MessageEvent<any>) => {
       const uint8Array = new Uint8Array(event.data);
       try {

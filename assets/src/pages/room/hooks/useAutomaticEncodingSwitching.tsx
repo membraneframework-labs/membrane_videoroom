@@ -1,4 +1,4 @@
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import { useCallback, useEffect, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { useStoreFirstNonNullValue } from "./useStoreFirstNonNullValue";
@@ -34,10 +34,10 @@ export const useAutomaticEncodingSwitching = (
   peerId: string | null,
   trackId: string | null,
   disableAutomaticLayerSwitching: boolean,
-  forceEncoding: TrackEncoding | null,
+  forceEncoding: TrackEncoding | null
 ) => {
   const { smartLayerSwitching } = useDeveloperInfo();
-  const autostartSmartLayerSwitching = smartLayerSwitching.status
+  const autostartSmartLayerSwitching = smartLayerSwitching.status;
   const [smartEncodingStatus, setSmartEncodingStatus] = useState(autostartSmartLayerSwitching);
   const onInitEncodingQuality = useStoreFirstNonNullValue(currentTrackEncoding || null);
 

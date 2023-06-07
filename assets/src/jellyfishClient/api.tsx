@@ -49,49 +49,36 @@ export const createApiWrapper = <PeerMetadata, TrackMetadata>(
     simulcastConfig?: SimulcastConfig,
     maxBandwidth?: TrackBandwidthLimit
   ) => {
-    console.log("createApiWrapper--addTrack");
     const remoteTrackId = webrtc.addTrack(track, stream, trackMetadata, simulcastConfig, maxBandwidth);
     dispatch({ type: "localAddTrack", remoteTrackId, track, stream, trackMetadata, simulcastConfig });
     return remoteTrackId;
   },
 
   replaceTrack: (trackId, newTrack, stream, newTrackMetadata) => {
-    console.log("createApiWrapper--addTrack");
-
     const promise = webrtc.replaceTrack(trackId, newTrack, newTrackMetadata);
     dispatch({ type: "localReplaceTrack", trackId, newTrack, stream, newTrackMetadata });
     return promise;
   },
 
   removeTrack: (trackId) => {
-    console.log("createApiWrapper--removeTrack");
-
     webrtc.removeTrack(trackId);
     dispatch({ type: "localRemoveTrack", trackId });
   },
 
   updateTrackMetadata: (trackId, trackMetadata) => {
-    console.log("createApiWrapper--updateTrackMetadata");
-
     webrtc.updateTrackMetadata(trackId, trackMetadata);
     dispatch({ type: "localUpdateTrackMetadata", trackId, trackMetadata });
   },
 
   enableTrackEncoding: (trackId, encoding) => {
-    console.log("createApiWrapper--enableTrackEncoding");
-
     webrtc.enableTrackEncoding(trackId, encoding);
   },
 
   disableTrackEncoding: (trackId: string, encoding: TrackEncoding): void => {
-    console.log("createApiWrapper--disableTrackEncoding");
-
     webrtc.disableTrackEncoding(trackId, encoding);
   },
 
   setTargetTrackEncoding: (trackId, encoding) => {
-    console.log("createApiWrapper--setTargetTrackEncoding");
-
     webrtc.setTargetTrackEncoding(trackId, encoding);
   },
 });

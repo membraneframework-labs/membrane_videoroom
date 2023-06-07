@@ -13,8 +13,7 @@ type SidebarProps = {
 
 const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const [tab, setTab] = useState<Tab>("people");
-  // const peoples = useSelector((s) => Object.values(s.remote || {}).length + 1);
-  const peoples = 0;
+  const peoples  = useSelector((s) => Object.values(s.remote || {}).length + 1);
 
   return (
     <div

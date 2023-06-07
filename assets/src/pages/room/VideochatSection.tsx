@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useMemo } from "react";
+import React, { FC, useMemo } from "react";
 
-import { ApiTrack, LocalPeer, PeerMetadata, RemotePeer, TrackMetadata } from "./hooks/usePeerState";
+import { ApiTrack, RemotePeer } from "./hooks/usePeerState";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
@@ -8,10 +8,8 @@ import { computeInitials } from "../../features/room-page/components/InitialsIma
 import { MediaPlayerTileConfig, PeerTileConfig, ScreenShareTileConfig, TrackType, TrackWithId } from "../types";
 import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection";
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
-import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
 import useTilePinning from "./hooks/useTilePinning";
 import { toLocalTrackSelector, toRemotePeerSelector, useSelector } from "../../jellifish.types";
-import { State } from "../../jellyfishClient";
 
 type Props = {
   showSimulcast: boolean;
@@ -75,7 +73,6 @@ const prepareScreenSharingStreams = (
       peer.tracks.map((track) => ({
         peerId: peer.id,
         track: track,
-        // emoji: peer.emoji,
         peerName: peer.displayName,
       }))
     )
@@ -96,14 +93,10 @@ const prepareScreenSharingStreams = (
       })
     );
 
-  const screenSharingStreams: ScreenShareTileConfig[] = localScreenSharing?.stream
+  return localScreenSharing?.stream
     ? [localPeerToScreenSharingStream(localScreenSharing), ...peersScreenSharingTracks]
     : peersScreenSharingTracks;
-
-  return screenSharingStreams;
 };
-
-// const createToLocalTrackSelecor = <PeerMetadata, TrackMetadata>(state: State<PeerMetadata, TrackMetadata>) => toLocalTrackSelector(state, "camera")
 
 export const VideochatSection: FC<Props> = ({ showSimulcast, unpinnedTilesHorizontal }: Props) => {
   const video = useSelector((state) => toLocalTrackSelector(state, "camera"));
@@ -113,10 +106,6 @@ export const VideochatSection: FC<Props> = ({ showSimulcast, unpinnedTilesHorizo
     peerId: state?.local?.id || "Unknown",
     initials: computeInitials(state?.local?.metadata?.name || ""),
   }));
-
-  useEffect(() => {
-    console.log({ screenSharing });
-  }, [screenSharing]);
 
   const localUser: PeerTileConfig = {
     typeName: "local",
@@ -130,23 +119,13 @@ export const VideochatSection: FC<Props> = ({ showSimulcast, unpinnedTilesHorizo
     isSpeaking: false,
   };
 
-  // const peers: RemotePeer[] = [];
   const peers: RemotePeer[] = useSelector((state) => toRemotePeerSelector(state));
   const screenSharingStreams = prepareScreenSharingStreams(peers, screenSharing);
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
-  // const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig;
-
-  useEffect(() => {
-    console.log({ allTilesConfig });
-  }, [allTilesConfig]);
 
   const { pinTile, unpinTile, pinningFlags, pinnedTilesIds, unpinnedTilesIds } = useTilePinning();
-
-  useEffect(() => {
-    console.log({ pinnedTilesIds, unpinnedTilesIds });
-  }, [pinnedTilesIds, unpinnedTilesIds]);
 
   const {
     pinnedTiles,

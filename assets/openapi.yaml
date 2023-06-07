@@ -32,11 +32,11 @@ paths:
         description: Room params
         required: false
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PeerToken'
+                $ref: "#/components/schemas/PeerToken"
           description: Room response
       summary: Join a room
       tags:

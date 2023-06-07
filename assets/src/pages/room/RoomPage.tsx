@@ -1,25 +1,20 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import MediaControlButtons from "./components/MediaControlButtons";
 import { useToggle } from "./hooks/useToggle";
 import { VideochatSection } from "./VideochatSection";
 import PageLayout from "../../features/room-page/components/PageLayout";
-import useToast from "../../features/shared/hooks/useToast";
-import useEffectOnChange from "../../features/shared/hooks/useEffectOnChange";
-import { ErrorMessage, messageComparator } from "./errorMessage";
 import { useAcquireWakeLockAutomatically } from "./hooks/useAcquireWakeLockAutomatically";
 import clsx from "clsx";
-import { useLocalPeer } from "../../features/devices/LocalPeerMediaContext";
 import RoomSidebar from "./RoomSidebar";
-import { useJellyfishClient, useConnect, useSelector, toLocalTrackSelector } from "../../jellifish.types";
+import { useConnect } from "../../jellifish.types";
 import { useDeveloperInfo } from "../../contexts/DeveloperInfoContext";
 import { useUser } from "../../contexts/UserContext";
-import { getToken, useRoom } from "../../contexts/RoomContext";
 import { JELLYFISH_WEBSOCKET_URL } from "./consts";
+import { getToken } from "../../room.api";
 
 type ConnectComponentProps = {
   username: string;
   roomId: string;
-  // setToken: (token: string | null) => void;
 };
 
 const ConnectComponent: FC<ConnectComponentProps> = ({ username, roomId }) => {
@@ -39,6 +34,8 @@ const ConnectComponent: FC<ConnectComponentProps> = ({ username, roomId }) => {
         disconnect();
       });
     };
+    // todo think about it
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <></>;
@@ -55,12 +52,6 @@ const RoomPage: FC<Props> = ({ roomId }: Props) => {
   const isSimulcastOn = simulcast.status;
 
   const [showSimulcastMenu, toggleSimulcastMenu] = useToggle(false);
-
-  // const state = useSelector((s) => ({ a: 1 }));
-  // useSelector((s) => toLocalTrackSelector(s, "camera"));
-  // useEffect(() => {
-  //   console.log({ state });
-  // }, [state]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

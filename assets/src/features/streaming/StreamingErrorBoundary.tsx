@@ -3,7 +3,7 @@ import useToast from "../shared/hooks/useToast";
 import { ErrorMessage, messageComparator } from "../../pages/room/errorMessage";
 import { useJellyfishClient } from "../../jellifish.types";
 import useEffectOnChange from "../shared/hooks/useEffectOnChange";
-import {useLocalPeer} from "../devices/LocalPeerMediaContext";
+import { useLocalPeer } from "../devices/LocalPeerMediaContext";
 
 export const StreamingErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
   const { addToast } = useToast();
@@ -22,34 +22,23 @@ export const StreamingErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
   );
 
   useEffect(() => {
-    // console.log({ name: "Try register callback", client });
     if (!client) return;
 
-    const id = client.id;
-
-    // console.log({ name: "Registering", client, id });
-
-    const onSocketError = (event: Event) => {
-      console.log({ name: "onSocketError", event, id });
+    const onSocketError = (_: Event) => {
       handleError(`Socket error occurred.`, "onSocketError");
     };
 
     const onConnectionError = (message: string) => {
-      console.log({ name: "onConnectionError", message, id });
       handleError(`Connection error occurred. ${message ?? ""}`);
     };
-    const onJoinError = (metadata: unknown) => {
-      console.error({ name: "onJoinError", metadata, id });
-
+    const onJoinError = (_: unknown) => {
       handleError(`Failed to join the room`);
     };
     const onAuthError = () => {
-      console.log({ name: "onAuthError", id });
       handleError(`Socket error occurred.`, "onAuthError");
     };
 
     const onSocketClose = () => {
-      console.log({name: "onSocketClose", id});
       handleError(`onSocketClose`, "onSocketClose");
     };
 
@@ -60,7 +49,6 @@ export const StreamingErrorBoundary: FC<PropsWithChildren> = ({ children }) => {
     client.on("onSocketClose", onSocketClose);
 
     return () => {
-      // console.log("Unregister!");
       client.off("onSocketError", onSocketError);
       client.off("onConnectionError", onConnectionError);
       client.off("onJoinError", onJoinError);

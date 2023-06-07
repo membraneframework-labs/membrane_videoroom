@@ -1,4 +1,4 @@
-import React, { FC, ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef } from "react";
 import MediaPlayer from "./MediaPlayer";
 import clsx from "clsx";
 
@@ -11,7 +11,9 @@ export interface Props {
   blockFillContent?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const GenericMediaPlayerTile = forwardRef<any, Props>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ({ video, audio, flipHorizontally, layers, className, blockFillContent }: Props, ref: ForwardedRef<any>) => {
     return (
       <div

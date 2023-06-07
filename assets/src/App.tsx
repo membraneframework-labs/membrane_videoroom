@@ -11,7 +11,6 @@ import { MediaSettingsModal } from "./features/devices/MediaSettingsModal";
 import { disableSafariCache } from "./features/devices/disableSafariCache";
 // import { JellyfishContextProvider } from "./jellifish.types";
 import { StreamingProvider } from "./features/streaming/StreamingContext";
-import { RoomProvider } from "./contexts/RoomContext";
 import { StreamingErrorBoundary } from "./features/streaming/StreamingErrorBoundary";
 
 // When returning to the videoroom page from another domain using the 'Back' button on the Safari browser,
@@ -29,14 +28,12 @@ const App: FC = () => {
               <ModalProvider>
                 <LocalMediaMessagesBoundary>
                   {/*<JellyfishContextProvider>*/}
-                  <RoomProvider>
-                    <StreamingErrorBoundary>
-                      <StreamingProvider>
-                        <RouterProvider router={router} />
-                        <MediaSettingsModal />
-                      </StreamingProvider>
-                    </StreamingErrorBoundary>
-                  </RoomProvider>
+                  <StreamingErrorBoundary>
+                    <StreamingProvider>
+                      <RouterProvider router={router} />
+                      <MediaSettingsModal />
+                    </StreamingProvider>
+                  </StreamingErrorBoundary>
                   {/*</JellyfishContextProvider>*/}
                 </LocalMediaMessagesBoundary>
               </ModalProvider>

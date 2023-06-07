@@ -1,16 +1,9 @@
 import React, { FC, ReactNode } from "react";
 import { MediaPlayerTileConfig } from "../../../types";
 import { TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
-import PeerInfoLayer from "./PeerInfoLayer";
-import { PinIndicator, PinTileLayer } from "../../../../features/room-page/components/PinComponents";
-import NameTag from "../../../../features/room-page/components/NameTag";
-import RemoteMediaPlayerTile from "./RemoteMediaPlayerTile";
-import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
-import InitialsImage from "../../../../features/room-page/components/InitialsImage";
+import { PinTileLayer } from "../../../../features/room-page/components/PinComponents";
 import { getGridConfig, GridConfigType } from "../../../../features/room-page/utils/getVideoGridConfig";
 import clsx from "clsx";
-import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
-import LocalMediaPlayerTile from "./LocalMediaPlayerTile";
 import Tile from "./Tile";
 
 type WrapperProps = {

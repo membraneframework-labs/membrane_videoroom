@@ -1,12 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
 import { useUser } from "../../../contexts/UserContext";
-import {
-  BACKEND_URL,
-  DEFAULT_MANUAL_MODE_CHECKBOX_VALUE,
-  DEFAULT_SMART_LAYER_SWITCHING_VALUE,
-} from "../../../pages/room/consts";
+import { DEFAULT_MANUAL_MODE_CHECKBOX_VALUE, DEFAULT_SMART_LAYER_SWITCHING_VALUE } from "../../../pages/room/consts";
 import { useToggle } from "../../../pages/room/hooks/useToggle";
 import Button from "../../shared/components/Button";
 import { Checkbox, CheckboxProps } from "../../shared/components/Checkbox";
@@ -15,9 +11,6 @@ import { MobileLoginStep, MobileLoginStepType } from "../types";
 import HomePageLayout from "./HomePageLayout";
 
 import HomePageVideoTile from "./HomePageVideoTile";
-import { RoomApi } from "../../../api";
-import axios from "axios";
-import { useRoom } from "../../../contexts/RoomContext";
 
 const VideoroomHomePage: React.FC = () => {
   const lastDisplayName: string | null = localStorage.getItem("displayName");
@@ -32,8 +25,8 @@ const VideoroomHomePage: React.FC = () => {
 
   const { simulcast, manualMode, smartLayerSwitching } = useDeveloperInfo();
 
-  const [searchParams] = useSearchParams();
-  const simulcastParam: string = searchParams?.get("simulcast") || "true";
+  // const [searchParams] = useSearchParams();
+  // const simulcastParam: string = searchParams?.get("simulcast") || "true";
   // const simulcastDefaultValue: boolean = simulcastParam === "true";
   // right now Jellifish does not support simulcast
   const simulcastDefaultValue = false;

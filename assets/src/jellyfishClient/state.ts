@@ -1,5 +1,6 @@
 import { State } from "./state.types";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DEFAULT_STORE: State<any, any> = {
   local: null,
   remote: {},

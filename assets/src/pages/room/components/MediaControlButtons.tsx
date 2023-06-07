@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 
 import MediaControlButton, { MediaControlButtonProps } from "./MediaControlButton";
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
@@ -18,7 +18,6 @@ import { SCREENSHARING_MEDIA_CONSTRAINTS } from "../consts";
 import { LocalPeerContext, useLocalPeer } from "../../../features/devices/LocalPeerMediaContext";
 import { StreamingContext, useStreaming } from "../../../features/streaming/StreamingContext";
 import { useDeveloperInfo } from "../../../contexts/DeveloperInfoContext";
-import { useSelector } from "../../../jellifish.types";
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
@@ -354,10 +353,6 @@ const MediaControlButtons: FC<MediaControlButtonsProps> = ({
   const streaming = useStreaming();
   const { isSmartphone } = useSmartphoneViewport();
   const { roomId } = useParams();
-
-  // useEffect(() => {
-  //   console.log({ client });
-  // }, [client]);
 
   const navigate = useNavigate();
   const localPeer = useLocalPeer();

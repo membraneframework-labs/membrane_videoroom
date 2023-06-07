@@ -10,26 +10,26 @@ type PeopleListItem = {
 };
 
 const PeopleComponent: FC = () => {
-  // const localUser: PeopleListItem = useSelector((state) => ({
-  //   peerId: state?.local?.id || "Unknown",
-  //   displayName: `${state?.local?.metadata?.name} (You)` || "",
-  //   initials: computeInitials(state?.local?.metadata?.name || ""),
-  // }));
-  const localUser: PeopleListItem = {
-    peerId:"Unknown",
-    displayName: "",
-    initials: "",
-  }
+  const localUser: PeopleListItem = useSelector((state) => ({
+    peerId: state?.local?.id || "Unknown",
+    displayName: `${state?.local?.metadata?.name} (You)` || "",
+    initials: computeInitials(state?.local?.metadata?.name || ""),
+  }));
+  // const localUser: PeopleListItem = {
+  //   peerId: "Unknown",
+  //   displayName: "",
+  //   initials: "",
+  // };
 
-  // const remoteUsers: PeopleListItem[] = useSelector((state) =>
-  //   Object.values(state.remote || {}).map((peer) => ({
-  //     peerId: peer.id ?? "Unknown",
-  //     displayName: peer.metadata?.name || "",
-  //     initials: computeInitials(peer?.metadata?.name || ""),
-  //   }))
-  // );
+  const remoteUsers: PeopleListItem[] = useSelector((state) =>
+    Object.values(state.remote || {}).map((peer) => ({
+      peerId: peer.id ?? "Unknown",
+      displayName: peer.metadata?.name || "",
+      initials: computeInitials(peer?.metadata?.name || ""),
+    }))
+  );
 
-  const remoteUsers: PeopleListItem[] = [];
+  // const remoteUsers: PeopleListItem[] = [];
 
   const allPeers: PeopleListItem[] = [localUser, ...remoteUsers];
 

@@ -1,10 +1,10 @@
-import {toPairs} from "ramda";
-import {TrackWithId} from "./pages/types";
-import {ApiTrack, RemotePeer} from "./pages/room/hooks/usePeerState";
+import { toPairs } from "ramda";
+import { TrackWithId } from "./pages/types";
+import { ApiTrack, RemotePeer } from "./pages/room/hooks/usePeerState";
 // import {Api, create, State} from "./jellyfishClient";
-import {Api, State} from "./jellyfishClient";
-import {create} from "./jellyfishClient/experimental";
-import {JellyfishClient} from "./jellyfishClient/JellyfishClient";
+import { Api, State } from "./jellyfishClient";
+import { create } from "./jellyfishClient/experimental";
+import { JellyfishClient } from "./jellyfishClient/JellyfishClient";
 // import { Api, create, State } from "@jellyfish-dev/react-client-sdk";
 // import { Api, State } from "@jellyfish-dev/react-client-sdk";
 // import { create } from "@jellyfish-dev/react-client-sdk";

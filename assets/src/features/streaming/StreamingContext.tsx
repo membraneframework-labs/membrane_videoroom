@@ -24,11 +24,8 @@ export const StreamingProvider = ({ children }: Props) => {
   const { manualMode } = useDeveloperInfo();
   const mode: StreamingMode = manualMode.status ? "manual" : "automatic";
   const isConnected = useSelector((snapshot) => snapshot.status === "joined");
-  // const isConnected = false;
-  //
   const { video, audio, screenShare: screenShareMedia } = useLocalPeer();
 
-  // todo refactor mode to boolean -> e.g isManual?
   const camera = useMembraneMediaStreaming(mode, "camera", isConnected, video.device);
   const microphone = useMembraneMediaStreaming(mode, "audio", isConnected, audio.device);
   const screenShare = useMembraneMediaStreaming(mode, "screensharing", isConnected, screenShareMedia.device);

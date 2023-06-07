@@ -19,7 +19,6 @@ export const useSelector = <Result, PeerMetadata, TrackMetadata>(
   selector: Selector<PeerMetadata, TrackMetadata, Result>
 ): Result => {
   const cachedSelector: Selector<PeerMetadata, TrackMetadata, Result> = useMemo(() => {
-    // console.log(selector.toString());
 
     return cache(isEqual, selector);
   }, [selector]);

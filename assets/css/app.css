@@ -42,6 +42,9 @@
     }
   }
 
+  /* 
+  TODO please change all elements of this class with `h-[100-dvh]` when dvh will be more common.
+  Please refer to `useDynamicHeightResize.tsx` for details */
   .h-inner-height {
     height: calc(var(--window-inner-height) - 1px) !important;
   }

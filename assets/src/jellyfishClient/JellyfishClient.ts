@@ -207,7 +207,7 @@ export class JellyfishClient<PeerMetadata, TrackMetadata> extends (EventEmitter 
   constructor(id: string) {
     super();
     this.id = id;
-    console.log({ name: "New Client created!", id });
+    // console.log({ name: "New Client created!", id });
   }
 
   /**

@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
  */
 const useEffectOnChange = <T,>(
   value: T,
-  effect: (prevValue?: T) => void | (() => void),
+  effect: (prevValue?: T, currentValue?: T) => void | (() => void),
   comparator?: (a: T, b?: T) => boolean
 ) => {
   const prevValueRef = useRef<T>();
@@ -23,7 +23,7 @@ const useEffectOnChange = <T,>(
 
   useEffect(() => {
     if (comparator ? !comparator(value, prevValue) : value !== prevValue) {
-      return effect(prevValue);
+      return effect(prevValue, value);
     } else return;
   }, [comparator, effect, prevValue, value]);
 };

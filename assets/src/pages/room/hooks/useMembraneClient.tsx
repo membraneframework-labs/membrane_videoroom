@@ -5,7 +5,7 @@ import { PeerMetadata, PeersApi, TrackMetadata } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";
 import { ErrorMessage } from "../errorMessage";
 
-const parseMetadata = (context: TrackContext) => {
+export const parseTrackMetadata = (context: TrackContext) => {
   const type = context.metadata.type;
   const active = context.metadata.active;
   return isTrackType(type) ? { type, active } : { active };
@@ -76,7 +76,7 @@ export const useMembraneClient = (
         },
         onTrackReady: (ctx: TrackContext) => {
           if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
-          const metadata: TrackMetadata = parseMetadata(ctx);
+          const metadata: TrackMetadata = parseTrackMetadata(ctx);
           if (ctx && ctx.metadata.type === "audio") {
             ctx.onVoiceActivityChanged = () => {
               api.setIsSpeaking(ctx.peer.id, ctx.trackId, ctx.vadStatus);
@@ -86,7 +86,7 @@ export const useMembraneClient = (
         },
         onTrackAdded: (ctx: TrackContext) => {
           if (!ctx?.peer) return;
-          const metadata: TrackMetadata = parseMetadata(ctx);
+          const metadata: TrackMetadata = parseTrackMetadata(ctx);
           // In onTrackAdded method we know, that peer has just added a new track, but right now, the server is still processing it.
           // We register this empty track (with mediaStreamTrack and mediaStream set to undefined) to show the loading indicator.
           api.addTrack(ctx.peer.id, ctx.trackId, metadata);

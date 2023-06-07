@@ -38,7 +38,7 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): PeerTileConfig[
     const audioTrack: TrackWithId | null = getTrack(peer.tracks, "audio");
 
     return {
-      mediaPlayerId: peer.id,
+      mediaPlayerId: videoTrack?.remoteTrackId || peer.id,
       typeName: "remote",
       peerId: peer.id,
       displayName: peer.displayName || "Unknown",
@@ -51,24 +51,25 @@ const mapRemotePeersToMediaPlayerConfig = (peers: RemotePeer[]): PeerTileConfig[
   });
 };
 
-const localPeerToScreenSharingStream = (localPeer: LocalPeer): ScreenShareTileConfig => {
-  const videoTrack = remoteTrackToLocalTrack(localPeer?.tracks["screensharing"]);
-
-  if (!videoTrack) {
+const localPeerToScreenSharingStream = (track: TrackWithId | null): ScreenShareTileConfig => {
+  if (!track) {
     throw Error("Something went wrong when parsing ScreenSharing track.");
   }
 
   return {
     mediaPlayerId: LOCAL_SCREEN_SHARING_ID,
     typeName: "screenShare",
-    video: videoTrack,
-    peerId: localPeer?.id ?? "Unknown",
+    video: track,
+    peerId: track.remoteTrackId ?? "Unknown",
     displayName: LOCAL_PEER_NAME,
     streamSource: "local",
   };
 };
 
-const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer): ScreenShareTileConfig[] => {
+const prepareScreenSharingStreams = (
+  peers: RemotePeer[],
+  localScreenSharing: TrackWithId | null
+): ScreenShareTileConfig[] => {
   const peersScreenSharingTracks: ScreenShareTileConfig[] = peers
     .flatMap((peer) =>
       peer.tracks.map((track) => ({
@@ -95,8 +96,8 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
       })
     );
 
-  const screenSharingStreams: ScreenShareTileConfig[] = localPeer?.tracks["screensharing"]?.stream
-    ? [localPeerToScreenSharingStream(localPeer), ...peersScreenSharingTracks]
+  const screenSharingStreams: ScreenShareTileConfig[] = localScreenSharing?.stream
+    ? [localPeerToScreenSharingStream(localScreenSharing), ...peersScreenSharingTracks]
     : peersScreenSharingTracks;
 
   return screenSharingStreams;
@@ -105,22 +106,17 @@ const prepareScreenSharingStreams = (peers: RemotePeer[], localPeer?: LocalPeer)
 // const createToLocalTrackSelecor = <PeerMetadata, TrackMetadata>(state: State<PeerMetadata, TrackMetadata>) => toLocalTrackSelector(state, "camera")
 
 export const VideochatSection: FC<Props> = ({ showSimulcast, unpinnedTilesHorizontal }: Props) => {
-  // useSelector((state) => toLocalTrackSelector(state, "camera"));
-  // useSelector((state) => state);
-  const video: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "camera"));
-  //  useSelector((state) => toLocalTrackSelector(state, "camera"));
-  // const audio: TrackWithId | null = useSelector((state) => toLocalTrackSelector(state, "audio"));
+  const video = useSelector((state) => toLocalTrackSelector(state, "camera"));
   const audio = useSelector((state) => toLocalTrackSelector(state, "audio"));
+  const screenSharing = useSelector((state) => toLocalTrackSelector(state, "screensharing"));
   const { peerId, initials } = useSelector((state) => ({
     peerId: state?.local?.id || "Unknown",
     initials: computeInitials(state?.local?.metadata?.name || ""),
   }));
-  // const video: TrackWithId | null = null;
-  // const audio: TrackWithId | null = null;
-  // const { peerId, initials } = {
-  //   peerId: "Unknown",
-  //   initials: computeInitials(""),
-  // };
+
+  useEffect(() => {
+    console.log({ screenSharing });
+  }, [screenSharing]);
 
   const localUser: PeerTileConfig = {
     typeName: "local",
@@ -134,20 +130,37 @@ export const VideochatSection: FC<Props> = ({ showSimulcast, unpinnedTilesHorizo
     isSpeaking: false,
   };
 
-  // const screenSharingStreams = prepareScreenSharingStreams(peers, localPeer);
-
   // const peers: RemotePeer[] = [];
   const peers: RemotePeer[] = useSelector((state) => toRemotePeerSelector(state));
+  const screenSharingStreams = prepareScreenSharingStreams(peers, screenSharing);
 
   const allPeersConfig: MediaPlayerTileConfig[] = [localUser, ...mapRemotePeersToMediaPlayerConfig(peers)];
-  // const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
-  const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig;
+  const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
+  // const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig;
 
-  // useEffect(() => {
-  //   console.log({ allTilesConfig });
-  // }, [allTilesConfig]);
+  useEffect(() => {
+    console.log({ allTilesConfig });
+  }, [allTilesConfig]);
 
-  const { pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags } = useTilePinning(allTilesConfig);
+  const { pinTile, unpinTile, pinningFlags, pinnedTilesIds, unpinnedTilesIds } = useTilePinning();
+
+  useEffect(() => {
+    console.log({ pinnedTilesIds, unpinnedTilesIds });
+  }, [pinnedTilesIds, unpinnedTilesIds]);
+
+  const {
+    pinnedTiles,
+    unpinnedTiles,
+  }: {
+    pinnedTiles: MediaPlayerTileConfig[];
+    unpinnedTiles: MediaPlayerTileConfig[];
+  } = useMemo(
+    () => ({
+      pinnedTiles: allTilesConfig.filter((tile) => pinnedTilesIds.includes(tile.mediaPlayerId)),
+      unpinnedTiles: allTilesConfig.filter((tile) => unpinnedTilesIds.includes(tile.mediaPlayerId)),
+    }),
+    [pinnedTilesIds, unpinnedTilesIds, allTilesConfig]
+  );
 
   const wrapperClass = useMemo(() => {
     const areAllTilesPinned = !pinningFlags.isAnyUnpinned;

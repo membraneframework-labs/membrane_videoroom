@@ -326,7 +326,7 @@ export const reducer = <PeerMetadata, TrackMetadata>(
   state: State<PeerMetadata, TrackMetadata>,
   action: Action<PeerMetadata, TrackMetadata>
 ): State<PeerMetadata, TrackMetadata> => {
-  console.log({ name: "reducer", state, action, type: action.type });
+  // console.log({ name: "reducer", state, action, type: action.type });
   switch (action.type) {
     // Internal events
     case "connect":

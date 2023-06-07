@@ -1,10 +1,10 @@
-import { toPairs } from "ramda";
-import { TrackWithId } from "./pages/types";
-import { ApiTrack, RemotePeer } from "./pages/room/hooks/usePeerState";
+import {toPairs} from "ramda";
+import {TrackWithId} from "./pages/types";
+import {ApiTrack, RemotePeer} from "./pages/room/hooks/usePeerState";
 // import {Api, create, State} from "./jellyfishClient";
-import { Api, State, Track } from "./jellyfishClient";
-import { create } from "./jellyfishClient/experimental";
-import { JellyfishClient } from "./jellyfishClient/JellyfishClient";
+import {Api, State} from "./jellyfishClient";
+import {create} from "./jellyfishClient/experimental";
+import {JellyfishClient} from "./jellyfishClient/JellyfishClient";
 // import { Api, create, State } from "@jellyfish-dev/react-client-sdk";
 // import { Api, State } from "@jellyfish-dev/react-client-sdk";
 // import { create } from "@jellyfish-dev/react-client-sdk";
@@ -39,25 +39,20 @@ export const useCurrentUserVideoTrackId = (): string | null =>
         .map((track) => track.trackId)[0] || null
   );
 
-export const toLocalTrackSelector = (state: State<PeerMetadata, TrackMetadata>, type: TrackType) => {
-  const newVar =
-    toPairs(state?.local?.tracks || {})
-      .filter(([_, value]) => value?.metadata?.type === type)
-      .map(([key, value]): TrackWithId => {
-        const { stream, metadata, encoding } = value;
-        return {
-          stream: stream || undefined,
-          remoteTrackId: key,
-          metadata,
-          isSpeaking: true,
-          enabled: true,
-          encodingQuality: encoding,
-        };
-      })[0] || null;
-  // console.log("%c Interesting value", "color: red");
-  // console.log({ newVar });
-  return newVar;
-};
+export const toLocalTrackSelector = (state: State<PeerMetadata, TrackMetadata>, type: TrackType): TrackWithId | null =>
+  toPairs(state?.local?.tracks || {})
+    .filter(([_, value]) => value?.metadata?.type === type)
+    .map(([key, value]): TrackWithId => {
+      const { stream, metadata, encoding } = value;
+      return {
+        stream: stream || undefined,
+        remoteTrackId: key,
+        metadata,
+        isSpeaking: true,
+        enabled: true,
+        encodingQuality: encoding,
+      };
+    })[0] || null;
 
 export const toRemotePeerSelector = (state: State<PeerMetadata, TrackMetadata>): RemotePeer[] => {
   return toPairs(state?.remote || {}).map(([peerId, peer]) => {

@@ -1,5 +1,5 @@
 # Works with
-- jellyfish_videoroom: RTC-201-room-management - a59edf3d1280f88cf582f243b4a40d785aaffe9c
+- jellyfish_videoroom: RTC-201-room-management - a59edf3d1280f88cf582f243b4a40d785aaffe9c (with different port and cors)
 - jellyfish: main - 7ac3fd30b2a5eb79405bf5ccdff84b9aba0cb1b7
 
 # Membrane Videoroom

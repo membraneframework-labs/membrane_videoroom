@@ -31,8 +31,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
     watch,
     handleSubmit,
     formState: { errors },
-    
-  } = useForm<Inputs>({mode: "onTouched"});
+  } = useForm<Inputs>({ mode: "onTouched" });
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     sendForm(data);
     onSubmitClick();
@@ -91,7 +90,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
               },
               required: "Email is required",
             }}
-            render={({ field: { value, onChange, onBlur, }, fieldState: { error } }) => (
+            render={({ field: { value, onChange, onBlur }, fieldState: { error } }) => (
               <Input
                 type="text"
                 label="Your e-mail (required)"
@@ -99,7 +98,9 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
                 placeholder="Your e-mail"
                 value={value ?? ""}
                 onChange={(v) => onChange(v)}
-                onBlur={()=> {onBlur()}}
+                onBlur={() => {
+                  onBlur();
+                }}
                 error={!!error}
                 additionalText={error?.message}
               />

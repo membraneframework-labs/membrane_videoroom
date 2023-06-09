@@ -44,7 +44,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
 
   const ratingNames = ["video", "audio", "screensharing"] as const;
   const isOneQualityRated = ratingNames.map(watch).some(isNotNil);
-  const canSubmit = emailFilled && isOneQualityRated;
+  const canSubmit = emailFilled || isOneQualityRated;
 
   return (
     <form
@@ -93,14 +93,13 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <Input
                 type="text"
-                label="Your e-mail"
+                label="Your e-mail (required)"
                 name="email"
                 placeholder="Your e-mail"
                 value={value ?? ""}
                 onChange={(v) => onChange(v)}
                 error={!!error}
                 additionalText={error?.message}
-                required
               />
             )}
           />

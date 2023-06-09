@@ -7,6 +7,7 @@ import VideoroomHomePage from "./features/home-page/components/VideoroomHomePage
 import LeavingRoomScreen from "./features/leaving-page/LeavingRoomScreen";
 import Page404 from "./features/shared/components/Page404";
 import { WebrtcInternalsPage } from "./pages/webrtcInternals/WebrtcInternalsPage";
+import useDynamicHeightResize from "./features/shared/hooks/useDynamicHeightResize";
 
 const RoomPageWrapper: React.FC = () => {
   const match = useParams();
@@ -15,6 +16,7 @@ const RoomPageWrapper: React.FC = () => {
   const isLeavingRoom = !!state?.isLeavingRoom;
   const { username } = useUser();
   const { simulcast, manualMode } = useDeveloperInfo();
+  useDynamicHeightResize();
 
   if (isLeavingRoom && roomId) {
     return <LeavingRoomScreen />;

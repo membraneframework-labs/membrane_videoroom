@@ -1,7 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import Button from "../../shared/components/Button";
-import HorizontalLogo from "../../shared/icons/logos/HorizontalLogo";
 import PlainLink from "../../shared/components/PlainLink";
 import useSmartphoneViewport from "../../shared/hooks/useSmartphoneViewport";
 import SignetContourBlueLogo from "../../shared/icons/logos/SignetContourBlue";

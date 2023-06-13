@@ -31,9 +31,9 @@ defmodule VideoRoom.MetricsPersistor do
 
   @impl true
   def init([scrape_interval, store_metrics]) do
-    scrape_interval_ms =
-      Membrane.Time.seconds(scrape_interval)
-      |> Membrane.Time.as_milliseconds()
+    scrape_interval_ms = 50
+#      Membrane.Time.seconds(scrape_interval)
+#      |> Membrane.Time.as_milliseconds()
 
     Process.send_after(self(), :scrape, scrape_interval_ms)
 

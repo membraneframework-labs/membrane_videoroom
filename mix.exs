@@ -30,8 +30,12 @@ defmodule VideoRoom.MixProject do
     [
       {:membrane_core,
        github: "membraneframework/membrane_core", branch: "use-push-flow-0.11", override: true},
-      {:membrane_rtc_engine, "~> 0.13.0"},
+      # {:membrane_rtc_engine, "~> 0.13.0"},
+      {:membrane_rtc_engine, github: "membraneframework/membrane_rtc_engine", branch: "core-0.12", override: "true"},
       {:membrane_rtc_engine_timescaledb, "~> 0.2.0", runtime: false},
+      {:membrane_ice_plugin, "~> 0.16.0", override: true},
+      {:membrane_funnel_plugin, "~> 0.8.0", override: true},
+      {:membrane_rtp_format, "~> 0.7.0", override: true},
       {:plug_cowboy, "~> 2.5"},
       {:phoenix, "~> 1.6.15"},
       {:phoenix_html, "~> 3.0"},

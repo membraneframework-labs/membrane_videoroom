@@ -247,10 +247,12 @@ defmodule Videoroom.Room do
       0x58 -> (fmtp.profile_level_id &&& 0x00_CF_00) == 0x00_C0_00
       _otherwise -> false
     end
+
+    false
   end
 
   defp filter_codecs(%Encoding{name: "opus"}), do: true
-  defp filter_codecs(_rtp_mapping), do: false
+  defp filter_codecs(_rtp_mapping), do: true
 
   defp tracing_metadata(),
     do: [

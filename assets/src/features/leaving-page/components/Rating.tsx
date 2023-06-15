@@ -38,7 +38,7 @@ const StarOption = ({ isActive, isHoverActive, onClick, onHover, onLeave }: Star
 };
 
 const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>) => {
-  const [rateValue, setRateValue] = useState<number| null>(value);
+  const [rateValue, setRateValue] = useState<number | null>(value);
   const [hoverRateValue, setHoverRateValue] = useState<number | null>(null);
 
   const ratingsFromOneToFive = Array.from({ length: 5 }, (_, i) => i + 1);

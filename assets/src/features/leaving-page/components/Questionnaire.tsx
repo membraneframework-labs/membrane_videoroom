@@ -37,14 +37,11 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
     onSubmitClick();
   };
 
-  const emailInput = watch("email");
-  const emailFilled = !!emailInput && !errors.email;
   const emailPattern =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   const ratingNames = ["video", "audio", "screensharing"] as const;
   const isOneQualityRated = ratingNames.map(watch).some(isNotNil);
-  const canSubmit = emailFilled || isOneQualityRated;
 
   return (
     <form
@@ -107,7 +104,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({ onSubmitClick }) => {
             )}
           />
         </div>
-        <SubmitButton isSmartphone={!!isSmartphone} disabled={!canSubmit} />
+        <SubmitButton isSmartphone={!!isSmartphone} disabled={!isOneQualityRated} />
       </div>
     </form>
   );

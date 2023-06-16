@@ -11,6 +11,7 @@ import UnpinnedTilesSection from "./components/StreamPlayer/UnpinnedTilesSection
 import PinnedTilesSection from "./components/StreamPlayer/PinnedTilesSection";
 import { remoteTrackToLocalTrack } from "../../features/room-page/utils/remoteTrackToLocalTrack";
 import useTilePinning from "./hooks/useTilePinning";
+import useSortBySpeaking from "./hooks/useSortBySpeaking";
 
 type Props = {
   peers: RemotePeer[];
@@ -132,6 +133,7 @@ export const VideochatSection: FC<Props> = ({
   const allTilesConfig: MediaPlayerTileConfig[] = allPeersConfig.concat(screenSharingStreams);
 
   const { pinnedTiles, unpinnedTiles, pinTile, unpinTile, pinningFlags } = useTilePinning(allTilesConfig);
+  const sortedUnpinnedTiles = useSortBySpeaking(unpinnedTiles);
 
   const wrapperClass = useMemo(() => {
     const areAllTilesPinned = !pinningFlags.isAnyUnpinned;
@@ -160,7 +162,7 @@ export const VideochatSection: FC<Props> = ({
 
         {pinningFlags.isAnyUnpinned && (
           <UnpinnedTilesSection
-            tileConfigs={unpinnedTiles}
+            tileConfigs={sortedUnpinnedTiles}
             showSimulcast={showSimulcast}
             isAnyTilePinned={pinningFlags.isAnyPinned}
             webrtc={webrtc}

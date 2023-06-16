@@ -29,6 +29,7 @@ type TextInputProps = BaseInputProps & {
   value?: string;
   required?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 };
 
 type InputProps = SelectInputProps | TextInputProps;
@@ -37,6 +38,7 @@ const Input: React.FC<InputProps> = (props) => {
   const {
     value,
     onChange,
+    onBlur,
     type,
     placeholder,
     label,
@@ -69,6 +71,7 @@ const Input: React.FC<InputProps> = (props) => {
           <Select
             value={value}
             onChange={onChange}
+            onBlur={onBlur}
             options={props.options}
             isDisabled={disabled}
             controlClassName={inputClassName}
@@ -83,6 +86,7 @@ const Input: React.FC<InputProps> = (props) => {
             id={name}
             value={value}
             onChange={onChange}
+            onBlur={onBlur}
             className={inputClassName}
             name={name}
             type={type}

@@ -14,7 +14,7 @@ type StarButtonProps = {
 type RatingProps<V extends FieldValues> = {
   name: Path<V>;
   value: number | null;
-  onChange: (newValue: number) => void;
+  onChange: (newValue: number | null) => void;
 };
 
 const StarOption = ({ isActive, isHoverActive, onClick, onHover, onLeave }: StarButtonProps) => {
@@ -38,7 +38,7 @@ const StarOption = ({ isActive, isHoverActive, onClick, onHover, onLeave }: Star
 };
 
 const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>) => {
-  const [rateValue, setRateValue] = useState<number>(value ?? 0);
+  const [rateValue, setRateValue] = useState<number | null>(value);
   const [hoverRateValue, setHoverRateValue] = useState<number | null>(null);
 
   const ratingsFromOneToFive = Array.from({ length: 5 }, (_, i) => i + 1);
@@ -47,10 +47,10 @@ const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>
   const title = `${capitalize(name)} Quality`;
 
   const handleOnClick = (newValue: number) => {
-    const newValueOrZero = newValue === rateValue ? 0 : newValue;
+    const newValueOrNull = newValue === rateValue ? null : newValue;
 
-    onChange(newValueOrZero);
-    setRateValue(newValueOrZero);
+    onChange(newValueOrNull);
+    setRateValue(newValueOrNull);
     setHoverRateValue(null);
   };
 
@@ -61,7 +61,7 @@ const Rating = <V extends FieldValues>({ name, value, onChange }: RatingProps<V>
         {ratingsFromOneToFive.map((rateIndex) => (
           <StarOption
             key={rateIndex}
-            isActive={hoverRateValue === null && rateIndex <= rateValue}
+            isActive={hoverRateValue === null && rateValue !== null && rateIndex <= rateValue}
             isHoverActive={hoverRateValue !== null && rateIndex <= hoverRateValue}
             onClick={() => {
               handleOnClick(rateIndex);

@@ -236,21 +236,9 @@ defmodule Videoroom.Room do
     end
   end
 
-  defp filter_codecs(%Encoding{name: "H264", format_params: fmtp}) do
-    import Bitwise
-
-    # Only accept constrained baseline
-    # based on RFC 6184, Table 5.
-    case fmtp.profile_level_id >>> 16 do
-      0x42 -> (fmtp.profile_level_id &&& 0x00_4F_00) == 0x00_40_00
-      0x4D -> (fmtp.profile_level_id &&& 0x00_8F_00) == 0x00_80_00
-      0x58 -> (fmtp.profile_level_id &&& 0x00_CF_00) == 0x00_C0_00
-      _otherwise -> false
-    end
-  end
-
+  defp filter_codecs(%Encoding{name: "VP8"}), do: true
   defp filter_codecs(%Encoding{name: "opus"}), do: true
-  defp filter_codecs(_rtp_mapping), do: false
+  defp filter_codecs(_other), do: false
 
   defp tracing_metadata(),
     do: [

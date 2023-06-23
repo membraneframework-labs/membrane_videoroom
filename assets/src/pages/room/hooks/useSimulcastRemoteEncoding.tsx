@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { WebRTCEndpoint, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 export type UseSimulcastRemoteEncodingResult = {
   targetEncoding: TrackEncoding | null;
@@ -9,7 +9,7 @@ export type UseSimulcastRemoteEncodingResult = {
 export const useSimulcastRemoteEncoding = (
   peerId: string | null,
   trackId: string | null,
-  webrtc: MembraneWebRTC | null
+  webrtc: WebRTCEndpoint | null
 ): UseSimulcastRemoteEncodingResult => {
   const [targetEncoding, setTargetEncodingState] = useState<TrackEncoding | null>(null);
 

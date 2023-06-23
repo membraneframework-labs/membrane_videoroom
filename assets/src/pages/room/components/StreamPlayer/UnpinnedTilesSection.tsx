@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { WebRTCEndpoint, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
 import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
@@ -17,7 +17,7 @@ type Props = {
   showSimulcast?: boolean;
   selectRemoteTrackEncoding?: (peerId: string, trackId: string, encoding: TrackEncoding) => void;
   isAnyTilePinned: boolean;
-  webrtc?: MembraneWebRTC;
+  webrtc?: WebRTCEndpoint;
   pin: (tileId: string) => void;
   videoInVideo: boolean;
   blockPinning: boolean;

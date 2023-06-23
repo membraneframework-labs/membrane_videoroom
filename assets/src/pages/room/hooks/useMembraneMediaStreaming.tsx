@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import { WebRTCEndpoint } from "@jellyfish-dev/membrane-webrtc-js";
 import { TrackType } from "../../types";
 import { selectBandwidthLimit } from "../bandwidth";
 
@@ -24,12 +24,12 @@ export const useMembraneMediaStreaming = (
   type: TrackType,
   isConnected: boolean,
   simulcastEnabled: boolean,
-  webrtc: MembraneWebRTC | null,
+  webrtc: WebRTCEndpoint | null,
   stream: MediaStream | null,
   isEnabled: boolean
 ): MembraneStreaming => {
   const [trackIds, setTrackIds] = useState<TrackIds | null>(null);
-  const [webrtcState, setWebrtcState] = useState<MembraneWebRTC | null>(webrtc);
+  const [webrtcState, setWebrtcState] = useState<WebRTCEndpoint | null>(webrtc);
   const [trackMetadata, setTrackMetadata] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   const defaultTrackMetadata = useMemo(() => ({ active: isEnabled, type }), [isEnabled, type]);
 

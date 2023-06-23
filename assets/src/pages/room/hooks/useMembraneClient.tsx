@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { MembraneWebRTC, Peer, SerializedMediaEvent, TrackContext } from "@jellyfish-dev/membrane-webrtc-js";
+import { Endpoint, SerializedMediaEvent, TrackContext, WebRTCEndpoint } from "@jellyfish-dev/membrane-webrtc-js";
 import { Socket } from "phoenix";
 import { PeerMetadata, PeersApi, TrackMetadata } from "./usePeerState";
 import { isTrackEncoding, isTrackType } from "../../types";
@@ -12,7 +12,7 @@ const parseMetadata = (context: TrackContext) => {
 };
 
 type UseSetupResult = {
-  webrtc?: MembraneWebRTC;
+  webrtc?: WebRTCEndpoint;
 };
 
 // todo extract callbacks
@@ -23,7 +23,7 @@ export const useMembraneClient = (
   api: PeersApi,
   setErrorMessage: (errorMessage: ErrorMessage) => void
 ): UseSetupResult => {
-  const [webrtc, setWebrtc] = useState<MembraneWebRTC | undefined>();
+  const [webrtc, setWebrtc] = useState<WebRTCEndpoint | undefined>();
 
   const handleError = useCallback(
     (text: string, id?: string) => {
@@ -54,74 +54,75 @@ export const useMembraneClient = (
       return;
     });
 
-    const webrtc = new MembraneWebRTC({
-      callbacks: {
-        onSendMediaEvent: (mediaEvent: SerializedMediaEvent) => {
-          webrtcChannel.push("mediaEvent", { data: mediaEvent });
-        },
-        onConnectionError: (message) => {
-          handleError(`Connection error occurred. ${message ?? ""}`);
-        },
-        // todo [Peer] -> Peer[] ???
-        onJoinSuccess: (peerId, peersInRoom: Peer[]) => {
-          api.setLocalPeer(peerId, peerMetadata);
-          api.addPeers(
-            peersInRoom.map((peer) => ({
-              id: peer.id,
-              displayName: peer.metadata.displayName,
-              emoji: peer.metadata.emoji,
-              source: "remote",
-            }))
-          );
-        },
-        onTrackReady: (ctx: TrackContext) => {
-          if (!ctx?.peer || !ctx?.track || !ctx?.stream) return;
-          const metadata: TrackMetadata = parseMetadata(ctx);
-          if (ctx && ctx.metadata.type === "audio") {
-            ctx.onVoiceActivityChanged = () => {
-              api.setIsSpeaking(ctx.peer.id, ctx.trackId, ctx.vadStatus);
-            };
-          }
-          api.addTrack(ctx.peer.id, ctx.trackId, metadata, ctx.track, ctx.stream, ctx.vadStatus);
-        },
-        onTrackAdded: (ctx: TrackContext) => {
-          if (!ctx?.peer) return;
-          const metadata: TrackMetadata = parseMetadata(ctx);
-          // In onTrackAdded method we know, that peer has just added a new track, but right now, the server is still processing it.
-          // We register this empty track (with mediaStreamTrack and mediaStream set to undefined) to show the loading indicator.
-          api.addTrack(ctx.peer.id, ctx.trackId, metadata);
-        },
-        onTrackRemoved: (ctx: TrackContext) => {
-          const peerId = ctx?.peer?.id;
-          if (!peerId) return;
-          api.removeTrack(peerId, ctx.trackId);
-        },
-        onPeerJoined: (peer) => {
-          api.addPeers([
-            {
-              id: peer.id,
-              displayName: peer.metadata.displayName,
-              emoji: peer.metadata.emoji,
-              source: "remote",
-            },
-          ]);
-        },
-        onPeerLeft: (peer) => {
-          api.removePeer(peer.id);
-        },
-        onTrackEncodingChanged: (peerId: string, trackId: string, encoding: string) => {
-          if (!isTrackEncoding(encoding)) return;
-          api.setEncoding(peerId, trackId, encoding);
-        },
-        onTrackUpdated: (ctx: TrackContext) => {
-          api.setMetadata(ctx.peer.id, ctx.trackId, ctx.metadata);
-        },
-        onJoinError: (_metadata) => {
-          console.error(_metadata);
+    const webrtc = new WebRTCEndpoint();
 
-          handleError(`Failed to join the room`);
+    webrtc.on("sendMediaEvent", (mediaEvent: SerializedMediaEvent) => {
+      webrtcChannel.push("mediaEvent", { data: mediaEvent });
+    });
+
+    webrtc.on("connectionError", (message: string) => {
+      handleError(`Connection error occurred. ${message ?? ""}`);
+    });
+
+    webrtc.on("connected", (endpointId: string, otherEndpoints: Endpoint[]) => {
+      api.setLocalPeer(endpointId, peerMetadata);
+      api.addPeers(
+        otherEndpoints.map((endpoint) => ({
+          id: endpoint.id,
+          displayName: endpoint.metadata.displayName,
+          emoji: endpoint.metadata.emoji,
+          source: "remote",
+        }))
+      );
+    });
+
+    webrtc.on("trackReady", (ctx: TrackContext) => {
+      if (!ctx?.endpoint || !ctx?.track || !ctx?.stream) return;
+      const metadata: TrackMetadata = parseMetadata(ctx);
+      if (ctx && ctx.metadata.type === "audio") {
+        ctx.on("voiceActivityChanged", () => {
+          api.setIsSpeaking(ctx.endpoint.id, ctx.trackId, ctx.vadStatus);
+        });
+
+        ctx.on("encodingChanged", (newCtx: TrackContext) => {
+          if (!isTrackEncoding(newCtx.encoding!)) return;
+          api.setEncoding(newCtx.endpoint.id, newCtx.trackId, newCtx.encoding!);
+        });
+      }
+      api.addTrack(ctx.endpoint.id, ctx.trackId, metadata, ctx.track, ctx.stream, ctx.vadStatus);
+    });
+
+    webrtc.on("trackAdded", (ctx: TrackContext) => {
+      if (!ctx?.endpoint) return;
+      const metadata: TrackMetadata = parseMetadata(ctx);
+      // In onTrackAdded method we know, that peer has just added a new track, but right now, the server is still processing it.
+      // We register this empty track (with mediaStreamTrack and mediaStream set to undefined) to show the loading indicator.
+      api.addTrack(ctx.endpoint.id, ctx.trackId, metadata);
+    });
+
+    webrtc.on("trackRemoved", (ctx: TrackContext) => {
+      const endpointId = ctx?.endpoint?.id;
+      if (!endpointId) return;
+      api.removeTrack(endpointId, ctx.trackId);
+    });
+
+    webrtc.on("endpointAdded", (endpoint: Endpoint) => {
+      api.addPeers([
+        {
+          id: endpoint.id,
+          displayName: endpoint.metadata.displayName,
+          emoji: endpoint.metadata.emoji,
+          source: "remote",
         },
-      },
+      ]);
+    });
+
+    webrtc.on("endpointRemoved", (endpoint: Endpoint) => {
+      api.removePeer(endpoint.id);
+    });
+
+    webrtc.on("trackUpdated", (ctx: TrackContext) => {
+      api.setMetadata(ctx.endpoint.id, ctx.trackId, ctx.metadata);
     });
 
     webrtcChannel.on("mediaEvent", (event) => {
@@ -140,7 +141,7 @@ export const useMembraneClient = (
     webrtcChannel
       .join()
       .receive("ok", () => {
-        webrtc.join(peerMetadata);
+        webrtc.connect(peerMetadata);
         setWebrtc(webrtc);
       })
       .receive("error", (_response) => {
@@ -150,7 +151,7 @@ export const useMembraneClient = (
       });
 
     const cleanUp = () => {
-      webrtc.leave();
+      webrtc.disconnect();
       webrtcChannel.leave();
       socket.off([socketOnCloseRef, socketOnErrorRef]);
       setWebrtc(undefined);

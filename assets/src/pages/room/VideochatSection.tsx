@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from "react";
 
 import { ApiTrack, LocalPeer, RemotePeer } from "./hooks/usePeerState";
-import { MembraneWebRTC } from "@jellyfish-dev/membrane-webrtc-js";
+import { WebRTCEndpoint } from "@jellyfish-dev/membrane-webrtc-js";
 import { LOCAL_PEER_NAME, LOCAL_SCREEN_SHARING_ID, LOCAL_VIDEO_ID } from "./consts";
 import clsx from "clsx";
 import { computeInitials } from "../../features/room-page/components/InitialsImage";
@@ -16,7 +16,7 @@ type Props = {
   peers: RemotePeer[];
   localPeer?: LocalPeer;
   showSimulcast?: boolean;
-  webrtc?: MembraneWebRTC;
+  webrtc?: WebRTCEndpoint;
   unpinnedTilesHorizontal?: boolean;
 };
 

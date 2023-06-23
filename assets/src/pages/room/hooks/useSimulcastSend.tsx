@@ -1,5 +1,5 @@
 import { useToggle } from "./useToggle";
-import { MembraneWebRTC, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
+import { WebRTCEndpoint, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 
 export type UseSimulcastLocalEncoding = {
   highQuality: boolean;
@@ -10,7 +10,7 @@ export type UseSimulcastLocalEncoding = {
   toggleLowQuality: () => void;
 };
 
-export const useSimulcastSend = (trackId: string | null, webrtc: MembraneWebRTC | null): UseSimulcastLocalEncoding => {
+export const useSimulcastSend = (trackId: string | null, webrtc: WebRTCEndpoint | null): UseSimulcastLocalEncoding => {
   const toggleRemoteEncoding = (status: boolean, encodingName: TrackEncoding) => {
     if (!trackId) {
       throw Error("Toggling simulcast layer is not possible when trackId is null");

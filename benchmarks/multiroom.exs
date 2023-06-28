@@ -9,7 +9,7 @@ defmodule MultiroomScenario do
   @peer_delay 1_000
   # in miliseconds
   @peer_duration 120_000
-  @url "http://localhost:4000/?room_id=benchmark"
+  @url "http://localhost:4000/room/benchmark"
 
   @impl true
   def run() do

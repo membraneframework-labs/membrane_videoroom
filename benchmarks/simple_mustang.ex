@@ -6,8 +6,8 @@ defmodule SimpleMustang do
     page = browser |> Playwright.Browser.new_page()
     _response = Playwright.Page.goto(page, options.target_url)
 
-    :ok = Playwright.Page.fill(page, "[name=display_name]", "stampede")
-    :ok = Playwright.Page.click(page, "[type=submit]")
+    :ok = Playwright.Page.fill(page,  "(//input[@id=\"display_name\"])[2]", "stampede")
+    :ok = Playwright.Page.click(page, "#join")
 
     {browser, page}
   end

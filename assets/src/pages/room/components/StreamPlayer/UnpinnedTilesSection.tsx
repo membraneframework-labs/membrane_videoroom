@@ -2,7 +2,7 @@ import React, { FC, useMemo } from "react";
 import MediaPlayerTile from "./MediaPlayerTile";
 import { WebRTCEndpoint, TrackEncoding } from "@jellyfish-dev/membrane-webrtc-js";
 import clsx from "clsx";
-import { MediaPlayerTileConfig, TrackWithId } from "../../../types";
+import { MediaPlayerTileConfig, TrackWithId, isPeerTileConfig } from "../../../types";
 import PeerInfoLayer from "./PeerInfoLayer";
 import { getGridConfig, getUnpinnedTilesGridStyle } from "../../../../features/room-page/utils/getVideoGridConfig";
 import NameTag from "../../../../features/room-page/components/NameTag";
@@ -11,6 +11,7 @@ import { PinTileLayer } from "../../../../features/room-page/components/PinCompo
 import { showDisabledIcon } from "../../../../features/room-page/components/DisabledTrackIcon";
 import useSmartphoneViewport from "../../../../features/shared/hooks/useSmartphoneViewport";
 import { getTileUpperLeftIcon } from "../../../../features/room-page/utils/computeLeftUpperIcon";
+import { useSortedUnpinnedTiles } from "../../hooks/useSortedUnpinnedTiles";
 
 type Props = {
   tileConfigs: MediaPlayerTileConfig[];
@@ -60,10 +61,15 @@ const UnpinnedTilesSection: FC<Props> = ({
     : "";
 
   const tileSize = tileConfigs.length >= 7 ? "M" : "L";
+  const maxTiles = isSmartphone ? 8 : isAnyTilePinned ? 5 : 16;
+  const { visibleTiles, overflownTiles } = useSortedUnpinnedTiles(maxTiles, tileConfigs);
+  const overflownTilesInitials = overflownTiles
+    .filter(isPeerTileConfig)
+    .map(({ mediaPlayerId, initials }) => ({ mediaPlayerId, initials }));
 
   return (
     <div id="videos-grid" className={videoGridStyle}>
-      {tileConfigs.map((config: MediaPlayerTileConfig) => {
+      {visibleTiles.map((config: MediaPlayerTileConfig) => {
         const video: TrackWithId | null = config.video;
         const hasInitials = config.typeName === "local" || config.typeName === "remote";
         const upperLeftIcon: JSX.Element | null = getTileUpperLeftIcon(config);
@@ -95,6 +101,31 @@ const UnpinnedTilesSection: FC<Props> = ({
           />
         );
       })}
+      {overflownTiles.length > 0 && (
+        <div
+          className={clsx(
+            tileStyle,
+            "relative h-full w-full justify-center overflow-hidden",
+            "grid place-content-center rounded-xl border border-brand-dark-blue-300 bg-brand-dark-blue-200"
+          )}
+        >
+          <div className="flex flex-col gap-2">
+            <div className="flex -space-x-4">
+              {overflownTilesInitials.map((tile) => (
+                <div
+                  key={tile.mediaPlayerId}
+                  className="grid h-14 w-14 place-content-center rounded-full border-2 border-brand-dark-blue-200 bg-brand-dark-blue-100"
+                >
+                  <span className="font-roc-grotesk text-lg font-medium text-brand-dark-blue-400">{tile.initials}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <p className="text-center text-xs">+ {overflownTiles.length} others</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

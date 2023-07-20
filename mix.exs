@@ -29,6 +29,10 @@ defmodule VideoRoom.MixProject do
   defp deps do
     [
       {:membrane_rtc_engine, "~> 0.15.0"},
+      # {:membrane_webrtc_plugin, github: "jellyfish-dev/membrane_webrtc_plugin", branch: "ex-ice", override: true},
+      {:membrane_webrtc_plugin, path: "../membrane_webrtc_plugin", override: true},
+      {:ex_ice, path: "../ex_ice", override: true},
+      {:membrane_ice_plugin, github: "jellyfish-dev/membrane_ice_plugin", branch: "ex-ice", override: true},
       {:membrane_rtc_engine_timescaledb, "~> 0.2.0", runtime: false},
       {:plug_cowboy, "~> 2.5"},
       {:phoenix, "~> 1.6.15"},

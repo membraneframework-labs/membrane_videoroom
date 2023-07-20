@@ -19,7 +19,8 @@ config :ex_dtls, impl: :nif
 
 config :logger,
   compile_time_purge_matching: [
-    [level_lower_than: :info],
+    [application: :membrane_core],
+    [application: :membrane_rtp_plugin],
     # Silence irrelevant warnings caused by resending handshake events
     [module: Membrane.SRTP.Encryptor, function: "handle_event/4", level_lower_than: :error]
   ]
@@ -38,6 +39,6 @@ config :membrane_videoroom_demo, ecto_repos: [VideoRoom.Repo]
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:file, :line, :room_id, :rtc_engine, :webrtc_endpoint]
+  metadata: [:pid, :file, :line, :room_id, :rtc_engine, :webrtc_endpoint]
 
 import_config("#{config_env()}.exs")

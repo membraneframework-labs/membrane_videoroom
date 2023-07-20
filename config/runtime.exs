@@ -61,6 +61,8 @@ defmodule ConfigParser do
   end
 end
 
+config :membrane_webrtc_plugin, ice_mode: :full_ice
+
 config :membrane_videoroom_demo,
   integrated_turn_ip:
     System.get_env("EXTERNAL_IP", "127.0.0.1") |> ConfigParser.parse_integrated_turn_ip(),

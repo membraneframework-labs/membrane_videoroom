@@ -13,7 +13,9 @@ defmodule VideoRoomWeb.PeerChannel do
 
     case :global.whereis_name(room_id) do
       :undefined ->
-        Videoroom.Room.start(%{room_id: room_id, simulcast?: simulcast?}, name: {:global, room_id})
+        Videoroom.Room.start(%{room_id: room_id, simulcast?: simulcast?},
+          name: {:global, room_id}
+        )
 
       pid ->
         {:ok, pid}

@@ -1,3 +1,10 @@
+# This repository is no longer maintained. See [Jellyfish Videoroom] instead.
+
+Because of a lot of projects repeating `Membrane Videoroom`'s logic, we extracted it into general purpose media server called [Jellyfish].
+Therefore, we no longer maintain this repository and instead we focus on [Jellyfish Videoroom] which is a clone of `Membrane Videoroom` but relies on [Jellyfish].
+[Jellyfish], of course, still uses awesome [Membrane RTC Engine] under the hood!
+If you want to see a little less advanced but still maintained videoconferencing system directly based on [Membrane RTC Engine] see [here](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_videoroom).
+
 # Membrane Videoroom
 
 [![CircleCI](https://circleci.com/gh/membraneframework/membrane_videoroom.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_videoroom)
@@ -246,3 +253,8 @@ Copyright 2020, [Software Mansion](https://swmansion.com/?utm_source=git&utm_med
 [![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=membrane-github)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane)
 
 Licensed under the [Apache License, Version 2.0](LICENSE)
+
+
+[Jellyfish]: https://github.com/jellyfish-dev/jellyfish
+[Jellyfish Videoroom]: https://github.com/jellyfish-dev/jellyfish_videoroom
+[Membrane RTC Engine]: https://github.com/membraneframework/membrane_rtc_engine

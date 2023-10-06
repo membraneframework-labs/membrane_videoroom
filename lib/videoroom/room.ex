@@ -187,7 +187,7 @@ defmodule Videoroom.Room do
     if peer_channel do
       send(peer_channel, :endpoint_crashed)
     else
-      Membrane.Logger.warn("""
+      Membrane.Logger.warning("""
       No peer corresponding to endpoint: #{inspect(endpoint_id)}.
       It might have left just before the crash happend or the
       crash happend as a result of peer leaving.

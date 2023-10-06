@@ -1,8 +1,7 @@
 # This repository is no longer maintained. See [Jellyfish Videoroom] instead.
 
 Because of a lot of projects repeating `Membrane Videoroom`'s logic, we extracted it into general purpose media server called [Jellyfish].
-While this repository is still a great example on how to use [Membrane RTC Engine] to
-create your own, videoconferencing system, we no longer maintain it and instead we focus on [Jellyfish Videoroom] which relies on [Jellyfish].
+Therefore, we no longer maintain this repository and instead we focus on [Jellyfish Videoroom] which is a clone of `Membrane Videoroom` but relies on [Jellyfish].
 [Jellyfish], of course, still uses awesome [Membrane RTC Engine] under the hood!
 If you want to see a little less advanced but still maintained videoconferencing system directly based on [Membrane RTC Engine] see [here](https://github.com/membraneframework/membrane_demo/tree/master/webrtc_videoroom).
 

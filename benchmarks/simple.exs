@@ -8,7 +8,7 @@ defmodule SimpleScenario do
   @peer_delay 1_000
   # in miliseconds
   @peer_duration 120_000
-  @room_url "http://localhost:4000/?room_id=benchmark"
+  @room_url "http://localhost:4000/room/benchmark"
 
   # stampede or chrome cannot connect more than 16 peers using one instance of browser
   # the problem is probably with granting permissions to mic/cam

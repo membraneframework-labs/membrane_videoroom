@@ -173,7 +173,7 @@ const VideoroomHomePage: React.FC = () => {
 
         <div className="flex w-full flex-col items-center justify-center gap-x-12 sm:max-h-[400px] sm:flex-row lg:gap-x-24">
           {/* mobile view */}
-          <div className="flex w-full flex-col items-center gap-y-6 sm:hidden">
+          <div id="mobile_home_form" className="flex w-full flex-col items-center gap-y-6 sm:hidden">
             {mobileLoginSteps[mobileCurrentLoginStep].content}
             {mobileLoginSteps[mobileCurrentLoginStep].button}
             {!joiningExistingRoom && (
@@ -190,7 +190,7 @@ const VideoroomHomePage: React.FC = () => {
               <HomePageVideoTile displayName={displayNameInput} />
             </div>
 
-            <div className="hidden w-auto flex-col items-center justify-center gap-y-6 sm:flex">
+            <div id="desktop_home_form" className="hidden w-auto flex-col items-center justify-center gap-y-6 sm:flex">
               {inputs}
               <div className="space-y-1">
                 {checkboxes.map(({ label, id, status, onChange }) => (

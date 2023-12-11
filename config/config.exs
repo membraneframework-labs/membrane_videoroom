@@ -30,8 +30,6 @@ config :membrane_telemetry_metrics, enabled: telemetry_enabled
 
 config :membrane_opentelemetry, enabled: telemetry_enabled
 
-config :membrane_rtc_engine_timescaledb, repo: VideoRoom.Repo
-
 config :membrane_core, use_push_flow_control: true
 
 config :membrane_videoroom_demo, ecto_repos: [VideoRoom.Repo]

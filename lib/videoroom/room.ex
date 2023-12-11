@@ -133,17 +133,7 @@ defmodule Videoroom.Room do
         ]
       end
 
-    webrtc_extensions =
-      if state.simulcast? do
-        [Mid, Rid, RepairedRid, TWCC]
-      else
-        [TWCC]
-      end
-
-    webrtc_extensions =
-      if state.enable_vad?,
-        do: webrtc_extensions ++ [VAD],
-        else: webrtc_extensions
+    webrtc_extensions = [Mid, Rid, RepairedRid, TWCC, VAD]
 
     endpoint = %WebRTC{
       rtc_engine: state.rtc_engine,
@@ -161,7 +151,7 @@ defmodule Videoroom.Room do
       toilet_capacity: 1000,
       simulcast_config: %SimulcastConfig{
         enabled: state.simulcast?,
-        initial_target_variant: fn _track -> :high end
+        initial_target_variant: fn _track -> :medium end
       }
     }
 
@@ -218,7 +208,7 @@ defmodule Videoroom.Room do
     if state.peer_channels == %{} do
       Membrane.Logger.info("Last peer left the room. Terminating engine.")
 
-      case Engine.terminate(state.rtc_engine, blocking?: true) do
+      case Membrane.Pipeline.terminate(state.rtc_engine) do
         :ok ->
           Membrane.Logger.info("Engine terminated.")
           {:stop, :normal, state}
@@ -234,6 +224,12 @@ defmodule Videoroom.Room do
     else
       {:noreply, state}
     end
+  end
+
+  @impl true
+  def handle_info(ignored_message, state) do
+    Membrane.Logger.warning("Ignored message: #{inspect(ignored_message)}")
+    {:noreply, state}
   end
 
   defp filter_codecs(%Encoding{name: "VP8"}), do: true

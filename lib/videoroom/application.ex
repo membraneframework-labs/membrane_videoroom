@@ -14,23 +14,12 @@ defmodule VideoRoom.Application do
     store_metrics = Application.fetch_env!(:membrane_videoroom_demo, :store_metrics)
     scrape_interval = Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
 
-    children =
-      [
-        {Membrane.TelemetryMetrics.Reporter,
-         [metrics: Membrane.RTC.Engine.Metrics.metrics(), name: VideoRoomReporter]},
-        VideoRoomWeb.Endpoint,
-        {Phoenix.PubSub, name: VideoRoom.PubSub},
-        {Registry, keys: :unique, name: Videoroom.Room.Registry},
-        {DynamicSupervisor, strategy: :one_for_one, name: Videoroom.RoomMonitorSupervisor},
-        {VideoRoom.MetricsPersistor,
-         scrape_interval: scrape_interval, store_metrics: store_metrics}
-      ] ++
-        if store_metrics do
-          Application.ensure_all_started(:membrane_rtc_engine_timescaledb)
-          [VideoRoom.Repo]
-        else
-          []
-        end
+    children = [
+      VideoRoomWeb.Endpoint,
+      {Phoenix.PubSub, name: VideoRoom.PubSub},
+      {Registry, keys: :unique, name: Videoroom.Room.Registry},
+      {DynamicSupervisor, strategy: :one_for_one, name: Videoroom.RoomMonitorSupervisor}
+    ]
 
     opts = [strategy: :one_for_one, name: __MODULE__]
     Supervisor.start_link(children, opts)

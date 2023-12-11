@@ -9,13 +9,7 @@ defmodule VideoRoom.MixProject do
       aliases: aliases(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: dialyzer(),
-      releases: [
-        membrane_videoroom_demo: [
-          steps: [:assemble, &VideoRoom.Release.cp_grafana_config_release_step/1],
-          applications: [membrane_rtc_engine_timescaledb: :load]
-        ]
-      ]
+      dialyzer: dialyzer()
     ]
   end
 
@@ -28,9 +22,21 @@ defmodule VideoRoom.MixProject do
 
   defp deps do
     [
-      {:membrane_rtc_engine, "~> 0.16.0"},
-      {:membrane_rtc_engine_webrtc, "~> 0.1.0"},
-      {:membrane_rtc_engine_timescaledb, "~> 0.2.0", runtime: false},
+      {:membrane_rtc_engine,
+       github: "jellyfish-dev/membrane_rtc_engine",
+       branch: "sgfn/sip-endpoint",
+       sparse: "engine",
+       override: true},
+      {:membrane_rtc_engine_webrtc,
+       github: "jellyfish-dev/membrane_rtc_engine",
+       branch: "sgfn/sip-endpoint",
+       sparse: "webrtc",
+       override: true},
+      {:membrane_rtc_engine_sip,
+       github: "jellyfish-dev/membrane_rtc_engine",
+       branch: "sgfn/sip-endpoint",
+       sparse: "sip",
+       override: true},
       {:plug_cowboy, "~> 2.5"},
       {:phoenix, "~> 1.6.15"},
       {:phoenix_html, "~> 3.0"},
@@ -39,15 +45,11 @@ defmodule VideoRoom.MixProject do
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:jason, "~> 1.2"},
       {:phoenix_inline_svg, "~> 1.4"},
-      {:uuid, "~> 1.1"},
+      {:elixir_uuid, "~> 1.2"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:cowlib, "~> 2.11.0", override: true},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
-
-      # Ecto
-      {:ecto_sql, "~> 3.7"},
-      {:postgrex, "~> 0.16"},
 
       # Otel
       {:opentelemetry, "~> 1.0"},

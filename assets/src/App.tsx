@@ -17,22 +17,20 @@ disableSafariCache();
 
 const App: FC = () => {
   return (
-    <React.StrictMode>
-      <UserProvider>
-        <DeveloperInfoProvider>
-          <LocalPeerMediaProvider>
-            <ToastProvider>
-              <ModalProvider>
-                <DeviceErrorBoundary>
-                  <RouterProvider router={router} />
-                  <MediaSettingsModal />
-                </DeviceErrorBoundary>
-              </ModalProvider>
-            </ToastProvider>
-          </LocalPeerMediaProvider>
-        </DeveloperInfoProvider>
-      </UserProvider>
-    </React.StrictMode>
+    <UserProvider>
+      <DeveloperInfoProvider>
+        <LocalPeerMediaProvider>
+          <ToastProvider>
+            <ModalProvider>
+              <DeviceErrorBoundary>
+                <RouterProvider router={router} />
+                <MediaSettingsModal />
+              </DeviceErrorBoundary>
+            </ModalProvider>
+          </ToastProvider>
+        </LocalPeerMediaProvider>
+      </DeveloperInfoProvider>
+    </UserProvider>
   );
 };
 

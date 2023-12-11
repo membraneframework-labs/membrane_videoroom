@@ -53,6 +53,13 @@ defmodule VideoRoomWeb.PeerChannel do
   end
 
   @impl true
+  def handle_info({:sip_message, msg}, socket) do
+    push(socket, "SIPMessage", %{data: msg})
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_info(:endpoint_crashed, socket) do
     push(socket, "error", %{
       message: "WebRTC Endpoint has crashed. Please refresh the page to reconnect"

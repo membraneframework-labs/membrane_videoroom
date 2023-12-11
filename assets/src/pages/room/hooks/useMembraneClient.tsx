@@ -11,7 +11,7 @@ const parseMetadata = (context: TrackContext) => {
   return isTrackType(type) ? { type, active } : { active };
 };
 
-type UseSetupResult = {
+export type UseSetupResult = {
   webrtc?: WebRTCEndpoint;
 };
 
@@ -129,7 +129,8 @@ export const useMembraneClient = (
       webrtc.receiveMediaEvent(event.data);
     });
 
-    webrtcChannel.on("simulcastConfig", () => {
+    webrtcChannel.on("SIPMessage", (message) => {
+      console.log("MSG: ", message)
       return;
     });
 

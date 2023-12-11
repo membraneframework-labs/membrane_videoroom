@@ -115,6 +115,7 @@ const RoomPage: FC<Props> = ({ roomId, displayName, isSimulcastOn, manualMode }:
           screenSharingStreaming={screenSharing.remote}
           isSidebarOpen={isSidebarOpen}
           openSidebar={() => setIsSidebarOpen((prev) => !prev)}
+          webrtc={webrtc}
         />
 
         {/* dev helpers */}

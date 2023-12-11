@@ -8,11 +8,13 @@ defmodule Videoroom.Room do
 
   alias Membrane.ICE.TURNManager
   alias Membrane.RTC.Engine
-  alias Membrane.RTC.Engine.Endpoint.WebRTC
+  alias Membrane.RTC.Engine.Endpoint.{WebRTC, SIP}
+  alias Membrane.RTC.Engine.Endpoint.SIP.RegistrarCredentials
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.RTC.Engine.Message
   alias Membrane.WebRTC.Extension.{Mid, RepairedRid, Rid, TWCC, VAD}
   alias Membrane.WebRTC.Track.Encoding
+  alias Membrane.RTC.Engine.Message.EndpointAdded
 
   @mix_env Mix.env()
 
@@ -104,7 +106,8 @@ defmodule Videoroom.Room do
        network_options: network_options,
        trace_ctx: trace_ctx,
        simulcast?: simulcast?,
-       enable_vad?: true
+       enable_vad?: true,
+       phone_number: nil
      }}
   end
 
@@ -115,7 +118,6 @@ defmodule Videoroom.Room do
     Process.monitor(peer_channel_pid)
 
     Membrane.Logger.info("New peer: #{inspect(peer_id)}. Accepting.")
-    peer_node = node(peer_channel_pid)
 
     handshake_opts =
       if state.network_options[:dtls_pkey] &&
@@ -155,7 +157,9 @@ defmodule Videoroom.Room do
       }
     }
 
-    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, id: peer_id, node: peer_node)
+    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, id: peer_id)
+
+    # call_phone(state)
 
     {:reply, :ok, state}
   end
@@ -190,8 +194,18 @@ defmodule Videoroom.Room do
   # media_event coming from client
   @impl true
   def handle_info({:media_event, to, event}, state) do
-    Engine.message_endpoint(state.rtc_engine, to, {:media_event, event})
-    {:noreply, state}
+    new_state =
+      case Jason.decode!(event) do
+        %{"type" => "SIP-Event", "phoneNumber" => phone_number} ->
+          call_phone(state)
+          %{state | phone_number: phone_number}
+
+        _other ->
+          Engine.message_endpoint(state.rtc_engine, to, {:media_event, event})
+          state
+      end
+
+    {:noreply, new_state}
   end
 
   @impl true
@@ -227,9 +241,43 @@ defmodule Videoroom.Room do
   end
 
   @impl true
+  def handle_info(
+        %EndpointAdded{
+          endpoint_id: sip_endpoint_id,
+          endpoint_type: SIP
+        },
+        state
+      ) do
+    # :ok = SIP.dial(state.rtc_engine, sip_endpoint_id, state.phone_number)
+    {:noreply, state}
+  end
+
+  @impl true
   def handle_info(ignored_message, state) do
     Membrane.Logger.warning("Ignored message: #{inspect(ignored_message)}")
     {:noreply, state}
+  end
+
+  defp call_phone(state) do
+    registrar_credentials =
+      RegistrarCredentials.new(
+        System.fetch_env!("SIP_DOMAIN"),
+        System.fetch_env!("SIP_USERNAME"),
+        System.fetch_env!("SIP_PASSWORD")
+      )
+      |> IO.inspect(label: :WTF)
+
+    endpoint = %SIP{
+      rtc_engine: state.rtc_engine,
+      registrar_credentials: registrar_credentials,
+      rtp_port: 5000,
+      sip_port: 500,
+      external_ip: System.fetch_env!("EXTERNAL_IP")
+    }
+
+    sip_endpoint_id = "sip-endpoint"
+
+    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, id: sip_endpoint_id)
   end
 
   defp filter_codecs(%Encoding{name: "VP8"}), do: true

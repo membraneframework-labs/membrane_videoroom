@@ -11,9 +11,6 @@ defmodule VideoRoom.Application do
     config_common_dtls_key_cert()
     create_integrated_turn_cert_file()
 
-    store_metrics = Application.fetch_env!(:membrane_videoroom_demo, :store_metrics)
-    scrape_interval = Application.fetch_env!(:membrane_videoroom_demo, :metrics_scrape_interval)
-
     children = [
       VideoRoomWeb.Endpoint,
       {Phoenix.PubSub, name: VideoRoom.PubSub},

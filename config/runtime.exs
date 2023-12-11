@@ -65,7 +65,7 @@ config :membrane_videoroom_demo,
   integrated_turn_ip:
     System.get_env("EXTERNAL_IP", "127.0.0.1") |> ConfigParser.parse_integrated_turn_ip(),
   integrated_turn_port_range:
-    System.get_env("INTEGRATED_TURN_PORT_RANGE", "50000-59999")
+    System.get_env("INTEGRATED_TURN_PORT_RANGE", "50050-50100")
     |> ConfigParser.parse_integrated_turn_port_range(),
   integrated_tcp_turn_port:
     System.get_env("INTEGRATED_TCP_TURN_PORT")
@@ -92,7 +92,7 @@ get_env = fn env, default ->
 end
 
 host = get_env.("VIRTUAL_HOST", "localhost")
-port = 4000
+port = 5002
 
 args =
   if protocol == :https do

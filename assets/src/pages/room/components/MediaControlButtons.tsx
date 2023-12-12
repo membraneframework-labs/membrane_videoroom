@@ -10,7 +10,6 @@ import Camera from "../../../features/room-page/icons/Camera";
 import CameraOff from "../../../features/room-page/icons/CameraOff";
 import Screenshare from "../../../features/room-page/icons/Screenshare";
 import HangUp from "../../../features/room-page/icons/HangUp";
-import PhoneCall from "../../../features/room-page/icons/PhoneCall";
 import Chat from "../../../features/room-page/icons/Chat";
 import useSmartphoneViewport from "../../../features/shared/hooks/useSmartphoneViewport";
 import MenuDots from "../../../features/room-page/icons/MenuDots";
@@ -18,6 +17,7 @@ import { activeButtonStyle, neutralButtonStyle, redButtonStyle } from "../../../
 import { SCREENSHARING_MEDIA_CONSTRAINTS } from "../consts";
 import { Device, useLocalPeer } from "../../../features/devices/LocalPeerMediaContext";
 import { WebRTCEndpoint } from "@jellyfish-dev/membrane-webrtc-js";
+import CallButton from "./CallButton"
 
 type ControlButton = MediaControlButtonProps & { id: string };
 
@@ -31,20 +31,20 @@ const getAutomaticControls = (
   setScreenSharingConfig: (constraints: MediaStreamConstraints | null) => void,
   isMobileViewport?: boolean
 ): ControlButton[] => [
-    {
-      id: "phone-call",
-      icon: PhoneCall,
-      hover: "Call phone",
-      buttonClassName: neutralButtonStyle,
-      // buttonClassName: redButtonStyle,
-      onClick: () => {
-        console.log("Send event")
-        const phoneNumber = "1234"
-        const mediaEvent = { type: "SIP-Event", phoneNumber: phoneNumber }
-        webrtc?.emit("sendMediaEvent", JSON.stringify(mediaEvent))
-        console.log("Call someone")
-      },
-    },
+    // {
+    //   id: "phone-call",
+    //   icon: PhoneCall,
+    //   hover: "Call phone",
+    //   buttonClassName: neutralButtonStyle,
+    //   // buttonClassName: redButtonStyle,
+    //   onClick: () => {
+    //     console.log("Send event")
+    //     const phoneNumber = "1234"
+    //     const mediaEvent = { type: "SIP-Event", phoneNumber: phoneNumber }
+    //     webrtc?.emit("sendMediaEvent", JSON.stringify(mediaEvent))
+    //     console.log("Call someone")
+    //   },
+    // },
     videoDevice.isEnabled
       ? {
         id: "cam-off",
@@ -404,6 +404,8 @@ const MediaControlButtons: FC<Props> = (props: Props) => {
       ></div>
       {show && (
         <div className="inset-x-0 z-10 flex flex-wrap justify-center gap-x-4 rounded-t-md">
+          <CallButton webrtc={props.webrtc} />
+
           {controls.map((group, index) => (
             <div key={index} className="flex justify-center gap-x-4">
               {group.map(({ hover, onClick, buttonClassName, id, icon, hideOnMobile }) => (

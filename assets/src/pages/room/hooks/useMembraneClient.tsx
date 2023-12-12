@@ -6,8 +6,8 @@ import { isTrackEncoding, isTrackType } from "../../types";
 import { ErrorMessage } from "../errorMessage";
 
 const parseMetadata = (context: TrackContext) => {
-  const type = context.metadata.type;
-  const active = context.metadata.active;
+  const type = context.metadata?.type || "audio";
+  const active = context.metadata?.active || true;
   return isTrackType(type) ? { type, active } : { active };
 };
 
@@ -69,8 +69,8 @@ export const useMembraneClient = (
       api.addPeers(
         otherEndpoints.map((endpoint) => ({
           id: endpoint.id,
-          displayName: endpoint.metadata.displayName,
-          emoji: endpoint.metadata.emoji,
+          displayName: endpoint.metadata?.displayName || "Phone",
+          emoji: endpoint.metadata?.emoji || undefined,
           source: "remote",
         }))
       );
@@ -79,7 +79,7 @@ export const useMembraneClient = (
     webrtc.on("trackReady", (ctx: TrackContext) => {
       if (!ctx?.endpoint || !ctx?.track || !ctx?.stream) return;
       const metadata: TrackMetadata = parseMetadata(ctx);
-      if (ctx && ctx.metadata.type === "audio") {
+      if (ctx && ctx.metadata && ctx.metadata.type === "audio") {
         ctx.on("voiceActivityChanged", () => {
           api.setIsSpeaking(ctx.endpoint.id, ctx.trackId, ctx.vadStatus);
         });
@@ -94,6 +94,7 @@ export const useMembraneClient = (
 
     webrtc.on("trackAdded", (ctx: TrackContext) => {
       if (!ctx?.endpoint) return;
+
       const metadata: TrackMetadata = parseMetadata(ctx);
       // In onTrackAdded method we know, that peer has just added a new track, but right now, the server is still processing it.
       // We register this empty track (with mediaStreamTrack and mediaStream set to undefined) to show the loading indicator.
@@ -110,8 +111,8 @@ export const useMembraneClient = (
       api.addPeers([
         {
           id: endpoint.id,
-          displayName: endpoint.metadata.displayName,
-          emoji: endpoint.metadata.emoji,
+          displayName: endpoint.metadata?.displayName || "Phone",
+          emoji: endpoint.metadata?.emoji || undefined,
           source: "remote",
         },
       ]);
@@ -130,7 +131,6 @@ export const useMembraneClient = (
     });
 
     webrtcChannel.on("SIPMessage", (message) => {
-      console.log("MSG: ", message)
       return;
     });
 

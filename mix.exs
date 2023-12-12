@@ -16,7 +16,7 @@ defmodule VideoRoom.MixProject do
   def application do
     [
       mod: {VideoRoom.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :sippet]
     ]
   end
 

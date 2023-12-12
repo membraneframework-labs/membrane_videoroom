@@ -6,6 +6,7 @@ defmodule Videoroom.Room do
   require Membrane.Logger
   require Membrane.OpenTelemetry
 
+  require Logger
   alias Membrane.ICE.TURNManager
   alias Membrane.RTC.Engine
   alias Membrane.RTC.Engine.Endpoint.{WebRTC, SIP}
@@ -14,9 +15,11 @@ defmodule Videoroom.Room do
   alias Membrane.RTC.Engine.Message
   alias Membrane.WebRTC.Extension.{Mid, RepairedRid, Rid, TWCC, VAD}
   alias Membrane.WebRTC.Track.Encoding
-  alias Membrane.RTC.Engine.Message.EndpointAdded
+  alias Membrane.RTC.Engine.Message.{EndpointAdded, EndpointRemoved}
 
   @mix_env Mix.env()
+
+  @sip_endpoint "sip-endpoint"
 
   @spec start(any(), list()) :: {:ok, pid()}
   def start(init_arg, opts) do
@@ -145,7 +148,7 @@ defmodule Videoroom.Room do
       integrated_turn_domain: state.network_options[:integrated_turn_domain],
       handshake_opts: handshake_opts,
       log_metadata: [peer_id: peer_id],
-      trace_context: state.trace_ctx,
+      # trace_context: state.trace_ctx,
       webrtc_extensions: webrtc_extensions,
       rtcp_sender_report_interval: Membrane.Time.seconds(5),
       rtcp_receiver_report_interval: Membrane.Time.seconds(5),
@@ -159,8 +162,6 @@ defmodule Videoroom.Room do
 
     :ok = Engine.add_endpoint(state.rtc_engine, endpoint, id: peer_id)
 
-    # call_phone(state)
-
     {:reply, :ok, state}
   end
 
@@ -172,6 +173,11 @@ defmodule Videoroom.Room do
 
     {:noreply, state}
   end
+
+  #  @impl true
+  #  def handle_info(%Message.EndpointCrashed{endpoint_id: @sip_endpoint}, state) do
+  #    {:noreply, %{state | phone_number: nil}}
+  #  end
 
   @impl true
   def handle_info(%Message.EndpointCrashed{endpoint_id: endpoint_id}, state) do
@@ -197,8 +203,21 @@ defmodule Videoroom.Room do
     new_state =
       case Jason.decode!(event) do
         %{"type" => "SIP-Event", "phoneNumber" => phone_number} ->
-          call_phone(state)
-          %{state | phone_number: phone_number}
+          if is_nil(state.phone_number) do
+            state = %{state | phone_number: phone_number}
+            call_phone(state.rtc_engine, phone_number)
+          else
+            Logger.warning(
+              "Tried to add another SIP Endpoint when previous call doesn't end, so removing old SIP endpoint"
+            )
+          end
+
+          state
+
+        %{"type" => "SIP-Event", "msg" => "disconnect"} ->
+          Logger.info("Remove phone number")
+          Engine.remove_endpoint(state.rtc_engine, @sip_endpoint)
+          state
 
         _other ->
           Engine.message_endpoint(state.rtc_engine, to, {:media_event, event})
@@ -243,12 +262,25 @@ defmodule Videoroom.Room do
   @impl true
   def handle_info(
         %EndpointAdded{
-          endpoint_id: sip_endpoint_id,
+          endpoint_id: _sip_endpoint_id,
           endpoint_type: SIP
         },
         state
       ) do
-    # :ok = SIP.dial(state.rtc_engine, sip_endpoint_id, state.phone_number)
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(
+        %EndpointRemoved{
+          endpoint_type: SIP
+        },
+        state
+      ) do
+    Process.sleep(2_500)
+
+    call_phone(state.rtc_engine, state.phone_number)
+
     {:noreply, state}
   end
 
@@ -258,26 +290,25 @@ defmodule Videoroom.Room do
     {:noreply, state}
   end
 
-  defp call_phone(state) do
+  defp call_phone(rtc_engine, phone_number) do
     registrar_credentials =
       RegistrarCredentials.new(
-        System.fetch_env!("SIP_DOMAIN"),
-        System.fetch_env!("SIP_USERNAME"),
-        System.fetch_env!("SIP_PASSWORD")
+        address: System.fetch_env!("SIP_DOMAIN"),
+        username: System.fetch_env!("SIP_USERNAME"),
+        password: System.fetch_env!("SIP_PASSWORD")
       )
-      |> IO.inspect(label: :WTF)
 
     endpoint = %SIP{
-      rtc_engine: state.rtc_engine,
+      rtc_engine: rtc_engine,
       registrar_credentials: registrar_credentials,
-      rtp_port: 5000,
-      sip_port: 500,
       external_ip: System.fetch_env!("EXTERNAL_IP")
     }
 
-    sip_endpoint_id = "sip-endpoint"
+    sip_endpoint_id = @sip_endpoint
 
-    :ok = Engine.add_endpoint(state.rtc_engine, endpoint, id: sip_endpoint_id)
+    :ok = Engine.add_endpoint(rtc_engine, endpoint, id: sip_endpoint_id)
+
+    :ok = SIP.dial(rtc_engine, sip_endpoint_id, phone_number)
   end
 
   defp filter_codecs(%Encoding{name: "VP8"}), do: true

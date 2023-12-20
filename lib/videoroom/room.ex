@@ -206,13 +206,14 @@ defmodule Videoroom.Room do
           if is_nil(state.phone_number) do
             state = %{state | phone_number: phone_number}
             call_phone(state.rtc_engine, phone_number)
+            state
           else
             Logger.warning(
               "Tried to add another SIP Endpoint when previous call doesn't end, so removing old SIP endpoint"
             )
-          end
 
-          state
+            state
+          end
 
         %{"type" => "SIP-Event", "msg" => "disconnect"} ->
           Logger.info("Remove phone number")
@@ -277,9 +278,7 @@ defmodule Videoroom.Room do
         },
         state
       ) do
-    Process.sleep(2_500)
-
-    call_phone(state.rtc_engine, state.phone_number)
+    state = %{state | phone_number: nil}
 
     {:noreply, state}
   end
@@ -304,11 +303,9 @@ defmodule Videoroom.Room do
       external_ip: System.fetch_env!("EXTERNAL_IP")
     }
 
-    sip_endpoint_id = @sip_endpoint
+    :ok = Engine.add_endpoint(rtc_engine, endpoint, id: @sip_endpoint)
 
-    :ok = Engine.add_endpoint(rtc_engine, endpoint, id: sip_endpoint_id)
-
-    :ok = SIP.dial(rtc_engine, sip_endpoint_id, phone_number)
+    :ok = SIP.dial(rtc_engine, @sip_endpoint, phone_number)
   end
 
   defp filter_codecs(%Encoding{name: "VP8"}), do: true

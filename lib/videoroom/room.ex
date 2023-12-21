@@ -200,6 +200,9 @@ defmodule Videoroom.Room do
   # media_event coming from client
   @impl true
   def handle_info({:media_event, to, event}, state) do
+    # The code below is a little bit of a hack. Because we check the internals of media-events,
+    # which could change in the future and are not part of Public API.
+    # That's why it would be better to set up a separate web socket.
     new_state =
       case Jason.decode!(event) do
         %{"type" => "SIP-Event", "phoneNumber" => phone_number} ->

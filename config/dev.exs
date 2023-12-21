@@ -26,7 +26,7 @@ config :membrane_videoroom_demo, VideoRoomWeb.Endpoint,
     ]
   ]
 
-#config :logger, level: :info
+# config :logger, level: :info
 config :logger, level: :debug
 
 # Set a higher stacktrace during development. Avoid configuring such

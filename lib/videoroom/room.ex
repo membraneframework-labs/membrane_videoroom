@@ -9,7 +9,7 @@ defmodule Videoroom.Room do
   require Logger
   alias Membrane.ICE.TURNManager
   alias Membrane.RTC.Engine
-  alias Membrane.RTC.Engine.Endpoint.{WebRTC, SIP}
+  alias Membrane.RTC.Engine.Endpoint.{SIP, WebRTC}
   alias Membrane.RTC.Engine.Endpoint.SIP.RegistrarCredentials
   alias Membrane.RTC.Engine.Endpoint.WebRTC.SimulcastConfig
   alias Membrane.RTC.Engine.Message
@@ -44,7 +44,6 @@ defmodule Videoroom.Room do
     room_id = args.room_id
     simulcast? = args.simulcast?
 
-    Logger.metadata(room_id: room_id)
     Membrane.Logger.info("Spawning room process: #{inspect(self())}")
 
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)

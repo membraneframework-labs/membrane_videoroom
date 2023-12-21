@@ -34,7 +34,7 @@ config :membrane_core, use_push_flow_control: true
 
 config :membrane_videoroom_demo, ecto_repos: [VideoRoom.Repo]
 
-#config :logger, :console,
+# config :logger, :console,
 #  format: "$time $metadata[$level] $message\n",
 #  metadata: [:file, :line, :room_id, :rtc_engine, :webrtc_endpoint]
 

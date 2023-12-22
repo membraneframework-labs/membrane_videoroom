@@ -173,11 +173,6 @@ defmodule Videoroom.Room do
     {:noreply, state}
   end
 
-  #  @impl true
-  #  def handle_info(%Message.EndpointCrashed{endpoint_id: @sip_endpoint}, state) do
-  #    {:noreply, %{state | phone_number: nil}}
-  #  end
-
   @impl true
   def handle_info(%Message.EndpointCrashed{endpoint_id: endpoint_id}, state) do
     Membrane.Logger.error("Endpoint #{inspect(endpoint_id)} has crashed!")

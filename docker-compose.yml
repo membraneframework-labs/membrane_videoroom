@@ -1,30 +1,13 @@
 version: "3.1"
 
 services:
-  # videoroom:
-  #   image: membraneframework/membrane_videoroom:${TAG:-latest}
-  #   network_mode: "host"
-  #   restart: on-failure
-  #   environment:
-  #     VIRTUAL_HOST: "${VIRTUAL_HOST:-localhost}"
-  #     USE_INTEGRATED_TURN: "true"
-  #     EXTERNAL_IP: "${EXTERNAL_IP:-127.0.0.1}"
-  #     INTEGRATED_TURN_PORT_RANGE: "50000-65355"
-  #     INTEGRATED_TCP_TURN_PORT: "49999"
-
-  asterisk:
-    image: dougbtv/asterisk
-    volumes:
-      - ./asterisk/config:/etc/asterisk
-      - ./asterisk/sounds:/var/lib/asterisk/sounds
-      - ./asterisk/recordings:/var/spool/asterisk/monitor
-    ports:
-      - 5061:5061/udp
-      - 5061:5061/tcp
-      - "10000-10100:10000-10100/udp"
+  videoroom:
+    image: membraneframework/membrane_videoroom:${TAG:-latest}
+    network_mode: "host"
+    restart: on-failure
     environment:
-      # add your environment variables here
-      - EXTERNAL_IP=$EXTERNAL_IP
-      - LOCAL_NET=${LOCAL_NET:-$EXTERNAL_IP/24}
-    container_name: my-asterisk
-    entrypoint: [ "/etc/asterisk/startup.sh" ] # replace "command" with "entrypoint"
+      VIRTUAL_HOST: "${VIRTUAL_HOST:-localhost}"
+      USE_INTEGRATED_TURN: "true"
+      EXTERNAL_IP: "${EXTERNAL_IP:-127.0.0.1}"
+      INTEGRATED_TURN_PORT_RANGE: "50000-65355"
+      INTEGRATED_TCP_TURN_PORT: "49999"

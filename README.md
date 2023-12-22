@@ -44,19 +44,12 @@ be executed on a given OS.
 
 ```bash
 brew install srtp clang-format ffmpeg pkg-config
-export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
-export CFLAGS="-I/usr/local/opt/openssl@1.1/include/"
-export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include/"
-export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
 ```
 
 #### macOS with M1 processor
 
 ```bash
 brew install srtp clang-format ffmpeg
-export C_INCLUDE_PATH=/opt/homebrew/Cellar/libnice/0.1.18/include:/opt/homebrew/Cellar/opus/1.3.1/include:/opt/homebrew/Cellar/openssl@1.1/1.1.1l_1/include
-export LIBRARY_PATH=/opt/homebrew/Cellar/opus/1.3.1/lib
-export PKG_CONFIG_PATH=/opt/homebrew/Cellar/openssl@1.1/1.1.1l_1/lib/pkgconfig/
 ```
 
 #### Ubuntu
@@ -84,6 +77,8 @@ EXTERNAL_IP=<IPv4> mix phx.server
 It is required unless you only connect via `localhost`.
 
 Then go to <http://localhost:4000/>.
+
+To use SIP you must provide `SIP_DOMAIN`, `SIP_USERNAME` and `SIP_PASSWORD`.
 
 ## Running with docker
 

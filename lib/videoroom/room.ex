@@ -49,17 +49,8 @@ defmodule Videoroom.Room do
     turn_mock_ip = Application.fetch_env!(:membrane_videoroom_demo, :integrated_turn_ip)
     turn_ip = if @mix_env == :prod, do: {0, 0, 0, 0}, else: turn_mock_ip
 
-    trace_ctx = Membrane.OpenTelemetry.new_ctx()
-    Membrane.OpenTelemetry.attach(trace_ctx)
-
-    span_id = room_span_id(room_id)
-    room_span = Membrane.OpenTelemetry.start_span(span_id)
-    Membrane.OpenTelemetry.set_attributes(span_id, tracing_metadata())
-
     rtc_engine_options = [
-      id: room_id,
-      trace_ctx: trace_ctx,
-      parent_span: room_span
+      id: room_id
     ]
 
     turn_cert_file =
@@ -106,7 +97,6 @@ defmodule Videoroom.Room do
        rtc_engine: pid,
        peer_channels: %{},
        network_options: network_options,
-       trace_ctx: trace_ctx,
        simulcast?: simulcast?,
        enable_vad?: true,
        phone_number: nil
@@ -147,7 +137,6 @@ defmodule Videoroom.Room do
       integrated_turn_domain: state.network_options[:integrated_turn_domain],
       handshake_opts: handshake_opts,
       log_metadata: [peer_id: peer_id],
-      # trace_context: state.trace_ctx,
       webrtc_extensions: webrtc_extensions,
       rtcp_sender_report_interval: Membrane.Time.seconds(5),
       rtcp_receiver_report_interval: Membrane.Time.seconds(5),
@@ -308,11 +297,4 @@ defmodule Videoroom.Room do
   defp filter_codecs(%Encoding{name: "VP8"}), do: true
   defp filter_codecs(%Encoding{name: "opus"}), do: true
   defp filter_codecs(_other), do: false
-
-  defp tracing_metadata(),
-    do: [
-      {:"library.language", :erlang},
-      {:"library.name", :membrane_rtc_engine},
-      {:"library.version", "server:#{Application.spec(:membrane_rtc_engine, :vsn)}"}
-    ]
 end

@@ -130,10 +130,6 @@ export const useMembraneClient = (
       webrtc.receiveMediaEvent(event.data);
     });
 
-    webrtcChannel.on("SIPMessage", (message) => {
-      return;
-    });
-
     webrtcChannel.on("error", (error) => {
       handleError(`Received error report from the server: ${error.message ?? ""}`);
       cleanUp();

@@ -45,3 +45,6 @@ export type ScreenShareTileConfig = {
 } & CommonTile;
 
 export type MediaPlayerTileConfig = PeerTileConfig | ScreenShareTileConfig;
+
+export const isPeerTileConfig = (tileConfig: MediaPlayerTileConfig): tileConfig is PeerTileConfig =>
+  StreamSourceValues.includes(tileConfig.typeName as StreamSource);

@@ -1,3 +1,5 @@
+.env
+
 asterisk/recordings/*
 
 asterisk/config/sip.conf

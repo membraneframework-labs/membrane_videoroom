@@ -36,6 +36,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:file, :line, :room_id, :rtc_engine, :webrtc_endpoint]
 
-config :membrane_rtc_engine_sip, port_range: {50_000, 50_010}
+config :membrane_rtc_engine_sip, sip_port: 5555, port_range: {50_000, 50_010}
 
 import_config("#{config_env()}.exs")

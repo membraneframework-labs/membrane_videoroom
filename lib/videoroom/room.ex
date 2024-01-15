@@ -287,7 +287,11 @@ defmodule Videoroom.Room do
 
     :ok = Engine.add_endpoint(rtc_engine, endpoint, id: @sip_endpoint)
 
-    :ok = SIP.dial(rtc_engine, @sip_endpoint, phone_number)
+    twilio_internal_phone_number = System.fetch_env!("CALLEE")
+
+    :ets.insert(:phone_numbers, {twilio_internal_phone_number, phone_number})
+
+    :ok = SIP.dial(rtc_engine, @sip_endpoint, twilio_internal_phone_number)
   end
 
   defp filter_codecs(%Encoding{name: "VP8"}), do: true

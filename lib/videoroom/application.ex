@@ -18,6 +18,8 @@ defmodule VideoRoom.Application do
       {DynamicSupervisor, strategy: :one_for_one, name: Videoroom.RoomMonitorSupervisor}
     ]
 
+    :ets.new(:phone_numbers, [:set, :public, :named_table])
+
     opts = [strategy: :one_for_one, name: __MODULE__]
     Supervisor.start_link(children, opts)
   end

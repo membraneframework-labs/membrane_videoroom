@@ -6,6 +6,13 @@ Mix.install(
   # force: true
 )
 
+# TWILIO SETUP GUIDE
+
+# 1. Purchase a phone number: search "Phone Numbers" in search bar > Buy a number
+# 2. Get Twilio account SID and auth token: search "API keys" in search bar > Auth Tokens section > Live Credentials > Account SID, Auth Token
+# 3. Setup your envs and run elixir script twilio_setup.exs
+# 4. Setup geographic permissions: search "Voice Geographic Permissions" in search bar > select countries in which the numbers you're planning to call are registered
+
 Application.start(:httpoison)
 
 twilio_account_sid = System.fetch_env!("TWILIO_ACCOUNT_SID")
@@ -28,6 +35,8 @@ phone_numbers =
   for phone <- decoded["incoming_phone_numbers"] do
     phone["phone_number"]
   end
+
+IO.inspect(phone_numbers, label: :TWILIO_PHONE_NUMBERS)
 
 # SIP Domain created
 created_sip_domain =

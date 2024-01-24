@@ -4,7 +4,6 @@ defmodule Videoroom.Room do
   use GenServer
 
   require Membrane.Logger
-  require Membrane.OpenTelemetry
 
   require Logger
   alias Membrane.ICE.TURNManager
@@ -35,9 +34,6 @@ defmodule Videoroom.Room do
   def add_peer_channel(room_pid, peer_channel_pid, peer_id) do
     GenServer.call(room_pid, {:add_peer_channel, peer_channel_pid, peer_id})
   end
-
-  @spec room_span_id(String.t()) :: String.t()
-  def room_span_id(id), do: "room:#{id}"
 
   @impl true
   def init(args) do

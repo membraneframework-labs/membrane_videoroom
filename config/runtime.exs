@@ -111,51 +111,6 @@ config :membrane_videoroom_demo, VideoRoomWeb.Endpoint, [
   {protocol, args}
 ]
 
-otel_state = :purge
-
-config :opentelemetry, :resource,
-  service: [
-    name: "membrane",
-    namespace: "membrane"
-  ]
-
-exporter =
-  case otel_state do
-    :local ->
-      {:otel_exporter_stdout, []}
-
-    :honeycomb ->
-      {:opentelemetry_exporter,
-       %{
-         endpoints: ["https://api.honeycomb.io:443"],
-         headers: [
-           {"x-honeycomb-dataset", "experiments"},
-           {"x-honeycomb-team", System.get_env("HONEYCOMB")}
-         ]
-       }}
-
-    :zipkin ->
-      {:opentelemetry_zipkin,
-       %{
-         address: ["http://localhost:9411/api/v2/spans"],
-         local_endpoint: %{service_name: "VideoRoom"}
-       }}
-
-    _ ->
-      {}
-  end
-
-if otel_state != :purge do
-  config :opentelemetry,
-    processors: [
-      otel_batch_processor: %{
-        exporter: exporter
-      }
-    ]
-else
-  config :opentelemetry, traces_exporter: :none
-end
-
 config :membrane_videoroom_demo, VideoRoom.Repo,
   database: System.get_env("DATABASE"),
   username: System.get_env("DB_USERNAME"),

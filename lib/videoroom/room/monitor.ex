@@ -2,7 +2,6 @@ defmodule Videoroom.Room.Monitor do
   @moduledoc false
   use GenServer, restart: :transient
 
-  require Membrane.OpenTelemetry
   require Logger
 
   @spec start_link(list()) :: :ok
@@ -22,10 +21,6 @@ defmodule Videoroom.Room.Monitor do
         %{ref: ref, room_pid: room_pid, room_id: room_id} = state
       ) do
     Logger.info("Room: #{room_id} terminated with reason: #{inspect(reason)}")
-
-    room_id
-    |> Videoroom.Room.room_span_id()
-    |> Membrane.OpenTelemetry.end_span()
 
     {:stop, :normal, state}
   end

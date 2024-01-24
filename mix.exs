@@ -51,12 +51,6 @@ defmodule VideoRoom.MixProject do
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
 
-      # Otel
-      {:opentelemetry, "~> 1.0"},
-      {:opentelemetry_api, "~> 1.0"},
-      {:opentelemetry_exporter, "~> 1.0.4"},
-      {:opentelemetry_zipkin, "~> 1.0"},
-
       # Benchmarks
       {:beamchmark, "~> 1.4.0", only: :benchmark},
       {:stampede, github: "membraneframework-labs/stampede-elixir", only: :benchmark},
